@@ -1,0 +1,133 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa Platform — Local Development Stack
+# ═══════════════════════════════════════════════════════════════
+#
+# Services:
+#   - postgres   : PostgreSQL 15 (with extensions)
+#   - redis      : Redis 7 (cache + Celery broker)
+#   - minio      : S3-compatible storage
+#   - adminer    : DB GUI
+#   - mailhog    : Email testing
+#
+# Usage:
+#   make up          # Start everything
+#   make down        # Stop everything
+#   make status      # Check status
+#   make logs        # Tail logs
+#   make psql        # Connect to PostgreSQL
+# ═══════════════════════════════════════════════════════════════
+
+name: rufaqaa
+
+services:
+  # ─── PostgreSQL 15 + PostGIS ───────────────────────────────
+  # Using postgis/postgis image because the schema uses POINT type
+  # for geospatial queries (orphan/family locations).
+  postgres:
+    image: postgis/postgis:15-3.4-alpine
+    container_name: rufaqaa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rufaqaa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rufaqaa_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-rufaqaa}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      TZ: ${TZ:-Asia/Kuwait}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rufaqaa} -d ${POSTGRES_DB:-rufaqaa}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rufaqaa-net
+
+  # ─── Redis 7 ───────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: rufaqaa-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rufaqaa-net
+
+  # ─── MinIO (S3-compatible storage) ─────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: rufaqaa-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-rufaqaa_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-rufaqaa_dev_secret_change_me}
+    ports:
+      - "${MINIO_PORT:-9000}:9000"      # API
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"  # Web Console
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rufaqaa-net
+
+  # ─── Adminer (DB GUI) ──────────────────────────────────────
+  adminer:
+    image: adminer:latest
+    container_name: rufaqaa-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: dracula
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - rufaqaa-net
+
+  # ─── MailHog (Email testing) ───────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: rufaqaa-mailhog
+    restart: unless-stopped
+    ports:
+      - "${MAILHOG_SMTP_PORT:-1025}:1025"   # SMTP
+      - "${MAILHOG_WEB_PORT:-8025}:8025"    # Web UI
+    networks:
+      - rufaqaa-net
+
+# ═══════════════════════════════════════════════════════════════
+# Volumes — Persistent data storage
+# ═══════════════════════════════════════════════════════════════
+volumes:
+  postgres-data:
+    name: rufaqaa-postgres-data
+  redis-data:
+    name: rufaqaa-redis-data
+  minio-data:
+    name: rufaqaa-minio-data
+
+# ═══════════════════════════════════════════════════════════════
+# Networks
+# ═══════════════════════════════════════════════════════════════
+networks:
+  rufaqaa-net:
+    name: rufaqaa-network
+    driver: bridge

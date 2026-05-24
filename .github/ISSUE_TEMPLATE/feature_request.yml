@@ -1,0 +1,102 @@
+name: 💡 اقتراح ميزة (Feature Request)
+description: اقترح ميزة جديدة لرفقاء
+title: "[Feature]: "
+labels: ["enhancement", "needs-discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        شكراً لمشاركة فكرتك 🌿
+
+        لتسريع المناقشة، ساعدنا بفهم:
+        - 🎯 ما المشكلة التي تحلّها؟
+        - 👥 من سيستفيد منها؟
+        - 🛠️ كيف تتخيّل تنفيذها؟
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 🎯 المشكلة
+      description: ما المشكلة التي تواجهها الآن؟ ما الذي يدفعك لطلب هذه الميزة؟
+      placeholder: عندما أحاول... أواجه...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 الحل المقترح
+      description: كيف تتخيّل أن الميزة ستعمل؟
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-role
+    attributes:
+      label: 👥 من سيستفيد من هذه الميزة؟
+      multiple: true
+      options:
+        - Super Admin
+        - Org Admin
+        - Partner Manager
+        - Partner Staff
+        - Marketing Manager
+        - Finance
+        - Donor (المتبرع)
+        - Guardian (ولي الأمر)
+        - Orphan (اليتيم 12+)
+        - Viewer
+        - Developer
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 البدائل التي فكّرت فيها
+      description: هل هناك طرق أخرى لحلّ المشكلة؟
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🔥 الأولوية المقترحة (من وجهة نظرك)
+      options:
+        - 🔴 حرجة (Critical) — يعطّل عملي
+        - 🟠 عالية (High) — يحسّن العمل كثيراً
+        - 🟡 متوسطة (Medium) — جميل أن يكون موجوداً
+        - 🟢 منخفضة (Low) — مجرّد فكرة
+    validations:
+      required: true
+
+  - type: textarea
+    id: alignment
+    attributes:
+      label: 🕌 التوافق مع روح المشروع
+      description: |
+        رفقاء وقفٌ إلكتروني. كيف تخدم هذه الميزة:
+        - كرامة اليتيم؟
+        - شفافية المتبرع؟
+        - عمل المؤسسة الخيرية؟
+      placeholder: هذه الميزة تخدم...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 معلومات إضافية
+      description: لقطات، روابط، أمثلة من منصات أخرى، إلخ
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: ✅ تأكيد
+      options:
+        - label: قرأت [ميثاق السلوك](https://github.com/samehshakeraly/rufaqaa-app/blob/main/CODE_OF_CONDUCT.md)
+          required: true
+        - label: بحثت في الـ Issues ولم أجد اقتراحاً مشابهاً
+          required: true

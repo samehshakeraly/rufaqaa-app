@@ -1,0 +1,70 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa Platform — Dependabot Configuration
+# ═══════════════════════════════════════════════════════════════
+# Automatically check for dependency updates weekly
+# https://docs.github.com/code-security/dependabot
+# ═══════════════════════════════════════════════════════════════
+
+version: 2
+
+updates:
+  # ─── GitHub Actions ──────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kuwait
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: chore
+      include: scope
+
+  # ─── Docker Compose (Postgres, Redis, etc.) ──────────────
+  - package-ecosystem: docker
+    directory: /infrastructure/docker/postgres
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
+      - docker
+
+  # ─── Backend (Python) — uncomment when backend is initialized ─
+  # - package-ecosystem: pip
+  #   directory: /backend
+  #   schedule:
+  #     interval: weekly
+  #     day: monday
+  #   open-pull-requests-limit: 10
+  #   labels:
+  #     - dependencies
+  #     - python
+  #   commit-message:
+  #     prefix: chore(deps)
+  #   groups:
+  #     production-deps:
+  #       dependency-type: production
+  #     development-deps:
+  #       dependency-type: development
+
+  # ─── Frontend (npm) — uncomment when frontend is initialized ─
+  # - package-ecosystem: npm
+  #   directory: /frontend
+  #   schedule:
+  #     interval: weekly
+  #     day: monday
+  #   open-pull-requests-limit: 10
+  #   labels:
+  #     - dependencies
+  #     - javascript
+  #   commit-message:
+  #     prefix: chore(deps)
+  #   groups:
+  #     production-deps:
+  #       dependency-type: production
+  #     development-deps:
+  #       dependency-type: development

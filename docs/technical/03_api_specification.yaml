@@ -1,0 +1,1255 @@
+openapi: 3.0.3
+info:
+  title: Rufaqaa Platform API
+  description: |
+    منصة رفقاء — Global Orphan Sponsorship Platform
+    
+    API لإدارة كفالة الأيتام عالمياً
+    "كافل اليتيم.. رفيق النبي ﷺ"
+    
+    ## Authentication
+    - JWT Bearer Token
+    - API Key (للتكاملات)
+    - 2FA إلزامي للأدوار الحساسة
+    
+    ## Rate Limiting
+    - Public: 60 req/min
+    - Authenticated: 300 req/min
+    - Admin: 1000 req/min
+    
+  version: 1.0.0
+  contact:
+    name: Rufaqaa Team
+    url: https://rufaqaa.app
+    email: hello@rufaqaa.app
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.rufaqaa.app/v1
+    description: Production
+  - url: https://staging-api.rufaqaa.app/v1
+    description: Staging
+  - url: http://localhost:8000/v1
+    description: Local Development
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+tags:
+  - name: Auth
+    description: المصادقة وإدارة الحسابات
+  - name: Organizations
+    description: إدارة المؤسسات
+  - name: Orphans
+    description: إدارة الأيتام
+  - name: Guardians
+    description: إدارة أولياء الأمور
+  - name: Donors
+    description: إدارة المتبرعين
+  - name: Sponsorships
+    description: إدارة الكفالات
+  - name: Payments
+    description: المدفوعات والمعاملات المالية
+  - name: Transfers
+    description: التحويلات البنكية للجهات الشريكة
+  - name: Partners
+    description: الجهات الشريكة
+  - name: Marketing
+    description: قنوات التسويق والأهداف
+  - name: Documents
+    description: المستندات والملفات
+  - name: Reports
+    description: تقارير الأيتام الدورية
+  - name: Media
+    description: الصور والفيديوهات
+  - name: Messages
+    description: الرسائل بين المتبرعين والأيتام
+  - name: Notifications
+    description: الإشعارات
+  - name: Analytics
+    description: التحليلات والإحصاءات
+  - name: Settings
+    description: إعدادات النظام والقواعد
+  - name: Webhooks
+    description: الـ Webhooks للتكاملات
+
+paths:
+  # ═══════════════════════════════════════════════════════════════
+  # AUTHENTICATION
+  # ═══════════════════════════════════════════════════════════════
+  
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: تسجيل مستخدم جديد
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: تم التسجيل بنجاح
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: البريد الإلكتروني مستخدم بالفعل
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: تسجيل الدخول
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: تم تسجيل الدخول
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/verify-2fa:
+    post:
+      tags: [Auth]
+      summary: تأكيد رمز 2FA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: تم التأكيد
+        '401':
+          description: رمز غير صحيح
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: تجديد رمز الدخول
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: رمز جديد
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: تسجيل الخروج
+      responses:
+        '204':
+          description: تم تسجيل الخروج
+
+  # ═══════════════════════════════════════════════════════════════
+  # ORPHANS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /orphans:
+    get:
+      tags: [Orphans]
+      summary: قائمة الأيتام
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [available, reserved, sponsored, pending_review]
+        - in: query
+          name: country
+          schema:
+            type: string
+        - in: query
+          name: age_min
+          schema:
+            type: integer
+        - in: query
+          name: age_max
+          schema:
+            type: integer
+        - in: query
+          name: gender
+          schema:
+            type: string
+            enum: [M, F]
+        - in: query
+          name: partner_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: channel_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: cursor
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: قائمة الأيتام
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Orphan'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Orphans]
+      summary: تسجيل يتيم جديد
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrphanRequest'
+      responses:
+        '201':
+          description: تم تسجيل اليتيم
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orphan'
+        '409':
+          description: حالة مكررة محتملة
+
+  /orphans/{id}:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Orphans]
+      summary: تفاصيل يتيم
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanDetailed'
+    patch:
+      tags: [Orphans]
+      summary: تحديث بيانات يتيم
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrphanRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orphan'
+
+  /orphans/{id}/approve:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Orphans]
+      summary: اعتماد حالة يتيم
+      responses:
+        '200':
+          description: تم الاعتماد
+
+  /orphans/{id}/reject:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Orphans]
+      summary: رفض حالة يتيم
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+
+  /orphans/{id}/assign-channel:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Orphans]
+      summary: تخصيص يتيم لقناة تسويقية
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel_id]
+              properties:
+                channel_id:
+                  type: string
+                  format: uuid
+                duration_days:
+                  type: integer
+                  default: 30
+
+  /orphans/{id}/release:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Orphans]
+      summary: إعادة يتيم للمتاحين
+      responses:
+        '200':
+          description: تم الإفراج
+
+  /orphans/{id}/reports:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Reports]
+      summary: تقارير يتيم
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrphanReport'
+    post:
+      tags: [Reports]
+      summary: رفع تقرير جديد
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportRequest'
+
+  # ═══════════════════════════════════════════════════════════════
+  # DONORS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /donors:
+    get:
+      tags: [Donors]
+      summary: قائمة المتبرعين
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: channel_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Donor'
+
+    post:
+      tags: [Donors]
+      summary: تسجيل متبرع جديد
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDonorRequest'
+
+  /donors/{id}:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Donors]
+      summary: تفاصيل متبرع
+
+  /donors/{id}/sponsorships:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Donors]
+      summary: كفالات متبرع
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sponsorship'
+
+  /donors/{id}/payments:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Donors]
+      summary: مدفوعات متبرع
+
+  # ═══════════════════════════════════════════════════════════════
+  # SPONSORSHIPS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /sponsorships:
+    get:
+      tags: [Sponsorships]
+      summary: قائمة الكفالات
+    post:
+      tags: [Sponsorships]
+      summary: إنشاء كفالة جديدة (ربط متبرع بيتيم)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSponsorshipRequest'
+
+  /sponsorships/{id}:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Sponsorships]
+    patch:
+      tags: [Sponsorships]
+      summary: تعديل كفالة
+
+  /sponsorships/{id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Sponsorships]
+      summary: إلغاء كفالة
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+
+  /sponsorships/{id}/renew:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Sponsorships]
+      summary: تجديد كفالة
+
+  # ═══════════════════════════════════════════════════════════════
+  # PAYMENTS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /payments:
+    get:
+      tags: [Payments]
+      summary: قائمة المدفوعات
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: donor_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: from_date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: to_date
+          schema:
+            type: string
+            format: date
+    post:
+      tags: [Payments]
+      summary: تسجيل دفعة جديدة
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+
+  /payments/{id}/refund:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Payments]
+      summary: استرداد دفعة
+
+  /payments/import-bank-statement:
+    post:
+      tags: [Payments]
+      summary: استيراد كشف بنك
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                bank_name:
+                  type: string
+
+  # ═══════════════════════════════════════════════════════════════
+  # TRANSFERS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /transfers:
+    get:
+      tags: [Transfers]
+      summary: التحويلات البنكية
+    post:
+      tags: [Transfers]
+      summary: إنشاء تحويل بنكي جديد
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransferRequest'
+
+  /transfers/{id}/approve:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Transfers]
+      summary: اعتماد تحويل
+
+  /transfers/{id}/execute:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Transfers]
+      summary: تنفيذ تحويل
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bank_reference]
+              properties:
+                bank_reference:
+                  type: string
+                executed_at:
+                  type: string
+                  format: date-time
+
+  # ═══════════════════════════════════════════════════════════════
+  # PARTNERS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /partners:
+    get:
+      tags: [Partners]
+      summary: قائمة الجهات الشريكة
+    post:
+      tags: [Partners]
+      summary: إضافة جهة شريكة
+
+  /partners/{id}:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Partners]
+    patch:
+      tags: [Partners]
+
+  # ═══════════════════════════════════════════════════════════════
+  # MARKETING CHANNELS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /channels:
+    get:
+      tags: [Marketing]
+      summary: قنوات التسويق
+    post:
+      tags: [Marketing]
+      summary: إنشاء قناة جديدة
+
+  /channels/{id}/goals:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    get:
+      tags: [Marketing]
+      summary: أهداف القناة وتقدمها
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelGoals'
+
+  # ═══════════════════════════════════════════════════════════════
+  # DOCUMENTS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /documents:
+    post:
+      tags: [Documents]
+      summary: رفع مستند
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, document_type, orphan_id]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                document_type:
+                  type: string
+                orphan_id:
+                  type: string
+                  format: uuid
+
+  /documents/{id}/verify:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Documents]
+      summary: التحقق من مستند
+
+  # ═══════════════════════════════════════════════════════════════
+  # MEDIA
+  # ═══════════════════════════════════════════════════════════════
+  
+  /media:
+    post:
+      tags: [Media]
+      summary: رفع صورة/فيديو
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, orphan_id, media_type]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                orphan_id:
+                  type: string
+                  format: uuid
+                media_type:
+                  type: string
+                  enum: [photo, video, audio]
+
+  /media/{id}/moderate:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Media]
+      summary: اعتماد/رفض محتوى
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision:
+                  type: string
+                  enum: [approve, reject]
+                notes:
+                  type: string
+
+  # ═══════════════════════════════════════════════════════════════
+  # MESSAGES
+  # ═══════════════════════════════════════════════════════════════
+  
+  /messages:
+    get:
+      tags: [Messages]
+    post:
+      tags: [Messages]
+      summary: إرسال رسالة (تذهب للمراجعة)
+
+  # ═══════════════════════════════════════════════════════════════
+  # NOTIFICATIONS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: إشعاراتي
+
+  /notifications/{id}/read:
+    parameters:
+      - $ref: '#/components/parameters/UuidPath'
+    post:
+      tags: [Notifications]
+
+  # ═══════════════════════════════════════════════════════════════
+  # ANALYTICS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /analytics/dashboard:
+    get:
+      tags: [Analytics]
+      summary: لوحة المعلومات الرئيسية
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dashboard'
+
+  /analytics/reports/{report_type}:
+    parameters:
+      - in: path
+        name: report_type
+        required: true
+        schema:
+          type: string
+          enum: [monthly, quarterly, annual, custom]
+    get:
+      tags: [Analytics]
+
+  # ═══════════════════════════════════════════════════════════════
+  # SETTINGS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /settings/business-rules:
+    get:
+      tags: [Settings]
+    patch:
+      tags: [Settings]
+
+  # ═══════════════════════════════════════════════════════════════
+  # WEBHOOKS
+  # ═══════════════════════════════════════════════════════════════
+  
+  /webhooks:
+    get:
+      tags: [Webhooks]
+    post:
+      tags: [Webhooks]
+      summary: إنشاء webhook جديد
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    UuidPath:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: طلب غير صالح
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: غير مصرّح
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: ممنوع
+    NotFound:
+      description: غير موجود
+    Conflict:
+      description: تعارض
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+    Pagination:
+      type: object
+      properties:
+        next_cursor:
+          type: string
+          nullable: true
+        has_more:
+          type: boolean
+        total:
+          type: integer
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        requires_2fa:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/User'
+
+    RegisterRequest:
+      type: object
+      required: [email, password, first_name, last_name, role]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 12
+        phone:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        role:
+          type: string
+          enum: [donor, guardian, partner_staff]
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        role:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+
+    Orphan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          example: "ORF-00045"
+        first_name:
+          type: string
+        family_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [M, F]
+        nationality:
+          type: string
+        case_status:
+          type: string
+        is_sponsored:
+          type: boolean
+        current_balance:
+          type: number
+        balance_currency:
+          type: string
+
+    OrphanDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Orphan'
+        - type: object
+          properties:
+            father_name:
+              type: string
+            father_death_date:
+              type: string
+              format: date
+            family:
+              type: object
+            partner_organization:
+              type: object
+            assigned_channel:
+              type: object
+            current_sponsorship:
+              $ref: '#/components/schemas/Sponsorship'
+            documents:
+              type: array
+              items:
+                type: object
+            recent_reports:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrphanReport'
+
+    CreateOrphanRequest:
+      type: object
+      required: [first_name, family_name, date_of_birth, gender, partner_organization_id]
+      properties:
+        first_name:
+          type: string
+        middle_name:
+          type: string
+        family_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [M, F]
+        nationality:
+          type: string
+        father_name:
+          type: string
+        father_death_date:
+          type: string
+          format: date
+        partner_organization_id:
+          type: string
+          format: uuid
+        family_id:
+          type: string
+          format: uuid
+
+    UpdateOrphanRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        family_name:
+          type: string
+
+    Donor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        full_name:
+          type: string
+        email:
+          type: string
+        total_sponsorships:
+          type: integer
+        total_donated:
+          type: number
+
+    CreateDonorRequest:
+      type: object
+      required: [full_name, email]
+      properties:
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        nationality:
+          type: string
+        preferred_currency:
+          type: string
+
+    Sponsorship:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        donor_id:
+          type: string
+          format: uuid
+        orphan_id:
+          type: string
+          format: uuid
+        monthly_amount:
+          type: number
+        currency:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        status:
+          type: string
+
+    CreateSponsorshipRequest:
+      type: object
+      required: [donor_id, orphan_id, monthly_amount, currency, start_date]
+      properties:
+        donor_id:
+          type: string
+          format: uuid
+        orphan_id:
+          type: string
+          format: uuid
+        marketing_channel_id:
+          type: string
+          format: uuid
+        monthly_amount:
+          type: number
+        currency:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        payment_frequency:
+          type: string
+          enum: [monthly, quarterly, semi_annual, annual]
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+        payment_method:
+          type: string
+        completed_at:
+          type: string
+          format: date-time
+
+    CreatePaymentRequest:
+      type: object
+      required: [donor_id, amount, currency, payment_method]
+      properties:
+        donor_id:
+          type: string
+          format: uuid
+        sponsorship_id:
+          type: string
+          format: uuid
+        orphan_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        currency:
+          type: string
+        payment_method:
+          type: string
+        gateway_transaction_id:
+          type: string
+
+    CreateTransferRequest:
+      type: object
+      required: [partner_organization_id, amount, currency, period_start, period_end]
+      properties:
+        partner_organization_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        currency:
+          type: string
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              orphan_id:
+                type: string
+                format: uuid
+              amount:
+                type: number
+
+    OrphanReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        report_type:
+          type: string
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        educational_progress:
+          type: object
+        quran_progress:
+          type: object
+        health_status:
+          type: object
+        status:
+          type: string
+
+    CreateReportRequest:
+      type: object
+      required: [report_type, period_start, period_end]
+      properties:
+        report_type:
+          type: string
+          enum: [monthly, quarterly, annual]
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        educational_progress:
+          type: object
+        quran_progress:
+          type: object
+        health_status:
+          type: object
+        summary:
+          type: string
+
+    ChannelGoals:
+      type: object
+      properties:
+        annual_goal_count:
+          type: integer
+        achieved_count:
+          type: integer
+        completion_percentage:
+          type: number
+        monthly_goal:
+          type: integer
+        monthly_achieved:
+          type: integer
+
+    Dashboard:
+      type: object
+      properties:
+        total_orphans:
+          type: integer
+        sponsored_orphans:
+          type: integer
+        active_sponsorships:
+          type: integer
+        total_donors:
+          type: integer
+        total_donations_this_month:
+          type: number
+        recent_payments:
+          type: array
+        recent_orphans:
+          type: array
+        alerts:
+          type: array

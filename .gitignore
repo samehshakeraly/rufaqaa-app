@@ -1,0 +1,243 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa Platform — .gitignore
+# ═══════════════════════════════════════════════════════════════
+
+# ─── Environment & Secrets ───────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+*.pem
+*.key
+*.crt
+secrets/
+.secrets/
+
+# ─── Python ──────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.tox/
+.nox/
+.hypothesis/
+.cache/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linting
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# ─── Node.js / Frontend ──────────────────────────────────────
+node_modules/
+.pnp/
+.pnp.js
+.yarn/install-state.gz
+
+# Build outputs
+build/
+dist/
+out/
+.next/
+.nuxt/
+.vuepress/dist/
+.docusaurus/
+.cache/
+
+# Bundle analysis
+.bundle-analysis/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Package manager
+.npm/
+.pnpm-store/
+.yarn-integrity
+
+# Vite
+*.local
+
+# ─── React Native / Expo ─────────────────────────────────────
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+web-build/
+
+# iOS
+ios/Pods/
+ios/build/
+ios/.xcode.env.local
+*.pbxproj.bak
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+*.iml
+
+# ─── Databases ───────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+postgres-data/
+redis-data/
+minio-data/
+
+# Backups
+*.sql.gz
+*.dump
+backups/
+
+# ─── Docker ──────────────────────────────────────────────────
+docker-compose.override.yml
+.docker/data/
+
+# ─── IDEs & Editors ──────────────────────────────────────────
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains (PyCharm, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ─── OS Files ────────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.Trash-*
+
+# ─── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+log/
+
+# ─── Temporary Files ─────────────────────────────────────────
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.backup
+
+# ─── Generated Files ─────────────────────────────────────────
+# Documentation
+docs/_build/
+docs/.docusaurus/
+site/
+
+# Storybook
+storybook-static/
+
+# ─── Sensitive Data ──────────────────────────────────────────
+# Never commit real data — even for development
+*.csv.real
+real-data/
+*-backup.sql
+
+# Uploaded files (in dev)
+uploads/
+media/uploads/
+storage/
+
+# ─── Misc ────────────────────────────────────────────────────
+.history/
+*.pid
+*.seed
+*.pid.lock

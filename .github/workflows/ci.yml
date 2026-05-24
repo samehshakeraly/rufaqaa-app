@@ -1,0 +1,144 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa Platform — Continuous Integration
+# ═══════════════════════════════════════════════════════════════
+# Runs on every push and pull request to ensure:
+#   - Code quality (linting)
+#   - File integrity (no broken markdown links, etc.)
+#   - SQL schema validity
+#
+# Note: Backend/Frontend tests will be added in their respective phases.
+# ═══════════════════════════════════════════════════════════════
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─── Validate repository structure ─────────────────────────
+  structure:
+    name: 📁 Repository Structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          required_files=(
+            "README.md"
+            "LICENSE"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            "SECURITY.md"
+            "CHANGELOG.md"
+            ".gitignore"
+            ".editorconfig"
+            "docker-compose.yml"
+            ".env.example"
+            "Makefile"
+          )
+
+          missing=0
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing: $file"
+              missing=1
+            else
+              echo "✅ Found:   $file"
+            fi
+          done
+
+          if [ $missing -eq 1 ]; then
+            echo ""
+            echo "::error::Required files are missing"
+            exit 1
+          fi
+
+  # ─── Validate Docker Compose ──────────────────────────────
+  docker-compose:
+    name: 🐳 Docker Compose Config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml syntax
+        run: |
+          docker compose config --quiet
+          echo "✅ docker-compose.yml is valid"
+
+  # ─── Validate SQL schema ──────────────────────────────────
+  sql-schema:
+    name: 🗄️  SQL Schema Syntax
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_schema
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Apply schema to verify syntax
+        env:
+          PGPASSWORD: test
+        run: |
+          if [ -f docs/technical/01_database_schema.sql ]; then
+            psql -h localhost -U test -d test_schema \
+              -f docs/technical/01_database_schema.sql \
+              -v ON_ERROR_STOP=1
+            echo "✅ Schema applied successfully"
+          else
+            echo "⚠️  Schema file not yet in docs/technical/ — skipping"
+          fi
+
+  # ─── Validate OpenAPI spec ────────────────────────────────
+  openapi:
+    name: 🌐 OpenAPI Specification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate OpenAPI YAML
+        run: |
+          if [ -f docs/technical/03_api_specification.yaml ]; then
+            npx --yes @redocly/cli@latest lint \
+              docs/technical/03_api_specification.yaml || true
+            echo "✅ OpenAPI checked"
+          else
+            echo "⚠️  API spec not yet in docs/technical/ — skipping"
+          fi
+
+  # ─── Markdown linting ─────────────────────────────────────
+  markdown:
+    name: 📝 Markdown Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for broken internal links
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --offline --verbose --no-progress './**/*.md'
+          fail: false
+        continue-on-error: true

@@ -1,0 +1,110 @@
+name: 🐛 الإبلاغ عن خطأ (Bug Report)
+description: ساعدنا في تحسين رفقاء عبر الإبلاغ عن خطأ تواجهه
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        شكراً لمساهمتك في تحسين رفقاء 🌿
+
+        قبل الإبلاغ، تأكّد:
+        - ✅ بحثت في الـ Issues الموجودة ولم تجد المشكلة
+        - ✅ المشكلة قابلة للتكرار
+        - ✅ المشكلة في الكود — وليست في إعداداتك المحلية
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 وصف المشكلة
+      description: ماذا يحدث؟ وما الذي كنت تتوقّع حدوثه بدلاً من ذلك؟
+      placeholder: عندما أحاول إنشاء كفالة جديدة، يظهر خطأ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 🔄 خطوات التكرار
+      description: كيف نعيد إنتاج المشكلة بدقة؟
+      placeholder: |
+        1. اذهب إلى ...
+        2. اضغط على ...
+        3. لاحظ أن ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ السلوك المتوقّع
+      description: ماذا كنت تتوقّع أن يحدث؟
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ السلوك الفعلي
+      description: ماذا حدث فعلاً؟ (أضف لقطات شاشة إن أمكن)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🧩 المكوّن المتأثر
+      options:
+        - Backend (API)
+        - Frontend (Web)
+        - Mobile (Donor App)
+        - Mobile (Guardian App)
+        - Mobile (Staff App)
+        - Mobile (Admin App)
+        - MCP Server
+        - Database
+        - Documentation
+        - Infrastructure (Docker/CI)
+        - Other / Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 🏷️ الإصدار / Commit SHA
+      placeholder: "v0.1.0 or commit abc1234"
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 💻 معلومات البيئة
+      placeholder: |
+        - OS: macOS 14 / Ubuntu 22.04 / Windows 11
+        - Browser: Chrome 120 / Safari 17 / Firefox 121
+        - Python version: 3.12.1
+        - Node version: 20.10.0
+        - Docker version: 24.0.7
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📋 السجلات (Logs)
+      description: انسخ أي أخطاء من الـ Console أو الـ Server logs
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: ✅ تأكيد
+      options:
+        - label: قرأت [ميثاق السلوك](https://github.com/samehshakeraly/rufaqaa-app/blob/main/CODE_OF_CONDUCT.md)
+          required: true
+        - label: بحثت في الـ Issues ولم أجد المشكلة مسجّلة
+          required: true

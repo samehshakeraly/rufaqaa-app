@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 سؤال أو نقاش عام
+    url: https://github.com/samehshakeraly/rufaqaa-app/discussions
+    about: الأسئلة والنقاشات تُطرح في Discussions وليس Issues
+  - name: 🛡️ الإبلاغ عن ثغرة أمنية
+    url: https://github.com/samehshakeraly/rufaqaa-app/security/advisories/new
+    about: لا تُبلِّغ عن الثغرات عبر Issues عامة — استخدم Security Advisories
+  - name: 📚 التوثيق
+    url: https://github.com/samehshakeraly/rufaqaa-app/tree/main/docs
+    about: راجع التوثيق قبل فتح Issue
