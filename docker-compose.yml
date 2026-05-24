@@ -102,6 +102,32 @@ services:
     networks:
       - rufaqaa-net
 
+  # ─── Backend API (FastAPI) ─────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rufaqaa-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-rufaqaa}:${POSTGRES_PASSWORD:-rufaqaa_dev_password}@postgres:5432/${POSTGRES_DB:-rufaqaa}
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - ./backend:/app
+      - ./docs:/docs:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - rufaqaa-net
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
   # ─── MailHog (Email testing) ───────────────────────────────
   mailhog:
     image: mailhog/mailhog:latest
