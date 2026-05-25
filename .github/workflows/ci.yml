@@ -132,6 +132,8 @@ jobs:
         run: alembic upgrade head
       - name: Run tests
         run: pytest -q
+      - name: OpenAPI export is up to date
+        run: python -m app.scripts.export_openapi --check
 
   # ─── MCP Server: lint + tests (no backend required) ──────
   mcp:

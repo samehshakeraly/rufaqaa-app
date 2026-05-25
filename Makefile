@@ -103,6 +103,9 @@ backend-lint: ## 🔍 فحص الكود في Backend
 backend-format: ## ✨ تنسيق الكود في Backend
 	@cd backend && ruff format .
 
+backend-openapi: ## 📘 توليد ملف OpenAPI من FastAPI
+	@cd backend && python -m app.scripts.export_openapi
+
 # ═══════════════════════════════════════════════════════════════
 # MCP Server
 # ═══════════════════════════════════════════════════════════════
