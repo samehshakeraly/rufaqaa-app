@@ -55,6 +55,7 @@
   "orphans": {
     "title": "الأيتام",
     "addNew": "إضافة يتيم",
+    "searchPlaceholder": "ابحث بالاسم أو الرمز...",
     "code": "الرمز",
     "name": "الاسم",
     "firstName": "الاسم الأول",

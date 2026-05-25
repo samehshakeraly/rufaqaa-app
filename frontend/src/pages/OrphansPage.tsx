@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -9,7 +9,8 @@ import { z } from "zod";
 import { createOrphan, listOrphans, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 
-const ORPHAN_QUERY = ["orphans", { limit: 20, offset: 0 }] as const;
+const orphanQueryKey = (q: string) =>
+  ["orphans", { limit: 20, offset: 0, q }] as const;
 
 const schema = z.object({
   first_name: z.string().min(1),
@@ -31,10 +32,24 @@ export function OrphansPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // 300ms debounce on the search box so we don't spam the API on every keystroke.
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(searchInput.trim()), 300);
+    return () => clearTimeout(id);
+  }, [searchInput]);
+
+  const queryKey = orphanQueryKey(debouncedSearch);
   const { data, isLoading, error } = useQuery({
-    queryKey: ORPHAN_QUERY,
-    queryFn: () => listOrphans({ limit: 20, offset: 0 }),
+    queryKey,
+    queryFn: () =>
+      listOrphans({
+        limit: 20,
+        offset: 0,
+        ...(debouncedSearch ? { q: debouncedSearch } : {}),
+      }),
   });
   const { data: partners } = useQuery({
     queryKey: ["partners"],
@@ -43,9 +58,16 @@ export function OrphansPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900">{t("orphans.title")}</h1>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-1 items-center justify-end gap-4">
+          <input
+            type="search"
+            className="input max-w-xs"
+            placeholder={t("orphans.searchPlaceholder")}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
           {data && (
             <span className="text-sm text-slate-500">
               {t("common.total")}: {data.total.toLocaleString()}
@@ -65,7 +87,7 @@ export function OrphansPage() {
         <NewOrphanForm
           partners={partners?.items ?? []}
           onCreated={async () => {
-            await qc.invalidateQueries({ queryKey: ORPHAN_QUERY });
+            await qc.invalidateQueries({ queryKey: queryKey });
             setShowForm(false);
           }}
         />

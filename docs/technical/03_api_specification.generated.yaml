@@ -2457,6 +2457,16 @@ paths:
       - media
   /api/v1/orphans:
     get:
+      description: 'List orphans, optionally filtered by case_status and a search term.
+
+
+        `q` does a Postgres full-text search against the trigger-maintained
+
+        `search_vector` (covers Arabic + English name fields and the code) and
+
+        also matches the code prefix directly so partial codes like "ORF-AB"
+
+        still work.'
       operationId: list_orphans_api_v1_orphans_get
       parameters:
       - in: query
@@ -2484,6 +2494,16 @@ paths:
           - type: string
           - type: 'null'
           title: Case Status
+      - in: query
+        name: q
+        required: false
+        schema:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Q
       responses:
         '200':
           content:

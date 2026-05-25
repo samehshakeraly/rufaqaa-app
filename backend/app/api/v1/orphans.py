@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select, text
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
@@ -25,15 +25,44 @@ async def list_orphans(
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     case_status: str | None = None,
+    q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
 ) -> Page[OrphanRead]:
+    """List orphans, optionally filtered by case_status and a search term.
+
+    `q` does a Postgres full-text search against the trigger-maintained
+    `search_vector` (covers Arabic + English name fields and the code) and
+    also matches the code prefix directly so partial codes like "ORF-AB"
+    still work.
+    """
     stmt = select(Orphan).where(Orphan.deleted_at.is_(None))
     if case_status:
         stmt = stmt.where(Orphan.case_status == case_status)
+    if q:
+        # plainto_tsquery treats input as raw text and handles tokenisation,
+        # which is safer than letting users craft tsquery operators.
+        tsquery = func.plainto_tsquery("simple", q)
+        like = f"%{q}%"
+        stmt = stmt.where(
+            or_(
+                text("search_vector @@ plainto_tsquery('simple', :q)").bindparams(q=q),
+                Orphan.code.ilike(like),
+                Orphan.first_name.ilike(like),
+                Orphan.family_name.ilike(like),
+            )
+        )
+        # Rank: best matches first when a query was supplied
+        stmt = stmt.order_by(
+            text("ts_rank(search_vector, plainto_tsquery('simple', :q)) DESC").bindparams(q=q),
+            Orphan.created_at.desc(),
+        )
+        # Avoid the "unused" warning about tsquery — it's still useful as a
+        # readable reference even though we use raw text() above.
+        _ = tsquery
+    else:
+        stmt = stmt.order_by(Orphan.created_at.desc())
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-    rows = (
-        await db.scalars(stmt.order_by(Orphan.created_at.desc()).limit(limit).offset(offset))
-    ).all()
+    rows = (await db.scalars(stmt.limit(limit).offset(offset))).all()
 
     return Page(
         items=[OrphanRead.model_validate(r) for r in rows],

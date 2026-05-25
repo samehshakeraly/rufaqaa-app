@@ -34,6 +34,8 @@ export interface OrphanCreateInput {
 export async function listOrphans(params?: {
   limit?: number;
   offset?: number;
+  q?: string;
+  case_status?: string;
 }): Promise<Page<Orphan>> {
   const { data } = await api.get<Page<Orphan>>("/orphans", { params });
   return data;
