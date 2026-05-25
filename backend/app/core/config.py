@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     LOG_FORMAT: Literal["json", "text"] = "json"
 
+    MYFATOORAH_API_URL: str = "https://apitest.myfatoorah.com"
+    MYFATOORAH_API_KEY: str = ""
+    MYFATOORAH_WEBHOOK_SECRET: str = ""
+
     @cached_property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
