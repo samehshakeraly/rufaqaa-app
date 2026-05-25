@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     DB_MAX_OVERFLOW: int = 20
 
     REDIS_URL: str = "redis://localhost:6379/0"
+    CELERY_BROKER_URL: str = "redis://localhost:6379/1"
+    CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
     SECRET_KEY: str = "development_only_change_in_production"
     JWT_SECRET_KEY: str = "development_only_change_in_production"

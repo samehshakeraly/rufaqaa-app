@@ -106,6 +106,12 @@ backend-format: ## ✨ تنسيق الكود في Backend
 backend-openapi: ## 📘 توليد ملف OpenAPI من FastAPI
 	@cd backend && python -m app.scripts.export_openapi
 
+worker-dev: ## ⚙️  تشغيل Celery worker للتطوير
+	@cd backend && celery -A app.workers.celery_app worker --loglevel=info
+
+beat-dev: ## ⏰ تشغيل Celery beat (المهام المجدولة)
+	@cd backend && celery -A app.workers.celery_app beat --loglevel=info
+
 # ═══════════════════════════════════════════════════════════════
 # MCP Server
 # ═══════════════════════════════════════════════════════════════
