@@ -323,6 +323,406 @@ components:
       - updated_at
       title: DonorRead
       type: object
+    FamilyCreate:
+      properties:
+        address_details:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address Details
+        city:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: City
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        deceased_father_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Deceased Father Name
+        district:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: District
+        family_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Family Name
+        father_death_cause:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Father Death Cause
+        father_death_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Father Death Date
+        governorate:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Governorate
+        housing_status:
+          anyOf:
+          - enum:
+            - owned
+            - rented
+            - donated
+            - homeless
+            type: string
+          - type: 'null'
+          title: Housing Status
+        income_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Income Currency
+        monthly_income:
+          anyOf:
+          - type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          - type: 'null'
+          title: Monthly Income
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
+      title: FamilyCreate
+      type: object
+    FamilyRead:
+      properties:
+        address_details:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address Details
+        city:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: City
+        code:
+          title: Code
+          type: string
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        deceased_father_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Deceased Father Name
+        district:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: District
+        family_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Family Name
+        father_death_cause:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Father Death Cause
+        father_death_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Father Death Date
+        governorate:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Governorate
+        housing_status:
+          anyOf:
+          - enum:
+            - owned
+            - rented
+            - donated
+            - homeless
+            type: string
+          - type: 'null'
+          title: Housing Status
+        id:
+          format: uuid
+          title: Id
+          type: string
+        income_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Income Currency
+        monthly_income:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          - type: 'null'
+          title: Monthly Income
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - code
+      - organization_id
+      - partner_organization_id
+      - created_at
+      - updated_at
+      title: FamilyRead
+      type: object
+    GuardianCreate:
+      properties:
+        date_of_birth:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Date Of Birth
+        email:
+          anyOf:
+          - format: email
+            type: string
+          - type: 'null'
+          title: Email
+        family_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Family Id
+        full_name:
+          maxLength: 255
+          minLength: 1
+          title: Full Name
+          type: string
+        gender:
+          anyOf:
+          - enum:
+            - M
+            - F
+            type: string
+          - type: 'null'
+          title: Gender
+        literacy_level:
+          default: low
+          enum:
+          - illiterate
+          - low
+          - medium
+          - high
+          title: Literacy Level
+          type: string
+        national_id:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: National Id
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_communication:
+          default: whatsapp
+          maxLength: 20
+          title: Preferred Communication
+          type: string
+        relation:
+          enum:
+          - mother
+          - father
+          - grandfather
+          - grandmother
+          - uncle
+          - aunt
+          - sibling
+          - other
+          title: Relation
+          type: string
+        whatsapp:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Whatsapp
+      required:
+      - full_name
+      - relation
+      title: GuardianCreate
+      type: object
+    GuardianRead:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        date_of_birth:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Date Of Birth
+        email:
+          anyOf:
+          - format: email
+            type: string
+          - type: 'null'
+          title: Email
+        family_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Family Id
+        full_name:
+          maxLength: 255
+          minLength: 1
+          title: Full Name
+          type: string
+        gender:
+          anyOf:
+          - enum:
+            - M
+            - F
+            type: string
+          - type: 'null'
+          title: Gender
+        id:
+          format: uuid
+          title: Id
+          type: string
+        literacy_level:
+          default: low
+          enum:
+          - illiterate
+          - low
+          - medium
+          - high
+          title: Literacy Level
+          type: string
+        national_id:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: National Id
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_communication:
+          default: whatsapp
+          maxLength: 20
+          title: Preferred Communication
+          type: string
+        relation:
+          enum:
+          - mother
+          - father
+          - grandfather
+          - grandmother
+          - uncle
+          - aunt
+          - sibling
+          - other
+          title: Relation
+          type: string
+        status:
+          title: Status
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        whatsapp:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Whatsapp
+      required:
+      - full_name
+      - relation
+      - id
+      - organization_id
+      - family_id
+      - status
+      - created_at
+      - updated_at
+      title: GuardianRead
+      type: object
     HTTPValidationError:
       properties:
         detail:
@@ -620,6 +1020,52 @@ components:
       - limit
       - offset
       title: Page[DonorRead]
+      type: object
+    Page_FamilyRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/FamilyRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[FamilyRead]
+      type: object
+    Page_GuardianRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/GuardianRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[GuardianRead]
       type: object
     Page_OrphanRead_:
       properties:
@@ -1735,6 +2181,180 @@ paths:
       summary: Get Donor
       tags:
       - donors
+  /api/v1/families:
+    get:
+      operationId: list_families_api_v1_families_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_FamilyRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Families
+      tags:
+      - families
+    post:
+      operationId: create_family_api_v1_families_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Family
+      tags:
+      - families
+  /api/v1/families/{family_id}:
+    get:
+      operationId: get_family_api_v1_families__family_id__get
+      parameters:
+      - in: path
+        name: family_id
+        required: true
+        schema:
+          format: uuid
+          title: Family Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Family
+      tags:
+      - families
+  /api/v1/families/{family_id}/guardians:
+    get:
+      operationId: list_guardians_api_v1_families__family_id__guardians_get
+      parameters:
+      - in: path
+        name: family_id
+        required: true
+        schema:
+          format: uuid
+          title: Family Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_GuardianRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Guardians
+      tags:
+      - families
+    post:
+      operationId: create_guardian_api_v1_families__family_id__guardians_post
+      parameters:
+      - in: path
+        name: family_id
+        required: true
+        schema:
+          format: uuid
+          title: Family Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardianCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Guardian
+      tags:
+      - families
   /api/v1/health:
     get:
       operationId: health_api_v1_health_get
