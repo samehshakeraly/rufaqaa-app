@@ -44,6 +44,12 @@ export function AppLayout() {
             <NavLink to="/payments" className={navItemClass}>
               {t("nav.payments")}
             </NavLink>
+            <NavLink to="/reports" className={navItemClass}>
+              {t("nav.reports")}
+            </NavLink>
+            <NavLink to="/settings" className={navItemClass}>
+              {t("nav.settings")}
+            </NavLink>
           </nav>
           <div className="flex items-center gap-3">
             {me && (

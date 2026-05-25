@@ -9,6 +9,8 @@
     "donors": "Donors",
     "sponsorships": "Sponsorships",
     "payments": "Payments",
+    "reports": "Reports",
+    "settings": "Settings",
     "logout": "Sign out",
     "language": "English"
   },
@@ -130,6 +132,43 @@
       "disputed": "Disputed",
       "on_hold": "On hold"
     }
+  },
+  "reports": {
+    "title": "Reports",
+    "type": "Type",
+    "period": "Period",
+    "status": "Status",
+    "types": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annual": "Annual",
+      "special": "Special",
+      "incident": "Incident"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "pending_partner_approval": "Pending partner approval",
+      "partner_approved": "Partner approved",
+      "pending_org_approval": "Pending org approval",
+      "org_approved": "Org approved",
+      "published_to_donor": "Published to donor",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "submit": "Submit",
+      "approve-partner": "Approve (partner)",
+      "approve-org": "Approve (org)",
+      "publish": "Publish",
+      "reject": "Reject"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "changedSuccess": "Password changed. You will be signed out."
   },
   "donors": {
     "title": "Donors",

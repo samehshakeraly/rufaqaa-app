@@ -9,6 +9,8 @@
     "donors": "المتبرعون",
     "sponsorships": "الكفالات",
     "payments": "المدفوعات",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
     "logout": "خروج",
     "language": "العربية"
   },
@@ -130,6 +132,43 @@
       "disputed": "متنازع عليها",
       "on_hold": "موقوفة"
     }
+  },
+  "reports": {
+    "title": "التقارير",
+    "type": "النوع",
+    "period": "الفترة",
+    "status": "الحالة",
+    "types": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "annual": "سنوي",
+      "special": "خاص",
+      "incident": "حادثة"
+    },
+    "statuses": {
+      "draft": "مسودة",
+      "pending_partner_approval": "بانتظار اعتماد الشريك",
+      "partner_approved": "معتمد من الشريك",
+      "pending_org_approval": "بانتظار اعتماد المؤسسة",
+      "org_approved": "معتمد من المؤسسة",
+      "published_to_donor": "منشور للمتبرع",
+      "rejected": "مرفوض"
+    },
+    "actions": {
+      "submit": "إرسال",
+      "approve-partner": "اعتماد الشريك",
+      "approve-org": "اعتماد المؤسسة",
+      "publish": "نشر للمتبرع",
+      "reject": "رفض"
+    }
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "changedSuccess": "تم تغيير كلمة المرور بنجاح. سيتم تسجيل خروجك."
   },
   "donors": {
     "title": "المتبرعون",
