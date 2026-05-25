@@ -128,6 +128,25 @@ services:
       - rufaqaa-net
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
+  # ─── Frontend (Vite dev server) ────────────────────────────
+  frontend:
+    image: node:20-alpine
+    container_name: rufaqaa-frontend
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      VITE_API_URL: http://backend:8000/api/v1
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - rufaqaa-net
+    command: sh -c "npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0 --port 3000"
+
   # ─── MailHog (Email testing) ───────────────────────────────
   mailhog:
     image: mailhog/mailhog:latest
@@ -149,6 +168,8 @@ volumes:
     name: rufaqaa-redis-data
   minio-data:
     name: rufaqaa-minio-data
+  frontend-node-modules:
+    name: rufaqaa-frontend-node-modules
 
 # ═══════════════════════════════════════════════════════════════
 # Networks
