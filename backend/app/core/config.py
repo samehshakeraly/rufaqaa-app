@@ -50,6 +50,14 @@ class Settings(BaseSettings):
     MYFATOORAH_API_KEY: str = ""
     MYFATOORAH_WEBHOOK_SECRET: str = ""
 
+    S3_ENDPOINT: str = "http://localhost:9000"
+    S3_ACCESS_KEY: str = "rufaqaa_admin"
+    S3_SECRET_KEY: str = "rufaqaa_dev_secret_change_me"
+    S3_BUCKET_PRIVATE: str = "rufaqaa-private"
+    S3_BUCKET_PUBLIC: str = "rufaqaa-public"
+    S3_REGION: str = "us-east-1"
+    UPLOAD_MAX_BYTES: int = 10 * 1024 * 1024
+
     @cached_property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]

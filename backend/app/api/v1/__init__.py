@@ -5,6 +5,7 @@ from app.api.v1 import (
     auth,
     donors,
     health,
+    media,
     orphans,
     partners,
     payments,
@@ -26,3 +27,4 @@ api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
 api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
 api_router.include_router(stats.router, prefix="/stats", tags=["stats"])
+api_router.include_router(media.router, prefix="/media", tags=["media"])

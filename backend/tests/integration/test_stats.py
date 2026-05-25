@@ -1,9 +1,7 @@
 from httpx import AsyncClient
 
 
-async def test_summary_returns_all_keys(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_summary_returns_all_keys(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     r = await api.get("/api/v1/stats/summary", headers=auth_headers)
     assert r.status_code == 200, r.text
     body = r.json()

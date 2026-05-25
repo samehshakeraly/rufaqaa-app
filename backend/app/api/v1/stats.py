@@ -49,9 +49,7 @@ async def dashboard_summary(db: DbSession, _user: CurrentUser) -> DashboardSumma
             Orphan.deleted_at.is_(None), Orphan.case_status == "available"
         )
     )
-    donors_total = await db.scalar(
-        select(func.count(Donor.id)).where(Donor.deleted_at.is_(None))
-    )
+    donors_total = await db.scalar(select(func.count(Donor.id)).where(Donor.deleted_at.is_(None)))
     sponsorships_active = await db.scalar(
         select(func.count(Sponsorship.id)).where(Sponsorship.status == "active")
     )
