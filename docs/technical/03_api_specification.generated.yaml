@@ -2538,6 +2538,105 @@ paths:
       summary: Health Db
       tags:
       - health
+  /api/v1/me/reports:
+    get:
+      description: 'Reports for every orphan this donor sponsors — only the ones that
+
+        have actually been published to donors.'
+      operationId: my_reports_api_v1_me_reports_get
+      parameters:
+      - in: query
+        name: donor_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Donor Id
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_ReportRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: My Reports
+      tags:
+      - donor-portal
+  /api/v1/me/sponsorships:
+    get:
+      operationId: my_sponsorships_api_v1_me_sponsorships_get
+      parameters:
+      - in: query
+        name: donor_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Donor Id
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_SponsorshipRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: My Sponsorships
+      tags:
+      - donor-portal
   /api/v1/media/orphans/{orphan_id}/photo:
     post:
       operationId: upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post
