@@ -6,6 +6,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { LoginPage } from "./pages/LoginPage";
 import { OrphansPage } from "./pages/OrphansPage";
+import { PaymentsPage } from "./pages/PaymentsPage";
 import { SponsorshipsPage } from "./pages/SponsorshipsPage";
 
 export function App() {
@@ -24,6 +25,7 @@ export function App() {
         <Route path="/orphans" element={<OrphansPage />} />
         <Route path="/donors" element={<DonorsPage />} />
         <Route path="/sponsorships" element={<SponsorshipsPage />} />
+        <Route path="/payments" element={<PaymentsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

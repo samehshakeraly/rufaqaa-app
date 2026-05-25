@@ -8,6 +8,7 @@
     "orphans": "الأيتام",
     "donors": "المتبرعون",
     "sponsorships": "الكفالات",
+    "payments": "المدفوعات",
     "logout": "خروج",
     "language": "العربية"
   },
@@ -79,6 +80,8 @@
     "nextPayment": "تاريخ السداد القادم",
     "status": "الحالة",
     "cancel": "إلغاء",
+    "totalPaid": "الإجمالي المدفوع",
+    "recordPayment": "تسجيل دفعة",
     "frequencies": {
       "monthly": "شهري",
       "quarterly": "ربع سنوي",
@@ -94,6 +97,38 @@
       "cancelled": "ملغاة",
       "completed": "مكتملة",
       "transferred": "محوّلة"
+    }
+  },
+  "payments": {
+    "title": "المدفوعات",
+    "code": "الرمز",
+    "amount": "المبلغ",
+    "method": "طريقة الدفع",
+    "gateway": "البوابة",
+    "status": "الحالة",
+    "completedAt": "تاريخ الإكمال",
+    "methods": {
+      "credit_card": "بطاقة ائتمان",
+      "debit_card": "بطاقة سحب",
+      "bank_transfer": "تحويل بنكي",
+      "knet": "كي-نت",
+      "paypal": "باي بال",
+      "cash": "نقداً",
+      "cheque": "شيك",
+      "standing_order": "أمر دائم",
+      "mobile_payment": "دفع عبر الموبايل",
+      "other": "أخرى"
+    },
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "processing": "قيد المعالجة",
+      "completed": "مكتملة",
+      "failed": "فشل",
+      "refunded": "مستردّة",
+      "partially_refunded": "مستردّة جزئياً",
+      "chargeback": "استرداد قسري",
+      "disputed": "متنازع عليها",
+      "on_hold": "موقوفة"
     }
   },
   "donors": {
