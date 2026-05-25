@@ -7,6 +7,7 @@
     "dashboard": "Dashboard",
     "orphans": "Orphans",
     "donors": "Donors",
+    "sponsorships": "Sponsorships",
     "logout": "Sign out",
     "language": "English"
   },
@@ -67,6 +68,32 @@
       "graduated": "Graduated",
       "deceased": "Deceased",
       "archived": "Archived"
+    }
+  },
+  "sponsorships": {
+    "title": "Sponsorships",
+    "code": "Code",
+    "monthlyAmount": "Monthly amount",
+    "frequency": "Frequency",
+    "start": "Start date",
+    "nextPayment": "Next payment",
+    "status": "Status",
+    "cancel": "Cancel",
+    "frequencies": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "semi_annual": "Semi-annual",
+      "annual": "Annual",
+      "one_time": "One-time"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "active": "Active",
+      "paused": "Paused",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "transferred": "Transferred"
     }
   },
   "donors": {

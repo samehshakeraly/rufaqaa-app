@@ -7,6 +7,7 @@
     "dashboard": "الرئيسية",
     "orphans": "الأيتام",
     "donors": "المتبرعون",
+    "sponsorships": "الكفالات",
     "logout": "خروج",
     "language": "العربية"
   },
@@ -67,6 +68,32 @@
       "graduated": "متخرّج",
       "deceased": "متوفّى",
       "archived": "مؤرشف"
+    }
+  },
+  "sponsorships": {
+    "title": "الكفالات",
+    "code": "الرمز",
+    "monthlyAmount": "المبلغ الشهري",
+    "frequency": "تواتر السداد",
+    "start": "تاريخ البداية",
+    "nextPayment": "تاريخ السداد القادم",
+    "status": "الحالة",
+    "cancel": "إلغاء",
+    "frequencies": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "semi_annual": "نصف سنوي",
+      "annual": "سنوي",
+      "one_time": "مرة واحدة"
+    },
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "active": "نشطة",
+      "paused": "متوقفة",
+      "overdue": "متأخّرة",
+      "cancelled": "ملغاة",
+      "completed": "مكتملة",
+      "transferred": "محوّلة"
     }
   },
   "donors": {

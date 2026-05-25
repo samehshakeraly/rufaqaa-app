@@ -38,6 +38,9 @@ export function AppLayout() {
             <NavLink to="/donors" className={navItemClass}>
               {t("nav.donors")}
             </NavLink>
+            <NavLink to="/sponsorships" className={navItemClass}>
+              {t("nav.sponsorships")}
+            </NavLink>
           </nav>
           <div className="flex items-center gap-3">
             {me && (
