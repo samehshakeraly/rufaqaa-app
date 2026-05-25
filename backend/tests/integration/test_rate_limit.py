@@ -20,6 +20,8 @@ async def low_cap_limiter():
     original_auth = settings.RATE_LIMIT_AUTHENTICATED
     original_limiter = rl_module._limiter
 
+    original_enabled = settings.RATE_LIMIT_ENABLED
+    settings.RATE_LIMIT_ENABLED = True
     settings.RATE_LIMIT_PUBLIC = 3
     settings.RATE_LIMIT_AUTHENTICATED = 5
     rl_module._limiter = rl_module.InMemoryLimiter()
@@ -27,6 +29,7 @@ async def low_cap_limiter():
     rl_module._limiter = original_limiter
     settings.RATE_LIMIT_PUBLIC = original_public
     settings.RATE_LIMIT_AUTHENTICATED = original_auth
+    settings.RATE_LIMIT_ENABLED = original_enabled
 
 
 async def test_unauthenticated_calls_hit_429_after_cap(api: AsyncClient, low_cap_limiter) -> None:
