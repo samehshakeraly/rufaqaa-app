@@ -21,6 +21,11 @@ Tools registered:
 | `list_donors` | `GET /api/v1/donors` |
 | `list_sponsorships` | `GET /api/v1/sponsorships` |
 | `create_sponsorship` | `POST /api/v1/sponsorships` |
+| `cancel_sponsorship` | `POST /api/v1/sponsorships/{id}/cancel` |
+| `list_payments` | `GET /api/v1/payments` |
+| `record_payment` | `POST /api/v1/payments` |
+| `list_reports` | `GET /api/v1/reports` |
+| `transition_report` | `POST /api/v1/reports/{id}/{submit\|approve-partner\|approve-org\|publish\|reject}` |
 
 The longer roadmap in [`docs/technical/04_mcp_tools.md`](../docs/technical/04_mcp_tools.md)
 lists 30+ tools across 9 categories — they will be added incrementally as the

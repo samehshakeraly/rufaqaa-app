@@ -103,6 +103,90 @@ async def create_sponsorship(
     )
 
 
+@mcp.tool()
+async def cancel_sponsorship(
+    sponsorship_id: str, reason: str | None = None
+) -> dict[str, Any]:
+    """Cancel an active sponsorship. The reason is recorded for audit."""
+    return await _get_client().cancel_sponsorship(sponsorship_id, reason=reason)
+
+
+@mcp.tool()
+async def list_payments(
+    limit: int = 20,
+    offset: int = 0,
+    donor_id: str | None = None,
+    sponsorship_id: str | None = None,
+    status: str | None = None,
+) -> dict[str, Any]:
+    """List recorded payments. Filter by donor, sponsorship, or status."""
+    return await _get_client().list_payments(
+        limit=limit,
+        offset=offset,
+        donor_id=donor_id,
+        sponsorship_id=sponsorship_id,
+        status=status,
+    )
+
+
+@mcp.tool()
+async def record_payment(
+    donor_id: str,
+    amount: str,
+    currency: str,
+    payment_method: str,
+    sponsorship_id: str | None = None,
+) -> dict[str, Any]:
+    """Record an offline (cash/cheque/bank-transfer) payment from a donor.
+
+    Args:
+        donor_id: UUID of the donor
+        amount: decimal as string (e.g. "25.00")
+        currency: ISO 4217 code (KWD, USD, …)
+        payment_method: cash / bank_transfer / knet / credit_card / cheque / other
+        sponsorship_id: optional UUID — when set, the sponsorship totals are
+            bumped automatically
+    """
+    return await _get_client().record_payment(
+        donor_id=donor_id,
+        amount=amount,
+        currency=currency,
+        payment_method=payment_method,
+        sponsorship_id=sponsorship_id,
+    )
+
+
+@mcp.tool()
+async def list_reports(
+    limit: int = 20,
+    offset: int = 0,
+    orphan_id: str | None = None,
+    status: str | None = None,
+) -> dict[str, Any]:
+    """List orphan periodic reports.
+
+    Status values: draft, pending_partner_approval, partner_approved,
+    pending_org_approval, org_approved, published_to_donor, rejected.
+    """
+    return await _get_client().list_reports(
+        limit=limit, offset=offset, orphan_id=orphan_id, status=status
+    )
+
+
+@mcp.tool()
+async def transition_report(report_id: str, action: str) -> dict[str, Any]:
+    """Advance a report through its approval workflow.
+
+    Args:
+        report_id: UUID of the report
+        action: one of submit / approve-partner / approve-org / publish / reject
+    """
+    allowed = {"submit", "approve-partner", "approve-org", "publish", "reject"}
+    if action not in allowed:
+        raise ValueError(f"action must be one of {sorted(allowed)}")
+    return await _get_client().transition_report(report_id, action)
+
+
 def main() -> None:
     """Run the server over stdio (for Claude Desktop)."""
     try:

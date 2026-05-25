@@ -121,3 +121,74 @@ class RufaqaaClient:
         r = await self._request("POST", "/sponsorships", json=payload)
         r.raise_for_status()
         return r.json()
+
+    async def cancel_sponsorship(
+        self, sponsorship_id: str, reason: str | None = None
+    ) -> dict[str, Any]:
+        r = await self._request(
+            "POST",
+            f"/sponsorships/{sponsorship_id}/cancel",
+            json={"reason": reason},
+        )
+        r.raise_for_status()
+        return r.json()
+
+    async def list_payments(
+        self,
+        limit: int = 20,
+        offset: int = 0,
+        donor_id: str | None = None,
+        sponsorship_id: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
+        if donor_id:
+            params["donor_id"] = donor_id
+        if sponsorship_id:
+            params["sponsorship_id"] = sponsorship_id
+        if status:
+            params["status"] = status
+        r = await self._request("GET", "/payments", params=params)
+        r.raise_for_status()
+        return r.json()
+
+    async def record_payment(
+        self,
+        donor_id: str,
+        amount: str,
+        currency: str,
+        payment_method: str,
+        sponsorship_id: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "donor_id": donor_id,
+            "amount": amount,
+            "currency": currency,
+            "payment_method": payment_method,
+        }
+        if sponsorship_id:
+            payload["sponsorship_id"] = sponsorship_id
+        r = await self._request("POST", "/payments", json=payload)
+        r.raise_for_status()
+        return r.json()
+
+    async def list_reports(
+        self,
+        limit: int = 20,
+        offset: int = 0,
+        orphan_id: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
+        if orphan_id:
+            params["orphan_id"] = orphan_id
+        if status:
+            params["status"] = status
+        r = await self._request("GET", "/reports", params=params)
+        r.raise_for_status()
+        return r.json()
+
+    async def transition_report(self, report_id: str, action: str) -> dict[str, Any]:
+        r = await self._request("POST", f"/reports/{report_id}/{action}", json={})
+        r.raise_for_status()
+        return r.json()
