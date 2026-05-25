@@ -39,6 +39,11 @@
     "createError": "تعذّر الحفظ",
     "required": "هذا الحقل مطلوب"
   },
+  "pagination": {
+    "page": "صفحة {{page}} من {{total}}",
+    "prev": "السابق",
+    "next": "التالي"
+  },
   "dashboard": {
     "title": "الرئيسية",
     "accountInfo": "معلومات الحساب",

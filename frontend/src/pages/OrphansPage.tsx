@@ -6,11 +6,14 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
+import { Pagination } from "@/components/Pagination";
 import { createOrphan, listOrphans, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 
-const orphanQueryKey = (q: string, caseStatus: string) =>
-  ["orphans", { limit: 20, offset: 0, q, caseStatus }] as const;
+const PAGE_SIZE = 20;
+
+const orphanQueryKey = (q: string, caseStatus: string, offset: number) =>
+  ["orphans", { limit: PAGE_SIZE, offset, q, caseStatus }] as const;
 
 const CASE_STATUS_OPTIONS = [
   "",
@@ -45,6 +48,7 @@ export function OrphansPage() {
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [caseStatus, setCaseStatus] = useState<string>("");
+  const [offset, setOffset] = useState(0);
 
   // 300ms debounce on the search box so we don't spam the API on every keystroke.
   useEffect(() => {
@@ -52,13 +56,19 @@ export function OrphansPage() {
     return () => clearTimeout(id);
   }, [searchInput]);
 
-  const queryKey = orphanQueryKey(debouncedSearch, caseStatus);
+  // Reset to page 1 whenever filters change so users don't land on an
+  // empty page after narrowing the result set.
+  useEffect(() => {
+    setOffset(0);
+  }, [debouncedSearch, caseStatus]);
+
+  const queryKey = orphanQueryKey(debouncedSearch, caseStatus, offset);
   const { data, isLoading, error } = useQuery({
     queryKey,
     queryFn: () =>
       listOrphans({
-        limit: 20,
-        offset: 0,
+        limit: PAGE_SIZE,
+        offset,
         ...(debouncedSearch ? { q: debouncedSearch } : {}),
         ...(caseStatus ? { case_status: caseStatus } : {}),
       }),
@@ -125,6 +135,15 @@ export function OrphansPage() {
 
       {data && data.items.length === 0 && (
         <div className="card text-center text-slate-500">{t("common.empty")}</div>
+      )}
+
+      {data && (
+        <Pagination
+          total={data.total}
+          limit={PAGE_SIZE}
+          offset={offset}
+          onOffsetChange={setOffset}
+        />
       )}
 
       {data && data.items.length > 0 && (
