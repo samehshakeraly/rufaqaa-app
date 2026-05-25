@@ -59,6 +59,17 @@ components:
       - created_at
       title: AuditLogRead
       type: object
+    BackupCodesResponse:
+      properties:
+        backup_codes:
+          items:
+            type: string
+          title: Backup Codes
+          type: array
+      required:
+      - backup_codes
+      title: BackupCodesResponse
+      type: object
     Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post:
       properties:
         file:
@@ -1875,6 +1886,39 @@ components:
       - refresh_token
       title: TokenPair
       type: object
+    TwoFAEnrollResponse:
+      description: 'Returned by /auth/2fa/enroll.
+
+
+        The shared secret is base32-encoded and the otpauth_uri is suitable
+
+        for rendering as a QR code in the client (e.g. Google Authenticator,
+
+        Authy, 1Password).'
+      properties:
+        otpauth_uri:
+          title: Otpauth Uri
+          type: string
+        secret:
+          title: Secret
+          type: string
+      required:
+      - secret
+      - otpauth_uri
+      title: TwoFAEnrollResponse
+      type: object
+    TwoFAVerifyRequest:
+      properties:
+        code:
+          maxLength: 8
+          minLength: 6
+          pattern: ^\d+$
+          title: Code
+          type: string
+      required:
+      - code
+      title: TwoFAVerifyRequest
+      type: object
     ValidationError:
       properties:
         ctx:
@@ -1977,6 +2021,71 @@ paths:
       summary: List Audit
       tags:
       - audit
+  /api/v1/auth/2fa/disable:
+    post:
+      operationId: disable_2fa_api_v1_auth_2fa_disable_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TwoFAVerifyRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Disable 2Fa
+      tags:
+      - auth
+  /api/v1/auth/2fa/enroll:
+    post:
+      operationId: enroll_2fa_api_v1_auth_2fa_enroll_post
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TwoFAEnrollResponse'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Enroll 2Fa
+      tags:
+      - auth
+  /api/v1/auth/2fa/verify:
+    post:
+      operationId: verify_2fa_api_v1_auth_2fa_verify_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TwoFAVerifyRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupCodesResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Verify 2Fa
+      tags:
+      - auth
   /api/v1/auth/change-password:
     post:
       operationId: change_password_api_v1_auth_change_password_post

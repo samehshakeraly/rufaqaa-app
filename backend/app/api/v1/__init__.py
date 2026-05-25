@@ -13,12 +13,14 @@ from app.api.v1 import (
     reports,
     sponsorships,
     stats,
+    twofa,
     webhooks,
 )
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(twofa.router, prefix="/auth/2fa", tags=["auth"])
 api_router.include_router(orphans.router, prefix="/orphans", tags=["orphans"])
 api_router.include_router(donors.router, prefix="/donors", tags=["donors"])
 api_router.include_router(partners.router, prefix="/partners", tags=["partners"])
