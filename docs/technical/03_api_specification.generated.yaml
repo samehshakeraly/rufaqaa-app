@@ -334,6 +334,78 @@ components:
       - updated_at
       title: DonorRead
       type: object
+    DonorUpdate:
+      properties:
+        country_of_residence:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Of Residence
+        email:
+          anyOf:
+          - format: email
+            type: string
+          - type: 'null'
+          title: Email
+        full_name:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Full Name
+        full_name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Full Name En
+        is_anonymous:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Anonymous
+        is_zakat_donor:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Zakat Donor
+        nationality:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Nationality
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Preferred Currency
+        status:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: Status
+        whatsapp:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Whatsapp
+      title: DonorUpdate
+      type: object
     FamilyCreate:
       properties:
         address_details:
@@ -2426,6 +2498,40 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Get Donor
+      tags:
+      - donors
+    patch:
+      operationId: update_donor_api_v1_donors__donor_id__patch
+      parameters:
+      - in: path
+        name: donor_id
+        required: true
+        schema:
+          format: uuid
+          title: Donor Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Donor
       tags:
       - donors
   /api/v1/families:
