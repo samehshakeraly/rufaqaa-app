@@ -20,7 +20,10 @@ celery_app = Celery(
     "rufaqaa",
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
-    include=["app.workers.tasks.sponsorships"],
+    include=[
+        "app.workers.tasks.sponsorships",
+        "app.workers.tasks.notifications",
+    ],
 )
 
 celery_app.conf.update(

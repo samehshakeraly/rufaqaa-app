@@ -176,6 +176,16 @@ async def publish_report(report_id: UUID, db: DbSession, _user: CurrentUser) -> 
     report.published_at = _now()
     await db.commit()
     await db.refresh(report)
+
+    # Fan out donor emails asynchronously. If the broker is down we still
+    # return success — the publish itself is the source of truth and the
+    # task can be retried out of band.
+    try:
+        from app.workers.tasks.notifications import notify_donors_of_report
+
+        notify_donors_of_report.delay(str(report.id))
+    except Exception:  # noqa: BLE001
+        pass
     return ReportRead.model_validate(report)
 
 
