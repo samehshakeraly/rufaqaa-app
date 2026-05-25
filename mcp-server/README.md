@@ -1,90 +1,134 @@
-# 🤖 MCP Server — Rufaqaa AI Integration
+# 🤖 MCP Server — Rufaqaa AI Tools
 
-> Model Context Protocol Server · Python · FastMCP · 30+ Tools for Claude AI
+> Python 3.12 · [Model Context Protocol](https://modelcontextprotocol.io/) · FastMCP · httpx
 
----
-
-## 📊 الحالة الحالية
-
-**🚧 لم يبدأ التطوير بعد**
-
-سيُبنى MCP Server في **المرحلة 15**، بعد استقرار REST API.
+Bridges Claude (Desktop / Web / API) to the Rufaqaa REST API: Claude can list
+and inspect orphans, donors and sponsorships, and create new sponsorships, by
+calling MCP tools.
 
 ---
 
-## 🎯 الفكرة
+## 📊 Status
 
-MCP يتيح للمستخدمين التحدّث مع Claude AI بلغة طبيعية لإدارة عمليات رفقاء:
+**🟢 Phase 3 — Skeleton** (runs, talks to the backend, ships with tests)
 
-> "كم يتيم كُفل هذا الشهر؟"
-> "أعطني المتبرعين المتأخرين أكثر من شهرين"
-> "اربط المتبرع DON-00123 باليتيم ORF-00045 بـ 15 د.ك شهرياً"
+Tools registered:
 
----
-
-## 📋 الأدوات (30+)
-
-| الفئة | عدد الأدوات | أمثلة |
-|---|---|---|
-| 👶 Orphans | 7 | `list_orphans`, `add_orphan`, `approve_orphan` |
-| 💝 Donors | 3 | `list_donors`, `get_donor_dashboard` |
-| 🔗 Sponsorships | 5 | `link_sponsor_to_orphan`, `cancel_sponsorship` |
-| 💰 Payments | 5 | `record_payment`, `list_overdue_donors` |
-| 📊 Reports | 5 | `get_dashboard_stats`, `generate_monthly_report` |
-| 📢 Notifications | 2 | `send_notification`, `send_bulk_reminder` |
-| 🏦 Transfers | 2 | `create_transfer`, `list_pending_transfers` |
-| 🔍 Smart Search | 2 | `smart_search`, `find_similar_orphans` |
-| 🧠 AI-Powered | 3 | `suggest_donor_for_orphan`, `predict_donor_churn` |
-
----
-
-## 🛠️ Stack المتوقّع
-
-| المكتبة | الغرض |
+| Tool | Backend endpoint |
 |---|---|
-| FastMCP | MCP server framework |
-| httpx | عميل HTTP غير متزامن للـ REST API |
-| pydantic v2 | Validation |
-| python-jose | JWT للمصادقة |
+| `list_orphans` | `GET /api/v1/orphans` |
+| `get_orphan` | `GET /api/v1/orphans/{id}` |
+| `list_donors` | `GET /api/v1/donors` |
+| `list_sponsorships` | `GET /api/v1/sponsorships` |
+| `create_sponsorship` | `POST /api/v1/sponsorships` |
+
+The longer roadmap in [`docs/technical/04_mcp_tools.md`](../docs/technical/04_mcp_tools.md)
+lists 30+ tools across 9 categories — they will be added incrementally as the
+backend endpoints land.
 
 ---
 
-## 📁 الهيكل المخطّط
+## 🚀 Run it
+
+### Setup
+
+```bash
+cd mcp-server
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+Configure (env vars or `.env` in repo root):
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `RUFAQAA_MCP_API_URL` | `http://localhost:8000/api/v1` | Backend base URL |
+| `RUFAQAA_MCP_API_EMAIL` | `admin@dev.rufaqaa.app` | Login email |
+| `RUFAQAA_MCP_API_PASSWORD` | `admin12345` | Login password |
+| `RUFAQAA_MCP_HTTP_TIMEOUT_SECONDS` | `15` | Per-request timeout |
+
+### Standalone (stdio)
+
+```bash
+rufaqaa-mcp
+# or
+python -m rufaqaa_mcp.server
+```
+
+### From Claude Desktop
+
+Add to your `claude_desktop_config.json` (macOS path:
+`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "rufaqaa": {
+      "command": "/absolute/path/to/mcp-server/.venv/bin/rufaqaa-mcp",
+      "env": {
+        "RUFAQAA_MCP_API_URL": "http://localhost:8000/api/v1",
+        "RUFAQAA_MCP_API_EMAIL": "admin@dev.rufaqaa.app",
+        "RUFAQAA_MCP_API_PASSWORD": "admin12345"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop — the Rufaqaa tools appear in the tools picker.
+
+---
+
+## 🧪 Tests
+
+```bash
+pytest                            # respx-mocked unit tests (no backend needed)
+ruff check rufaqaa_mcp tests
+```
+
+End-to-end against the live backend:
+
+```bash
+# with backend running on :8000 and seeded
+python -c "
+import asyncio
+from rufaqaa_mcp.client import RufaqaaClient
+
+async def main():
+    c = RufaqaaClient()
+    print(await c.list_orphans(limit=3))
+    await c.aclose()
+
+asyncio.run(main())
+"
+```
+
+---
+
+## 🏗️ Layout
 
 ```
 mcp-server/
-├── src/
-│   ├── tools/
-│   │   ├── orphans.py
-│   │   ├── donors.py
-│   │   ├── sponsorships.py
-│   │   ├── payments.py
-│   │   ├── reports.py
-│   │   ├── notifications.py
-│   │   ├── transfers.py
-│   │   ├── search.py
-│   │   └── ai.py
-│   ├── client.py          # Rufaqaa REST API client
-│   ├── auth.py            # المصادقة والصلاحيات
-│   ├── permissions.py
-│   └── server.py          # نقطة الدخول
+├── rufaqaa_mcp/
+│   ├── config.py    # Pydantic settings (RUFAQAA_MCP_*)
+│   ├── client.py    # Async httpx client; lazy login + 401 retry
+│   └── server.py    # FastMCP entry; registers tools
 ├── tests/
+│   └── test_client.py    # respx-mocked unit tests
 ├── pyproject.toml
 └── README.md
 ```
 
 ---
 
-## 🚀 الإطلاق المتوقّع
+## 🔐 Authentication
 
-```bash
-cd mcp-server
-pip install -e ".[dev]"
-python -m src.server
-```
+The skeleton uses a single Rufaqaa user (configured email + password). On the
+first tool call it logs in and caches the access token; on any 401 it
+re-authenticates once and retries the original request. The backend's
+Row-Level Security middleware scopes all reads/writes to that user's
+organization.
 
-ثم ربطه بـ Claude Desktop عبر إعداد `~/.config/Claude/claude_desktop_config.json`.
-
----
-
-📚 راجع [مواصفات MCP Tools](../docs/technical/04_mcp_tools.md) للتفاصيل الكاملة.
+A future phase will replace this with a service-account API key issued from
+the Rufaqaa admin UI (the schema already includes the `api_keys` table).

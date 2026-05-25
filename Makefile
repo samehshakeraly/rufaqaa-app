@@ -104,6 +104,22 @@ backend-format: ## ✨ تنسيق الكود في Backend
 	@cd backend && ruff format .
 
 # ═══════════════════════════════════════════════════════════════
+# MCP Server
+# ═══════════════════════════════════════════════════════════════
+
+mcp-install: ## 📦 تثبيت dependencies الـ MCP Server
+	@cd mcp-server && pip install -e ".[dev]"
+
+mcp-run: ## 🤖 تشغيل MCP Server (stdio)
+	@cd mcp-server && rufaqaa-mcp
+
+mcp-test: ## 🧪 تشغيل اختبارات MCP Server
+	@cd mcp-server && pytest -v
+
+mcp-lint: ## 🔍 فحص الكود في MCP Server
+	@cd mcp-server && ruff check rufaqaa_mcp tests
+
+# ═══════════════════════════════════════════════════════════════
 # Frontend (will be active after Phase 10)
 # ═══════════════════════════════════════════════════════════════
 
