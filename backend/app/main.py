@@ -8,6 +8,7 @@ from app import __version__
 from app.api.v1 import api_router
 from app.core.config import settings
 from app.core.database import engine
+from app.core.ratelimit import RateLimitMiddleware
 
 
 @asynccontextmanager
@@ -32,6 +33,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if settings.RATE_LIMIT_ENABLED:
+    app.add_middleware(RateLimitMiddleware)
 
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 

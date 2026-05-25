@@ -43,6 +43,10 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
 
+    RATE_LIMIT_PUBLIC: int = 60  # per minute, anonymous
+    RATE_LIMIT_AUTHENTICATED: int = 300  # per minute, with Bearer token
+    RATE_LIMIT_ENABLED: bool = True
+
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     LOG_FORMAT: Literal["json", "text"] = "json"
 
