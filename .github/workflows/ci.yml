@@ -1,23 +1,15 @@
 # ═══════════════════════════════════════════════════════════════
 # Rufaqaa Platform — Continuous Integration
 # ═══════════════════════════════════════════════════════════════
-# Runs on every push and pull request to ensure:
-#   - Code quality (linting)
-#   - File integrity (no broken markdown links, etc.)
-#   - SQL schema validity
-#
-# Note: Backend/Frontend tests will be added in their respective phases.
-# ═══════════════════════════════════════════════════════════════
 
 name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, "claude/**"]
   pull_request:
     branches: [main, develop]
 
-# Cancel in-progress runs for the same branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -45,7 +37,6 @@ jobs:
             ".env.example"
             "Makefile"
           )
-
           missing=0
           for file in "${required_files[@]}"; do
             if [ ! -f "$file" ]; then
@@ -55,9 +46,7 @@ jobs:
               echo "✅ Found:   $file"
             fi
           done
-
           if [ $missing -eq 1 ]; then
-            echo ""
             echo "::error::Required files are missing"
             exit 1
           fi
@@ -68,11 +57,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Validate docker-compose.yml syntax
-        run: |
-          docker compose config --quiet
-          echo "✅ docker-compose.yml is valid"
+        run: docker compose config --quiet
 
   # ─── Validate SQL schema ──────────────────────────────────
   sql-schema:
@@ -92,25 +78,85 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Install PostgreSQL client
         run: sudo apt-get install -y postgresql-client
-
-      - name: Apply schema to verify syntax
+      - name: Apply schema
         env:
           PGPASSWORD: test
         run: |
-          if [ -f docs/technical/01_database_schema.sql ]; then
-            psql -h localhost -U test -d test_schema \
-              -f docs/technical/01_database_schema.sql \
-              -v ON_ERROR_STOP=1
-            echo "✅ Schema applied successfully"
-          else
-            echo "⚠️  Schema file not yet in docs/technical/ — skipping"
-          fi
+          psql -h localhost -U test -d test_schema \
+            -f docs/technical/01_database_schema.sql \
+            -v ON_ERROR_STOP=1
+
+  # ─── Backend: lint + tests ────────────────────────────────
+  backend:
+    name: 🐍 Backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        env:
+          POSTGRES_USER: rufaqaa
+          POSTGRES_PASSWORD: rufaqaa_dev_password
+          POSTGRES_DB: rufaqaa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa
+      RUFAQAA_TEST_DATABASE_URL: postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Lint (ruff)
+        run: ruff check app tests
+      - name: Format check (ruff)
+        run: ruff format --check app tests
+      - name: Apply migrations
+        run: alembic upgrade head
+      - name: Run tests
+        run: pytest -q
+
+  # ─── Frontend: lint + typecheck + tests + build ───────────
+  frontend:
+    name: ⚛️  Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint (ESLint)
+        run: npm run lint
+      - name: Typecheck (tsc)
+        run: npm run typecheck
+      - name: Test (Vitest)
+        run: npm test
+      - name: Build (Vite)
+        run: npm run build
 
   # ─── Validate OpenAPI spec ────────────────────────────────
   openapi:
@@ -118,15 +164,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Validate OpenAPI YAML
         run: |
           if [ -f docs/technical/03_api_specification.yaml ]; then
             npx --yes @redocly/cli@latest lint \
               docs/technical/03_api_specification.yaml || true
-            echo "✅ OpenAPI checked"
-          else
-            echo "⚠️  API spec not yet in docs/technical/ — skipping"
           fi
 
   # ─── Markdown linting ─────────────────────────────────────
@@ -135,7 +177,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Check for broken internal links
         uses: lycheeverse/lychee-action@v1
         with:
