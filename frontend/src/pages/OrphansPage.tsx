@@ -9,8 +9,18 @@ import { z } from "zod";
 import { createOrphan, listOrphans, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 
-const orphanQueryKey = (q: string) =>
-  ["orphans", { limit: 20, offset: 0, q }] as const;
+const orphanQueryKey = (q: string, caseStatus: string) =>
+  ["orphans", { limit: 20, offset: 0, q, caseStatus }] as const;
+
+const CASE_STATUS_OPTIONS = [
+  "",
+  "pending_review",
+  "approved",
+  "available",
+  "reserved",
+  "sponsored",
+  "graduated",
+] as const;
 
 const schema = z.object({
   first_name: z.string().min(1),
@@ -34,6 +44,7 @@ export function OrphansPage() {
   const [showForm, setShowForm] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [caseStatus, setCaseStatus] = useState<string>("");
 
   // 300ms debounce on the search box so we don't spam the API on every keystroke.
   useEffect(() => {
@@ -41,7 +52,7 @@ export function OrphansPage() {
     return () => clearTimeout(id);
   }, [searchInput]);
 
-  const queryKey = orphanQueryKey(debouncedSearch);
+  const queryKey = orphanQueryKey(debouncedSearch, caseStatus);
   const { data, isLoading, error } = useQuery({
     queryKey,
     queryFn: () =>
@@ -49,6 +60,7 @@ export function OrphansPage() {
         limit: 20,
         offset: 0,
         ...(debouncedSearch ? { q: debouncedSearch } : {}),
+        ...(caseStatus ? { case_status: caseStatus } : {}),
       }),
   });
   const { data: partners } = useQuery({
@@ -68,6 +80,17 @@ export function OrphansPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
+          <select
+            className="input max-w-[10rem]"
+            value={caseStatus}
+            onChange={(e) => setCaseStatus(e.target.value)}
+          >
+            {CASE_STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s === "" ? t("orphans.allStatuses") : t(`orphans.caseStatus.${s}`, s)}
+              </option>
+            ))}
+          </select>
           {data && (
             <span className="text-sm text-slate-500">
               {t("common.total")}: {data.total.toLocaleString()}

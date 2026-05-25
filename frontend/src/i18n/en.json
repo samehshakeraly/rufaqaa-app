@@ -58,6 +58,7 @@
     "title": "Orphans",
     "addNew": "Add orphan",
     "searchPlaceholder": "Search by name or code…",
+    "allStatuses": "All statuses",
     "code": "Code",
     "name": "Name",
     "firstName": "First name",
