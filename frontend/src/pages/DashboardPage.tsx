@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import { PaymentsChart } from "@/components/PaymentsChart";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { fetchSummary } from "@/lib/stats";
+import { fetchPaymentsTimeseries, fetchSummary } from "@/lib/stats";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -10,6 +11,10 @@ export function DashboardPage() {
   const { data: summary, isLoading: summaryLoading } = useQuery({
     queryKey: ["stats", "summary"],
     queryFn: fetchSummary,
+  });
+  const { data: timeseries } = useQuery({
+    queryKey: ["stats", "payments-timeseries"],
+    queryFn: fetchPaymentsTimeseries,
   });
 
   return (
@@ -47,6 +52,15 @@ export function DashboardPage() {
           }
         />
       </div>
+
+      {timeseries && (
+        <div className="card">
+          <h2 className="mb-3 text-lg font-semibold">
+            {t("dashboard.paymentsChart")}
+          </h2>
+          <PaymentsChart data={timeseries} />
+        </div>
+      )}
 
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("dashboard.accountInfo")}</h2>

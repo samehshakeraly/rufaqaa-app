@@ -15,3 +15,18 @@ export async function fetchSummary(): Promise<DashboardSummary> {
   const { data } = await api.get<DashboardSummary>("/stats/summary");
   return data;
 }
+
+export interface MonthlyPoint {
+  month: string; // YYYY-MM-DD (1st of month)
+  payments_total: string;
+  payments_count: number;
+}
+
+export interface PaymentsTimeseries {
+  months: MonthlyPoint[];
+}
+
+export async function fetchPaymentsTimeseries(): Promise<PaymentsTimeseries> {
+  const { data } = await api.get<PaymentsTimeseries>("/stats/payments-timeseries");
+  return data;
+}

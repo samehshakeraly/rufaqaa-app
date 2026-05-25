@@ -57,7 +57,8 @@
     "donorsTotal": "إجمالي المتبرعين",
     "sponsorshipsActive": "كفالات نشطة",
     "sponsorshipsOverdue": "كفالات متأخّرة",
-    "payments30d": "مدفوعات آخر 30 يوم"
+    "payments30d": "مدفوعات آخر 30 يوم",
+    "paymentsChart": "المدفوعات الشهرية (آخر 12 شهر)"
   },
   "orphans": {
     "title": "الأيتام",
