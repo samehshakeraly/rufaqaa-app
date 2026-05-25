@@ -986,6 +986,72 @@ components:
       - updated_at
       title: OrphanRead
       type: object
+    OrphanUpdate:
+      description: 'Partial update. Every field optional — only the supplied keys are
+
+        written. Status changes go through dedicated endpoints (workflow).'
+      properties:
+        date_of_birth:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Date Of Birth
+        family_name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Family Name
+        father_death_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Father Death Date
+        father_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Father Name
+        first_name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: First Name
+        full_name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Full Name En
+        gender:
+          anyOf:
+          - enum:
+            - M
+            - F
+            type: string
+          - type: 'null'
+          title: Gender
+        middle_name:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Middle Name
+        nationality:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Nationality
+      title: OrphanUpdate
+      type: object
     Page_AuditLogRead_:
       properties:
         items:
@@ -2850,6 +2916,40 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Get Orphan
+      tags:
+      - orphans
+    patch:
+      operationId: update_orphan_api_v1_orphans__orphan_id__patch
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Orphan
       tags:
       - orphans
   /api/v1/partners:

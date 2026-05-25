@@ -36,6 +36,21 @@ class OrphanCreate(OrphanBase):
     family_id: UUID | None = None
 
 
+class OrphanUpdate(BaseModel):
+    """Partial update. Every field optional — only the supplied keys are
+    written. Status changes go through dedicated endpoints (workflow)."""
+
+    first_name: str | None = Field(default=None, min_length=1, max_length=100)
+    middle_name: str | None = Field(default=None, max_length=100)
+    family_name: str | None = Field(default=None, min_length=1, max_length=100)
+    full_name_en: str | None = Field(default=None, max_length=255)
+    date_of_birth: date | None = None
+    gender: Gender | None = None
+    nationality: str | None = Field(default=None, min_length=2, max_length=2)
+    father_name: str | None = Field(default=None, max_length=255)
+    father_death_date: date | None = None
+
+
 class OrphanRead(OrphanBase):
     model_config = ConfigDict(from_attributes=True)
 

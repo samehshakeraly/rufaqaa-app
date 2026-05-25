@@ -11,7 +11,7 @@ from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.orphan import OrphanCreate, OrphanRead
+from app.schemas.orphan import OrphanCreate, OrphanRead, OrphanUpdate
 from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
@@ -122,6 +122,51 @@ async def get_orphan(
     if orphan is None:
         raise NotFound("Orphan")
     return OrphanRead.model_validate(orphan)
+
+
+@router.patch("/{orphan_id}", response_model=OrphanRead)
+async def update_orphan(
+    orphan_id: UUID,
+    payload: OrphanUpdate,
+    db: DbSession,
+    user: CurrentUser,
+) -> OrphanRead:
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+
+    changes: dict[str, dict[str, str | None]] = {}
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        old = getattr(orphan, field)
+        if old != value:
+            changes[field] = {"old": _stringify(old), "new": _stringify(value)}
+            setattr(orphan, field, value)
+
+    if changes:
+        record_audit(
+            db,
+            organization_id=user.organization_id,
+            user_id=user.id,
+            action="orphan.updated",
+            entity_type="orphan",
+            entity_id=orphan.id,
+            old_values={k: v["old"] for k, v in changes.items()},
+            new_values={k: v["new"] for k, v in changes.items()},
+        )
+    await db.commit()
+    await db.refresh(orphan)
+    return OrphanRead.model_validate(orphan)
+
+
+def _stringify(v):  # noqa: ANN001, ANN202
+    """JSON-safe representation for audit values (dates → ISO, UUIDs → str)."""
+    if v is None:
+        return None
+    if hasattr(v, "isoformat"):
+        return v.isoformat()
+    return str(v)
 
 
 @router.delete("/{orphan_id}", status_code=status.HTTP_204_NO_CONTENT)
