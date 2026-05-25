@@ -651,12 +651,55 @@ components:
       - offset
       title: Page[SponsorshipRead]
       type: object
+    PartnerCreate:
+      properties:
+        contact_email:
+          anyOf:
+          - format: email
+            type: string
+          - type: 'null'
+          title: Contact Email
+        contact_person:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Contact Person
+        contact_phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Contact Phone
+        country_code:
+          maxLength: 2
+          minLength: 2
+          title: Country Code
+          type: string
+        name_ar:
+          maxLength: 255
+          minLength: 1
+          title: Name Ar
+          type: string
+        name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Name En
+      required:
+      - name_ar
+      - country_code
+      title: PartnerCreate
+      type: object
     PartnerRead:
       properties:
         code:
           title: Code
           type: string
         country_code:
+          maxLength: 2
+          minLength: 2
           title: Country Code
           type: string
         created_at:
@@ -668,25 +711,64 @@ components:
           title: Id
           type: string
         name_ar:
+          maxLength: 255
+          minLength: 1
           title: Name Ar
           type: string
         name_en:
           anyOf:
-          - type: string
+          - maxLength: 255
+            type: string
           - type: 'null'
           title: Name En
         status:
+          enum:
+          - active
+          - suspended
+          - archived
           title: Status
           type: string
       required:
+      - name_ar
+      - country_code
       - id
       - code
-      - name_ar
-      - name_en
-      - country_code
       - status
       - created_at
       title: PartnerRead
+      type: object
+    PartnerUpdate:
+      properties:
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        name_ar:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name Ar
+        name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Name En
+        status:
+          anyOf:
+          - enum:
+            - active
+            - suspended
+            - archived
+            type: string
+          - type: 'null'
+          title: Status
+      title: PartnerUpdate
       type: object
     PaymentCreate:
       properties:
@@ -1674,6 +1756,31 @@ paths:
       tags:
       - orphans
   /api/v1/orphans/{orphan_id}:
+    delete:
+      description: Soft-delete an orphan record. Restricted to org admins.
+      operationId: delete_orphan_api_v1_orphans__orphan_id__delete
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Delete Orphan
+      tags:
+      - orphans
     get:
       operationId: get_orphan_api_v1_orphans__orphan_id__get
       parameters:
@@ -1723,6 +1830,13 @@ paths:
           minimum: 0
           title: Offset
           type: integer
+      - in: query
+        name: include_inactive
+        required: false
+        schema:
+          default: false
+          title: Include Inactive
+          type: boolean
       responses:
         '200':
           content:
@@ -1739,6 +1853,120 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: List Partners
+      tags:
+      - partners
+    post:
+      operationId: create_partner_api_v1_partners_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartnerCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Partner
+      tags:
+      - partners
+  /api/v1/partners/{partner_id}:
+    delete:
+      description: Soft-archive a partner organization.
+      operationId: archive_partner_api_v1_partners__partner_id__delete
+      parameters:
+      - in: path
+        name: partner_id
+        required: true
+        schema:
+          format: uuid
+          title: Partner Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Archive Partner
+      tags:
+      - partners
+    get:
+      operationId: get_partner_api_v1_partners__partner_id__get
+      parameters:
+      - in: path
+        name: partner_id
+        required: true
+        schema:
+          format: uuid
+          title: Partner Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Partner
+      tags:
+      - partners
+    patch:
+      operationId: update_partner_api_v1_partners__partner_id__patch
+      parameters:
+      - in: path
+        name: partner_id
+        required: true
+        schema:
+          format: uuid
+          title: Partner Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartnerUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Partner
       tags:
       - partners
   /api/v1/payments:

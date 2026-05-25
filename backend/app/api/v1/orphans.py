@@ -1,12 +1,15 @@
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.orphan import OrphanCreate, OrphanRead
 from app.services.audit import record_audit
@@ -90,3 +93,29 @@ async def get_orphan(
     if orphan is None:
         raise NotFound("Orphan")
     return OrphanRead.model_validate(orphan)
+
+
+@router.delete("/{orphan_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_orphan(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> None:
+    """Soft-delete an orphan record. Restricted to org admins."""
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+    orphan.deleted_at = datetime.now(UTC)
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.deleted",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"code": orphan.code},
+        is_sensitive=True,
+    )
+    await db.commit()
