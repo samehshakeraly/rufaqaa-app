@@ -43,7 +43,14 @@
     "name": "الاسم",
     "email": "البريد",
     "role": "الدور",
-    "organization": "المؤسسة"
+    "organization": "المؤسسة",
+    "orphansTotal": "إجمالي الأيتام",
+    "orphansSponsored": "أيتام مكفولون",
+    "orphansAvailable": "متاحون للكفالة",
+    "donorsTotal": "إجمالي المتبرعين",
+    "sponsorshipsActive": "كفالات نشطة",
+    "sponsorshipsOverdue": "كفالات متأخّرة",
+    "payments30d": "مدفوعات آخر 30 يوم"
   },
   "orphans": {
     "title": "الأيتام",

@@ -43,7 +43,14 @@
     "name": "Name",
     "email": "Email",
     "role": "Role",
-    "organization": "Organization"
+    "organization": "Organization",
+    "orphansTotal": "Orphans",
+    "orphansSponsored": "Sponsored",
+    "orphansAvailable": "Available",
+    "donorsTotal": "Donors",
+    "sponsorshipsActive": "Active sponsorships",
+    "sponsorshipsOverdue": "Overdue",
+    "payments30d": "Payments (30d)"
   },
   "orphans": {
     "title": "Orphans",
