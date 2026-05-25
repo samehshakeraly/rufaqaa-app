@@ -180,7 +180,18 @@
     "currentPassword": "Current password",
     "newPassword": "New password",
     "confirmPassword": "Confirm new password",
-    "changedSuccess": "Password changed. You will be signed out."
+    "changedSuccess": "Password changed. You will be signed out.",
+    "twofa": "Two-factor authentication (2FA)",
+    "twofaDescription": "Add an extra layer of security with a TOTP app (Google Authenticator, Authy, 1Password).",
+    "twofaEnroll": "Enable",
+    "twofaVerify": "Verify",
+    "twofaDisable": "Disable",
+    "twofaScanInstruction": "Scan this URI in your authenticator app and enter the 6-digit code:",
+    "twofaSecret": "Secret",
+    "twofaBackupWarning": "Save these backup codes somewhere safe — they're shown only once.",
+    "twofaEnabled": "Two-factor authentication enabled",
+    "twofaDisabled": "Two-factor authentication disabled",
+    "twofaInvalidCode": "Invalid code"
   },
   "partners": {
     "title": "Partners",

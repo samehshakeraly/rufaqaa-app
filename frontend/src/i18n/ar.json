@@ -185,7 +185,18 @@
     "currentPassword": "كلمة المرور الحالية",
     "newPassword": "كلمة المرور الجديدة",
     "confirmPassword": "تأكيد كلمة المرور الجديدة",
-    "changedSuccess": "تم تغيير كلمة المرور بنجاح. سيتم تسجيل خروجك."
+    "changedSuccess": "تم تغيير كلمة المرور بنجاح. سيتم تسجيل خروجك.",
+    "twofa": "التحقق الثنائي (2FA)",
+    "twofaDescription": "أضف طبقة أمان إضافية باستخدام تطبيق TOTP (Google Authenticator، Authy، 1Password).",
+    "twofaEnroll": "تفعيل",
+    "twofaVerify": "تأكيد",
+    "twofaDisable": "تعطيل",
+    "twofaScanInstruction": "امسح هذا الرابط في تطبيق المصادقة لديك، ثم أدخل الرمز المكوّن من 6 أرقام:",
+    "twofaSecret": "السر",
+    "twofaBackupWarning": "احفظ هذه الرموز الاحتياطية في مكان آمن — تظهر مرة واحدة فقط.",
+    "twofaEnabled": "تم تفعيل التحقق الثنائي",
+    "twofaDisabled": "تم تعطيل التحقق الثنائي",
+    "twofaInvalidCode": "رمز غير صحيح"
   },
   "partners": {
     "title": "الشركاء",

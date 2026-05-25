@@ -7,7 +7,9 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { api } from "@/lib/api";
+import { disable2FA, enroll2FA, verify2FA } from "@/lib/twofa";
 import { useAuthStore } from "@/store/auth";
+import { toast } from "@/store/toasts";
 
 function buildSchema(t: (k: string) => string) {
   return z
@@ -47,7 +49,6 @@ export function SettingsPage() {
       setSuccess(true);
       setServerError(null);
       reset();
-      // Server has revoked every refresh token, so log out locally too.
       setTimeout(() => clear(), 1500);
     },
     onError: (err) => {
@@ -95,6 +96,126 @@ export function SettingsPage() {
           {isSubmitting ? t("common.saving") : t("common.save")}
         </button>
       </form>
+
+      <TwoFASection />
+    </div>
+  );
+}
+
+function TwoFASection() {
+  const { t } = useTranslation();
+  const [enrollment, setEnrollment] = useState<{ secret: string; uri: string } | null>(null);
+  const [code, setCode] = useState("");
+  const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
+
+  const enroll = useMutation({
+    mutationFn: enroll2FA,
+    onSuccess: (data) => setEnrollment({ secret: data.secret, uri: data.otpauth_uri }),
+    onError: (err) => {
+      if (err instanceof AxiosError) toast.error(err.response?.data?.detail ?? "2FA failed");
+    },
+  });
+  const verify = useMutation({
+    mutationFn: (c: string) => verify2FA(c),
+    onSuccess: (data) => {
+      setBackupCodes(data.backup_codes);
+      setEnrollment(null);
+      setCode("");
+      toast.success(t("settings.twofaEnabled"));
+    },
+    onError: () => toast.error(t("settings.twofaInvalidCode")),
+  });
+  const disable = useMutation({
+    mutationFn: (c: string) => disable2FA(c),
+    onSuccess: () => {
+      setBackupCodes(null);
+      setCode("");
+      toast.success(t("settings.twofaDisabled"));
+    },
+    onError: () => toast.error(t("settings.twofaInvalidCode")),
+  });
+
+  return (
+    <div className="card max-w-lg space-y-4">
+      <h2 className="text-lg font-semibold">{t("settings.twofa")}</h2>
+
+      {!enrollment && !backupCodes && (
+        <>
+          <p className="text-sm text-slate-600">{t("settings.twofaDescription")}</p>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => enroll.mutate()}
+            disabled={enroll.isPending}
+          >
+            {t("settings.twofaEnroll")}
+          </button>
+        </>
+      )}
+
+      {enrollment && (
+        <div className="space-y-3">
+          <p className="text-sm text-slate-700">{t("settings.twofaScanInstruction")}</p>
+          <pre className="overflow-x-auto rounded-lg bg-snow p-3 text-xs">
+            {enrollment.uri}
+          </pre>
+          <p className="text-sm">
+            {t("settings.twofaSecret")}:{" "}
+            <code className="rounded bg-snow px-2 py-1 font-mono text-xs">
+              {enrollment.secret}
+            </code>
+          </p>
+          <div className="flex gap-2">
+            <input
+              className="input flex-1"
+              inputMode="numeric"
+              placeholder="123456"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              maxLength={8}
+            />
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => verify.mutate(code)}
+              disabled={code.length < 6 || verify.isPending}
+            >
+              {t("settings.twofaVerify")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {backupCodes && (
+        <div className="space-y-3">
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            {t("settings.twofaBackupWarning")}
+          </p>
+          <pre className="grid grid-cols-2 gap-1 rounded-lg bg-snow p-3 font-mono text-xs">
+            {backupCodes.map((c) => (
+              <code key={c}>{c}</code>
+            ))}
+          </pre>
+          <div className="flex gap-2">
+            <input
+              className="input flex-1"
+              inputMode="numeric"
+              placeholder="123456"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+              maxLength={8}
+            />
+            <button
+              type="button"
+              className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
+              onClick={() => disable.mutate(code)}
+              disabled={code.length < 6 || disable.isPending}
+            >
+              {t("settings.twofaDisable")}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
