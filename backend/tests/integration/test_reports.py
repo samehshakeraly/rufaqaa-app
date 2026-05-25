@@ -68,8 +68,11 @@ async def test_report_full_workflow(api: AsyncClient, auth_headers: dict[str, st
     r = await api.post(f"/api/v1/reports/{rid}/submit", json={}, headers=auth_headers)
     assert r.status_code == 409
 
-    # listing by status
-    r = await api.get("/api/v1/reports?status=published_to_donor&limit=5", headers=auth_headers)
+    # listing by status — filter to this orphan to keep the search bounded
+    r = await api.get(
+        f"/api/v1/reports?status=published_to_donor&orphan_id={orphan_id}",
+        headers=auth_headers,
+    )
     assert r.status_code == 200
     assert any(item["id"] == rid for item in r.json()["items"])
 

@@ -9,6 +9,7 @@ from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.schemas.common import Page
 from app.schemas.orphan import OrphanCreate, OrphanRead
+from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
 router = APIRouter()
@@ -62,6 +63,16 @@ async def create_orphan(
         created_by=user.id,
     )
     db.add(orphan)
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.created",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        new_values={"code": orphan.code, "case_status": orphan.case_status},
+    )
     await db.commit()
     await db.refresh(orphan)
     return OrphanRead.model_validate(orphan)

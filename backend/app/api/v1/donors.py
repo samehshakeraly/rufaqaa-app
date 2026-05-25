@@ -9,6 +9,7 @@ from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.schemas.common import Page
 from app.schemas.donor import DonorCreate, DonorRead
+from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
 router = APIRouter()
@@ -56,6 +57,16 @@ async def create_donor(
         is_zakat_donor=payload.is_zakat_donor,
     )
     db.add(donor)
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="donor.created",
+        entity_type="donor",
+        entity_id=donor.id,
+        new_values={"code": donor.code, "email": donor.email},
+    )
     await db.commit()
     await db.refresh(donor)
     return DonorRead.model_validate(donor)

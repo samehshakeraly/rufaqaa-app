@@ -1,3 +1,4 @@
+from app.models.audit import AuditLogEntry
 from app.models.donor import Donor
 from app.models.family import Family, Guardian
 from app.models.organization import Organization
@@ -10,6 +11,7 @@ from app.models.sponsorship import Sponsorship
 from app.models.user import User
 
 __all__ = [
+    "AuditLogEntry",
     "Donor",
     "Family",
     "Guardian",

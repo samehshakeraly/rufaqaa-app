@@ -1,5 +1,64 @@
 components:
   schemas:
+    AuditLogRead:
+      properties:
+        action:
+          title: Action
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        entity_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Entity Id
+        entity_type:
+          title: Entity Type
+          type: string
+        id:
+          title: Id
+          type: integer
+        is_sensitive:
+          title: Is Sensitive
+          type: boolean
+        new_values:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: New Values
+        old_values:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Old Values
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: User Id
+      required:
+      - id
+      - organization_id
+      - user_id
+      - action
+      - entity_type
+      - entity_id
+      - old_values
+      - new_values
+      - is_sensitive
+      - created_at
+      title: AuditLogRead
+      type: object
     ChangePasswordRequest:
       properties:
         current_password:
@@ -430,6 +489,29 @@ components:
       - created_at
       - updated_at
       title: OrphanRead
+      type: object
+    Page_AuditLogRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AuditLogRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[AuditLogRead]
       type: object
     Page_DonorRead_:
       properties:
@@ -1218,6 +1300,70 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
+  /api/v1/audit:
+    get:
+      operationId: list_audit_api_v1_audit_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: entity_type
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+      - in: query
+        name: entity_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Entity Id
+      - in: query
+        name: action
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_AuditLogRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Audit
+      tags:
+      - audit
   /api/v1/auth/change-password:
     post:
       operationId: change_password_api_v1_auth_change_password_post

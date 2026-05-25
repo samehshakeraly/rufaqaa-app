@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    audit,
     auth,
     donors,
     health,
@@ -22,3 +23,4 @@ api_router.include_router(sponsorships.router, prefix="/sponsorships", tags=["sp
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
 api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
 api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
+api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
