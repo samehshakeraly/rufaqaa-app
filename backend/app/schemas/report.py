@@ -54,3 +54,15 @@ class ReportRead(BaseModel):
 
 class ReportTransition(BaseModel):
     reason: str | None = Field(default=None, max_length=1000)
+
+
+class ReportUpdate(BaseModel):
+    """Partial update — every field optional. Only allowed while the
+    report is still in `draft` (the workflow refuses edits after submit)."""
+
+    summary: str | None = None
+    educational_progress: dict | None = None
+    quran_progress: dict | None = None
+    activities: dict | None = None
+    health_status: dict | None = None
+    psychological_status: dict | None = None

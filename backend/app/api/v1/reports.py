@@ -19,7 +19,7 @@ from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.report import OrphanReport
 from app.schemas.common import Page
-from app.schemas.report import ReportCreate, ReportRead, ReportTransition
+from app.schemas.report import ReportCreate, ReportRead, ReportTransition, ReportUpdate
 
 router = APIRouter()
 
@@ -113,6 +113,28 @@ async def get_report(
     report = await db.scalar(select(OrphanReport).where(OrphanReport.id == report_id))
     if report is None:
         raise NotFound("Report")
+    return ReportRead.model_validate(report)
+
+
+@router.patch("/{report_id}", response_model=ReportRead)
+async def update_report(
+    report_id: UUID,
+    payload: ReportUpdate,
+    db: DbSession,
+    _user: CurrentUser,
+) -> ReportRead:
+    """Fill in or revise a draft report's content sections."""
+    report = await _load_or_404(db, report_id)
+    if report.status != "draft":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(f"Report is in status '{report.status}'; only drafts can be edited"),
+        )
+    data = payload.model_dump(exclude_unset=True)
+    for field, value in data.items():
+        setattr(report, field, value)
+    await db.commit()
+    await db.refresh(report)
     return ReportRead.model_validate(report)
 
 
