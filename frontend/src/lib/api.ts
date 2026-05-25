@@ -84,3 +84,25 @@ api.interceptors.response.use(
     return api.request(cfg);
   },
 );
+
+/**
+ * Surface 5xx and network-level failures via toasts. 4xx flows are left
+ * to the call site so feature code can render its own field-specific
+ * error UI (e.g. "email already in use" next to the field).
+ */
+import { toast } from "@/store/toasts";
+
+api.interceptors.response.use(
+  (r) => r,
+  (error: AxiosError) => {
+    const status = error.response?.status;
+    if (status === undefined) {
+      toast.error("Network error — please retry");
+    } else if (status >= 500) {
+      toast.error(`Server error (${status})`);
+    } else if (status === 429) {
+      toast.error("Too many requests — slow down a moment");
+    }
+    return Promise.reject(error);
+  },
+);

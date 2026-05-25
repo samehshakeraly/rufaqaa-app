@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
+import { ToastViewport } from "./components/ToastViewport";
 import "./i18n";
 import "./styles/globals.css";
 
@@ -25,6 +26,7 @@ ReactDOM.createRoot(root).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <App />
+        <ToastViewport />
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,
