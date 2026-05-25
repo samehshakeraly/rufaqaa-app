@@ -1,3 +1,4 @@
+import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 from uuid import UUID
@@ -38,6 +39,7 @@ def create_token(
         "iat": int(now.timestamp()),
         "exp": int(expires.timestamp()),
         "type": token_type,
+        "jti": secrets.token_urlsafe(16),
     }
     if org_id is not None:
         payload["org"] = str(org_id)

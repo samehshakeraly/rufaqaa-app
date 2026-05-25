@@ -1,61 +1,155 @@
-from datetime import UTC, datetime
+import hashlib
+from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Request, status
 from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.config import settings
 from app.core.exceptions import InvalidCredentials, TokenInvalid
 from app.core.security import (
     create_token,
     decode_token,
+    hash_password,
     verify_password,
 )
+from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.auth import (
-    CurrentUser as CurrentUserSchema,
-)
-from app.schemas.auth import (
+    ChangePasswordRequest,
     LoginRequest,
     RefreshRequest,
     TokenPair,
+)
+from app.schemas.auth import (
+    CurrentUser as CurrentUserSchema,
 )
 
 router = APIRouter()
 
 
-@router.post("/login", response_model=TokenPair)
-async def login(payload: LoginRequest, db: DbSession) -> TokenPair:
-    user = await db.scalar(select(User).where(User.email == payload.email))
-    if user is None or not verify_password(payload.password, user.password_hash):
-        raise InvalidCredentials()
-    if user.status != "active":
-        raise InvalidCredentials()
-    if user.locked_until and user.locked_until > datetime.now(UTC):
-        raise InvalidCredentials()
+def _hash_refresh(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
-    user.last_login_at = datetime.now(UTC)
-    user.failed_login_attempts = 0
-    await db.commit()
 
+async def _record_session(db, user_id, refresh_token: str, request: Request | None) -> None:
+    expires = datetime.now(UTC) + timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
+    session = UserSession(
+        user_id=user_id,
+        token_hash=_hash_refresh(refresh_token),
+        expires_at=expires,
+        ip_address=(request.client.host if request and request.client else None),
+    )
+    db.add(session)
+
+
+def _build_pair(user: User) -> TokenPair:
     return TokenPair(
         access_token=create_token(user.id, "access", user.organization_id, user.role),
         refresh_token=create_token(user.id, "refresh", user.organization_id, user.role),
     )
 
 
+@router.post("/login", response_model=TokenPair)
+async def login(payload: LoginRequest, db: DbSession, request: Request) -> TokenPair:
+    user = await db.scalar(select(User).where(User.email == payload.email))
+    if user is None:
+        raise InvalidCredentials()
+
+    now = datetime.now(UTC)
+    if user.locked_until and user.locked_until > now:
+        raise InvalidCredentials()
+
+    if not verify_password(payload.password, user.password_hash):
+        user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+        if user.failed_login_attempts >= settings.LOGIN_MAX_FAILED_ATTEMPTS:
+            user.locked_until = now + timedelta(minutes=settings.LOGIN_LOCKOUT_MINUTES)
+            user.failed_login_attempts = 0
+        await db.commit()
+        raise InvalidCredentials()
+
+    if user.status != "active":
+        raise InvalidCredentials()
+
+    user.last_login_at = now
+    user.last_login_ip = request.client.host if request.client else None
+    user.failed_login_attempts = 0
+    user.locked_until = None
+
+    pair = _build_pair(user)
+    await _record_session(db, user.id, pair.refresh_token, request)
+    await db.commit()
+    return pair
+
+
 @router.post("/refresh", response_model=TokenPair)
-async def refresh(payload: RefreshRequest) -> TokenPair:
+async def refresh(payload: RefreshRequest, db: DbSession, request: Request) -> TokenPair:
     try:
         data = decode_token(payload.refresh_token)
     except ValueError as exc:
         raise TokenInvalid() from exc
     if data.get("type") != "refresh":
         raise TokenInvalid("Wrong token type")
+    if not data.get("sub"):
+        raise TokenInvalid("Malformed token")
 
-    return TokenPair(
-        access_token=create_token(data["sub"], "access", data.get("org"), data.get("role")),
-        refresh_token=create_token(data["sub"], "refresh", data.get("org"), data.get("role")),
-    )
+    token_hash = _hash_refresh(payload.refresh_token)
+    session = await db.scalar(select(UserSession).where(UserSession.token_hash == token_hash))
+    if session is None or session.revoked_at is not None:
+        raise TokenInvalid("Refresh token revoked or unknown")
+    if session.expires_at < datetime.now(UTC):
+        raise TokenInvalid("Refresh token expired")
+
+    user = await db.scalar(select(User).where(User.id == session.user_id))
+    if user is None or user.status != "active":
+        raise TokenInvalid("User not found or inactive")
+
+    session.revoked_at = datetime.now(UTC)
+    pair = _build_pair(user)
+    await _record_session(db, user.id, pair.refresh_token, request)
+    await db.commit()
+    return pair
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def logout(payload: RefreshRequest, db: DbSession) -> None:
+    """Revoke a single refresh token (the device's session)."""
+    token_hash = _hash_refresh(payload.refresh_token)
+    session = await db.scalar(select(UserSession).where(UserSession.token_hash == token_hash))
+    if session is not None and session.revoked_at is None:
+        session.revoked_at = datetime.now(UTC)
+        await db.commit()
+
+
+@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_password(
+    payload: ChangePasswordRequest,
+    db: DbSession,
+    user: CurrentUser,
+) -> None:
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+    if payload.new_password == payload.current_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must differ from the current one",
+        )
+
+    user.password_hash = hash_password(payload.new_password)
+    sessions = (
+        await db.scalars(
+            select(UserSession).where(
+                UserSession.user_id == user.id, UserSession.revoked_at.is_(None)
+            )
+        )
+    ).all()
+    now = datetime.now(UTC)
+    for s in sessions:
+        s.revoked_at = now
+    await db.commit()
 
 
 @router.get("/me", response_model=CurrentUserSchema)
