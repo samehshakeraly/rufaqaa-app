@@ -796,6 +796,25 @@ components:
       - created_at
       title: MediaUploadResponse
       type: object
+    MonthlyPoint:
+      properties:
+        month:
+          format: date
+          title: Month
+          type: string
+        payments_count:
+          title: Payments Count
+          type: integer
+        payments_total:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Payments Total
+          type: string
+      required:
+      - month
+      - payments_total
+      - payments_count
+      title: MonthlyPoint
+      type: object
     OrphanCreate:
       properties:
         date_of_birth:
@@ -1548,6 +1567,17 @@ components:
       - completed_at
       - created_at
       title: PaymentRead
+      type: object
+    PaymentsTimeseries:
+      properties:
+        months:
+          items:
+            $ref: '#/components/schemas/MonthlyPoint'
+          title: Months
+          type: array
+      required:
+      - months
+      title: PaymentsTimeseries
       type: object
     RefreshRequest:
       properties:
@@ -3662,6 +3692,22 @@ paths:
       summary: Cancel Sponsorship
       tags:
       - sponsorships
+  /api/v1/stats/payments-timeseries:
+    get:
+      description: Total paid + count grouped by month for the last 12 months.
+      operationId: payments_timeseries_api_v1_stats_payments_timeseries_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsTimeseries'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Payments Timeseries
+      tags:
+      - stats
   /api/v1/stats/summary:
     get:
       operationId: dashboard_summary_api_v1_stats_summary_get

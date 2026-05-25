@@ -5,7 +5,7 @@ dashboard with one round trip. Numbers are scoped by RLS (the
 organization the caller belongs to).
 """
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from fastapi import APIRouter
@@ -76,4 +76,44 @@ async def dashboard_summary(db: DbSession, _user: CurrentUser) -> DashboardSumma
         sponsorships_overdue=sponsorships_overdue or 0,
         payments_last_30d_total=Decimal(pay_sum or 0),
         payments_last_30d_count=pay_count or 0,
+    )
+
+
+class MonthlyPoint(BaseModel):
+    month: date  # first day of the month
+    payments_total: Decimal
+    payments_count: int
+
+
+class PaymentsTimeseries(BaseModel):
+    months: list[MonthlyPoint]
+
+
+@router.get("/payments-timeseries", response_model=PaymentsTimeseries)
+async def payments_timeseries(db: DbSession, _user: CurrentUser) -> PaymentsTimeseries:
+    """Total paid + count grouped by month for the last 12 months."""
+    cutoff = datetime.now(UTC).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    ) - timedelta(days=365)
+    month = func.date_trunc("month", Payment.completed_at).label("month")
+    stmt = (
+        select(
+            month,
+            func.coalesce(func.sum(Payment.amount), 0).label("total"),
+            func.count(Payment.id).label("count"),
+        )
+        .where(Payment.status == "completed", Payment.completed_at >= cutoff)
+        .group_by(month)
+        .order_by(month)
+    )
+    rows = (await db.execute(stmt)).all()
+    return PaymentsTimeseries(
+        months=[
+            MonthlyPoint(
+                month=r.month.date() if hasattr(r.month, "date") else r.month,
+                payments_total=Decimal(r.total),
+                payments_count=int(r.count),
+            )
+            for r in rows
+        ]
     )
