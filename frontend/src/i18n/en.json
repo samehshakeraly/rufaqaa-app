@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "Rufaqaa",
+    "tagline": "Orphan sponsorship management platform"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "orphans": "Orphans",
+    "donors": "Donors",
+    "logout": "Sign out",
+    "language": "English"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "...",
+    "invalidEmail": "Invalid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "invalidCredentials": "Invalid email or password",
+    "serverError": "Could not reach the server"
+  },
+  "common": {
+    "loading": "Loading...",
+    "total": "Total",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "add": "Add",
+    "empty": "No data yet",
+    "loadError": "Could not load data",
+    "createError": "Could not save",
+    "required": "This field is required"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "accountInfo": "Account info",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "organization": "Organization"
+  },
+  "orphans": {
+    "title": "Orphans",
+    "addNew": "Add orphan",
+    "code": "Code",
+    "name": "Name",
+    "firstName": "First name",
+    "familyName": "Family name",
+    "fatherName": "Father's name",
+    "dateOfBirth": "Date of birth",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "nationality": "Nationality",
+    "partner": "Partner organization",
+    "status": "Status",
+    "selectPartner": "Choose a partner",
+    "caseStatus": {
+      "pending_review": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "available": "Available",
+      "reserved": "Reserved",
+      "sponsored": "Sponsored",
+      "graduated": "Graduated",
+      "deceased": "Deceased",
+      "archived": "Archived"
+    }
+  },
+  "donors": {
+    "title": "Donors",
+    "addNew": "Add donor",
+    "code": "Code",
+    "name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "country": "Country",
+    "currency": "Preferred currency",
+    "status": "Status"
+  }
+}

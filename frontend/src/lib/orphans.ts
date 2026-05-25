@@ -21,10 +21,25 @@ export interface Page<T> {
   offset: number;
 }
 
+export interface OrphanCreateInput {
+  first_name: string;
+  family_name: string;
+  date_of_birth: string;
+  gender: "M" | "F";
+  partner_organization_id: string;
+  father_name?: string;
+  nationality?: string;
+}
+
 export async function listOrphans(params?: {
   limit?: number;
   offset?: number;
 }): Promise<Page<Orphan>> {
   const { data } = await api.get<Page<Orphan>>("/orphans", { params });
+  return data;
+}
+
+export async function createOrphan(payload: OrphanCreateInput): Promise<Orphan> {
+  const { data } = await api.post<Orphan>("/orphans", payload);
   return data;
 }

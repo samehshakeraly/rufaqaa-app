@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "رفقاء",
+    "tagline": "منصة إدارة كفالة الأيتام"
+  },
+  "nav": {
+    "dashboard": "الرئيسية",
+    "orphans": "الأيتام",
+    "donors": "المتبرعون",
+    "logout": "خروج",
+    "language": "العربية"
+  },
+  "auth": {
+    "loginTitle": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "submit": "دخول",
+    "submitting": "...",
+    "invalidEmail": "بريد إلكتروني غير صالح",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "serverError": "تعذّر الاتصال بالخادم"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "total": "الإجمالي",
+    "save": "حفظ",
+    "saving": "جاري الحفظ...",
+    "cancel": "إلغاء",
+    "add": "إضافة",
+    "empty": "لا توجد بيانات بعد",
+    "loadError": "تعذّر تحميل البيانات",
+    "createError": "تعذّر الحفظ",
+    "required": "هذا الحقل مطلوب"
+  },
+  "dashboard": {
+    "title": "الرئيسية",
+    "accountInfo": "معلومات الحساب",
+    "name": "الاسم",
+    "email": "البريد",
+    "role": "الدور",
+    "organization": "المؤسسة"
+  },
+  "orphans": {
+    "title": "الأيتام",
+    "addNew": "إضافة يتيم",
+    "code": "الرمز",
+    "name": "الاسم",
+    "firstName": "الاسم الأول",
+    "familyName": "اسم العائلة",
+    "fatherName": "اسم الأب",
+    "dateOfBirth": "تاريخ الميلاد",
+    "gender": "الجنس",
+    "male": "ذكر",
+    "female": "أنثى",
+    "nationality": "الجنسية",
+    "partner": "الجهة الشريكة",
+    "status": "الحالة",
+    "selectPartner": "اختر الجهة الشريكة",
+    "caseStatus": {
+      "pending_review": "قيد المراجعة",
+      "approved": "معتمد",
+      "rejected": "مرفوض",
+      "available": "متاح للكفالة",
+      "reserved": "محجوز",
+      "sponsored": "مكفول",
+      "graduated": "متخرّج",
+      "deceased": "متوفّى",
+      "archived": "مؤرشف"
+    }
+  },
+  "donors": {
+    "title": "المتبرعون",
+    "addNew": "إضافة متبرع",
+    "code": "الرمز",
+    "name": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "country": "بلد الإقامة",
+    "currency": "العملة المفضّلة",
+    "status": "الحالة"
+  }
+}

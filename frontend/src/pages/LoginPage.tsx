@@ -3,22 +3,27 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { login } from "@/lib/auth";
 import { useAuthStore } from "@/store/auth";
 
-const schema = z.object({
-  email: z.string().email("بريد إلكتروني غير صالح"),
-  password: z.string().min(8, "كلمة المرور يجب أن تكون 8 أحرف على الأقل"),
-});
+function buildSchema(t: (k: string) => string) {
+  return z.object({
+    email: z.string().email(t("auth.invalidEmail")),
+    password: z.string().min(8, t("auth.passwordTooShort")),
+  });
+}
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const token = useAuthStore((s) => s.accessToken);
   const setTokens = useAuthStore((s) => s.setTokens);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -28,7 +33,7 @@ export function LoginPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(buildSchema(t)),
     defaultValues: { email: "admin@dev.rufaqaa.app", password: "" },
   });
 
@@ -41,9 +46,9 @@ export function LoginPage() {
     },
     onError: (err) => {
       if (err instanceof AxiosError && err.response?.status === 401) {
-        setServerError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+        setServerError(t("auth.invalidCredentials"));
       } else {
-        setServerError("تعذّر الاتصال بالخادم");
+        setServerError(t("auth.serverError"));
       }
     },
   });
@@ -55,11 +60,12 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-tranquil px-4">
       <div className="card w-full max-w-md">
+        <div className="mb-4 flex justify-end">
+          <LanguageSwitcher />
+        </div>
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-trust">رفقاء</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            منصة إدارة كفالة الأيتام
-          </p>
+          <h1 className="text-2xl font-bold text-trust">{t("app.name")}</h1>
+          <p className="mt-1 text-sm text-slate-600">{t("app.tagline")}</p>
         </div>
 
         <form
@@ -71,7 +77,7 @@ export function LoginPage() {
         >
           <label className="block">
             <span className="mb-1 block text-sm font-medium text-slate-700">
-              البريد الإلكتروني
+              {t("auth.email")}
             </span>
             <input
               type="email"
@@ -86,7 +92,7 @@ export function LoginPage() {
 
           <label className="block">
             <span className="mb-1 block text-sm font-medium text-slate-700">
-              كلمة المرور
+              {t("auth.password")}
             </span>
             <input
               type="password"
@@ -106,7 +112,7 @@ export function LoginPage() {
           )}
 
           <button type="submit" className="btn-primary w-full" disabled={isSubmitting}>
-            {isSubmitting ? "..." : "دخول"}
+            {isSubmitting ? t("auth.submitting") : t("auth.submit")}
           </button>
         </form>
       </div>
