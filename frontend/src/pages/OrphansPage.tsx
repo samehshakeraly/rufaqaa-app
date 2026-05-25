@@ -38,7 +38,7 @@ export function OrphansPage() {
   });
   const { data: partners } = useQuery({
     queryKey: ["partners"],
-    queryFn: listPartners,
+    queryFn: () => listPartners(),
   });
 
   return (

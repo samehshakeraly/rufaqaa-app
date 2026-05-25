@@ -38,6 +38,9 @@ export function AppLayout() {
             <NavLink to="/donors" className={navItemClass}>
               {t("nav.donors")}
             </NavLink>
+            <NavLink to="/partners" className={navItemClass}>
+              {t("nav.partners")}
+            </NavLink>
             <NavLink to="/sponsorships" className={navItemClass}>
               {t("nav.sponsorships")}
             </NavLink>

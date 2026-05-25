@@ -7,12 +7,31 @@ export interface Partner {
   name_ar: string;
   name_en: string | null;
   country_code: string;
-  status: string;
+  status: "active" | "suspended" | "archived";
+  created_at: string;
 }
 
-export async function listPartners(): Promise<Page<Partner>> {
+export interface PartnerCreateInput {
+  name_ar: string;
+  name_en?: string;
+  country_code: string;
+  contact_email?: string;
+  contact_phone?: string;
+  contact_person?: string;
+}
+
+export async function listPartners(includeInactive = false): Promise<Page<Partner>> {
   const { data } = await api.get<Page<Partner>>("/partners", {
-    params: { limit: 100 },
+    params: { limit: 100, include_inactive: includeInactive },
   });
   return data;
+}
+
+export async function createPartner(payload: PartnerCreateInput): Promise<Partner> {
+  const { data } = await api.post<Partner>("/partners", payload);
+  return data;
+}
+
+export async function archivePartner(id: string): Promise<void> {
+  await api.delete(`/partners/${id}`);
 }
