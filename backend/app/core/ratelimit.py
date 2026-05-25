@@ -76,6 +76,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """Enforces per-minute request caps. Exempts health + docs paths."""
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
+        # Read the toggle each request so tests can flip it at runtime.
+        if not settings.RATE_LIMIT_ENABLED:
+            return await call_next(request)
+
         path = request.url.path
         if any(path.startswith(p) for p in EXEMPT_PREFIXES) and path != "/api/v1":
             # Plain "/" and the docs always go through.

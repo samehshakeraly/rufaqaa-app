@@ -29,6 +29,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core import database as db_module
+from app.core.config import settings as _settings
 from app.main import app
 from app.scripts.seed import (
     SEED_ADMIN_EMAIL,
@@ -37,6 +38,17 @@ from app.scripts.seed import (
 )
 
 TEST_DB_URL = os.getenv("RUFAQAA_TEST_DATABASE_URL")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _disable_rate_limit_for_tests():
+    """Rate limiting kicks in across the full suite because every test
+    hits the API as the same caller. Disable it for integration tests;
+    the rate-limit tests opt in explicitly via their own fixture."""
+    original = _settings.RATE_LIMIT_ENABLED
+    _settings.RATE_LIMIT_ENABLED = False
+    yield
+    _settings.RATE_LIMIT_ENABLED = original
 
 
 @pytest.fixture(scope="session")
