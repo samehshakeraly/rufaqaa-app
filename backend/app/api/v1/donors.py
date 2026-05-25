@@ -8,7 +8,7 @@ from app.api.deps import CurrentUser, DbSession
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.schemas.common import Page
-from app.schemas.donor import DonorCreate, DonorRead
+from app.schemas.donor import DonorCreate, DonorRead, DonorUpdate
 from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
@@ -81,4 +81,42 @@ async def get_donor(
     donor = await db.scalar(select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_(None)))
     if donor is None:
         raise NotFound("Donor")
+    return DonorRead.model_validate(donor)
+
+
+@router.patch("/{donor_id}", response_model=DonorRead)
+async def update_donor(
+    donor_id: UUID,
+    payload: DonorUpdate,
+    db: DbSession,
+    user: CurrentUser,
+) -> DonorRead:
+    donor = await db.scalar(select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_(None)))
+    if donor is None:
+        raise NotFound("Donor")
+
+    changes: dict[str, dict[str, object]] = {}
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        old = getattr(donor, field)
+        if old != value:
+            changes[field] = {"old": old, "new": value}
+            setattr(donor, field, value)
+
+    if changes:
+        record_audit(
+            db,
+            organization_id=user.organization_id,
+            user_id=user.id,
+            action="donor.updated",
+            entity_type="donor",
+            entity_id=donor.id,
+            old_values={
+                k: str(v["old"]) if v["old"] is not None else None for k, v in changes.items()
+            },
+            new_values={
+                k: str(v["new"]) if v["new"] is not None else None for k, v in changes.items()
+            },
+        )
+    await db.commit()
+    await db.refresh(donor)
     return DonorRead.model_validate(donor)
