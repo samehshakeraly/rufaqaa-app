@@ -7,9 +7,11 @@
     "dashboard": "الرئيسية",
     "orphans": "الأيتام",
     "donors": "المتبرعون",
+    "partners": "الشركاء",
     "sponsorships": "الكفالات",
     "payments": "المدفوعات",
     "reports": "التقارير",
+    "audit": "سجل التدقيق",
     "settings": "الإعدادات",
     "logout": "خروج",
     "language": "العربية"
@@ -177,6 +179,31 @@
     "newPassword": "كلمة المرور الجديدة",
     "confirmPassword": "تأكيد كلمة المرور الجديدة",
     "changedSuccess": "تم تغيير كلمة المرور بنجاح. سيتم تسجيل خروجك."
+  },
+  "partners": {
+    "title": "الشركاء",
+    "addNew": "إضافة شريك",
+    "code": "الرمز",
+    "name": "الاسم",
+    "nameAr": "الاسم (عربي)",
+    "nameEn": "الاسم (إنجليزي)",
+    "country": "الدولة",
+    "status": "الحالة",
+    "archive": "أرشفة",
+    "statuses": {
+      "active": "نشط",
+      "suspended": "موقوف",
+      "archived": "مؤرشف"
+    }
+  },
+  "audit": {
+    "title": "سجل التدقيق",
+    "allTypes": "كل الأنواع",
+    "when": "الوقت",
+    "action": "الإجراء",
+    "entity": "النوع",
+    "entityId": "المعرّف",
+    "details": "التفاصيل"
   },
   "donors": {
     "title": "المتبرعون",

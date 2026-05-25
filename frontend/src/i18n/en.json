@@ -7,9 +7,11 @@
     "dashboard": "Dashboard",
     "orphans": "Orphans",
     "donors": "Donors",
+    "partners": "Partners",
     "sponsorships": "Sponsorships",
     "payments": "Payments",
     "reports": "Reports",
+    "audit": "Audit log",
     "settings": "Settings",
     "logout": "Sign out",
     "language": "English"
@@ -177,6 +179,31 @@
     "newPassword": "New password",
     "confirmPassword": "Confirm new password",
     "changedSuccess": "Password changed. You will be signed out."
+  },
+  "partners": {
+    "title": "Partners",
+    "addNew": "Add partner",
+    "code": "Code",
+    "name": "Name",
+    "nameAr": "Name (Arabic)",
+    "nameEn": "Name (English)",
+    "country": "Country",
+    "status": "Status",
+    "archive": "Archive",
+    "statuses": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "archived": "Archived"
+    }
+  },
+  "audit": {
+    "title": "Audit log",
+    "allTypes": "All types",
+    "when": "When",
+    "action": "Action",
+    "entity": "Entity",
+    "entityId": "ID",
+    "details": "Details"
   },
   "donors": {
     "title": "Donors",

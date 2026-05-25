@@ -1,7 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { AdminRoute } from "./components/AdminRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
+import { AuditPage } from "./pages/AuditPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -31,6 +33,14 @@ export function App() {
         <Route path="/sponsorships" element={<SponsorshipsPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route
+          path="/audit"
+          element={
+            <AdminRoute>
+              <AuditPage />
+            </AdminRoute>
+          }
+        />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

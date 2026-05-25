@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { useRole } from "@/hooks/useRole";
 import {
   archivePartner,
   createPartner,
@@ -15,6 +16,7 @@ const QK = ["partners", { includeInactive: true }] as const;
 export function PartnersPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
+  const { isAdmin } = useRole();
   const [showForm, setShowForm] = useState(false);
 
   const { data, isLoading, error } = useQuery({
@@ -36,13 +38,15 @@ export function PartnersPage() {
               {t("common.total")}: {data.total.toLocaleString()}
             </span>
           )}
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => setShowForm((v) => !v)}
-          >
-            {showForm ? t("common.cancel") : t("partners.addNew")}
-          </button>
+          {isAdmin && (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setShowForm((v) => !v)}
+            >
+              {showForm ? t("common.cancel") : t("partners.addNew")}
+            </button>
+          )}
         </div>
       </div>
 
@@ -90,7 +94,7 @@ export function PartnersPage() {
                     {t(`partners.statuses.${p.status}`, p.status)}
                   </td>
                   <td className="px-4 py-3 text-end">
-                    {p.status === "active" && (
+                    {isAdmin && p.status === "active" && (
                       <button
                         type="button"
                         className="rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"

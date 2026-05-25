@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useRole } from "@/hooks/useRole";
 import { useAuthStore } from "@/store/auth";
 
 const navItemClass = ({ isActive }: { isActive: boolean }) =>
@@ -15,6 +16,7 @@ export function AppLayout() {
   const { t } = useTranslation();
   const clear = useAuthStore((s) => s.clear);
   const { data: me } = useCurrentUser();
+  const { isAdmin } = useRole();
 
   function logout() {
     clear();
@@ -50,6 +52,11 @@ export function AppLayout() {
             <NavLink to="/reports" className={navItemClass}>
               {t("nav.reports")}
             </NavLink>
+            {isAdmin && (
+              <NavLink to="/audit" className={navItemClass}>
+                {t("nav.audit")}
+              </NavLink>
+            )}
             <NavLink to="/settings" className={navItemClass}>
               {t("nav.settings")}
             </NavLink>
