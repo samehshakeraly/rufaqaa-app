@@ -33,6 +33,16 @@ SessionLocal = async_sessionmaker(
 )
 
 
+def make_session() -> AsyncSession:
+    """Open a new session using the *current* SessionLocal.
+
+    Use this from callers (deps, scripts, tests) instead of importing
+    `SessionLocal` directly, so that tests can swap the factory without
+    leaving stale references behind.
+    """
+    return SessionLocal()
+
+
 @asynccontextmanager
 async def session_scope(
     org_id: UUID | None = None,

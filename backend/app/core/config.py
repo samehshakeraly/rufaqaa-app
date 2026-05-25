@@ -1,7 +1,7 @@
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from typing import Literal
 
-from pydantic import Field, PostgresDsn, field_validator
+from pydantic import Field, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,17 +36,14 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     BCRYPT_ROUNDS: int = 12
 
-    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
 
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     LOG_FORMAT: Literal["json", "text"] = "json"
 
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def _split_cors(cls, v: str | list[str]) -> list[str]:
-        if isinstance(v, str):
-            return [o.strip() for o in v.split(",") if o.strip()]
-        return v
+    @cached_property
+    def cors_origins_list(self) -> list[str]:
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
 
 @lru_cache
