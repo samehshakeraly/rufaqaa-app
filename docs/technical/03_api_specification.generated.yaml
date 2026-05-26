@@ -4196,6 +4196,58 @@ paths:
       summary: Create Sponsorship
       tags:
       - sponsorships
+  /api/v1/sponsorships/export.csv:
+    get:
+      description: 'Stream sponsorships matching the same filters as the list endpoint,
+
+        as CSV. Registered before /{sponsorship_id} so FastAPI doesn''t try
+
+        to parse ''export.csv'' as a UUID. Capped at 10 000 rows.'
+      operationId: export_sponsorships_csv_api_v1_sponsorships_export_csv_get
+      parameters:
+      - in: query
+        name: donor_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Donor Id
+      - in: query
+        name: orphan_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+      - in: query
+        name: status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Export Sponsorships Csv
+      tags:
+      - sponsorships
   /api/v1/sponsorships/{sponsorship_id}:
     get:
       operationId: get_sponsorship_api_v1_sponsorships__sponsorship_id__get

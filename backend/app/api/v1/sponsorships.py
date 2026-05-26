@@ -1,8 +1,11 @@
+import csv
+import io
 from datetime import UTC, date, datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
@@ -134,6 +137,74 @@ async def create_sponsorship(
     await db.commit()
     await db.refresh(sponsorship)
     return SponsorshipRead.model_validate(sponsorship)
+
+
+_CSV_COLUMNS = (
+    "code",
+    "donor_id",
+    "orphan_id",
+    "monthly_amount",
+    "currency",
+    "payment_frequency",
+    "status",
+    "start_date",
+    "end_date",
+    "next_payment_date",
+    "total_paid",
+    "payments_count",
+    "created_at",
+)
+
+
+@router.get("/export.csv")
+async def export_sponsorships_csv(
+    db: DbSession,
+    _user: CurrentUser,
+    donor_id: UUID | None = None,
+    orphan_id: UUID | None = None,
+    status_filter: Annotated[str | None, Query(alias="status")] = None,
+) -> StreamingResponse:
+    """Stream sponsorships matching the same filters as the list endpoint,
+    as CSV. Registered before /{sponsorship_id} so FastAPI doesn't try
+    to parse 'export.csv' as a UUID. Capped at 10 000 rows."""
+    stmt = select(Sponsorship)
+    if donor_id:
+        stmt = stmt.where(Sponsorship.donor_id == donor_id)
+    if orphan_id:
+        stmt = stmt.where(Sponsorship.orphan_id == orphan_id)
+    if status_filter:
+        stmt = stmt.where(Sponsorship.status == status_filter)
+    stmt = stmt.order_by(Sponsorship.created_at.desc()).limit(10_000)
+
+    rows = (await db.scalars(stmt)).all()
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(_CSV_COLUMNS)
+    for s in rows:
+        writer.writerow(
+            [
+                s.code,
+                str(s.donor_id),
+                str(s.orphan_id),
+                str(s.monthly_amount),
+                s.currency,
+                s.payment_frequency or "",
+                s.status,
+                s.start_date.isoformat() if s.start_date else "",
+                s.end_date.isoformat() if s.end_date else "",
+                s.next_payment_date.isoformat() if s.next_payment_date else "",
+                str(s.total_paid or 0),
+                s.payments_count or 0,
+                s.created_at.isoformat(),
+            ]
+        )
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="rufaqaa-sponsorships.csv"'},
+    )
 
 
 @router.get("/{sponsorship_id}", response_model=SponsorshipRead)
