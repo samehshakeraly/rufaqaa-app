@@ -2197,6 +2197,64 @@ components:
           title: Payment Method
       title: SponsorshipUpdate
       type: object
+    Timeline:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+          title: Items
+          type: array
+      required:
+      - items
+      title: Timeline
+      type: object
+    TimelineEvent:
+      description: 'One row in the orphan timeline. `kind` tells the frontend how to
+
+        interpret the entity_id; `summary` is a small human-readable hint.'
+      properties:
+        amount:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Amount
+        currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Currency
+        entity_id:
+          format: uuid
+          title: Entity Id
+          type: string
+        kind:
+          enum:
+          - sponsorship
+          - payment
+          - report
+          - media
+          title: Kind
+          type: string
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+        summary:
+          title: Summary
+          type: string
+        when:
+          format: date-time
+          title: When
+          type: string
+      required:
+      - when
+      - kind
+      - entity_id
+      - summary
+      title: TimelineEvent
+      type: object
     TokenPair:
       properties:
         access_token:
@@ -3330,6 +3388,40 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Update Orphan
+      tags:
+      - orphans
+  /api/v1/orphans/{orphan_id}/timeline:
+    get:
+      description: 'Chronological feed of everything that has happened around an orphan:
+
+        sponsorships, payments, and reports. Newest first, capped at 200
+
+        events.'
+      operationId: orphan_timeline_api_v1_orphans__orphan_id__timeline_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeline'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Orphan Timeline
       tags:
       - orphans
   /api/v1/partners:

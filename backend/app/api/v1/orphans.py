@@ -9,9 +9,13 @@ from app.api.deps import CurrentUser, DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
+from app.models.payment import Payment
+from app.models.report import OrphanReport
+from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.orphan import OrphanCreate, OrphanRead, OrphanUpdate
+from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
@@ -193,3 +197,66 @@ async def delete_orphan(
         is_sensitive=True,
     )
     await db.commit()
+
+
+@router.get("/{orphan_id}/timeline", response_model=Timeline)
+async def orphan_timeline(
+    orphan_id: UUID,
+    db: DbSession,
+    _user: CurrentUser,
+) -> Timeline:
+    """Chronological feed of everything that has happened around an orphan:
+    sponsorships, payments, and reports. Newest first, capped at 200
+    events."""
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+
+    sponsorships = (
+        await db.scalars(select(Sponsorship).where(Sponsorship.orphan_id == orphan_id))
+    ).all()
+    payments = (await db.scalars(select(Payment).where(Payment.orphan_id == orphan_id))).all()
+    reports = (
+        await db.scalars(select(OrphanReport).where(OrphanReport.orphan_id == orphan_id))
+    ).all()
+
+    events: list[TimelineEvent] = []
+    for sp in sponsorships:
+        events.append(
+            TimelineEvent(
+                when=sp.created_at,
+                kind="sponsorship",
+                entity_id=sp.id,
+                summary=f"{sp.code} · {sp.monthly_amount} {sp.currency}/{sp.payment_frequency}",
+                amount=sp.monthly_amount,
+                currency=sp.currency,
+                status=sp.status,
+            )
+        )
+    for p in payments:
+        events.append(
+            TimelineEvent(
+                when=p.completed_at or p.initiated_at,
+                kind="payment",
+                entity_id=p.id,
+                summary=f"{p.code} · {p.payment_method}",
+                amount=p.amount,
+                currency=p.currency,
+                status=p.status,
+            )
+        )
+    for r in reports:
+        events.append(
+            TimelineEvent(
+                when=r.created_at,
+                kind="report",
+                entity_id=r.id,
+                summary=f"{r.report_type} ({r.period_start}–{r.period_end})",
+                status=r.status,
+            )
+        )
+
+    events.sort(key=lambda e: e.when, reverse=True)
+    return Timeline(items=events[:200])
