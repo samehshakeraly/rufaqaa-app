@@ -87,9 +87,7 @@ async def get_marketing_channel(
     db: DbSession,
     _user: CurrentUser,
 ) -> MarketingChannelRead:
-    channel = await db.scalar(
-        select(MarketingChannel).where(MarketingChannel.id == channel_id)
-    )
+    channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
     if channel is None:
         raise NotFound("Marketing channel")
     return MarketingChannelRead.model_validate(channel)
@@ -102,9 +100,7 @@ async def update_marketing_channel(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> MarketingChannelRead:
-    channel = await db.scalar(
-        select(MarketingChannel).where(MarketingChannel.id == channel_id)
-    )
+    channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
     if channel is None:
         raise NotFound("Marketing channel")
     changes: dict = {}
@@ -134,9 +130,7 @@ async def archive_marketing_channel(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> None:
-    channel = await db.scalar(
-        select(MarketingChannel).where(MarketingChannel.id == channel_id)
-    )
+    channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
     if channel is None:
         raise NotFound("Marketing channel")
     channel.status = "archived"

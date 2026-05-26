@@ -160,9 +160,7 @@ async def change_password(
 
 
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
-async def forgot_password(
-    payload: ForgotPasswordRequest, db: DbSession
-) -> ForgotPasswordResponse:
+async def forgot_password(payload: ForgotPasswordRequest, db: DbSession) -> ForgotPasswordResponse:
     """Mint a short-lived password-reset token and (eventually) email it.
 
     Always returns the same response shape regardless of whether the
@@ -195,9 +193,7 @@ async def reset_password(payload: ResetPasswordRequest, db: DbSession) -> None:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired reset token",
         ) from exc
-    user = await db.scalar(
-        select(User).where(User.id == user_id, User.deleted_at.is_(None))
-    )
+    user = await db.scalar(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     if user is None or user.status != "active":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

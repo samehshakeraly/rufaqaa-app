@@ -79,9 +79,7 @@ async def list_users(
 _INVITE_TTL_DAYS = 7
 
 
-@router.post(
-    "/invite", response_model=UserInviteResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/invite", response_model=UserInviteResponse, status_code=status.HTTP_201_CREATED)
 async def invite_user(
     payload: UserInvite,
     db: DbSession,
@@ -140,9 +138,7 @@ async def accept_invite(payload: AcceptInvite, db: DbSession) -> UserAdminRead:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired invite token",
         ) from exc
-    target = await db.scalar(
-        select(User).where(User.id == user_id, User.deleted_at.is_(None))
-    )
+    target = await db.scalar(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     if target is None:
         raise NotFound("User")
     if target.status != "pending_verification":

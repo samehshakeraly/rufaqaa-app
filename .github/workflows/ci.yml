@@ -57,6 +57,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Seed .env for compose
+        # docker-compose.yml references env_file: .env, which is
+        # gitignored. Use the committed example as a stand-in just for
+        # the config-syntax check.
+        run: cp .env.example .env
       - name: Validate docker-compose.yml syntax
         run: docker compose config --quiet
 

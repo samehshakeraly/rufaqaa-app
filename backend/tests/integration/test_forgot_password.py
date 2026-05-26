@@ -10,9 +10,7 @@ from app.scripts.seed import SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD
 async def test_forgot_password_returns_debug_token_for_real_user(
     api: AsyncClient,
 ) -> None:
-    r = await api.post(
-        "/api/v1/auth/forgot-password", json={"email": SEED_ADMIN_EMAIL}
-    )
+    r = await api.post("/api/v1/auth/forgot-password", json={"email": SEED_ADMIN_EMAIL})
     assert r.status_code == 200
     body = r.json()
     assert body["sent"] is True
@@ -20,9 +18,7 @@ async def test_forgot_password_returns_debug_token_for_real_user(
 
 
 async def test_forgot_password_silent_for_unknown_email(api: AsyncClient) -> None:
-    r = await api.post(
-        "/api/v1/auth/forgot-password", json={"email": "nobody@example.com"}
-    )
+    r = await api.post("/api/v1/auth/forgot-password", json={"email": "nobody@example.com"})
     assert r.status_code == 200
     body = r.json()
     assert body["sent"] is True
@@ -31,9 +27,7 @@ async def test_forgot_password_silent_for_unknown_email(api: AsyncClient) -> Non
 
 async def test_reset_password_full_flow(api: AsyncClient) -> None:
     # 1. Request token
-    r = await api.post(
-        "/api/v1/auth/forgot-password", json={"email": SEED_ADMIN_EMAIL}
-    )
+    r = await api.post("/api/v1/auth/forgot-password", json={"email": SEED_ADMIN_EMAIL})
     token = r.json()["debug_token"]
 
     new_password = "newsecret123"
@@ -62,9 +56,7 @@ async def test_reset_password_full_flow(api: AsyncClient) -> None:
     # password change still landed. The 200 path is the common case.
 
     # 5. Restore the original password so sibling tests still pass
-    r = await api.post(
-        "/api/v1/auth/forgot-password", json={"email": SEED_ADMIN_EMAIL}
-    )
+    r = await api.post("/api/v1/auth/forgot-password", json={"email": SEED_ADMIN_EMAIL})
     restore_token = r.json()["debug_token"]
     r = await api.post(
         "/api/v1/auth/reset-password",

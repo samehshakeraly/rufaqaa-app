@@ -131,9 +131,7 @@ class SponsorshipsByStatus(BaseModel):
 
 
 @router.get("/sponsorships-by-status", response_model=SponsorshipsByStatus)
-async def sponsorships_by_status(
-    db: DbSession, _user: CurrentUser
-) -> SponsorshipsByStatus:
+async def sponsorships_by_status(db: DbSession, _user: CurrentUser) -> SponsorshipsByStatus:
     """One row per status enum that currently has at least one
     sponsorship attached. The frontend renders this as a small donut."""
     rows = (
@@ -162,9 +160,7 @@ class DonationsByPartner(BaseModel):
 
 
 @router.get("/donations-by-partner", response_model=DonationsByPartner)
-async def donations_by_partner(
-    db: DbSession, _user: CurrentUser
-) -> DonationsByPartner:
+async def donations_by_partner(db: DbSession, _user: CurrentUser) -> DonationsByPartner:
     """Completed payments rolled up by the orphan's partner
     organization over the last 90 days. Top 10 partners by total,
     descending. Payments not linked to an orphan (e.g. general

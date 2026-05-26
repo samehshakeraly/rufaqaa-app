@@ -5,9 +5,7 @@ from __future__ import annotations
 from httpx import AsyncClient
 
 
-async def test_sponsorships_by_status_shape(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_sponsorships_by_status_shape(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     r = await api.get("/api/v1/stats/sponsorships-by-status", headers=auth_headers)
     assert r.status_code == 200
     body = r.json()
@@ -18,9 +16,7 @@ async def test_sponsorships_by_status_shape(
         assert s["count"] >= 0
 
 
-async def test_donations_by_partner_shape(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_donations_by_partner_shape(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     r = await api.get("/api/v1/stats/donations-by-partner", headers=auth_headers)
     assert r.status_code == 200
     body = r.json()
@@ -28,4 +24,10 @@ async def test_donations_by_partner_shape(
     assert isinstance(body["items"], list)
     assert len(body["items"]) <= 10
     for it in body["items"]:
-        assert {"partner_id", "partner_code", "partner_name", "payments_total", "payments_count"} <= it.keys()
+        assert {
+            "partner_id",
+            "partner_code",
+            "partner_name",
+            "payments_total",
+            "payments_count",
+        } <= it.keys()

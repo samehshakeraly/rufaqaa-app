@@ -9,9 +9,7 @@ from httpx import AsyncClient
 from app.core.security import create_invite_token
 
 
-async def test_invite_and_accept_roundtrip(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_invite_and_accept_roundtrip(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     email = f"inv-{uuid.uuid4().hex[:8]}@example.com"
     r = await api.post(
         "/api/v1/users/invite",
@@ -53,16 +51,12 @@ async def test_invite_and_accept_roundtrip(
     assert r.status_code == 409
 
     # And the new user can actually log in
-    r = await api.post(
-        "/api/v1/auth/login", json={"email": email, "password": "newpassword123"}
-    )
+    r = await api.post("/api/v1/auth/login", json={"email": email, "password": "newpassword123"})
     assert r.status_code == 200, r.text
     assert "access_token" in r.json()
 
 
-async def test_invite_duplicate_email_409(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_invite_duplicate_email_409(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     # The seeded admin definitely exists
     me = (await api.get("/api/v1/auth/me", headers=auth_headers)).json()
     r = await api.post(
