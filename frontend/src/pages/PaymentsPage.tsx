@@ -1,25 +1,73 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Pagination } from "@/components/Pagination";
 import { listPayments } from "@/lib/payments";
+
+const PAGE_SIZE = 20;
+
+const STATUS_OPTIONS = [
+  "",
+  "pending",
+  "processing",
+  "completed",
+  "failed",
+  "refunded",
+] as const;
 
 export function PaymentsPage() {
   const { t } = useTranslation();
+  const [offset, setOffset] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<string>("");
+
+  // Reset to first page whenever the filter changes.
+  useEffect(() => {
+    setOffset(0);
+  }, [statusFilter]);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["payments", { limit: 50 }],
-    queryFn: () => listPayments({ limit: 50 }),
+    queryKey: ["payments", { limit: PAGE_SIZE, offset, statusFilter }],
+    queryFn: () =>
+      listPayments({
+        limit: PAGE_SIZE,
+        offset,
+        ...(statusFilter ? { status: statusFilter } : {}),
+      }),
   });
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900">{t("payments.title")}</h1>
-        {data && (
-          <span className="text-sm text-slate-500">
-            {t("common.total")}: {data.total.toLocaleString()}
-          </span>
-        )}
+        <div className="flex items-center gap-4">
+          <select
+            className="input max-w-[10rem]"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s === "" ? t("payments.allStatuses") : t(`payments.statuses.${s}`, s)}
+              </option>
+            ))}
+          </select>
+          {data && (
+            <span className="text-sm text-slate-500">
+              {t("common.total")}: {data.total.toLocaleString()}
+            </span>
+          )}
+        </div>
       </div>
+
+      {data && (
+        <Pagination
+          total={data.total}
+          limit={PAGE_SIZE}
+          offset={offset}
+          onOffsetChange={setOffset}
+        />
+      )}
 
       {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
       {error && (

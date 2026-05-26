@@ -127,6 +127,7 @@
   },
   "payments": {
     "title": "المدفوعات",
+    "allStatuses": "كل الحالات",
     "code": "الرمز",
     "amount": "المبلغ",
     "method": "طريقة الدفع",
