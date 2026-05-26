@@ -2012,10 +2012,20 @@ components:
           minLength: 3
           title: Currency
           type: string
+        donor_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Code
         donor_id:
           format: uuid
           title: Donor Id
           type: string
+        donor_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Name
         end_date:
           anyOf:
           - format: date
@@ -2045,10 +2055,20 @@ components:
           format: uuid
           title: Organization Id
           type: string
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
         orphan_id:
           format: uuid
           title: Orphan Id
           type: string
+        orphan_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Name
         payment_frequency:
           default: monthly
           enum:
@@ -2112,9 +2132,9 @@ components:
     SponsorshipUpdate:
       description: 'Partial update. Status changes go through dedicated /pause and
 
-        /resume endpoints — leaving the cancel/complete transitions on their
+        /resume endpoints — leaving the cancel/complete transitions on
 
-        own routes so each one can keep its specific guard logic.'
+        their own routes so each one can keep its specific guard logic.'
       properties:
         end_date:
           anyOf:
