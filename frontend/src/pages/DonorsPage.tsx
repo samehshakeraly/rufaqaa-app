@@ -2,13 +2,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
+
+import { Pagination } from "@/components/Pagination";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { createDonor, listDonors, type DonorCreateInput } from "@/lib/donors";
 
-const DONOR_QUERY = ["donors", { limit: 20, offset: 0 }] as const;
+const PAGE_SIZE = 20;
+const donorQueryKey = (offset: number) =>
+  ["donors", { limit: PAGE_SIZE, offset }] as const;
 
 const schema = z.object({
   full_name: z.string().min(1),
@@ -32,10 +36,12 @@ export function DonorsPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [offset, setOffset] = useState(0);
 
+  const queryKey = donorQueryKey(offset);
   const { data, isLoading, error } = useQuery({
-    queryKey: DONOR_QUERY,
-    queryFn: () => listDonors({ limit: 20, offset: 0 }),
+    queryKey,
+    queryFn: () => listDonors({ limit: PAGE_SIZE, offset }),
   });
 
   return (
@@ -61,9 +67,19 @@ export function DonorsPage() {
       {showForm && (
         <NewDonorForm
           onCreated={async () => {
-            await qc.invalidateQueries({ queryKey: DONOR_QUERY });
+            await qc.invalidateQueries({ queryKey: ["donors"] });
             setShowForm(false);
+            setOffset(0);
           }}
+        />
+      )}
+
+      {data && (
+        <Pagination
+          total={data.total}
+          limit={PAGE_SIZE}
+          offset={offset}
+          onOffsetChange={setOffset}
         />
       )}
 
