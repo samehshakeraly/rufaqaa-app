@@ -46,7 +46,7 @@ async def test_invite_and_accept_roundtrip(api: AsyncClient, auth_headers: dict[
     # Replay rejected
     r = await api.post(
         "/api/v1/users/accept-invite",
-        json={"token": token, "password": "another"},
+        json={"token": token, "password": "anotherpass123"},
     )
     assert r.status_code == 409
 
