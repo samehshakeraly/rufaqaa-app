@@ -74,6 +74,8 @@
     "partner": "Partner organization",
     "status": "Status",
     "selectPartner": "Choose a partner",
+    "balance": "Current balance",
+    "timeline": "Timeline",
     "caseStatus": {
       "pending_review": "Pending review",
       "approved": "Approved",

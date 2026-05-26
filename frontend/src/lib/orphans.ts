@@ -45,3 +45,27 @@ export async function createOrphan(payload: OrphanCreateInput): Promise<Orphan> 
   const { data } = await api.post<Orphan>("/orphans", payload);
   return data;
 }
+
+export async function getOrphan(id: string): Promise<Orphan> {
+  const { data } = await api.get<Orphan>(`/orphans/${id}`);
+  return data;
+}
+
+export interface TimelineEvent {
+  when: string;
+  kind: "sponsorship" | "payment" | "report" | "media";
+  entity_id: string;
+  summary: string;
+  amount: string | null;
+  currency: string | null;
+  status: string | null;
+}
+
+export interface Timeline {
+  items: TimelineEvent[];
+}
+
+export async function getOrphanTimeline(id: string): Promise<Timeline> {
+  const { data } = await api.get<Timeline>(`/orphans/${id}/timeline`);
+  return data;
+}

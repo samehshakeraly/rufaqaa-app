@@ -4,6 +4,7 @@ import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { Pagination } from "@/components/Pagination";
@@ -161,7 +162,11 @@ export function OrphansPage() {
             <tbody className="divide-y divide-sky/40 text-sm">
               {data.items.map((o) => (
                 <tr key={o.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">{o.code}</td>
+                  <td className="px-4 py-3 font-mono text-xs">
+                    <Link to={`/orphans/${o.id}`} className="text-trust hover:underline">
+                      {o.code}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {o.first_name} {o.family_name}
                   </td>
