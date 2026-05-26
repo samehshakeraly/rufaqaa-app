@@ -11,6 +11,8 @@ import { disable2FA, enroll2FA, verify2FA } from "@/lib/twofa";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/store/toasts";
 
+import { OrganizationSettingsCard } from "@/components/OrganizationSettingsCard";
+
 function buildSchema(t: (k: string) => string) {
   return z
     .object({
@@ -98,6 +100,8 @@ export function SettingsPage() {
       </form>
 
       <TwoFASection />
+
+      <OrganizationSettingsCard />
     </div>
   );
 }

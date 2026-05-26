@@ -218,7 +218,13 @@
     "twofaBackupWarning": "Save these backup codes somewhere safe — they're shown only once.",
     "twofaEnabled": "Two-factor authentication enabled",
     "twofaDisabled": "Two-factor authentication disabled",
-    "twofaInvalidCode": "Invalid code"
+    "twofaInvalidCode": "Invalid code",
+    "organization": "Organization",
+    "organizationSaved": "Organization settings saved",
+    "timezone": "Timezone",
+    "language": "Default language",
+    "primaryColor": "Primary colour",
+    "adminOnly": "Admins only"
   },
   "partners": {
     "title": "Partners",

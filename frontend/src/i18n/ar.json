@@ -223,7 +223,13 @@
     "twofaBackupWarning": "احفظ هذه الرموز الاحتياطية في مكان آمن — تظهر مرة واحدة فقط.",
     "twofaEnabled": "تم تفعيل التحقق الثنائي",
     "twofaDisabled": "تم تعطيل التحقق الثنائي",
-    "twofaInvalidCode": "رمز غير صحيح"
+    "twofaInvalidCode": "رمز غير صحيح",
+    "organization": "بيانات المنظمة",
+    "organizationSaved": "تم حفظ إعدادات المنظمة",
+    "timezone": "المنطقة الزمنية",
+    "language": "اللغة الافتراضية",
+    "primaryColor": "اللون الأساسي",
+    "adminOnly": "فقط للمدراء"
   },
   "partners": {
     "title": "الشركاء",
