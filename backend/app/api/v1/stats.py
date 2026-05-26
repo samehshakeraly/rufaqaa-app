@@ -7,6 +7,7 @@ organization the caller belongs to).
 
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from uuid import UUID
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -15,6 +16,7 @@ from sqlalchemy import func, select
 from app.api.deps import CurrentUser, DbSession
 from app.models.donor import Donor
 from app.models.orphan import Orphan
+from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
 
@@ -116,4 +118,89 @@ async def payments_timeseries(db: DbSession, _user: CurrentUser) -> PaymentsTime
             )
             for r in rows
         ]
+    )
+
+
+class StatusSlice(BaseModel):
+    status: str
+    count: int
+
+
+class SponsorshipsByStatus(BaseModel):
+    slices: list[StatusSlice]
+
+
+@router.get("/sponsorships-by-status", response_model=SponsorshipsByStatus)
+async def sponsorships_by_status(
+    db: DbSession, _user: CurrentUser
+) -> SponsorshipsByStatus:
+    """One row per status enum that currently has at least one
+    sponsorship attached. The frontend renders this as a small donut."""
+    rows = (
+        await db.execute(
+            select(Sponsorship.status, func.count(Sponsorship.id))
+            .group_by(Sponsorship.status)
+            .order_by(Sponsorship.status)
+        )
+    ).all()
+    return SponsorshipsByStatus(
+        slices=[StatusSlice(status=str(r[0]), count=int(r[1])) for r in rows]
+    )
+
+
+class PartnerDonations(BaseModel):
+    partner_id: UUID
+    partner_code: str
+    partner_name: str
+    payments_total: Decimal
+    payments_count: int
+
+
+class DonationsByPartner(BaseModel):
+    window_days: int
+    items: list[PartnerDonations]
+
+
+@router.get("/donations-by-partner", response_model=DonationsByPartner)
+async def donations_by_partner(
+    db: DbSession, _user: CurrentUser
+) -> DonationsByPartner:
+    """Completed payments rolled up by the orphan's partner
+    organization over the last 90 days. Top 10 partners by total,
+    descending. Payments not linked to an orphan (e.g. general
+    donations) are skipped."""
+    window_days = 90
+    cutoff = datetime.now(UTC) - timedelta(days=window_days)
+    stmt = (
+        select(
+            PartnerOrganization.id,
+            PartnerOrganization.code,
+            PartnerOrganization.name_ar,
+            func.coalesce(func.sum(Payment.amount), 0).label("total"),
+            func.count(Payment.id).label("count"),
+        )
+        .join(Orphan, Orphan.partner_organization_id == PartnerOrganization.id)
+        .join(Payment, Payment.orphan_id == Orphan.id)
+        .where(
+            Payment.status == "completed",
+            Payment.completed_at >= cutoff,
+            Orphan.deleted_at.is_(None),
+        )
+        .group_by(PartnerOrganization.id, PartnerOrganization.code, PartnerOrganization.name_ar)
+        .order_by(func.sum(Payment.amount).desc())
+        .limit(10)
+    )
+    rows = (await db.execute(stmt)).all()
+    return DonationsByPartner(
+        window_days=window_days,
+        items=[
+            PartnerDonations(
+                partner_id=r[0],
+                partner_code=r[1],
+                partner_name=r[2],
+                payments_total=Decimal(r[3]),
+                payments_count=int(r[4]),
+            )
+            for r in rows
+        ],
     )

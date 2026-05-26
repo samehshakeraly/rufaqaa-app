@@ -1,9 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import { PartnerDonationsBar } from "@/components/PartnerDonationsBar";
 import { PaymentsChart } from "@/components/PaymentsChart";
+import { SponsorshipsDonut } from "@/components/SponsorshipsDonut";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { fetchPaymentsTimeseries, fetchSummary } from "@/lib/stats";
+import {
+  fetchDonationsByPartner,
+  fetchPaymentsTimeseries,
+  fetchSponsorshipsByStatus,
+  fetchSummary,
+} from "@/lib/stats";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -15,6 +22,14 @@ export function DashboardPage() {
   const { data: timeseries } = useQuery({
     queryKey: ["stats", "payments-timeseries"],
     queryFn: fetchPaymentsTimeseries,
+  });
+  const { data: byStatus } = useQuery({
+    queryKey: ["stats", "sponsorships-by-status"],
+    queryFn: fetchSponsorshipsByStatus,
+  });
+  const { data: byPartner } = useQuery({
+    queryKey: ["stats", "donations-by-partner"],
+    queryFn: fetchDonationsByPartner,
   });
 
   return (
@@ -61,6 +76,25 @@ export function DashboardPage() {
           <PaymentsChart data={timeseries} />
         </div>
       )}
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {byStatus && (
+          <div className="card">
+            <h2 className="mb-3 text-lg font-semibold">
+              {t("dashboard.sponsorshipsByStatus")}
+            </h2>
+            <SponsorshipsDonut data={byStatus} />
+          </div>
+        )}
+        {byPartner && (
+          <div className="card">
+            <h2 className="mb-3 text-lg font-semibold">
+              {t("dashboard.donationsByPartner", { days: byPartner.window_days })}
+            </h2>
+            <PartnerDonationsBar data={byPartner} />
+          </div>
+        )}
+      </div>
 
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("dashboard.accountInfo")}</h2>

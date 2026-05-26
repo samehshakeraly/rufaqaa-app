@@ -70,7 +70,9 @@
     "sponsorshipsActive": "Active sponsorships",
     "sponsorshipsOverdue": "Overdue",
     "payments30d": "Payments (30d)",
-    "paymentsChart": "Monthly payments (last 12 months)"
+    "paymentsChart": "Monthly payments (last 12 months)",
+    "sponsorshipsByStatus": "Sponsorships by status",
+    "donationsByPartner": "Donations by partner (last {{days}} days)"
   },
   "orphans": {
     "title": "Orphans",

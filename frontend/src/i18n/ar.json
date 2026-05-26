@@ -75,7 +75,9 @@
     "sponsorshipsActive": "كفالات نشطة",
     "sponsorshipsOverdue": "كفالات متأخّرة",
     "payments30d": "مدفوعات آخر 30 يوم",
-    "paymentsChart": "المدفوعات الشهرية (آخر 12 شهر)"
+    "paymentsChart": "المدفوعات الشهرية (آخر 12 شهر)",
+    "sponsorshipsByStatus": "الكفالات حسب الحالة",
+    "donationsByPartner": "التبرعات حسب الشريك (آخر {{days}} يوم)"
   },
   "orphans": {
     "title": "الأيتام",
