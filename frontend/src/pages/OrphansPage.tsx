@@ -8,8 +8,14 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { Pagination } from "@/components/Pagination";
-import { createOrphan, listOrphans, type OrphanCreateInput } from "@/lib/orphans";
+import {
+  createOrphan,
+  exportOrphansCsv,
+  listOrphans,
+  type OrphanCreateInput,
+} from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
+import { toast } from "@/store/toasts";
 
 const PAGE_SIZE = 20;
 
@@ -107,6 +113,27 @@ export function OrphansPage() {
               {t("common.total")}: {data.total.toLocaleString()}
             </span>
           )}
+          <button
+            type="button"
+            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
+            onClick={async () => {
+              try {
+                const blob = await exportOrphansCsv(
+                  caseStatus ? { case_status: caseStatus } : {},
+                );
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "rufaqaa-orphans.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch {
+                toast.error(t("common.loadError"));
+              }
+            }}
+          >
+            {t("orphans.exportCsv")}
+          </button>
           <button
             type="button"
             className="btn-primary"

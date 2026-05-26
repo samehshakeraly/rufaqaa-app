@@ -59,6 +59,7 @@
   "orphans": {
     "title": "Orphans",
     "addNew": "Add orphan",
+    "exportCsv": "Export CSV",
     "searchPlaceholder": "Search by name or code…",
     "allStatuses": "All statuses",
     "code": "Code",

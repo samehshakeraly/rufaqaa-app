@@ -51,6 +51,16 @@ export async function getOrphan(id: string): Promise<Orphan> {
   return data;
 }
 
+export async function exportOrphansCsv(params?: {
+  case_status?: string;
+}): Promise<Blob> {
+  const r = await api.get("/orphans/export.csv", {
+    params,
+    responseType: "blob",
+  });
+  return r.data as Blob;
+}
+
 export interface TimelineEvent {
   when: string;
   kind: "sponsorship" | "payment" | "report" | "media";

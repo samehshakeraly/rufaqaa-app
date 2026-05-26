@@ -64,6 +64,7 @@
   "orphans": {
     "title": "الأيتام",
     "addNew": "إضافة يتيم",
+    "exportCsv": "تصدير CSV",
     "searchPlaceholder": "ابحث بالاسم أو الرمز...",
     "allStatuses": "كل الحالات",
     "code": "الرمز",
