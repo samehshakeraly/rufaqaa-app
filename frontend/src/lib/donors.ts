@@ -36,3 +36,8 @@ export async function createDonor(payload: DonorCreateInput): Promise<Donor> {
   const { data } = await api.post<Donor>("/donors", payload);
   return data;
 }
+
+export async function exportDonorsCsv(): Promise<Blob> {
+  const r = await api.get("/donors/export.csv", { responseType: "blob" });
+  return r.data as Blob;
+}
