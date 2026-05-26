@@ -100,13 +100,11 @@ export function SponsorshipsPage() {
             <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
               <tr>
                 <th className="px-4 py-3 font-medium">{t("sponsorships.code")}</th>
+                <th className="px-4 py-3 font-medium">{t("sponsorships.donor")}</th>
+                <th className="px-4 py-3 font-medium">{t("sponsorships.orphan")}</th>
                 <th className="px-4 py-3 font-medium">
                   {t("sponsorships.monthlyAmount")}
                 </th>
-                <th className="px-4 py-3 font-medium">
-                  {t("sponsorships.frequency")}
-                </th>
-                <th className="px-4 py-3 font-medium">{t("sponsorships.start")}</th>
                 <th className="px-4 py-3 font-medium">
                   {t("sponsorships.nextPayment")}
                 </th>
@@ -119,15 +117,27 @@ export function SponsorshipsPage() {
                 <tr key={s.id} className="hover:bg-snow">
                   <td className="px-4 py-3 font-mono text-xs">{s.code}</td>
                   <td className="px-4 py-3">
-                    {s.monthly_amount} {s.currency}
-                  </td>
-                  <td className="px-4 py-3">
-                    {t(
-                      `sponsorships.frequencies.${s.payment_frequency}`,
-                      s.payment_frequency,
+                    <div>{s.donor_name ?? s.donor_id.slice(0, 8)}</div>
+                    {s.donor_code && (
+                      <div className="font-mono text-xs text-slate-500">
+                        {s.donor_code}
+                      </div>
                     )}
                   </td>
-                  <td className="px-4 py-3">{s.start_date}</td>
+                  <td className="px-4 py-3">
+                    <div>{s.orphan_name ?? s.orphan_id.slice(0, 8)}</div>
+                    {s.orphan_code && (
+                      <div className="font-mono text-xs text-slate-500">
+                        {s.orphan_code}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {s.monthly_amount} {s.currency}{" "}
+                    <span className="text-xs text-slate-500">
+                      ({t(`sponsorships.frequencies.${s.payment_frequency}`, s.payment_frequency)})
+                    </span>
+                  </td>
                   <td className="px-4 py-3">{s.next_payment_date ?? "—"}</td>
                   <td className="px-4 py-3">
                     {t(`sponsorships.statuses.${s.status}`, s.status)}
