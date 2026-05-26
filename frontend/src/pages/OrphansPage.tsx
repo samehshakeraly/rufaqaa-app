@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { Pagination } from "@/components/Pagination";
+import { TableSkeleton } from "@/components/Skeleton";
 import {
   createOrphan,
   exportOrphansCsv,
@@ -154,7 +155,7 @@ export function OrphansPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={6} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}

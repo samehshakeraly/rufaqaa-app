@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { PartnerDonationsBar } from "@/components/PartnerDonationsBar";
 import { PaymentsChart } from "@/components/PaymentsChart";
+import { Skeleton, StatGridSkeleton } from "@/components/Skeleton";
 import { SponsorshipsDonut } from "@/components/SponsorshipsDonut";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
@@ -36,6 +37,9 @@ export function DashboardPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-900">{t("dashboard.title")}</h1>
 
+      {!summary && <StatGridSkeleton cards={7} />}
+
+      {summary && (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label={t("dashboard.orphansTotal")} value={summary?.orphans_total} />
         <Stat
@@ -67,6 +71,14 @@ export function DashboardPage() {
           }
         />
       </div>
+      )}
+
+      {!timeseries && (
+        <div className="card space-y-3">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      )}
 
       {timeseries && (
         <div className="card">

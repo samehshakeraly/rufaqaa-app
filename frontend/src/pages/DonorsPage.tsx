@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { DonorCsvImport } from "@/components/DonorCsvImport";
 import { Pagination } from "@/components/Pagination";
+import { TableSkeleton } from "@/components/Skeleton";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -126,7 +127,7 @@ export function DonorsPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={6} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}

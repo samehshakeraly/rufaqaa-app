@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Pagination } from "@/components/Pagination";
+import { TableSkeleton } from "@/components/Skeleton";
 import { exportPaymentsCsv, listPayments } from "@/lib/payments";
 import { toast } from "@/store/toasts";
 
@@ -91,7 +92,7 @@ export function PaymentsPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={6} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}
