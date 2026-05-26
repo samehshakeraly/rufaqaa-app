@@ -56,3 +56,24 @@ def decode_token(token: str) -> dict[str, Any]:
         return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     except JWTError as exc:
         raise ValueError("Invalid token") from exc
+
+
+def create_invite_token(user_id: UUID, expires_in_days: int = 7) -> str:
+    """One-shot invitation token. Decoded by /users/accept-invite to
+    bind a password to a pending account."""
+    now = datetime.now(UTC)
+    payload = {
+        "sub": str(user_id),
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(days=expires_in_days)).timestamp()),
+        "type": "invite",
+        "jti": secrets.token_urlsafe(16),
+    }
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_invite_token(token: str) -> UUID:
+    payload = decode_token(token)
+    if payload.get("type") != "invite":
+        raise ValueError("Not an invite token")
+    return UUID(payload["sub"])

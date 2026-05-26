@@ -1,5 +1,20 @@
 components:
   schemas:
+    AcceptInvite:
+      properties:
+        password:
+          maxLength: 128
+          minLength: 8
+          title: Password
+          type: string
+        token:
+          title: Token
+          type: string
+      required:
+      - token
+      - password
+      title: AcceptInvite
+      type: object
     AuditLogRead:
       properties:
         action:
@@ -2695,6 +2710,50 @@ components:
       - created_at
       title: UserAdminRead
       type: object
+    UserInvite:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+        first_name:
+          maxLength: 100
+          minLength: 1
+          title: First Name
+          type: string
+        last_name:
+          maxLength: 100
+          minLength: 1
+          title: Last Name
+          type: string
+        role:
+          maxLength: 50
+          minLength: 1
+          title: Role
+          type: string
+      required:
+      - email
+      - first_name
+      - last_name
+      - role
+      title: UserInvite
+      type: object
+    UserInviteResponse:
+      properties:
+        expires_in_days:
+          title: Expires In Days
+          type: integer
+        invite_token:
+          title: Invite Token
+          type: string
+        user:
+          $ref: '#/components/schemas/UserAdminRead'
+      required:
+      - user
+      - invite_token
+      - expires_in_days
+      title: UserInviteResponse
+      type: object
     ValidationError:
       properties:
         ctx:
@@ -5068,6 +5127,69 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: List Users
+      tags:
+      - users
+  /api/v1/users/accept-invite:
+    post:
+      description: 'Bind a password to a pending user. No auth required — possession
+
+        of the (signed, expiring) token IS the proof.'
+      operationId: accept_invite_api_v1_users_accept_invite_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInvite'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdminRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Accept Invite
+      tags:
+      - users
+  /api/v1/users/invite:
+    post:
+      description: 'Create a pending user and mint a one-shot invite token.
+
+
+        The token is returned in the response — the caller is responsible for
+
+        delivering it (email, copy/paste, etc). Until accepted, the user has
+
+        an unusable random password and `status="pending_verification"`.'
+      operationId: invite_user_api_v1_users_invite_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInvite'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInviteResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Invite User
       tags:
       - users
   /api/v1/users/{user_id}/reactivate:

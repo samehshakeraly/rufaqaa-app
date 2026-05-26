@@ -1,21 +1,27 @@
-"""Admin user management — list, suspend, reactivate.
+"""Admin user management — list, suspend, reactivate, invite.
 
-A fuller surface (create, invite, role change) will follow once the
-permission story is firmer.
+Role-change still pending a firmer permission story.
 """
 
 from __future__ import annotations
 
+import secrets
 from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import func, select
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
+from app.core.security import (
+    create_invite_token,
+    decode_invite_token,
+    hash_password,
+)
 from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.common import Page
@@ -23,6 +29,24 @@ from app.schemas.user_admin import UserAdminRead
 from app.services.audit import record_audit
 
 router = APIRouter()
+
+
+class UserInvite(BaseModel):
+    email: EmailStr
+    first_name: str = Field(min_length=1, max_length=100)
+    last_name: str = Field(min_length=1, max_length=100)
+    role: str = Field(min_length=1, max_length=50)
+
+
+class UserInviteResponse(BaseModel):
+    user: UserAdminRead
+    invite_token: str
+    expires_in_days: int
+
+
+class AcceptInvite(BaseModel):
+    token: str
+    password: str = Field(min_length=8, max_length=128)
 
 
 @router.get("", response_model=Page[UserAdminRead])
@@ -50,6 +74,97 @@ async def list_users(
         limit=limit,
         offset=offset,
     )
+
+
+_INVITE_TTL_DAYS = 7
+
+
+@router.post(
+    "/invite", response_model=UserInviteResponse, status_code=status.HTTP_201_CREATED
+)
+async def invite_user(
+    payload: UserInvite,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> UserInviteResponse:
+    """Create a pending user and mint a one-shot invite token.
+
+    The token is returned in the response — the caller is responsible for
+    delivering it (email, copy/paste, etc). Until accepted, the user has
+    an unusable random password and `status="pending_verification"`."""
+    existing = await db.scalar(select(User).where(User.email == payload.email))
+    if existing is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A user with that email already exists",
+        )
+    invited = User(
+        organization_id=user.organization_id,
+        email=payload.email,
+        password_hash=hash_password(secrets.token_urlsafe(32)),
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+        role=payload.role,
+        status="pending_verification",
+    )
+    db.add(invited)
+    await db.flush()
+    token = create_invite_token(invited.id, expires_in_days=_INVITE_TTL_DAYS)
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="user.invited",
+        entity_type="user",
+        entity_id=invited.id,
+        new_values={"email": invited.email, "role": invited.role},
+        is_sensitive=True,
+    )
+    await db.commit()
+    await db.refresh(invited)
+    return UserInviteResponse(
+        user=UserAdminRead.model_validate(invited),
+        invite_token=token,
+        expires_in_days=_INVITE_TTL_DAYS,
+    )
+
+
+@router.post("/accept-invite", response_model=UserAdminRead)
+async def accept_invite(payload: AcceptInvite, db: DbSession) -> UserAdminRead:
+    """Bind a password to a pending user. No auth required — possession
+    of the (signed, expiring) token IS the proof."""
+    try:
+        user_id = decode_invite_token(payload.token)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired invite token",
+        ) from exc
+    target = await db.scalar(
+        select(User).where(User.id == user_id, User.deleted_at.is_(None))
+    )
+    if target is None:
+        raise NotFound("User")
+    if target.status != "pending_verification":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This invite has already been accepted",
+        )
+    target.password_hash = hash_password(payload.password)
+    target.status = "active"
+    target.email_verified_at = datetime.now(UTC)
+    record_audit(
+        db,
+        organization_id=target.organization_id,
+        user_id=target.id,
+        action="user.invite_accepted",
+        entity_type="user",
+        entity_id=target.id,
+        is_sensitive=True,
+    )
+    await db.commit()
+    await db.refresh(target)
+    return UserAdminRead.model_validate(target)
 
 
 async def _load_user_or_404(db, user_id: UUID) -> User:
