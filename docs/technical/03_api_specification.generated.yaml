@@ -2566,6 +2566,25 @@ paths:
       summary: Create Donor
       tags:
       - donors
+  /api/v1/donors/export.csv:
+    get:
+      description: 'Stream every non-deleted donor in this org as CSV, capped at
+
+        10 000 rows. Tighten the org / future filters if you need to export
+
+        more — pagination won''t help with CSV.'
+      operationId: export_donors_csv_api_v1_donors_export_csv_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Export Donors Csv
+      tags:
+      - donors
   /api/v1/donors/{donor_id}:
     delete:
       description: 'Soft-delete a donor. Refuses if any sponsorship is still active —

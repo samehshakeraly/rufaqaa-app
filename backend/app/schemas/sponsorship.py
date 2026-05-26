@@ -67,9 +67,7 @@ class SponsorshipUpdate(BaseModel):
     their own routes so each one can keep its specific guard logic.
     """
 
-    monthly_amount: Decimal | None = Field(
-        default=None, gt=0, max_digits=10, decimal_places=2
-    )
+    monthly_amount: Decimal | None = Field(default=None, gt=0, max_digits=10, decimal_places=2)
     payment_frequency: PaymentFrequency | None = None
     payment_method: str | None = Field(default=None, max_length=30)
     notes: str | None = None

@@ -1,8 +1,11 @@
+import csv
+import io
 from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
@@ -37,6 +40,64 @@ async def list_donors(
         total=total,
         limit=limit,
         offset=offset,
+    )
+
+
+_CSV_COLUMNS = (
+    "code",
+    "full_name",
+    "email",
+    "phone",
+    "country_of_residence",
+    "preferred_currency",
+    "status",
+    "total_sponsorships",
+    "active_sponsorships",
+    "total_donated",
+    "created_at",
+)
+
+
+@router.get("/export.csv")
+async def export_donors_csv(
+    db: DbSession,
+    _user: CurrentUser,
+) -> StreamingResponse:
+    """Stream every non-deleted donor in this org as CSV, capped at
+    10 000 rows. Tighten the org / future filters if you need to export
+    more — pagination won't help with CSV."""
+    stmt = (
+        select(Donor)
+        .where(Donor.deleted_at.is_(None))
+        .order_by(Donor.created_at.desc())
+        .limit(10_000)
+    )
+    rows = (await db.scalars(stmt)).all()
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(_CSV_COLUMNS)
+    for d in rows:
+        writer.writerow(
+            [
+                d.code,
+                d.full_name,
+                d.email,
+                d.phone or "",
+                d.country_of_residence or "",
+                d.preferred_currency or "",
+                d.status,
+                d.total_sponsorships or 0,
+                d.active_sponsorships or 0,
+                str(d.total_donated or 0),
+                d.created_at.isoformat(),
+            ]
+        )
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="rufaqaa-donors.csv"'},
     )
 
 
