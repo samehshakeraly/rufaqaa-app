@@ -1,8 +1,11 @@
+import csv
+import io
 from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func, or_, select, text
 
 from app.api.deps import CurrentUser, DbSession
@@ -112,6 +115,61 @@ async def create_orphan(
     await db.commit()
     await db.refresh(orphan)
     return OrphanRead.model_validate(orphan)
+
+
+_CSV_COLUMNS = (
+    "code",
+    "first_name",
+    "family_name",
+    "date_of_birth",
+    "gender",
+    "nationality",
+    "case_status",
+    "is_sponsored",
+    "current_balance",
+    "created_at",
+)
+
+
+@router.get("/export.csv")
+async def export_orphans_csv(
+    db: DbSession,
+    _user: CurrentUser,
+    case_status: str | None = None,
+) -> StreamingResponse:
+    """Stream non-deleted orphans (optionally filtered by case_status)
+    as CSV. Capped at 10 000 rows. Registered before /{orphan_id} so
+    FastAPI doesn't try to parse 'export.csv' as a UUID."""
+    stmt = select(Orphan).where(Orphan.deleted_at.is_(None))
+    if case_status:
+        stmt = stmt.where(Orphan.case_status == case_status)
+    stmt = stmt.order_by(Orphan.created_at.desc()).limit(10_000)
+    rows = (await db.scalars(stmt)).all()
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(_CSV_COLUMNS)
+    for o in rows:
+        writer.writerow(
+            [
+                o.code,
+                o.first_name,
+                o.family_name,
+                o.date_of_birth.isoformat() if o.date_of_birth else "",
+                o.gender,
+                o.nationality or "",
+                o.case_status,
+                "true" if o.is_sponsored else "false",
+                str(o.current_balance or 0),
+                o.created_at.isoformat(),
+            ]
+        )
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="rufaqaa-orphans.csv"'},
+    )
 
 
 @router.get("/{orphan_id}", response_model=OrphanRead)
