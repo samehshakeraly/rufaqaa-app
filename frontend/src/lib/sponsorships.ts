@@ -70,3 +70,15 @@ export async function resumeSponsorship(id: string): Promise<Sponsorship> {
   const { data } = await api.post<Sponsorship>(`/sponsorships/${id}/resume`);
   return data;
 }
+
+export async function exportSponsorshipsCsv(params?: {
+  donor_id?: string;
+  orphan_id?: string;
+  status?: string;
+}): Promise<Blob> {
+  const r = await api.get("/sponsorships/export.csv", {
+    params,
+    responseType: "blob",
+  });
+  return r.data as Blob;
+}

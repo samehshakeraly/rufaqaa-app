@@ -97,6 +97,7 @@
   "sponsorships": {
     "title": "الكفالات",
     "addNew": "إضافة كفالة",
+    "exportCsv": "تصدير CSV",
     "donor": "المتبرع",
     "orphan": "اليتيم",
     "selectDonor": "اختر متبرعاً",

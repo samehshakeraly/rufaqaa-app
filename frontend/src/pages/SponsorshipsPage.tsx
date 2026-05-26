@@ -8,6 +8,7 @@ import { listOrphans, type Orphan } from "@/lib/orphans";
 import {
   cancelSponsorship,
   createSponsorship,
+  exportSponsorshipsCsv,
   listSponsorships,
   pauseSponsorship,
   resumeSponsorship,
@@ -63,6 +64,25 @@ export function SponsorshipsPage() {
               {t("common.total")}: {data.total.toLocaleString()}
             </span>
           )}
+          <button
+            type="button"
+            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+            onClick={async () => {
+              try {
+                const blob = await exportSponsorshipsCsv();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "rufaqaa-sponsorships.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch {
+                toast.error(t("common.loadError"));
+              }
+            }}
+          >
+            {t("sponsorships.exportCsv")}
+          </button>
           <button
             type="button"
             className="btn-primary"

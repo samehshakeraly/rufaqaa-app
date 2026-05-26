@@ -92,6 +92,7 @@
   "sponsorships": {
     "title": "Sponsorships",
     "addNew": "New sponsorship",
+    "exportCsv": "Export CSV",
     "donor": "Donor",
     "orphan": "Orphan",
     "selectDonor": "Choose a donor",
