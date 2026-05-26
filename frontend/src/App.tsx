@@ -10,6 +10,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { PartnersPage } from "./pages/PartnersPage";
 import { PaymentsPage } from "./pages/PaymentsPage";
+import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SponsorshipsPage } from "./pages/SponsorshipsPage";
@@ -33,6 +34,7 @@ export function App() {
         <Route path="/sponsorships" element={<SponsorshipsPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/reports/:id" element={<ReportDetailPage />} />
         <Route
           path="/audit"
           element={

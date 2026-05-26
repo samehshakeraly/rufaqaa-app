@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import { Link } from "react-router-dom";
+
 import {
   listReports,
   transitionReport,
@@ -78,6 +80,12 @@ export function ReportsPage() {
                       {t(`reports.statuses.${r.status}`, r.status)}
                     </td>
                     <td className="px-4 py-3 text-end">
+                      <Link
+                        to={`/reports/${r.id}`}
+                        className="me-2 rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
+                      >
+                        {t("reports.open")}
+                      </Link>
                       {nextAction && (
                         <button
                           type="button"

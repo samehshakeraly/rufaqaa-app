@@ -152,6 +152,17 @@
   },
   "reports": {
     "title": "التقارير",
+    "open": "فتح",
+    "invalidJson": "JSON غير صالح",
+    "readOnlyNotice": "هذا التقرير لم يعد قابلاً للتعديل بسبب حالته الحالية.",
+    "sections": {
+      "summary": "ملخّص",
+      "educational_progress": "التقدّم الدراسي",
+      "quran_progress": "تقدّم القرآن",
+      "activities": "الأنشطة",
+      "health_status": "الحالة الصحية",
+      "psychological_status": "الحالة النفسية"
+    },
     "type": "النوع",
     "period": "الفترة",
     "status": "الحالة",

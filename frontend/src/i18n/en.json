@@ -147,6 +147,17 @@
   },
   "reports": {
     "title": "Reports",
+    "open": "Open",
+    "invalidJson": "Invalid JSON",
+    "readOnlyNotice": "This report can no longer be edited at its current status.",
+    "sections": {
+      "summary": "Summary",
+      "educational_progress": "Educational progress",
+      "quran_progress": "Qur'an progress",
+      "activities": "Activities",
+      "health_status": "Health",
+      "psychological_status": "Psychological"
+    },
     "type": "Type",
     "period": "Period",
     "status": "Status",
