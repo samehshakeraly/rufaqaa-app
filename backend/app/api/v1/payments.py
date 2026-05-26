@@ -1,8 +1,11 @@
+import csv
+import io
 from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
@@ -98,3 +101,69 @@ async def create_payment(
     await db.commit()
     await db.refresh(payment)
     return PaymentRead.model_validate(payment)
+
+
+_CSV_COLUMNS = (
+    "code",
+    "donor_id",
+    "sponsorship_id",
+    "amount",
+    "currency",
+    "payment_method",
+    "payment_gateway",
+    "gateway_transaction_id",
+    "status",
+    "completed_at",
+    "created_at",
+)
+
+
+@router.get("/export.csv")
+async def export_payments_csv(
+    db: DbSession,
+    _user: CurrentUser,
+    donor_id: UUID | None = None,
+    sponsorship_id: UUID | None = None,
+    status_filter: Annotated[str | None, Query(alias="status")] = None,
+) -> StreamingResponse:
+    """Stream payments matching the same filters as the list endpoint, as
+    CSV. Useful for finance ops who need to reconcile in Excel.
+    Capped at 10 000 rows to keep memory bounded; tighten the filters
+    if the response would exceed that."""
+    stmt = select(Payment)
+    if donor_id:
+        stmt = stmt.where(Payment.donor_id == donor_id)
+    if sponsorship_id:
+        stmt = stmt.where(Payment.sponsorship_id == sponsorship_id)
+    if status_filter:
+        stmt = stmt.where(Payment.status == status_filter)
+    stmt = stmt.order_by(Payment.created_at.desc()).limit(10_000)
+
+    rows = (await db.scalars(stmt)).all()
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(_CSV_COLUMNS)
+    for p in rows:
+        writer.writerow(
+            [
+                p.code,
+                str(p.donor_id),
+                str(p.sponsorship_id) if p.sponsorship_id else "",
+                str(p.amount),
+                p.currency,
+                p.payment_method,
+                p.payment_gateway or "",
+                p.gateway_transaction_id or "",
+                p.status,
+                p.completed_at.isoformat() if p.completed_at else "",
+                p.created_at.isoformat(),
+            ]
+        )
+
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="rufaqaa-payments.csv"'},
+    )

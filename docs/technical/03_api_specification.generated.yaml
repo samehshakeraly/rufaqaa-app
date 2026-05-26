@@ -3372,6 +3372,60 @@ paths:
       summary: Create Payment
       tags:
       - payments
+  /api/v1/payments/export.csv:
+    get:
+      description: 'Stream payments matching the same filters as the list endpoint, as
+
+        CSV. Useful for finance ops who need to reconcile in Excel.
+
+        Capped at 10 000 rows to keep memory bounded; tighten the filters
+
+        if the response would exceed that.'
+      operationId: export_payments_csv_api_v1_payments_export_csv_get
+      parameters:
+      - in: query
+        name: donor_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Donor Id
+      - in: query
+        name: sponsorship_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+      - in: query
+        name: status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Export Payments Csv
+      tags:
+      - payments
   /api/v1/reports:
     get:
       operationId: list_reports_api_v1_reports_get
