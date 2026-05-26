@@ -13,6 +13,7 @@
     "reports": "التقارير",
     "users": "المستخدمون",
     "audit": "سجل التدقيق",
+    "portal": "بوابتي",
     "settings": "الإعدادات",
     "logout": "خروج",
     "language": "العربية"
@@ -246,6 +247,14 @@
       "suspended": "موقوف",
       "archived": "مؤرشف"
     }
+  },
+  "portal": {
+    "title": "بوابتي",
+    "mySponsorships": "كفالاتي",
+    "myReports": "تقارير الأيتام الذين أكفلهم",
+    "noReportsYet": "لم تُنشر أي تقارير بعد.",
+    "selectDonor": "اختر متبرعاً",
+    "pickDonorPrompt": "اختر متبرعاً من القائمة لعرض بياناته."
   },
   "audit": {
     "title": "سجل التدقيق",

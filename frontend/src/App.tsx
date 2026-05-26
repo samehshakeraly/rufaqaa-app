@@ -7,6 +7,7 @@ import { AuditPage } from "./pages/AuditPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { LoginPage } from "./pages/LoginPage";
+import { MyPortalPage } from "./pages/MyPortalPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { PartnersPage } from "./pages/PartnersPage";
@@ -54,6 +55,7 @@ export function App() {
             </AdminRoute>
           }
         />
+        <Route path="/me" element={<MyPortalPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

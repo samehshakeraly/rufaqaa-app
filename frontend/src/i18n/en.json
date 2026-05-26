@@ -13,6 +13,7 @@
     "reports": "Reports",
     "users": "Users",
     "audit": "Audit log",
+    "portal": "My portal",
     "settings": "Settings",
     "logout": "Sign out",
     "language": "English"
@@ -241,6 +242,14 @@
       "suspended": "Suspended",
       "archived": "Archived"
     }
+  },
+  "portal": {
+    "title": "My portal",
+    "mySponsorships": "My sponsorships",
+    "myReports": "Reports on the orphans I sponsor",
+    "noReportsYet": "No reports have been published yet.",
+    "selectDonor": "Choose a donor",
+    "pickDonorPrompt": "Pick a donor from the list to preview their portal."
   },
   "audit": {
     "title": "Audit log",
