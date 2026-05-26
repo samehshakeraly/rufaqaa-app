@@ -36,9 +36,9 @@ async def test_delete_donor_succeeds_without_active_sponsorships(
     r = await api.delete(f"/api/v1/donors/{donor['id']}", headers=auth_headers)
     assert r.status_code == 204
 
-    # Now invisible via the list (deleted_at filter)
-    page = await api.get("/api/v1/donors?limit=200", headers=auth_headers)
-    assert all(d["id"] != donor["id"] for d in page.json()["items"])
+    # GET by id now 404s (the row is filtered by deleted_at IS NULL)
+    r = await api.get(f"/api/v1/donors/{donor['id']}", headers=auth_headers)
+    assert r.status_code == 404
 
 
 async def test_delete_donor_blocked_by_active_sponsorship(
