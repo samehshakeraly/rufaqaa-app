@@ -831,6 +831,138 @@ components:
       - password
       title: LoginRequest
       type: object
+    MarketingChannelCreate:
+      properties:
+        channel_type:
+          anyOf:
+          - enum:
+            - digital_marketing
+            - committee
+            - website
+            - branch
+            - social_media
+            - partnership
+            - other
+            type: string
+          - type: 'null'
+          title: Channel Type
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        name_ar:
+          maxLength: 255
+          minLength: 1
+          title: Name Ar
+          type: string
+        name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Name En
+      required:
+      - name_ar
+      title: MarketingChannelCreate
+      type: object
+    MarketingChannelRead:
+      properties:
+        channel_type:
+          anyOf:
+          - enum:
+            - digital_marketing
+            - committee
+            - website
+            - branch
+            - social_media
+            - partnership
+            - other
+            type: string
+          - type: 'null'
+          title: Channel Type
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name_ar:
+          maxLength: 255
+          minLength: 1
+          title: Name Ar
+          type: string
+        name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Name En
+        status:
+          enum:
+          - active
+          - suspended
+          - archived
+          title: Status
+          type: string
+      required:
+      - name_ar
+      - id
+      - status
+      - created_at
+      title: MarketingChannelRead
+      type: object
+    MarketingChannelUpdate:
+      properties:
+        channel_type:
+          anyOf:
+          - enum:
+            - digital_marketing
+            - committee
+            - website
+            - branch
+            - social_media
+            - partnership
+            - other
+            type: string
+          - type: 'null'
+          title: Channel Type
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        name_ar:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name Ar
+        name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Name En
+        status:
+          anyOf:
+          - enum:
+            - active
+            - suspended
+            - archived
+            type: string
+          - type: 'null'
+          title: Status
+      title: MarketingChannelUpdate
+      type: object
     MediaUploadResponse:
       properties:
         created_at:
@@ -1379,6 +1511,29 @@ components:
       - limit
       - offset
       title: Page[GuardianRead]
+      type: object
+    Page_MarketingChannelRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/MarketingChannelRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[MarketingChannelRead]
       type: object
     Page_OrphanRead_:
       properties:
@@ -3227,6 +3382,165 @@ paths:
       summary: Health Db
       tags:
       - health
+  /api/v1/marketing-channels:
+    get:
+      operationId: list_marketing_channels_api_v1_marketing_channels_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: include_inactive
+        required: false
+        schema:
+          default: false
+          title: Include Inactive
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_MarketingChannelRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Marketing Channels
+      tags:
+      - marketing-channels
+    post:
+      operationId: create_marketing_channel_api_v1_marketing_channels_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketingChannelCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketingChannelRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Marketing Channel
+      tags:
+      - marketing-channels
+  /api/v1/marketing-channels/{channel_id}:
+    delete:
+      operationId: archive_marketing_channel_api_v1_marketing_channels__channel_id__delete
+      parameters:
+      - in: path
+        name: channel_id
+        required: true
+        schema:
+          format: uuid
+          title: Channel Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Archive Marketing Channel
+      tags:
+      - marketing-channels
+    get:
+      operationId: get_marketing_channel_api_v1_marketing_channels__channel_id__get
+      parameters:
+      - in: path
+        name: channel_id
+        required: true
+        schema:
+          format: uuid
+          title: Channel Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketingChannelRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Marketing Channel
+      tags:
+      - marketing-channels
+    patch:
+      operationId: update_marketing_channel_api_v1_marketing_channels__channel_id__patch
+      parameters:
+      - in: path
+        name: channel_id
+        required: true
+        schema:
+          format: uuid
+          title: Channel Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketingChannelUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketingChannelRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Marketing Channel
+      tags:
+      - marketing-channels
   /api/v1/me/reports:
     get:
       description: 'Reports for every orphan this donor sponsors — only the ones that

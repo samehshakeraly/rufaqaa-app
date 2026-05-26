@@ -7,6 +7,7 @@ from app.api.v1 import (
     donors,
     families,
     health,
+    marketing_channels,
     media,
     organization,
     orphans,
@@ -27,6 +28,9 @@ api_router.include_router(twofa.router, prefix="/auth/2fa", tags=["auth"])
 api_router.include_router(orphans.router, prefix="/orphans", tags=["orphans"])
 api_router.include_router(donors.router, prefix="/donors", tags=["donors"])
 api_router.include_router(partners.router, prefix="/partners", tags=["partners"])
+api_router.include_router(
+    marketing_channels.router, prefix="/marketing-channels", tags=["marketing-channels"]
+)
 api_router.include_router(sponsorships.router, prefix="/sponsorships", tags=["sponsorships"])
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
 api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
