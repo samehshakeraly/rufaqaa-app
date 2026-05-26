@@ -7,7 +7,12 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { api } from "@/lib/api";
+import {
+  type NotificationPreferences,
+  updateNotificationPreferences,
+} from "@/lib/auth";
 import { disable2FA, enroll2FA, verify2FA } from "@/lib/twofa";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "@/store/toasts";
 
@@ -101,7 +106,59 @@ export function SettingsPage() {
 
       <TwoFASection />
 
+      <NotificationPreferencesCard />
+
       <OrganizationSettingsCard />
+    </div>
+  );
+}
+
+function NotificationPreferencesCard() {
+  const { t } = useTranslation();
+  const { data: user } = useCurrentUser();
+  const prefs = user?.notification_preferences;
+
+  const mut = useMutation({
+    mutationFn: (patch: Partial<NotificationPreferences>) =>
+      updateNotificationPreferences(patch),
+    onSuccess: () => toast.success(t("settings.notificationsSaved")),
+    onError: () => toast.error(t("common.createError")),
+  });
+
+  if (!prefs) {
+    return (
+      <div className="card max-w-lg">
+        <p className="text-sm text-slate-500">{t("common.loading")}</p>
+      </div>
+    );
+  }
+
+  const channels: Array<keyof NotificationPreferences> = [
+    "email",
+    "sms",
+    "whatsapp",
+    "weekly_digest",
+    "marketing",
+  ];
+
+  return (
+    <div className="card max-w-lg space-y-4">
+      <h2 className="text-lg font-semibold">{t("settings.notifications")}</h2>
+      <p className="text-sm text-slate-600">{t("settings.notificationsDescription")}</p>
+      <div className="space-y-2">
+        {channels.map((c) => (
+          <label key={c} className="flex items-center justify-between rounded-lg border border-sky px-3 py-2">
+            <span className="text-sm text-slate-700">{t(`settings.channels.${c}`)}</span>
+            <input
+              type="checkbox"
+              checked={prefs[c]}
+              onChange={(e) => mut.mutate({ [c]: e.target.checked })}
+              disabled={mut.isPending}
+              className="h-4 w-4"
+            />
+          </label>
+        ))}
+      </div>
     </div>
   );
 }

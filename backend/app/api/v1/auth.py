@@ -18,6 +18,8 @@ from app.models.user import User
 from app.schemas.auth import (
     ChangePasswordRequest,
     LoginRequest,
+    NotificationPreferences,
+    NotificationPreferencesUpdate,
     RefreshRequest,
     TokenPair,
 )
@@ -152,6 +154,13 @@ async def change_password(
     await db.commit()
 
 
+def _resolve_notification_prefs(user: User) -> NotificationPreferences:
+    """Merge stored JSONB prefs over the schema defaults — keys missing
+    from the DB row come from the model's defaults."""
+    stored = user.notification_preferences or {}
+    return NotificationPreferences(**{**{}, **stored})
+
+
 @router.get("/me", response_model=CurrentUserSchema)
 async def me(user: CurrentUser) -> CurrentUserSchema:
     return CurrentUserSchema(
@@ -161,4 +170,22 @@ async def me(user: CurrentUser) -> CurrentUserSchema:
         role=user.role,
         first_name=user.first_name,
         last_name=user.last_name,
+        notification_preferences=_resolve_notification_prefs(user),
     )
+
+
+@router.patch("/me/notifications", response_model=NotificationPreferences)
+async def update_notification_preferences(
+    payload: NotificationPreferencesUpdate,
+    db: DbSession,
+    user: CurrentUser,
+) -> NotificationPreferences:
+    """Partial update: only the keys you send are touched. Unsent
+    channels keep their current value."""
+    current = dict(user.notification_preferences or {})
+    for field, value in payload.model_dump(exclude_none=True).items():
+        current[field] = value
+    user.notification_preferences = current
+    await db.commit()
+    await db.refresh(user)
+    return _resolve_notification_prefs(user)

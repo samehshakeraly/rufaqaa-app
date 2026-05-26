@@ -18,6 +18,27 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
+class NotificationPreferences(BaseModel):
+    """Channel-level toggles for transactional and marketing notifications.
+
+    Stored as JSONB on `users.notification_preferences`; absent keys fall
+    back to the defaults below (everything on except marketing)."""
+
+    email: bool = True
+    sms: bool = False
+    whatsapp: bool = False
+    weekly_digest: bool = True
+    marketing: bool = False
+
+
+class NotificationPreferencesUpdate(BaseModel):
+    email: bool | None = None
+    sms: bool | None = None
+    whatsapp: bool | None = None
+    weekly_digest: bool | None = None
+    marketing: bool | None = None
+
+
 class CurrentUser(BaseModel):
     id: UUID
     email: EmailStr
@@ -25,6 +46,9 @@ class CurrentUser(BaseModel):
     role: str
     first_name: str
     last_name: str
+    notification_preferences: NotificationPreferences = Field(
+        default_factory=NotificationPreferences
+    )
 
 
 class ChangePasswordRequest(BaseModel):

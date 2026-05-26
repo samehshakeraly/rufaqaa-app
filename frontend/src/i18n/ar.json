@@ -230,7 +230,17 @@
     "timezone": "المنطقة الزمنية",
     "language": "اللغة الافتراضية",
     "primaryColor": "اللون الأساسي",
-    "adminOnly": "فقط للمدراء"
+    "adminOnly": "فقط للمدراء",
+    "notifications": "تفضيلات الإشعارات",
+    "notificationsDescription": "اختر كيف نتواصل معك. تُحفظ التغييرات تلقائياً.",
+    "notificationsSaved": "تم حفظ تفضيلات الإشعارات",
+    "channels": {
+      "email": "البريد الإلكتروني",
+      "sms": "رسالة نصية",
+      "whatsapp": "واتساب",
+      "weekly_digest": "ملخص أسبوعي",
+      "marketing": "العروض والتحديثات"
+    }
   },
   "partners": {
     "title": "الشركاء",

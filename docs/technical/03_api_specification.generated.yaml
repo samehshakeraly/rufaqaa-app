@@ -128,6 +128,8 @@ components:
         last_name:
           title: Last Name
           type: string
+        notification_preferences:
+          $ref: '#/components/schemas/NotificationPreferences'
         organization_id:
           format: uuid
           title: Organization Id
@@ -1033,6 +1035,65 @@ components:
       - payments_total
       - payments_count
       title: MonthlyPoint
+      type: object
+    NotificationPreferences:
+      description: 'Channel-level toggles for transactional and marketing notifications.
+
+
+        Stored as JSONB on `users.notification_preferences`; absent keys fall
+
+        back to the defaults below (everything on except marketing).'
+      properties:
+        email:
+          default: true
+          title: Email
+          type: boolean
+        marketing:
+          default: false
+          title: Marketing
+          type: boolean
+        sms:
+          default: false
+          title: Sms
+          type: boolean
+        weekly_digest:
+          default: true
+          title: Weekly Digest
+          type: boolean
+        whatsapp:
+          default: false
+          title: Whatsapp
+          type: boolean
+      title: NotificationPreferences
+      type: object
+    NotificationPreferencesUpdate:
+      properties:
+        email:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Email
+        marketing:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Marketing
+        sms:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Sms
+        weekly_digest:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Weekly Digest
+        whatsapp:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Whatsapp
+      title: NotificationPreferencesUpdate
       type: object
     OrganizationRead:
       properties:
@@ -3004,6 +3065,36 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Me
+      tags:
+      - auth
+  /api/v1/auth/me/notifications:
+    patch:
+      description: 'Partial update: only the keys you send are touched. Unsent
+
+        channels keep their current value.'
+      operationId: update_notification_preferences_api_v1_auth_me_notifications_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationPreferencesUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Notification Preferences
       tags:
       - auth
   /api/v1/auth/refresh:

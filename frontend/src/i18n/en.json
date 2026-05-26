@@ -225,7 +225,17 @@
     "timezone": "Timezone",
     "language": "Default language",
     "primaryColor": "Primary colour",
-    "adminOnly": "Admins only"
+    "adminOnly": "Admins only",
+    "notifications": "Notification preferences",
+    "notificationsDescription": "Choose how we reach you. Changes save automatically.",
+    "notificationsSaved": "Notification preferences saved",
+    "channels": {
+      "email": "Email",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "weekly_digest": "Weekly digest",
+      "marketing": "Marketing & updates"
+    }
   },
   "partners": {
     "title": "Partners",

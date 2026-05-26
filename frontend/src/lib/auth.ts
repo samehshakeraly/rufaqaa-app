@@ -6,6 +6,14 @@ export interface TokenPair {
   token_type: string;
 }
 
+export interface NotificationPreferences {
+  email: boolean;
+  sms: boolean;
+  whatsapp: boolean;
+  weekly_digest: boolean;
+  marketing: boolean;
+}
+
 export interface CurrentUser {
   id: string;
   email: string;
@@ -13,6 +21,17 @@ export interface CurrentUser {
   role: string;
   first_name: string;
   last_name: string;
+  notification_preferences: NotificationPreferences;
+}
+
+export async function updateNotificationPreferences(
+  patch: Partial<NotificationPreferences>,
+): Promise<NotificationPreferences> {
+  const { data } = await api.patch<NotificationPreferences>(
+    "/auth/me/notifications",
+    patch,
+  );
+  return data;
 }
 
 export async function login(email: string, password: string): Promise<TokenPair> {
