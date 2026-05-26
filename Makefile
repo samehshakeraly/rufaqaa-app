@@ -106,6 +106,12 @@ backend-format: ## ✨ تنسيق الكود في Backend
 backend-openapi: ## 📘 توليد ملف OpenAPI من FastAPI
 	@cd backend && python -m app.scripts.export_openapi
 
+backend-seed: ## 🌱 إنشاء مؤسسة + مسؤول التطوير (إذا لم يكونا موجودين)
+	@cd backend && python -m app.scripts.seed
+
+backend-demo-seed: ## 🎭 بيانات تجريبية (6 أيتام، 5 متبرعين، 4 كفالات، 8 مدفوعات)
+	@cd backend && python -m app.scripts.demo_seed
+
 worker-dev: ## ⚙️  تشغيل Celery worker للتطوير
 	@cd backend && celery -A app.workers.celery_app worker --loglevel=info
 
