@@ -92,6 +92,13 @@
   },
   "sponsorships": {
     "title": "الكفالات",
+    "addNew": "إضافة كفالة",
+    "donor": "المتبرع",
+    "orphan": "اليتيم",
+    "selectDonor": "اختر متبرعاً",
+    "selectOrphan": "اختر يتيماً",
+    "created": "تم إنشاء الكفالة",
+    "cancelled": "تم إلغاء الكفالة",
     "code": "الرمز",
     "monthlyAmount": "المبلغ الشهري",
     "frequency": "تواتر السداد",

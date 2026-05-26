@@ -87,6 +87,13 @@
   },
   "sponsorships": {
     "title": "Sponsorships",
+    "addNew": "New sponsorship",
+    "donor": "Donor",
+    "orphan": "Orphan",
+    "selectDonor": "Choose a donor",
+    "selectOrphan": "Choose an orphan",
+    "created": "Sponsorship created",
+    "cancelled": "Sponsorship cancelled",
     "code": "Code",
     "monthlyAmount": "Monthly amount",
     "frequency": "Frequency",
