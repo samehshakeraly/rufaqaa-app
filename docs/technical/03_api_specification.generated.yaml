@@ -1350,6 +1350,29 @@ components:
       - offset
       title: Page[SponsorshipRead]
       type: object
+    Page_UserAdminRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/UserAdminRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[UserAdminRead]
+      type: object
     PartnerCreate:
       properties:
         contact_email:
@@ -2223,6 +2246,56 @@ components:
       required:
       - code
       title: TwoFAVerifyRequest
+      type: object
+    UserAdminRead:
+      description: 'Lean user payload for the admin list view — never includes the
+
+        password hash or the 2FA secret.'
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        email:
+          format: email
+          title: Email
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        last_login_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Last Login At
+        last_name:
+          title: Last Name
+          type: string
+        role:
+          title: Role
+          type: string
+        status:
+          title: Status
+          type: string
+        two_factor_enabled:
+          title: Two Factor Enabled
+          type: boolean
+      required:
+      - id
+      - email
+      - first_name
+      - last_name
+      - role
+      - status
+      - two_factor_enabled
+      - last_login_at
+      - created_at
+      title: UserAdminRead
       type: object
     ValidationError:
       properties:
@@ -4190,6 +4263,61 @@ paths:
       summary: Dashboard Summary
       tags:
       - stats
+  /api/v1/users:
+    get:
+      operationId: list_users_api_v1_users_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: role
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+      - in: query
+        name: status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_UserAdminRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Users
+      tags:
+      - users
   /api/v1/webhooks/myfatoorah:
     post:
       description: 'Receive payment status updates from MyFatoorah.
