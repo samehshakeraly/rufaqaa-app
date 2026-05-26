@@ -126,6 +126,33 @@ async def update_donor(
     return DonorRead.model_validate(donor)
 
 
+@router.post("/{donor_id}/restore", response_model=DonorRead)
+async def restore_donor(
+    donor_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> DonorRead:
+    """Clear deleted_at so a soft-deleted donor is visible again."""
+    donor = await db.scalar(
+        select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_not(None))
+    )
+    if donor is None:
+        raise NotFound("Deleted donor")
+    donor.deleted_at = None
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="donor.restored",
+        entity_type="donor",
+        entity_id=donor.id,
+        new_values={"code": donor.code},
+    )
+    await db.commit()
+    await db.refresh(donor)
+    return DonorRead.model_validate(donor)
+
+
 @router.delete("/{donor_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def soft_delete_donor(
     donor_id: UUID,

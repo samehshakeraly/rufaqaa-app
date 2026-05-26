@@ -40,6 +40,18 @@ async def test_delete_donor_succeeds_without_active_sponsorships(
     r = await api.get(f"/api/v1/donors/{donor['id']}", headers=auth_headers)
     assert r.status_code == 404
 
+    # Restore brings it back
+    r = await api.post(f"/api/v1/donors/{donor['id']}/restore", headers=auth_headers)
+    assert r.status_code == 200, r.text
+    assert r.json()["id"] == donor["id"]
+
+    r = await api.get(f"/api/v1/donors/{donor['id']}", headers=auth_headers)
+    assert r.status_code == 200
+
+    # Restoring an already-live donor is a 404 (nothing to restore)
+    r = await api.post(f"/api/v1/donors/{donor['id']}/restore", headers=auth_headers)
+    assert r.status_code == 404
+
 
 async def test_delete_donor_blocked_by_active_sponsorship(
     api: AsyncClient, auth_headers: dict[str, str]

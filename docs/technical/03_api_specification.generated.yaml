@@ -2561,6 +2561,36 @@ paths:
       summary: Update Donor
       tags:
       - donors
+  /api/v1/donors/{donor_id}/restore:
+    post:
+      description: Clear deleted_at so a soft-deleted donor is visible again.
+      operationId: restore_donor_api_v1_donors__donor_id__restore_post
+      parameters:
+      - in: path
+        name: donor_id
+        required: true
+        schema:
+          format: uuid
+          title: Donor Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Restore Donor
+      tags:
+      - donors
   /api/v1/families:
     get:
       operationId: list_families_api_v1_families_get
