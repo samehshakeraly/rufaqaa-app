@@ -16,6 +16,10 @@ export interface Sponsorship {
   payments_count: number;
   next_payment_date: string | null;
   created_at: string;
+  donor_code: string | null;
+  donor_name: string | null;
+  orphan_code: string | null;
+  orphan_name: string | null;
 }
 
 export interface SponsorshipCreateInput {
