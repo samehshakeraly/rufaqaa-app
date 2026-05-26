@@ -9,6 +9,8 @@ import {
   cancelSponsorship,
   createSponsorship,
   listSponsorships,
+  pauseSponsorship,
+  resumeSponsorship,
   type SponsorshipCreateInput,
 } from "@/lib/sponsorships";
 import { toast } from "@/store/toasts";
@@ -39,6 +41,14 @@ export function SponsorshipsPage() {
       qc.invalidateQueries({ queryKey: SP_QUERY });
       toast.success(t("sponsorships.cancelled"));
     },
+  });
+  const pauseMut = useMutation({
+    mutationFn: (id: string) => pauseSponsorship(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: SP_QUERY }),
+  });
+  const resumeMut = useMutation({
+    mutationFn: (id: string) => resumeSponsorship(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: SP_QUERY }),
   });
 
   return (
@@ -123,16 +133,38 @@ export function SponsorshipsPage() {
                     {t(`sponsorships.statuses.${s.status}`, s.status)}
                   </td>
                   <td className="px-4 py-3 text-end">
-                    {ACTIVE.has(s.status) && (
-                      <button
-                        type="button"
-                        className="rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
-                        onClick={() => cancelMut.mutate(s.id)}
-                        disabled={cancelMut.isPending}
-                      >
-                        {t("sponsorships.cancel")}
-                      </button>
-                    )}
+                    <span className="flex justify-end gap-2">
+                      {s.status === "active" && (
+                        <button
+                          type="button"
+                          className="rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
+                          onClick={() => pauseMut.mutate(s.id)}
+                          disabled={pauseMut.isPending}
+                        >
+                          {t("sponsorships.pause")}
+                        </button>
+                      )}
+                      {s.status === "paused" && (
+                        <button
+                          type="button"
+                          className="rounded-lg border border-trust bg-trust px-2 py-1 text-xs text-white hover:bg-trust/90"
+                          onClick={() => resumeMut.mutate(s.id)}
+                          disabled={resumeMut.isPending}
+                        >
+                          {t("sponsorships.resume")}
+                        </button>
+                      )}
+                      {ACTIVE.has(s.status) && (
+                        <button
+                          type="button"
+                          className="rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
+                          onClick={() => cancelMut.mutate(s.id)}
+                          disabled={cancelMut.isPending}
+                        >
+                          {t("sponsorships.cancel")}
+                        </button>
+                      )}
+                    </span>
                   </td>
                 </tr>
               ))}

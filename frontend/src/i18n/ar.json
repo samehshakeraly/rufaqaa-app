@@ -106,6 +106,8 @@
     "nextPayment": "تاريخ السداد القادم",
     "status": "الحالة",
     "cancel": "إلغاء",
+    "pause": "إيقاف مؤقت",
+    "resume": "استئناف",
     "totalPaid": "الإجمالي المدفوع",
     "recordPayment": "تسجيل دفعة",
     "frequencies": {

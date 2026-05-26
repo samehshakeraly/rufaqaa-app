@@ -101,6 +101,8 @@
     "nextPayment": "Next payment",
     "status": "Status",
     "cancel": "Cancel",
+    "pause": "Pause",
+    "resume": "Resume",
     "totalPaid": "Total paid",
     "recordPayment": "Record payment",
     "frequencies": {
