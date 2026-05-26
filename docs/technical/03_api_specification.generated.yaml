@@ -887,6 +887,151 @@ components:
       - payments_count
       title: MonthlyPoint
       type: object
+    OrganizationRead:
+      properties:
+        code:
+          title: Code
+          type: string
+        country_code:
+          title: Country Code
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        default_currency:
+          title: Default Currency
+          type: string
+        default_language:
+          title: Default Language
+          type: string
+        deployment_mode:
+          title: Deployment Mode
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        logo_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Logo Url
+        name_ar:
+          title: Name Ar
+          type: string
+        name_en:
+          title: Name En
+          type: string
+        org_type:
+          title: Org Type
+          type: string
+        primary_color:
+          title: Primary Color
+          type: string
+        status:
+          title: Status
+          type: string
+        subscription_expires_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Subscription Expires At
+        subscription_plan:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subscription Plan
+        timezone:
+          title: Timezone
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - code
+      - name_ar
+      - name_en
+      - org_type
+      - deployment_mode
+      - country_code
+      - timezone
+      - default_language
+      - default_currency
+      - logo_url
+      - primary_color
+      - status
+      - subscription_plan
+      - subscription_expires_at
+      - created_at
+      - updated_at
+      title: OrganizationRead
+      type: object
+    OrganizationUpdate:
+      description: 'Settings an org admin may edit. Code, org_type, and deployment_mode
+
+        are intentionally NOT here — those are platform-level and should not
+
+        drift via the admin UI.'
+      properties:
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        default_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Default Currency
+        default_language:
+          anyOf:
+          - maxLength: 5
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Default Language
+        logo_url:
+          anyOf:
+          - maxLength: 500
+            type: string
+          - type: 'null'
+          title: Logo Url
+        name_ar:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name Ar
+        name_en:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name En
+        primary_color:
+          anyOf:
+          - pattern: ^#[0-9A-Fa-f]{6}$
+            type: string
+          - type: 'null'
+          title: Primary Color
+        timezone:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: Timezone
+      title: OrganizationUpdate
+      type: object
     OrphanCreate:
       properties:
         date_of_birth:
@@ -3209,6 +3354,47 @@ paths:
       summary: Get Media Presigned Url
       tags:
       - media
+  /api/v1/organization:
+    get:
+      operationId: get_current_organization_api_v1_organization_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Current Organization
+      tags:
+      - organization
+    patch:
+      operationId: update_current_organization_api_v1_organization_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Current Organization
+      tags:
+      - organization
   /api/v1/orphans:
     get:
       description: 'List orphans, optionally filtered by case_status and a search term.

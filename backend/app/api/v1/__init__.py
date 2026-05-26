@@ -8,6 +8,7 @@ from app.api.v1 import (
     families,
     health,
     media,
+    organization,
     orphans,
     partners,
     payments,
@@ -36,3 +37,4 @@ api_router.include_router(media.router, prefix="/media", tags=["media"])
 api_router.include_router(families.router, prefix="/families", tags=["families"])
 api_router.include_router(donor_portal.router, prefix="/me", tags=["donor-portal"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(organization.router, prefix="/organization", tags=["organization"])
