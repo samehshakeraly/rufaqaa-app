@@ -268,7 +268,11 @@
     "role": "Role",
     "status": "Status",
     "twofa": "2FA",
-    "lastLogin": "Last sign-in"
+    "lastLogin": "Last sign-in",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "suspended": "User suspended",
+    "reactivated": "User reactivated"
   },
   "donors": {
     "title": "Donors",

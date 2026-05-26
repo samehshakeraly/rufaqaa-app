@@ -22,3 +22,13 @@ export async function listUsers(params?: {
   const { data } = await api.get<Page<AdminUser>>("/users", { params });
   return data;
 }
+
+export async function suspendUser(id: string): Promise<AdminUser> {
+  const { data } = await api.post<AdminUser>(`/users/${id}/suspend`);
+  return data;
+}
+
+export async function reactivateUser(id: string): Promise<AdminUser> {
+  const { data } = await api.post<AdminUser>(`/users/${id}/reactivate`);
+  return data;
+}

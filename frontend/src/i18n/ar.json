@@ -273,7 +273,11 @@
     "role": "الدور",
     "status": "الحالة",
     "twofa": "2FA",
-    "lastLogin": "آخر دخول"
+    "lastLogin": "آخر دخول",
+    "suspend": "تعليق",
+    "reactivate": "إعادة تفعيل",
+    "suspended": "تم تعليق الحساب",
+    "reactivated": "تم إعادة تفعيل الحساب"
   },
   "donors": {
     "title": "المتبرعون",
