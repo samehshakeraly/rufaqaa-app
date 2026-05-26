@@ -4,17 +4,20 @@ from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
+from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.payment import PaymentCreate, PaymentRead
+from app.schemas.payment import PaymentCreate, PaymentRead, PaymentStatusUpdate
+from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
 router = APIRouter()
@@ -98,6 +101,46 @@ async def create_payment(
         sponsorship.last_payment_amount = payload.amount
 
     db.add(payment)
+    await db.commit()
+    await db.refresh(payment)
+    return PaymentRead.model_validate(payment)
+
+
+@router.post("/{payment_id}/status", response_model=PaymentRead)
+async def update_payment_status(
+    payment_id: UUID,
+    payload: PaymentStatusUpdate,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> PaymentRead:
+    """Admin override: change a payment's status manually. Audits the
+    before/after so any reconciliation question has a paper trail."""
+    payment = await db.scalar(select(Payment).where(Payment.id == payment_id))
+    if payment is None:
+        raise NotFound("Payment")
+    old_status = payment.status
+    if old_status == payload.status:
+        return PaymentRead.model_validate(payment)
+
+    payment.status = payload.status
+    now = datetime.now(UTC)
+    if payload.status == "completed" and payment.completed_at is None:
+        payment.completed_at = now
+    if payload.status == "failed":
+        payment.failed_at = now
+        payment.failure_reason = payload.reason
+
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="payment.status_changed",
+        entity_type="payment",
+        entity_id=payment.id,
+        old_values={"status": old_status},
+        new_values={"status": payload.status, "reason": payload.reason},
+        is_sensitive=True,
+    )
     await db.commit()
     await db.refresh(payment)
     return PaymentRead.model_validate(payment)

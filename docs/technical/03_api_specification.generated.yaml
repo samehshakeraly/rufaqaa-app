@@ -1640,6 +1640,36 @@ components:
       - created_at
       title: PaymentRead
       type: object
+    PaymentStatusUpdate:
+      description: 'Manual status transition by ops — e.g. marking a pending wire as
+
+        completed or a chargebacked one as refunded. Does NOT replay the
+
+        side effects (sponsorship totals), so use sparingly.'
+      properties:
+        reason:
+          anyOf:
+          - maxLength: 1000
+            type: string
+          - type: 'null'
+          title: Reason
+        status:
+          enum:
+          - pending
+          - processing
+          - completed
+          - failed
+          - refunded
+          - partially_refunded
+          - chargeback
+          - disputed
+          - on_hold
+          title: Status
+          type: string
+      required:
+      - status
+      title: PaymentStatusUpdate
+      type: object
     PaymentsTimeseries:
       properties:
         months:
@@ -3499,6 +3529,44 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Export Payments Csv
+      tags:
+      - payments
+  /api/v1/payments/{payment_id}/status:
+    post:
+      description: 'Admin override: change a payment''s status manually. Audits the
+
+        before/after so any reconciliation question has a paper trail.'
+      operationId: update_payment_status_api_v1_payments__payment_id__status_post
+      parameters:
+      - in: path
+        name: payment_id
+        required: true
+        schema:
+          format: uuid
+          title: Payment Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentStatusUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Payment Status
       tags:
       - payments
   /api/v1/reports:

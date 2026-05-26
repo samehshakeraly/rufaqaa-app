@@ -31,6 +31,15 @@ PaymentStatus = Literal[
 ]
 
 
+class PaymentStatusUpdate(BaseModel):
+    """Manual status transition by ops — e.g. marking a pending wire as
+    completed or a chargebacked one as refunded. Does NOT replay the
+    side effects (sponsorship totals), so use sparingly."""
+
+    status: PaymentStatus
+    reason: str | None = Field(default=None, max_length=1000)
+
+
 class PaymentCreate(BaseModel):
     donor_id: UUID
     sponsorship_id: UUID | None = None
