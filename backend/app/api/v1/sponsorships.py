@@ -32,6 +32,17 @@ def _next_monthly(start: date) -> date:
     return date(year, month, day)
 
 
+def _enrich(sp: Sponsorship, donor: Donor | None, orphan: Orphan | None) -> SponsorshipRead:
+    out = SponsorshipRead.model_validate(sp)
+    if donor is not None:
+        out.donor_code = donor.code
+        out.donor_name = donor.full_name
+    if orphan is not None:
+        out.orphan_code = orphan.code
+        out.orphan_name = f"{orphan.first_name} {orphan.family_name}"
+    return out
+
+
 @router.get("", response_model=Page[SponsorshipRead])
 async def list_sponsorships(
     db: DbSession,
@@ -54,8 +65,21 @@ async def list_sponsorships(
     rows = (
         await db.scalars(stmt.order_by(Sponsorship.created_at.desc()).limit(limit).offset(offset))
     ).all()
+
+    # Batch-fetch donor + orphan rows for the page so we don't N+1.
+    donor_ids = {r.donor_id for r in rows}
+    orphan_ids = {r.orphan_id for r in rows}
+    donors = await db.scalars(select(Donor).where(Donor.id.in_(donor_ids))) if donor_ids else []
+    orphans = (
+        await db.scalars(select(Orphan).where(Orphan.id.in_(orphan_ids))) if orphan_ids else []
+    )
+    donor_by_id = {d.id: d for d in donors}
+    orphan_by_id = {o.id: o for o in orphans}
+
     return Page(
-        items=[SponsorshipRead.model_validate(r) for r in rows],
+        items=[
+            _enrich(r, donor_by_id.get(r.donor_id), orphan_by_id.get(r.orphan_id)) for r in rows
+        ],
         total=total,
         limit=limit,
         offset=offset,
@@ -121,7 +145,9 @@ async def get_sponsorship(
     sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
     if sp is None:
         raise NotFound("Sponsorship")
-    return SponsorshipRead.model_validate(sp)
+    donor = await db.scalar(select(Donor).where(Donor.id == sp.donor_id))
+    orphan = await db.scalar(select(Orphan).where(Orphan.id == sp.orphan_id))
+    return _enrich(sp, donor, orphan)
 
 
 @router.patch("/{sponsorship_id}", response_model=SponsorshipRead)
