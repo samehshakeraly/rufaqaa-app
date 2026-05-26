@@ -61,6 +61,11 @@ export function AppLayout() {
               </NavLink>
             )}
             {isAdmin && (
+              <NavLink to="/marketing-channels" className={navItemClass}>
+                {t("nav.marketingChannels")}
+              </NavLink>
+            )}
+            {isAdmin && (
               <NavLink to="/audit" className={navItemClass}>
                 {t("nav.audit")}
               </NavLink>

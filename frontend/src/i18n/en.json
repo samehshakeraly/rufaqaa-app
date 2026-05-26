@@ -12,6 +12,7 @@
     "payments": "Payments",
     "reports": "Reports",
     "users": "Users",
+    "marketingChannels": "Channels",
     "audit": "Audit log",
     "portal": "My portal",
     "settings": "Settings",
@@ -283,6 +284,31 @@
     "reactivate": "Reactivate",
     "suspended": "User suspended",
     "reactivated": "User reactivated"
+  },
+  "marketingChannels": {
+    "title": "Marketing channels",
+    "addNew": "Add channel",
+    "name": "Name",
+    "nameAr": "Name (Arabic)",
+    "nameEn": "Name (English)",
+    "type": "Type",
+    "description": "Description",
+    "status": "Status",
+    "archive": "Archive",
+    "types": {
+      "digital_marketing": "Digital marketing",
+      "committee": "Committee",
+      "website": "Website",
+      "branch": "Branch",
+      "social_media": "Social media",
+      "partnership": "Partnership",
+      "other": "Other"
+    },
+    "statuses": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "archived": "Archived"
+    }
   },
   "donors": {
     "title": "Donors",

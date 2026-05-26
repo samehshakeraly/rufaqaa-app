@@ -7,6 +7,7 @@ import { AuditPage } from "./pages/AuditPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { LoginPage } from "./pages/LoginPage";
+import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
 import { MyPortalPage } from "./pages/MyPortalPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphansPage } from "./pages/OrphansPage";
@@ -35,6 +36,14 @@ export function App() {
         <Route path="/orphans/:id" element={<OrphanDetailPage />} />
         <Route path="/donors" element={<DonorsPage />} />
         <Route path="/partners" element={<PartnersPage />} />
+        <Route
+          path="/marketing-channels"
+          element={
+            <AdminRoute>
+              <MarketingChannelsPage />
+            </AdminRoute>
+          }
+        />
         <Route path="/sponsorships" element={<SponsorshipsPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/reports" element={<ReportsPage />} />

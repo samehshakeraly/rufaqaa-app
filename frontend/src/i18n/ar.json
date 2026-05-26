@@ -12,6 +12,7 @@
     "payments": "المدفوعات",
     "reports": "التقارير",
     "users": "المستخدمون",
+    "marketingChannels": "القنوات",
     "audit": "سجل التدقيق",
     "portal": "بوابتي",
     "settings": "الإعدادات",
@@ -288,6 +289,31 @@
     "reactivate": "إعادة تفعيل",
     "suspended": "تم تعليق الحساب",
     "reactivated": "تم إعادة تفعيل الحساب"
+  },
+  "marketingChannels": {
+    "title": "قنوات التسويق",
+    "addNew": "إضافة قناة",
+    "name": "الاسم",
+    "nameAr": "الاسم (عربي)",
+    "nameEn": "الاسم (إنجليزي)",
+    "type": "النوع",
+    "description": "الوصف",
+    "status": "الحالة",
+    "archive": "أرشفة",
+    "types": {
+      "digital_marketing": "تسويق رقمي",
+      "committee": "لجنة",
+      "website": "الموقع",
+      "branch": "فرع",
+      "social_media": "تواصل اجتماعي",
+      "partnership": "شراكة",
+      "other": "أخرى"
+    },
+    "statuses": {
+      "active": "نشطة",
+      "suspended": "موقوفة",
+      "archived": "مؤرشفة"
+    }
   },
   "donors": {
     "title": "المتبرعون",
