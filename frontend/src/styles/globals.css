@@ -6,11 +6,17 @@
   html {
     @apply bg-snow text-slate-900 antialiased;
   }
+  html.dark {
+    @apply bg-slate-900 text-slate-100;
+  }
   body {
     @apply min-h-screen font-sans;
   }
   :focus-visible {
     @apply outline-none ring-2 ring-trust ring-offset-2 ring-offset-snow;
+  }
+  html.dark :focus-visible {
+    @apply ring-offset-slate-900;
   }
 }
 
@@ -21,9 +27,12 @@
   }
   .input {
     @apply w-full rounded-xl border border-sky bg-white px-4 py-2 text-slate-900
-      placeholder:text-slate-400 focus:border-trust focus:outline-none;
+      placeholder:text-slate-400 focus:border-trust focus:outline-none
+      dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100
+      dark:placeholder:text-slate-500;
   }
   .card {
-    @apply rounded-2xl border border-sky bg-white p-6 shadow-sm;
+    @apply rounded-2xl border border-sky bg-white p-6 shadow-sm
+      dark:border-slate-700 dark:bg-slate-800;
   }
 }
