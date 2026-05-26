@@ -1604,6 +1604,46 @@ components:
       - created_at
       title: PartnerRead
       type: object
+    PartnerStats:
+      description: Headline metrics for one partner organization.
+      properties:
+        orphans_available:
+          title: Orphans Available
+          type: integer
+        orphans_sponsored:
+          title: Orphans Sponsored
+          type: integer
+        orphans_total:
+          title: Orphans Total
+          type: integer
+        partner_id:
+          format: uuid
+          title: Partner Id
+          type: string
+        payments_last_30d_count:
+          title: Payments Last 30D Count
+          type: integer
+        payments_last_30d_total:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Payments Last 30D Total
+          type: string
+        sponsorships_active:
+          title: Sponsorships Active
+          type: integer
+        sponsorships_overdue:
+          title: Sponsorships Overdue
+          type: integer
+      required:
+      - partner_id
+      - orphans_total
+      - orphans_sponsored
+      - orphans_available
+      - sponsorships_active
+      - sponsorships_overdue
+      - payments_last_30d_total
+      - payments_last_30d_count
+      title: PartnerStats
+      type: object
     PartnerUpdate:
       properties:
         country_code:
@@ -3802,6 +3842,40 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Update Partner
+      tags:
+      - partners
+  /api/v1/partners/{partner_id}/stats:
+    get:
+      description: 'Rollup for a single partner: orphan counts, active/overdue
+
+        sponsorships, and 30-day payment totals. All scoped by partner via
+
+        the orphans.partner_organization_id FK.'
+      operationId: get_partner_stats_api_v1_partners__partner_id__stats_get
+      parameters:
+      - in: path
+        name: partner_id
+        required: true
+        schema:
+          format: uuid
+          title: Partner Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartnerStats'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Partner Stats
       tags:
       - partners
   /api/v1/payments:
