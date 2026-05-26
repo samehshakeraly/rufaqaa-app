@@ -1,12 +1,16 @@
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.sponsorship import Sponsorship
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.donor import DonorCreate, DonorRead, DonorUpdate
 from app.services.audit import record_audit
