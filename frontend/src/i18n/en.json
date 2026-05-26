@@ -122,6 +122,7 @@
   },
   "payments": {
     "title": "Payments",
+    "exportCsv": "Export CSV",
     "allStatuses": "All statuses",
     "code": "Code",
     "amount": "Amount",

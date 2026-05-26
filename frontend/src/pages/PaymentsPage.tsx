@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Pagination } from "@/components/Pagination";
-import { listPayments } from "@/lib/payments";
+import { exportPaymentsCsv, listPayments } from "@/lib/payments";
+import { toast } from "@/store/toasts";
 
 const PAGE_SIZE = 20;
 
@@ -57,6 +58,27 @@ export function PaymentsPage() {
               {t("common.total")}: {data.total.toLocaleString()}
             </span>
           )}
+          <button
+            type="button"
+            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
+            onClick={async () => {
+              try {
+                const blob = await exportPaymentsCsv(
+                  statusFilter ? { status: statusFilter } : {},
+                );
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "rufaqaa-payments.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch {
+                toast.error(t("common.loadError"));
+              }
+            }}
+          >
+            {t("payments.exportCsv")}
+          </button>
         </div>
       </div>
 

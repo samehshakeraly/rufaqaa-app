@@ -127,6 +127,7 @@
   },
   "payments": {
     "title": "المدفوعات",
+    "exportCsv": "تصدير CSV",
     "allStatuses": "كل الحالات",
     "code": "الرمز",
     "amount": "المبلغ",

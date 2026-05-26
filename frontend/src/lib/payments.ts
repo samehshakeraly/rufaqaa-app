@@ -54,3 +54,15 @@ export async function createPayment(payload: PaymentCreateInput): Promise<Paymen
   const { data } = await api.post<Payment>("/payments", payload);
   return data;
 }
+
+export async function exportPaymentsCsv(params?: {
+  donor_id?: string;
+  sponsorship_id?: string;
+  status?: string;
+}): Promise<Blob> {
+  const r = await api.get("/payments/export.csv", {
+    params,
+    responseType: "blob",
+  });
+  return r.data as Blob;
+}
