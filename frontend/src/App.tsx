@@ -6,6 +6,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { AuditPage } from "./pages/AuditPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorsPage } from "./pages/DonorsPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
 import { MyPortalPage } from "./pages/MyPortalPage";
@@ -15,6 +16,7 @@ import { PartnersPage } from "./pages/PartnersPage";
 import { PaymentsPage } from "./pages/PaymentsPage";
 import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SponsorshipsPage } from "./pages/SponsorshipsPage";
 import { UsersPage } from "./pages/UsersPage";
@@ -23,6 +25,8 @@ export function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route
         element={
           <ProtectedRoute>

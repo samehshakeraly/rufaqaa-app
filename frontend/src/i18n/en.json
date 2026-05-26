@@ -28,7 +28,21 @@
     "invalidEmail": "Invalid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "invalidCredentials": "Invalid email or password",
-    "serverError": "Could not reach the server"
+    "serverError": "Could not reach the server",
+    "forgotLink": "Forgot your password?",
+    "forgotTitle": "Reset your password",
+    "forgotDescription": "Enter your email and we'll send a reset link.",
+    "forgotSubmit": "Send reset link",
+    "forgotSent": "If an account exists for that email, a reset link has been sent.",
+    "devTokenNotice": "Dev mode: use this token directly to reset your password.",
+    "resetTitle": "Choose a new password",
+    "resetToken": "Reset token",
+    "resetSubmit": "Update password",
+    "resetDone": "Your password has been updated. You can sign in now.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "passwordMismatch": "Passwords do not match",
+    "backToLogin": "Back to sign in"
   },
   "common": {
     "loading": "Loading...",

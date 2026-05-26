@@ -8,7 +8,9 @@ from app.api.deps import CurrentUser, DbSession
 from app.core.config import settings
 from app.core.exceptions import InvalidCredentials, TokenInvalid
 from app.core.security import (
+    create_password_reset_token,
     create_token,
+    decode_password_reset_token,
     decode_token,
     hash_password,
     verify_password,
@@ -17,10 +19,13 @@ from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.auth import (
     ChangePasswordRequest,
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
     LoginRequest,
     NotificationPreferences,
     NotificationPreferencesUpdate,
     RefreshRequest,
+    ResetPasswordRequest,
     TokenPair,
 )
 from app.schemas.auth import (
@@ -141,6 +146,66 @@ async def change_password(
         )
 
     user.password_hash = hash_password(payload.new_password)
+    sessions = (
+        await db.scalars(
+            select(UserSession).where(
+                UserSession.user_id == user.id, UserSession.revoked_at.is_(None)
+            )
+        )
+    ).all()
+    now = datetime.now(UTC)
+    for s in sessions:
+        s.revoked_at = now
+    await db.commit()
+
+
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+async def forgot_password(
+    payload: ForgotPasswordRequest, db: DbSession
+) -> ForgotPasswordResponse:
+    """Mint a short-lived password-reset token and (eventually) email it.
+
+    Always returns the same response shape regardless of whether the
+    address belongs to a real account, so the endpoint can't be used to
+    enumerate users. In non-production environments the freshly minted
+    token is included as `debug_token` so the flow is testable without
+    an SMTP transport."""
+    user = await db.scalar(
+        select(User).where(User.email == payload.email, User.deleted_at.is_(None))
+    )
+    token: str | None = None
+    if user is not None and user.status == "active":
+        token = create_password_reset_token(user.id)
+        # TODO: queue an email — for now the token is only returned in
+        # debug mode and the caller copy-pastes the reset link.
+    return ForgotPasswordResponse(
+        sent=True,
+        debug_token=token if settings.ENVIRONMENT != "production" else None,
+    )
+
+
+@router.post("/reset-password", status_code=status.HTTP_204_NO_CONTENT)
+async def reset_password(payload: ResetPasswordRequest, db: DbSession) -> None:
+    """Consume a reset token, set the new password, and revoke every
+    live refresh session so other devices have to sign in again."""
+    try:
+        user_id = decode_password_reset_token(payload.token)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        ) from exc
+    user = await db.scalar(
+        select(User).where(User.id == user_id, User.deleted_at.is_(None))
+    )
+    if user is None or user.status != "active":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+    user.password_hash = hash_password(payload.new_password)
+    user.failed_login_attempts = 0
+    user.locked_until = None
     sessions = (
         await db.scalars(
             select(UserSession).where(

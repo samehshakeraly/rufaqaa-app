@@ -634,6 +634,29 @@ components:
       - updated_at
       title: FamilyRead
       type: object
+    ForgotPasswordRequest:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+      required:
+      - email
+      title: ForgotPasswordRequest
+      type: object
+    ForgotPasswordResponse:
+      properties:
+        debug_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Debug Token
+        sent:
+          default: true
+          title: Sent
+          type: boolean
+      title: ForgotPasswordResponse
+      type: object
     GuardianCreate:
       properties:
         date_of_birth:
@@ -2360,6 +2383,21 @@ components:
           title: Summary
       title: ReportUpdate
       type: object
+    ResetPasswordRequest:
+      properties:
+        new_password:
+          maxLength: 128
+          minLength: 8
+          title: New Password
+          type: string
+        token:
+          title: Token
+          type: string
+      required:
+      - token
+      - new_password
+      title: ResetPasswordRequest
+      type: object
     SponsorshipCancel:
       properties:
         reason:
@@ -3005,6 +3043,43 @@ paths:
       summary: Change Password
       tags:
       - auth
+  /api/v1/auth/forgot-password:
+    post:
+      description: 'Mint a short-lived password-reset token and (eventually) email it.
+
+
+        Always returns the same response shape regardless of whether the
+
+        address belongs to a real account, so the endpoint can''t be used to
+
+        enumerate users. In non-production environments the freshly minted
+
+        token is included as `debug_token` so the flow is testable without
+
+        an SMTP transport.'
+      operationId: forgot_password_api_v1_auth_forgot_password_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgotPasswordResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Forgot Password
+      tags:
+      - auth
   /api/v1/auth/login:
     post:
       operationId: login_api_v1_auth_login_post
@@ -3120,6 +3195,30 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Refresh
+      tags:
+      - auth
+  /api/v1/auth/reset-password:
+    post:
+      description: 'Consume a reset token, set the new password, and revoke every
+
+        live refresh session so other devices have to sign in again.'
+      operationId: reset_password_api_v1_auth_reset_password_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Reset Password
       tags:
       - auth
   /api/v1/donors:

@@ -77,3 +77,23 @@ def decode_invite_token(token: str) -> UUID:
     if payload.get("type") != "invite":
         raise ValueError("Not an invite token")
     return UUID(payload["sub"])
+
+
+def create_password_reset_token(user_id: UUID, expires_in_minutes: int = 30) -> str:
+    """Short-lived (30 min) token for the forgot-password flow."""
+    now = datetime.now(UTC)
+    payload = {
+        "sub": str(user_id),
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(minutes=expires_in_minutes)).timestamp()),
+        "type": "password_reset",
+        "jti": secrets.token_urlsafe(16),
+    }
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_password_reset_token(token: str) -> UUID:
+    payload = decode_token(token)
+    if payload.get("type") != "password_reset":
+        raise ValueError("Not a password-reset token")
+    return UUID(payload["sub"])
