@@ -124,3 +124,42 @@ async def update_donor(
     await db.commit()
     await db.refresh(donor)
     return DonorRead.model_validate(donor)
+
+
+@router.delete("/{donor_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def soft_delete_donor(
+    donor_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> None:
+    """Soft-delete a donor. Refuses if any sponsorship is still active —
+    cancel those first so the audit trail is honest about why money stops.
+    """
+    donor = await db.scalar(select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_(None)))
+    if donor is None:
+        raise NotFound("Donor")
+
+    active = await db.scalar(
+        select(func.count(Sponsorship.id)).where(
+            Sponsorship.donor_id == donor_id,
+            Sponsorship.status.in_(("active", "paused", "overdue")),
+        )
+    )
+    if (active or 0) > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Donor has {active} active sponsorship(s) — cancel them first",
+        )
+
+    donor.deleted_at = datetime.now(UTC)
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="donor.deleted",
+        entity_type="donor",
+        entity_id=donor.id,
+        old_values={"code": donor.code, "email": donor.email},
+        is_sensitive=True,
+    )
+    await db.commit()
