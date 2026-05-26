@@ -11,6 +11,7 @@
     "sponsorships": "الكفالات",
     "payments": "المدفوعات",
     "reports": "التقارير",
+    "users": "المستخدمون",
     "audit": "سجل التدقيق",
     "settings": "الإعدادات",
     "logout": "خروج",
@@ -244,6 +245,16 @@
     "entity": "النوع",
     "entityId": "المعرّف",
     "details": "التفاصيل"
+  },
+  "users": {
+    "title": "المستخدمون",
+    "allRoles": "كل الأدوار",
+    "name": "الاسم",
+    "email": "البريد",
+    "role": "الدور",
+    "status": "الحالة",
+    "twofa": "2FA",
+    "lastLogin": "آخر دخول"
   },
   "donors": {
     "title": "المتبرعون",

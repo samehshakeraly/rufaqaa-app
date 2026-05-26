@@ -11,6 +11,7 @@
     "sponsorships": "Sponsorships",
     "payments": "Payments",
     "reports": "Reports",
+    "users": "Users",
     "audit": "Audit log",
     "settings": "Settings",
     "logout": "Sign out",
@@ -239,6 +240,16 @@
     "entity": "Entity",
     "entityId": "ID",
     "details": "Details"
+  },
+  "users": {
+    "title": "Users",
+    "allRoles": "All roles",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "twofa": "2FA",
+    "lastLogin": "Last sign-in"
   },
   "donors": {
     "title": "Donors",

@@ -14,6 +14,7 @@ import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SponsorshipsPage } from "./pages/SponsorshipsPage";
+import { UsersPage } from "./pages/UsersPage";
 
 export function App() {
   return (
@@ -40,6 +41,14 @@ export function App() {
           element={
             <AdminRoute>
               <AuditPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <AdminRoute>
+              <UsersPage />
             </AdminRoute>
           }
         />
