@@ -56,3 +56,13 @@ export async function cancelSponsorship(
   });
   return data;
 }
+
+export async function pauseSponsorship(id: string): Promise<Sponsorship> {
+  const { data } = await api.post<Sponsorship>(`/sponsorships/${id}/pause`);
+  return data;
+}
+
+export async function resumeSponsorship(id: string): Promise<Sponsorship> {
+  const { data } = await api.post<Sponsorship>(`/sponsorships/${id}/resume`);
+  return data;
+}
