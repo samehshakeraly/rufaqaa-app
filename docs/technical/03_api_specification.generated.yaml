@@ -3945,13 +3945,20 @@ paths:
       description: 'Receive payment status updates from MyFatoorah.
 
 
-        Authenticates by comparing a shared-secret header against
+        Authentication: when `MYFATOORAH_WEBHOOK_SECRET` is configured the
 
-        `MYFATOORAH_WEBHOOK_SECRET`. The handler is idempotent: a webhook
+        caller must include `X-MyFatoorah-Signature` set to the hex
 
-        delivered twice for the same `gateway_transaction_id` only inserts the
+        HMAC-SHA256 of the raw request body keyed by the shared secret. A
 
-        payment row once.'
+        raw equality with the secret is also accepted for backward
+
+        compatibility with the original sandbox configuration.
+
+
+        The handler is idempotent: a webhook delivered twice for the same
+
+        `gateway_transaction_id` only inserts the payment row once.'
       operationId: myfatoorah_webhook_api_v1_webhooks_myfatoorah_post
       parameters:
       - in: header
@@ -3962,14 +3969,6 @@ paths:
           - type: string
           - type: 'null'
           title: X-Myfatoorah-Signature
-      requestBody:
-        content:
-          application/json:
-            schema:
-              additionalProperties: true
-              title: Payload
-              type: object
-        required: true
       responses:
         '200':
           content:

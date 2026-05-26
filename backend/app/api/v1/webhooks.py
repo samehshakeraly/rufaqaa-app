@@ -10,11 +10,13 @@ webhook_deliveries so operators can replay or diagnose failures.
 
 from __future__ import annotations
 
+import hashlib
 import hmac
+import json
 from datetime import UTC, datetime
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Header, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, Request, status
 from sqlalchemy import select, text
 
 from app.api.deps import DbSession
@@ -38,25 +40,45 @@ _STATUS_MAP = {
 }
 
 
+def _sign_payload(secret: str, body: bytes) -> str:
+    """Hex-encoded HMAC-SHA256 over the raw request body."""
+    return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+
+
 @router.post("/myfatoorah")
 async def myfatoorah_webhook(
-    payload: dict[str, Any],
+    request: Request,
     db: DbSession,
     x_myfatoorah_signature: Annotated[str | None, Header()] = None,
 ) -> dict[str, Any]:
     """Receive payment status updates from MyFatoorah.
 
-    Authenticates by comparing a shared-secret header against
-    `MYFATOORAH_WEBHOOK_SECRET`. The handler is idempotent: a webhook
-    delivered twice for the same `gateway_transaction_id` only inserts the
-    payment row once.
+    Authentication: when `MYFATOORAH_WEBHOOK_SECRET` is configured the
+    caller must include `X-MyFatoorah-Signature` set to the hex
+    HMAC-SHA256 of the raw request body keyed by the shared secret. A
+    raw equality with the secret is also accepted for backward
+    compatibility with the original sandbox configuration.
+
+    The handler is idempotent: a webhook delivered twice for the same
+    `gateway_transaction_id` only inserts the payment row once.
     """
+    raw_body = await request.body()
     expected = getattr(settings, "MYFATOORAH_WEBHOOK_SECRET", None)
     if expected:
-        if x_myfatoorah_signature is None or not hmac.compare_digest(
-            x_myfatoorah_signature, expected
-        ):
+        if x_myfatoorah_signature is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        sig_ok = hmac.compare_digest(
+            x_myfatoorah_signature, _sign_payload(expected, raw_body)
+        ) or hmac.compare_digest(x_myfatoorah_signature, expected)
+        if not sig_ok:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        payload: dict[str, Any] = json.loads(raw_body) if raw_body else {}
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON body"
+        ) from exc
 
     data = payload.get("Data") or payload
     gateway_txn_id = str(data.get("InvoiceId") or data.get("TransactionId") or "")
