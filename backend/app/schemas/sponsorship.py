@@ -51,3 +51,16 @@ class SponsorshipRead(SponsorshipBase):
 
 class SponsorshipCancel(BaseModel):
     reason: str | None = Field(default=None, max_length=1000)
+
+
+class SponsorshipUpdate(BaseModel):
+    """Partial update. Status changes go through dedicated /pause and
+    /resume endpoints — leaving the cancel/complete transitions on their
+    own routes so each one can keep its specific guard logic.
+    """
+
+    monthly_amount: Decimal | None = Field(default=None, gt=0, max_digits=10, decimal_places=2)
+    payment_frequency: PaymentFrequency | None = None
+    payment_method: str | None = Field(default=None, max_length=30)
+    notes: str | None = None
+    end_date: date | None = None

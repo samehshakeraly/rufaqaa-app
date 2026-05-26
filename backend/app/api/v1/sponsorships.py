@@ -15,6 +15,7 @@ from app.schemas.sponsorship import (
     SponsorshipCancel,
     SponsorshipCreate,
     SponsorshipRead,
+    SponsorshipUpdate,
 )
 from app.utils.codes import generate_code
 
@@ -120,6 +121,72 @@ async def get_sponsorship(
     sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
     if sp is None:
         raise NotFound("Sponsorship")
+    return SponsorshipRead.model_validate(sp)
+
+
+@router.patch("/{sponsorship_id}", response_model=SponsorshipRead)
+async def update_sponsorship(
+    sponsorship_id: UUID,
+    payload: SponsorshipUpdate,
+    db: DbSession,
+    _user: CurrentUser,
+) -> SponsorshipRead:
+    """Edit non-status fields on an active sponsorship.
+
+    Cancelled / completed sponsorships are immutable so the historical
+    record stays clean."""
+    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
+    if sp is None:
+        raise NotFound("Sponsorship")
+    if sp.status in ("cancelled", "completed"):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Sponsorship is {sp.status} — cannot edit",
+        )
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(sp, field, value)
+    await db.commit()
+    await db.refresh(sp)
+    return SponsorshipRead.model_validate(sp)
+
+
+@router.post("/{sponsorship_id}/pause", response_model=SponsorshipRead)
+async def pause_sponsorship(
+    sponsorship_id: UUID,
+    db: DbSession,
+    _user: CurrentUser,
+) -> SponsorshipRead:
+    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
+    if sp is None:
+        raise NotFound("Sponsorship")
+    if sp.status != "active":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Can only pause active sponsorships (current: {sp.status})",
+        )
+    sp.status = "paused"
+    await db.commit()
+    await db.refresh(sp)
+    return SponsorshipRead.model_validate(sp)
+
+
+@router.post("/{sponsorship_id}/resume", response_model=SponsorshipRead)
+async def resume_sponsorship(
+    sponsorship_id: UUID,
+    db: DbSession,
+    _user: CurrentUser,
+) -> SponsorshipRead:
+    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
+    if sp is None:
+        raise NotFound("Sponsorship")
+    if sp.status != "paused":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Can only resume paused sponsorships (current: {sp.status})",
+        )
+    sp.status = "active"
+    await db.commit()
+    await db.refresh(sp)
     return SponsorshipRead.model_validate(sp)
 
 

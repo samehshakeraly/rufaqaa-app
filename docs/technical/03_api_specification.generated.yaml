@@ -2079,6 +2079,51 @@ components:
       - updated_at
       title: SponsorshipRead
       type: object
+    SponsorshipUpdate:
+      description: 'Partial update. Status changes go through dedicated /pause and
+
+        /resume endpoints — leaving the cancel/complete transitions on their
+
+        own routes so each one can keep its specific guard logic.'
+      properties:
+        end_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: End Date
+        monthly_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          - type: 'null'
+          title: Monthly Amount
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        payment_frequency:
+          anyOf:
+          - enum:
+            - monthly
+            - quarterly
+            - semi_annual
+            - annual
+            - one_time
+            type: string
+          - type: 'null'
+          title: Payment Frequency
+        payment_method:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Payment Method
+      title: SponsorshipUpdate
+      type: object
     TokenPair:
       properties:
         access_token:
@@ -3874,6 +3919,46 @@ paths:
       summary: Get Sponsorship
       tags:
       - sponsorships
+    patch:
+      description: 'Edit non-status fields on an active sponsorship.
+
+
+        Cancelled / completed sponsorships are immutable so the historical
+
+        record stays clean.'
+      operationId: update_sponsorship_api_v1_sponsorships__sponsorship_id__patch
+      parameters:
+      - in: path
+        name: sponsorship_id
+        required: true
+        schema:
+          format: uuid
+          title: Sponsorship Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SponsorshipUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Sponsorship
+      tags:
+      - sponsorships
   /api/v1/sponsorships/{sponsorship_id}/cancel:
     post:
       operationId: cancel_sponsorship_api_v1_sponsorships__sponsorship_id__cancel_post
@@ -3907,6 +3992,64 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Cancel Sponsorship
+      tags:
+      - sponsorships
+  /api/v1/sponsorships/{sponsorship_id}/pause:
+    post:
+      operationId: pause_sponsorship_api_v1_sponsorships__sponsorship_id__pause_post
+      parameters:
+      - in: path
+        name: sponsorship_id
+        required: true
+        schema:
+          format: uuid
+          title: Sponsorship Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Pause Sponsorship
+      tags:
+      - sponsorships
+  /api/v1/sponsorships/{sponsorship_id}/resume:
+    post:
+      operationId: resume_sponsorship_api_v1_sponsorships__sponsorship_id__resume_post
+      parameters:
+      - in: path
+        name: sponsorship_id
+        required: true
+        schema:
+          format: uuid
+          title: Sponsorship Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Resume Sponsorship
       tags:
       - sponsorships
   /api/v1/stats/payments-timeseries:
