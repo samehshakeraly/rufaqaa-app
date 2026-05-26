@@ -1,22 +1,26 @@
-"""Read-only user listing for org admins.
+"""Admin user management — list, suspend, reactivate.
 
-A fuller user-management surface (create, invite, role change, suspend)
-will follow once the role/permission story is firmer; this endpoint is
-specifically the 'who's in my org?' view.
+A fuller surface (create, invite, role change) will follow once the
+permission story is firmer.
 """
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Annotated
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.exceptions import NotFound
+from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.user_admin import UserAdminRead
+from app.services.audit import record_audit
 
 router = APIRouter()
 
@@ -46,3 +50,91 @@ async def list_users(
         limit=limit,
         offset=offset,
     )
+
+
+async def _load_user_or_404(db, user_id: UUID) -> User:
+    target = await db.scalar(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
+    if target is None:
+        raise NotFound("User")
+    return target
+
+
+@router.post("/{user_id}/suspend", response_model=UserAdminRead)
+async def suspend_user(
+    user_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> UserAdminRead:
+    """Mark a user as suspended and revoke all their refresh tokens.
+
+    Refuses to suspend the caller (would lock the admin out of their
+    own session immediately)."""
+    if user_id == user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot suspend yourself",
+        )
+    target = await _load_user_or_404(db, user_id)
+    if target.status == "suspended":
+        return UserAdminRead.model_validate(target)
+
+    target.status = "suspended"
+
+    # Kill every live refresh token so the next access-token expiry
+    # logs the user out for good.
+    sessions = (
+        await db.scalars(
+            select(UserSession).where(
+                UserSession.user_id == target.id,
+                UserSession.revoked_at.is_(None),
+            )
+        )
+    ).all()
+    now = datetime.now(UTC)
+    for s in sessions:
+        s.revoked_at = now
+
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="user.suspended",
+        entity_type="user",
+        entity_id=target.id,
+        new_values={"email": target.email, "revoked_sessions": len(sessions)},
+        is_sensitive=True,
+    )
+    await db.commit()
+    await db.refresh(target)
+    return UserAdminRead.model_validate(target)
+
+
+@router.post("/{user_id}/reactivate", response_model=UserAdminRead)
+async def reactivate_user(
+    user_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> UserAdminRead:
+    """Flip a suspended user back to active. Their refresh tokens stay
+    revoked — they'll need to log in again."""
+    target = await _load_user_or_404(db, user_id)
+    if target.status != "suspended":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Can only reactivate suspended users (current: {target.status})",
+        )
+    target.status = "active"
+    target.failed_login_attempts = 0
+    target.locked_until = None
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="user.reactivated",
+        entity_type="user",
+        entity_id=target.id,
+        new_values={"email": target.email},
+    )
+    await db.commit()
+    await db.refresh(target)
+    return UserAdminRead.model_validate(target)

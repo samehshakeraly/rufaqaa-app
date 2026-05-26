@@ -4756,6 +4756,73 @@ paths:
       summary: List Users
       tags:
       - users
+  /api/v1/users/{user_id}/reactivate:
+    post:
+      description: 'Flip a suspended user back to active. Their refresh tokens stay
+
+        revoked — they''ll need to log in again.'
+      operationId: reactivate_user_api_v1_users__user_id__reactivate_post
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          format: uuid
+          title: User Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdminRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Reactivate User
+      tags:
+      - users
+  /api/v1/users/{user_id}/suspend:
+    post:
+      description: 'Mark a user as suspended and revoke all their refresh tokens.
+
+
+        Refuses to suspend the caller (would lock the admin out of their
+
+        own session immediately).'
+      operationId: suspend_user_api_v1_users__user_id__suspend_post
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          format: uuid
+          title: User Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdminRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Suspend User
+      tags:
+      - users
   /api/v1/webhooks/myfatoorah:
     post:
       description: 'Receive payment status updates from MyFatoorah.
