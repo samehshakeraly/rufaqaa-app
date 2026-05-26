@@ -8,7 +8,13 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-import { createDonor, listDonors, type DonorCreateInput } from "@/lib/donors";
+import {
+  createDonor,
+  exportDonorsCsv,
+  listDonors,
+  type DonorCreateInput,
+} from "@/lib/donors";
+import { toast } from "@/store/toasts";
 
 const PAGE_SIZE = 20;
 const donorQueryKey = (offset: number) =>
@@ -54,6 +60,25 @@ export function DonorsPage() {
               {t("common.total")}: {data.total.toLocaleString()}
             </span>
           )}
+          <button
+            type="button"
+            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
+            onClick={async () => {
+              try {
+                const blob = await exportDonorsCsv();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "rufaqaa-donors.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch {
+                toast.error(t("common.loadError"));
+              }
+            }}
+          >
+            {t("donors.exportCsv")}
+          </button>
           <button
             type="button"
             className="btn-primary"

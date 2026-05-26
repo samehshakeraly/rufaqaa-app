@@ -243,6 +243,7 @@
   "donors": {
     "title": "Donors",
     "addNew": "Add donor",
+    "exportCsv": "Export CSV",
     "code": "Code",
     "name": "Full name",
     "email": "Email",
