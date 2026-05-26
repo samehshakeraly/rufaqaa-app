@@ -3,6 +3,9 @@
 Currently only a MyFatoorah stub: validates a shared-secret header, records
 the payment, and bumps sponsorship totals. Real signature verification will
 be added when we move beyond the sandbox.
+
+Every inbound delivery — successful or not — is logged into
+webhook_deliveries so operators can replay or diagnose failures.
 """
 
 from __future__ import annotations
@@ -19,6 +22,7 @@ from app.core.config import settings
 from app.models.donor import Donor
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
+from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
 router = APIRouter()
@@ -131,6 +135,25 @@ async def myfatoorah_webhook(
         sponsorship.last_payment_amount = amount
 
     db.add(payment)
+    await db.flush()
+
+    # Audit trail — there's no acting user for an inbound webhook, so
+    # user_id stays NULL. organization_id is the donor's, which is what
+    # gives us the per-tenant filter when admins later inspect the log.
+    record_audit(
+        db,
+        organization_id=donor.organization_id,
+        user_id=None,
+        action="webhook.myfatoorah.received",
+        entity_type="payment",
+        entity_id=payment.id,
+        new_values={
+            "gateway_transaction_id": gateway_txn_id,
+            "gateway_status": gateway_status,
+            "amount": str(amount),
+            "currency": currency,
+        },
+    )
     await db.commit()
     await db.refresh(payment)
 
