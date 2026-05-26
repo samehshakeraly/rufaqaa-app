@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 
+import { DonorCsvImport } from "@/components/DonorCsvImport";
 import { Pagination } from "@/components/Pagination";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -42,6 +43,7 @@ export function DonorsPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [offset, setOffset] = useState(0);
 
   const queryKey = donorQueryKey(offset);
@@ -81,6 +83,13 @@ export function DonorsPage() {
           </button>
           <button
             type="button"
+            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
+            onClick={() => setShowImport((v) => !v)}
+          >
+            {showImport ? t("common.cancel") : t("donors.importCsv")}
+          </button>
+          <button
+            type="button"
             className="btn-primary"
             onClick={() => setShowForm((v) => !v)}
           >
@@ -88,6 +97,15 @@ export function DonorsPage() {
           </button>
         </div>
       </div>
+
+      {showImport && (
+        <DonorCsvImport
+          onImported={async () => {
+            await qc.invalidateQueries({ queryKey: ["donors"] });
+            setOffset(0);
+          }}
+        />
+      )}
 
       {showForm && (
         <NewDonorForm
