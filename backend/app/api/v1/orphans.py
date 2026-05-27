@@ -4,14 +4,16 @@ from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from sqlalchemy import func, or_, select, text
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
+from app.models.partner import MarketingChannel
 from app.models.payment import Payment
 from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
@@ -255,6 +257,64 @@ async def delete_orphan(
         is_sensitive=True,
     )
     await db.commit()
+
+
+class AssignChannelPayload(BaseModel):
+    """Pass channel_id=null to unassign."""
+
+    channel_id: UUID | None
+
+
+@router.post("/{orphan_id}/assign-channel", response_model=OrphanRead)
+async def assign_orphan_channel(
+    orphan_id: UUID,
+    payload: AssignChannelPayload,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> OrphanRead:
+    """Attach (or detach) an orphan to a marketing channel. Validates
+    that the channel belongs to the same organization and is active;
+    null clears the assignment."""
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+
+    if payload.channel_id is not None:
+        channel = await db.scalar(
+            select(MarketingChannel).where(MarketingChannel.id == payload.channel_id)
+        )
+        if channel is None:
+            raise NotFound("Marketing channel")
+        if channel.organization_id != orphan.organization_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Channel belongs to a different organization",
+            )
+        if channel.status != "active":
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Cannot assign to a non-active channel",
+            )
+
+    old = orphan.assigned_to_channel_id
+    orphan.assigned_to_channel_id = payload.channel_id
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.channel_assigned",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"assigned_to_channel_id": str(old) if old else None},
+        new_values={
+            "assigned_to_channel_id": (str(payload.channel_id) if payload.channel_id else None)
+        },
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return OrphanRead.model_validate(orphan)
 
 
 @router.get("/{orphan_id}/timeline", response_model=Timeline)

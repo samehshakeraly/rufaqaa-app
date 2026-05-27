@@ -15,6 +15,19 @@ components:
       - password
       title: AcceptInvite
       type: object
+    AssignChannelPayload:
+      description: Pass channel_id=null to unassign.
+      properties:
+        channel_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Channel Id
+      required:
+      - channel_id
+      title: AssignChannelPayload
+      type: object
     AuditLogRead:
       properties:
         action:
@@ -5252,6 +5265,46 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Update Orphan
+      tags:
+      - orphans
+  /api/v1/orphans/{orphan_id}/assign-channel:
+    post:
+      description: 'Attach (or detach) an orphan to a marketing channel. Validates
+
+        that the channel belongs to the same organization and is active;
+
+        null clears the assignment.'
+      operationId: assign_orphan_channel_api_v1_orphans__orphan_id__assign_channel_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignChannelPayload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Assign Orphan Channel
       tags:
       - orphans
   /api/v1/orphans/{orphan_id}/documents:
