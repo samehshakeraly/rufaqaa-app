@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
 import { getOrphan, getOrphanTimeline } from "@/lib/orphans";
 
 const KIND_ACCENT: Record<string, string> = {
@@ -79,6 +80,8 @@ export function OrphanDetailPage() {
           </div>
         </dl>
       </div>
+
+      <OrphanPhotoUpload orphanId={id} />
 
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("orphans.timeline")}</h2>

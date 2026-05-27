@@ -102,6 +102,12 @@
     "bulkArchiveConfirm": "Archive {{count}} orphans? This soft-deletes them.",
     "bulkArchiveDone": "Archived {{ok}} orphans.",
     "bulkArchivePartial": "Archived {{ok}}; {{fail}} failed.",
+    "photo": {
+      "title": "Photos",
+      "uploaded": "Photo uploaded.",
+      "tooLarge": "File too large (max 10 MB).",
+      "none": "No photos yet."
+    },
     "caseStatus": {
       "pending_review": "Pending review",
       "approved": "Approved",

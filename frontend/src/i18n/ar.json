@@ -107,6 +107,12 @@
     "bulkArchiveConfirm": "أرشفة {{count}} يتيم؟ يتم حذفهم بشكل ناعم.",
     "bulkArchiveDone": "تمت أرشفة {{ok}} يتيم.",
     "bulkArchivePartial": "تمت أرشفة {{ok}}؛ فشل {{fail}}.",
+    "photo": {
+      "title": "الصور",
+      "uploaded": "تم رفع الصورة.",
+      "tooLarge": "الملف كبير جداً (الحد الأقصى 10 ميجا).",
+      "none": "لا توجد صور بعد."
+    },
     "caseStatus": {
       "pending_review": "قيد المراجعة",
       "approved": "معتمد",

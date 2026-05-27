@@ -1623,6 +1623,37 @@ components:
       - partner_organization_id
       title: OrphanCreate
       type: object
+    OrphanPhoto:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        file_size_bytes:
+          title: File Size Bytes
+          type: integer
+        file_url:
+          title: File Url
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+        presigned_url:
+          title: Presigned Url
+          type: string
+      required:
+      - id
+      - file_url
+      - presigned_url
+      - file_size_bytes
+      - moderation_status
+      - created_at
+      title: OrphanPhoto
+      type: object
     OrphanRead:
       properties:
         case_status:
@@ -4506,6 +4537,43 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Upload Orphan Photo
+      tags:
+      - media
+  /api/v1/media/orphans/{orphan_id}/photos:
+    get:
+      description: 'Photos attached to an orphan, newest first. Each row carries a
+
+        fresh presigned URL so the UI can render the image without exposing
+
+        the bucket.'
+      operationId: list_orphan_photos_api_v1_media_orphans__orphan_id__photos_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanPhoto'
+                title: Response List Orphan Photos Api V1 Media Orphans  Orphan Id  Photos Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Photos
       tags:
       - media
   /api/v1/media/{media_id}/url:
