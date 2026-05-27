@@ -186,6 +186,8 @@ jobs:
         run: npm test
       - name: Build (Vite)
         run: npm run build
+      - name: Generated API schema is up to date
+        run: npm run generate:api:check
 
   # ─── Validate OpenAPI spec ────────────────────────────────
   openapi:
