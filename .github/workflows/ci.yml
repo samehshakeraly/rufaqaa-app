@@ -200,6 +200,36 @@ jobs:
               docs/technical/03_api_specification.yaml || true
           fi
 
+  # ─── Docker images: build verification ────────────────────
+  docker-images:
+    name: 🐋 Docker Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: backend
+            context: backend
+            dockerfile: backend/Dockerfile
+          - service: frontend
+            context: frontend
+            dockerfile: frontend/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.service }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: false
+          load: true
+          tags: |
+            rufaqaa-${{ matrix.service }}:${{ github.sha }}
+            rufaqaa-${{ matrix.service }}:latest
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,scope=${{ matrix.service }},mode=max
+
   # ─── Markdown linting ─────────────────────────────────────
   markdown:
     name: 📝 Markdown Quality
