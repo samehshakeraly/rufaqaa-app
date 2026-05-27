@@ -145,16 +145,56 @@ docs/design/screens/
 
 ---
 
-## 🚧 شاشات لم تُنجَز بعد
+## 🌐 الموقع التعريفي العام (Public Website) — 6 شاشات
 
-حسب [SCREENS_PLAN.md](../../SCREENS_PLAN.md)، تبقى:
+| الكود | الملف | الـ Route المتوقّع |
+|---|---|---|
+| W-01 | public/W-01-LandingPage.html | `/` |
+| W-02 | public/W-02-About.html | `/about` |
+| W-03 | public/W-03-HowItWorks.html | `/how-it-works` |
+| W-04 | public/W-04-Transparency.html | `/transparency` |
+| W-05 | public/W-05-Partners.html | `/partners` |
+| W-06 | public/W-06-ContactFAQ.html | `/contact`, `/faq` |
 
-- **O-01 to O-04** — بوابة اليتيم 12+ سنة (4 شاشات)
-- **SA-01 to SA-04** — مشرف المنصة Super Admin (4 شاشات)
-- **W-01 to W-06** — الموقع التعريفي العام (6 شاشات)
-- **S-01 to S-08** — حالات النظام Empty/Error/Loading/etc (8 حالات)
+---
 
-**المجموع المتبقّي: 22 شاشة**
+## 👶 بوابة اليتيم (Orphan Portal 12+) — 4 شاشات
+
+| الكود | الملف | الـ Route المتوقّع |
+|---|---|---|
+| O-01 | orphan/O-01-Login.html | `/orphan/login` |
+| O-02 | orphan/O-02-Home.html | `/orphan/home` |
+| O-03 | orphan/O-03-SendMessage.html | `/orphan/message/new` |
+| O-04 | orphan/O-04-Achievements.html | `/orphan/achievements` |
+
+**ملاحظة:** البوابة تطبّق قواعد حماية صارمة — لا اسم حقيقي للكفيل، لا بيانات مالية، خطوط أكبر، وكلّ رسالة تمرّ بالمراجعة.
+
+---
+
+## 🛠️ مشرف المنصّة (Super Admin) — 4 شاشات
+
+| الكود | الملف | الـ Route المتوقّع |
+|---|---|---|
+| SA-01 | super-admin/SA-01-Dashboard.html | `/super-admin/dashboard` |
+| SA-02 | super-admin/SA-02-Organizations.html | `/super-admin/organizations` |
+| SA-03 | super-admin/SA-03-Analytics.html | `/super-admin/analytics` |
+| SA-04 | super-admin/SA-04-Settings.html | `/super-admin/settings` |
+
+---
+
+## 🔁 حالات النظام (System States) — 3 ملفات تجمع 8 حالات
+
+| الكود | الملف | المحتوى |
+|---|---|---|
+| S-01 → S-04 | system/S-Empty-States.html | لا أيتام · لا كفالات · لا تقارير · لا رسائل |
+| S-05 → S-08 | system/S-Error-States.html | 404 · 403 · 500 · انقطاع الاتّصال |
+| Loading | system/S-Loading-States.html | Skeleton · Spinners · Progressive · Optimistic UI |
+
+---
+
+## ✅ اكتمال خطّة التصميم
+
+كلّ شاشات [SCREENS_PLAN.md](../../SCREENS_PLAN.md) منجزة الآن — المجموع **73 شاشة**.
 
 ---
 
