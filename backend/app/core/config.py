@@ -62,6 +62,18 @@ class Settings(BaseSettings):
     S3_REGION: str = "us-east-1"
     UPLOAD_MAX_BYTES: int = 10 * 1024 * 1024
 
+    # Outbound email. Defaults target the MailHog dev container; in
+    # production set SMTP_HOST/PORT/USER/PASSWORD to a real relay.
+    SMTP_HOST: str = "localhost"
+    SMTP_PORT: int = 1025
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_TLS: bool = False
+    EMAIL_FROM: str = "noreply@rufaqaa.app"
+    EMAIL_FROM_NAME: str = "رفقاء"
+    EMAIL_ENABLED: bool = False  # flip to True once SMTP creds are set
+    DEFAULT_LOCALE: Literal["ar", "en"] = "ar"
+
     # Error reporting (optional). Leave SENTRY_DSN empty to disable.
     SENTRY_DSN: str = ""
     SENTRY_TRACES_SAMPLE_RATE: float = 0.0

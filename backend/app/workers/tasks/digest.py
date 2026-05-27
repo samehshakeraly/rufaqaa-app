@@ -21,6 +21,7 @@ from app.models.organization import Organization
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
+from app.services.email import send_templated
 from app.workers.celery_app import celery_app
 
 logger = structlog.get_logger(__name__)
@@ -137,10 +138,26 @@ async def compose_daily_digests() -> list[DigestEntry]:
 
 @celery_app.task(name="app.workers.tasks.digest.send_daily_digest")
 def send_daily_digest() -> int:
-    """Composes and emits the digest per org. Returns the number of
-    digest entries produced. SMTP delivery is a TODO — for now the
-    digest is logged so an operator can verify the schedule fires."""
+    """Composes the digest per org and renders the bilingual email
+    template for each recipient. Returns the total email count
+    (attempted + logged-only)."""
     entries = asyncio.run(compose_daily_digests())
+    today = datetime.now(UTC).date().isoformat()
+    total = 0
     for entry in entries:
         logger.info("daily_digest", **entry.as_dict())
-    return len(entries)
+        for recipient in entry.recipients:
+            send_templated(
+                to=recipient,
+                template="daily_digest",
+                # No per-user locale yet; fall back to the org default.
+                locale="ar",
+                org_name=entry.organization_name,
+                date=today,
+                new_payments_count=entry.new_payments_count,
+                new_payments_total=f"{entry.new_payments_total}",
+                new_sponsorships_count=entry.new_sponsorships_count,
+                overdue_sponsorships_count=entry.overdue_sponsorships_count,
+            )
+            total += 1
+    return total
