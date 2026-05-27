@@ -275,6 +275,12 @@ jobs:
       # default doesn't include that origin, so widen it here so the
       # browser-driven login POST clears the preflight.
       CORS_ORIGINS: http://127.0.0.1:4173,http://localhost:4173
+      # 14+ specs hit /public/*, /auth/login, /auth/signup etc. as the
+      # same client IP (127.0.0.1). The default 60/min anonymous cap
+      # is well below that — explicitly disable rate limiting for the
+      # E2E job. The dedicated `test_rate_limit.py` integration test
+      # still exercises the limiter via its own fixture.
+      RATE_LIMIT_ENABLED: "false"
       E2E_BASE_URL: http://127.0.0.1:4173
       E2E_ADMIN_EMAIL: admin@dev.rufaqaa.app
       E2E_ADMIN_PASSWORD: admin12345

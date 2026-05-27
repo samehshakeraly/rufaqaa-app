@@ -155,7 +155,7 @@
     "forgotTitle": "Reset your password",
     "forgotDescription": "Enter your email and we'll send a reset link.",
     "forgotSubmit": "Send reset link",
-    "forgotSent": "If an account exists for that email, a reset link has been sent.",
+    "forgotSent": "Check your email — if an account exists for that address, a reset link has been sent.",
     "devTokenNotice": "Dev mode: use this token directly to reset your password.",
     "resetTitle": "Choose a new password",
     "resetToken": "Reset token",
@@ -621,7 +621,7 @@
       "invalidDetails": "Show {{count}} invalid rows",
       "run": "Import {{n}} donors",
       "importing": "Importing… {{done}}/{{total}}",
-      "done": "Done. {{ok}} created, {{fail}} failed."
+      "done": "Done. {{ok}} succeeded, {{fail}} failed."
     },
     "code": "Code",
     "name": "Full name",
