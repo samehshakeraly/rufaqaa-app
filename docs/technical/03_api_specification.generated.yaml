@@ -85,6 +85,169 @@ components:
       - backup_codes
       title: BackupCodesResponse
       type: object
+    BankTransferCreate:
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,13}|(?=[\d.]{1,16}0*$)\d{0,13}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        bank_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Bank Name
+        bank_reference:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Bank Reference
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        partner_organization_id:
+          format: uuid
+          title: Partner Organization Id
+          type: string
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+      required:
+      - partner_organization_id
+      - amount
+      - currency
+      - period_start
+      - period_end
+      title: BankTransferCreate
+      type: object
+    BankTransferRead:
+      properties:
+        amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+          type: string
+        approved_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Approved At
+        approved_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Approved By
+        bank_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bank Name
+        bank_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bank Reference
+        code:
+          title: Code
+          type: string
+        confirmed_by_partner_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Confirmed By Partner At
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        currency:
+          title: Currency
+          type: string
+        executed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Executed At
+        executed_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Executed By
+        id:
+          format: uuid
+          title: Id
+          type: string
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        partner_organization_id:
+          format: uuid
+          title: Partner Organization Id
+          type: string
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+        status:
+          enum:
+          - pending
+          - approved
+          - processing
+          - completed
+          - failed
+          - cancelled
+          title: Status
+          type: string
+      required:
+      - id
+      - code
+      - organization_id
+      - partner_organization_id
+      - amount
+      - currency
+      - bank_name
+      - bank_reference
+      - period_start
+      - period_end
+      - status
+      - approved_by
+      - approved_at
+      - executed_by
+      - executed_at
+      - confirmed_by_partner_at
+      - notes
+      - created_at
+      title: BankTransferRead
+      type: object
     Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post:
       properties:
         file:
@@ -1861,6 +2024,29 @@ components:
       - limit
       - offset
       title: Page[AuditLogRead]
+      type: object
+    Page_BankTransferRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/BankTransferRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[BankTransferRead]
       type: object
     Page_DocumentRead_:
       properties:
@@ -3773,6 +3959,209 @@ paths:
       summary: Reset Password
       tags:
       - auth
+  /api/v1/bank-transfers:
+    get:
+      operationId: list_bank_transfers_api_v1_bank_transfers_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - in: query
+        name: partner_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_BankTransferRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Bank Transfers
+      tags:
+      - bank-transfers
+    post:
+      operationId: create_bank_transfer_api_v1_bank_transfers_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankTransferCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransferRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Bank Transfer
+      tags:
+      - bank-transfers
+  /api/v1/bank-transfers/{transfer_id}/approve:
+    post:
+      operationId: approve_bank_transfer_api_v1_bank_transfers__transfer_id__approve_post
+      parameters:
+      - in: path
+        name: transfer_id
+        required: true
+        schema:
+          format: uuid
+          title: Transfer Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransferRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Approve Bank Transfer
+      tags:
+      - bank-transfers
+  /api/v1/bank-transfers/{transfer_id}/cancel:
+    post:
+      operationId: cancel_bank_transfer_api_v1_bank_transfers__transfer_id__cancel_post
+      parameters:
+      - in: path
+        name: transfer_id
+        required: true
+        schema:
+          format: uuid
+          title: Transfer Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransferRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Cancel Bank Transfer
+      tags:
+      - bank-transfers
+  /api/v1/bank-transfers/{transfer_id}/confirm-receipt:
+    post:
+      description: 'Acknowledge that the partner has received the funds. Does not
+
+        change `status` (a transfer can be `completed` without partner
+
+        confirmation), only stamps confirmed_by_partner_at.'
+      operationId: partner_confirm_receipt_api_v1_bank_transfers__transfer_id__confirm_receipt_post
+      parameters:
+      - in: path
+        name: transfer_id
+        required: true
+        schema:
+          format: uuid
+          title: Transfer Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransferRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Partner Confirm Receipt
+      tags:
+      - bank-transfers
+  /api/v1/bank-transfers/{transfer_id}/mark-completed:
+    post:
+      operationId: mark_bank_transfer_completed_api_v1_bank_transfers__transfer_id__mark_completed_post
+      parameters:
+      - in: path
+        name: transfer_id
+        required: true
+        schema:
+          format: uuid
+          title: Transfer Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransferRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Mark Bank Transfer Completed
+      tags:
+      - bank-transfers
   /api/v1/documents/{document_id}:
     delete:
       description: 'Hard delete — the file in object storage is the source of truth
