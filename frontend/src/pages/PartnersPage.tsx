@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
@@ -86,7 +87,14 @@ export function PartnersPage() {
             <tbody className="divide-y divide-sky/40 text-sm">
               {data.items.map((p) => (
                 <tr key={p.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">{p.code}</td>
+                  <td className="px-4 py-3 font-mono text-xs">
+                    <Link
+                      to={`/partners/${p.id}`}
+                      className="text-trust hover:underline"
+                    >
+                      {p.code}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {i18n.language === "ar" ? p.name_ar : p.name_en ?? p.name_ar}
                   </td>

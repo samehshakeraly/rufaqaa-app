@@ -15,6 +15,7 @@ import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
 import { MyPortalPage } from "./pages/MyPortalPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphansPage } from "./pages/OrphansPage";
+import { PartnerDetailPage } from "./pages/PartnerDetailPage";
 import { PartnersPage } from "./pages/PartnersPage";
 import { PaymentReceiptPage } from "./pages/PaymentReceiptPage";
 import { PaymentsPage } from "./pages/PaymentsPage";
@@ -46,6 +47,7 @@ export function App() {
         <Route path="/families" element={<FamiliesPage />} />
         <Route path="/families/:id" element={<FamilyDetailPage />} />
         <Route path="/partners" element={<PartnersPage />} />
+        <Route path="/partners/:id" element={<PartnerDetailPage />} />
         <Route
           path="/marketing-channels"
           element={
