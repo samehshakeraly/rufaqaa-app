@@ -21,7 +21,11 @@ from app.core.exceptions import NotFound
 from app.models.bank_transfer import BankTransfer
 from app.models.partner import PartnerOrganization
 from app.models.user import User
-from app.schemas.bank_transfer import BankTransferCreate, BankTransferRead
+from app.schemas.bank_transfer import (
+    BankTransferConfirmReceipt,
+    BankTransferCreate,
+    BankTransferRead,
+)
 from app.schemas.common import Page
 from app.services.audit import record_audit
 from app.utils.codes import generate_code
@@ -204,17 +208,39 @@ async def partner_confirm_receipt(
     transfer_id: UUID,
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+    payload: BankTransferConfirmReceipt | None = None,
 ) -> BankTransferRead:
-    """Acknowledge that the partner has received the funds. Does not
-    change `status` (a transfer can be `completed` without partner
-    confirmation), only stamps confirmed_by_partner_at."""
+    """Acknowledge that the partner has received the funds. Stamps
+    confirmed_by_partner_at; optionally attaches a proof document
+    via confirmation_document_id and a free-text note. Does not
+    change `status` — a transfer can be `completed` without partner
+    confirmation."""
     transfer = await _load_or_404(db, transfer_id)
     if transfer.status != "completed":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Can only confirm receipt for completed transfers",
         )
-    transfer.confirmed_by_partner_at = datetime.now(UTC)
+    now = datetime.now(UTC)
+    transfer.confirmed_by_partner_at = now
+    if payload is not None:
+        if payload.confirmation_document_id is not None:
+            from app.models.document import Document
+
+            doc = await db.scalar(
+                select(Document).where(Document.id == payload.confirmation_document_id)
+            )
+            if doc is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Confirmation document not found",
+                )
+            transfer.confirmation_document_id = doc.id
+        if payload.notes is not None and payload.notes.strip():
+            existing = (transfer.notes or "").strip()
+            stamp = now.date().isoformat()
+            new_chunk = f"[{stamp} confirm-receipt] {payload.notes.strip()}"
+            transfer.notes = f"{existing}\n{new_chunk}".strip() if existing else new_chunk
     record_audit(
         db,
         organization_id=user.organization_id,
@@ -222,6 +248,13 @@ async def partner_confirm_receipt(
         action="bank_transfer.partner_confirmed",
         entity_type="bank_transfer",
         entity_id=transfer.id,
+        new_values={
+            "confirmation_document_id": (
+                str(transfer.confirmation_document_id)
+                if transfer.confirmation_document_id
+                else None
+            ),
+        },
         is_sensitive=True,
     )
     await db.commit()
