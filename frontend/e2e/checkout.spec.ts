@@ -141,8 +141,12 @@ test("admin can start a MyFatoorah checkout from an orphan", async ({
   await firstOrphanLink.click();
   await expect(page).toHaveURL(/\/orphans\/[0-9a-f-]+$/);
 
-  // 3. Hit the Sponsor link.
-  await page.getByRole("link", { name: /(sponsor|كفالة)/i }).first().click();
+  // 3. Hit the Sponsor link. Anchor the regex so we match the
+  // page-level "Sponsor" CTA, not the sidebar "Sponsorships" nav item.
+  await page
+    .getByRole("link", { name: /^(sponsor|كفالة)$/i })
+    .first()
+    .click();
   await expect(page).toHaveURL(/\/sponsor\/[0-9a-f-]+\/checkout$/);
 
   // 4. Pick the (single) donor in the dropdown.
