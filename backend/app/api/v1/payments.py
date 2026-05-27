@@ -1,11 +1,13 @@
 import csv
 import io
 from datetime import UTC, datetime
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
@@ -116,6 +118,136 @@ async def create_payment(
     await db.commit()
     await db.refresh(payment)
     return PaymentRead.model_validate(payment)
+
+
+# ────────────────────────────────────────────────────────────────────
+# Admin-on-behalf hosted-checkout (walk-in donor flow)
+# ────────────────────────────────────────────────────────────────────
+
+
+class AdminInitiateOnBehalf(BaseModel):
+    """The admin sits with a present-but-digitally-unable donor, picks
+    them from the existing donor records, and starts a hosted checkout
+    that the donor pays right now on a screen or their own phone."""
+
+    donor_id: UUID
+    sponsorship_id: UUID | None = None
+    orphan_id: UUID | None = None
+    amount: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    currency: str = Field(min_length=3, max_length=3)
+    language: Literal["ar", "en"] = "ar"
+
+
+@router.post(
+    "/admin/initiate-on-behalf",
+    response_model=PaymentInitiateResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def admin_initiate_on_behalf(
+    payload: AdminInitiateOnBehalf,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> PaymentInitiateResponse:
+    """Admin-driven MyFatoorah checkout. The Payment row records BOTH
+    the real donor and the admin who initiated. The webhook-side
+    completion flow is unchanged."""
+    donor = await db.scalar(
+        select(Donor).where(Donor.id == payload.donor_id, Donor.deleted_at.is_(None))
+    )
+    if donor is None:
+        raise NotFound("Donor")
+
+    sponsorship: Sponsorship | None = None
+    if payload.sponsorship_id is not None:
+        sponsorship = await db.scalar(
+            select(Sponsorship).where(Sponsorship.id == payload.sponsorship_id)
+        )
+        if sponsorship is None:
+            raise NotFound("Sponsorship")
+        if sponsorship.donor_id != donor.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Sponsorship does not belong to this donor",
+            )
+
+    donor_org_id = donor.organization_id
+    donor_id = donor.id
+    donor_name = donor.full_name
+    donor_email = donor.email
+    donor_phone = donor.phone
+    admin_user_id = user.id
+
+    payment = Payment(
+        organization_id=donor_org_id,
+        code=generate_code("PAY"),
+        donor_id=donor_id,
+        sponsorship_id=sponsorship.id if sponsorship is not None else None,
+        orphan_id=(
+            sponsorship.orphan_id if sponsorship is not None else payload.orphan_id
+        ),
+        amount=payload.amount,
+        currency=payload.currency,
+        payment_method="credit_card",
+        payment_gateway="myfatoorah",
+        status="pending",
+        initiated_by_user_id=admin_user_id,
+    )
+    db.add(payment)
+    await db.flush()
+    customer_ref = sponsorship.code if sponsorship is not None else str(payment.id)
+    callback_base = settings.APP_BASE_URL.rstrip("/")
+    try:
+        result = await myfatoorah.send_payment(
+            amount=payload.amount,
+            currency=payload.currency,
+            customer_name=donor_name,
+            customer_email=donor_email,
+            customer_phone=donor_phone,
+            customer_reference=customer_ref,
+            callback_url=f"{callback_base}/payment/success?payment_id={payment.id}",
+            error_url=f"{callback_base}/payment/failure?payment_id={payment.id}",
+            language=payload.language,
+        )
+    except myfatoorah.MyFatoorahError as exc:
+        await db.rollback()
+        record_audit(
+            db,
+            organization_id=donor_org_id,
+            user_id=admin_user_id,
+            action="payment.admin_initiate_failed",
+            entity_type="donor",
+            entity_id=donor_id,
+            new_values={"detail": exc.message, "amount": str(payload.amount)},
+        )
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Gateway error: {exc.message}",
+        ) from exc
+
+    payment.gateway_transaction_id = result.invoice_id
+    record_audit(
+        db,
+        organization_id=donor_org_id,
+        user_id=admin_user_id,
+        action="payment.admin_initiated_on_behalf",
+        entity_type="payment",
+        entity_id=payment.id,
+        new_values={
+            "donor_id": str(donor_id),
+            "invoice_id": result.invoice_id,
+            "amount": str(payload.amount),
+            "currency": payload.currency,
+        },
+        is_sensitive=True,
+    )
+    await db.commit()
+    await db.refresh(payment)
+    return PaymentInitiateResponse(
+        payment_id=payment.id,
+        invoice_id=result.invoice_id,
+        payment_url=result.payment_url,
+    )
 
 
 @router.post(

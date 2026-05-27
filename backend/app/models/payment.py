@@ -68,3 +68,8 @@ class Payment(Base):
         TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
     )
     created_by: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("users.id"))
+    # Admin who started the hosted-checkout on behalf of a present
+    # donor. NULL on donor self-initiated payments.
+    initiated_by_user_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id")
+    )
