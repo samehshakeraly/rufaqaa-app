@@ -97,3 +97,23 @@ def decode_password_reset_token(token: str) -> UUID:
     if payload.get("type") != "password_reset":
         raise ValueError("Not a password-reset token")
     return UUID(payload["sub"])
+
+
+def create_email_verification_token(user_id: UUID, expires_in_hours: int = 24) -> str:
+    """One-shot token used to verify a donor's email post-signup."""
+    now = datetime.now(UTC)
+    payload = {
+        "sub": str(user_id),
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(hours=expires_in_hours)).timestamp()),
+        "type": "email_verification",
+        "jti": secrets.token_urlsafe(16),
+    }
+    return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_email_verification_token(token: str) -> UUID:
+    payload = decode_token(token)
+    if payload.get("type") != "email_verification":
+        raise ValueError("Not an email-verification token")
+    return UUID(payload["sub"])

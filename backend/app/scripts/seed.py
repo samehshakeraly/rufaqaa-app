@@ -18,12 +18,44 @@ from app.models.organization import Organization
 from app.models.user import User
 
 SEED_ORG_CODE = "DEV"
+SEED_PLATFORM_ORG_CODE = "PLATFORM"
 SEED_PARTNER_CODE = "DEV-PTN"
 SEED_ADMIN_EMAIL = "admin@dev.rufaqaa.app"
 SEED_ADMIN_PASSWORD = "admin12345"  # dev only
 
 
+async def _ensure_platform_org(db) -> Organization:
+    """The PLATFORM org owns every donor created via public signup.
+
+    They don't belong to any partner / branch — they're 'just donors'
+    on the platform. The org row is real (so RLS works, FKs land), but
+    operationally inert: no orphans, no staff, no partners attached."""
+    existing = await db.scalar(
+        select(Organization).where(Organization.code == SEED_PLATFORM_ORG_CODE)
+    )
+    if existing is not None:
+        return existing
+    org = Organization(
+        code=SEED_PLATFORM_ORG_CODE,
+        name_ar="منصة رفقاء",
+        name_en="Rufaqaa Platform",
+        org_type="standalone",
+        deployment_mode="self_hosted",
+        country_code="KW",
+    )
+    db.add(org)
+    await db.flush()
+    print(f"✔ created platform org: {org.code} (id={org.id})")
+    return org
+
+
 async def seed() -> None:
+    async with make_session() as db:
+        # Always make sure the platform org exists — every public donor
+        # signup needs it whether or not the dev admin has been seeded.
+        await _ensure_platform_org(db)
+        await db.commit()
+
     async with make_session() as db:
         existing = await db.scalar(select(User).where(User.email == SEED_ADMIN_EMAIL))
         if existing:
