@@ -12,12 +12,13 @@ export default {
       },
       fontFamily: {
         sans: [
-          "'Noto Sans Arabic'",
-          "'Inter'",
+          "'IBM Plex Sans Arabic'",
+          "'IBM Plex Sans'",
           "system-ui",
           "-apple-system",
           "sans-serif",
         ],
+        mono: ["'IBM Plex Mono'", "ui-monospace", "monospace"],
       },
     },
   },
