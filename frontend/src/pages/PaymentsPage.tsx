@@ -82,6 +82,9 @@ export function PaymentsPage() {
           >
             {t("payments.exportCsv")}
           </button>
+          <Link to="/admin/payments/walk-in" className="btn-primary">
+            {t("walkIn.title")}
+          </Link>
         </div>
       </div>
 

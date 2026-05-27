@@ -120,6 +120,25 @@ export async function initiatePayment(
   return data;
 }
 
+export interface AdminInitiateOnBehalfInput {
+  donor_id: string;
+  sponsorship_id?: string;
+  orphan_id?: string;
+  amount: string;
+  currency: string;
+  language?: "ar" | "en";
+}
+
+export async function adminInitiateOnBehalf(
+  payload: AdminInitiateOnBehalfInput,
+): Promise<PaymentInitiateResponse> {
+  const { data } = await api.post<PaymentInitiateResponse>(
+    "/payments/admin/initiate-on-behalf",
+    payload,
+  );
+  return data;
+}
+
 export async function refundPayment(
   paymentId: string,
   amount: string,

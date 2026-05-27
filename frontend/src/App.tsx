@@ -42,6 +42,7 @@ import { SponsorshipsPage } from "./pages/SponsorshipsPage";
 import { UsersPage } from "./pages/UsersPage";
 import { VerifyEmailConfirmPage } from "./pages/VerifyEmailConfirmPage";
 import { VerifyEmailPendingPage } from "./pages/VerifyEmailPendingPage";
+import { WalkInCheckoutPage } from "./pages/WalkInCheckoutPage";
 
 export function App() {
   return (
@@ -105,6 +106,14 @@ export function App() {
         />
         <Route path="sponsorships" element={<SponsorshipsPage />} />
         <Route path="payments" element={<PaymentsPage />} />
+        <Route
+          path="payments/walk-in"
+          element={
+            <AdminRoute>
+              <WalkInCheckoutPage />
+            </AdminRoute>
+          }
+        />
         <Route path="payments/:id/receipt" element={<PaymentReceiptPage />} />
         <Route
           path="bank-transfers"
