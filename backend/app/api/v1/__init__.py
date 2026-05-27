@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.v1 import (
     audit,
     auth,
+    documents,
     donor_portal,
     donors,
     families,
@@ -42,3 +43,4 @@ api_router.include_router(families.router, prefix="/families", tags=["families"]
 api_router.include_router(donor_portal.router, prefix="/me", tags=["donor-portal"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(organization.router, prefix="/organization", tags=["organization"])
+api_router.include_router(documents.router, tags=["documents"])

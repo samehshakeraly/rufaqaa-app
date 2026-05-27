@@ -184,6 +184,221 @@ components:
       - payments_last_30d_count
       title: DashboardSummary
       type: object
+    DocumentCreate:
+      description: 'Caller has already uploaded the file to S3 / MinIO (via the
+
+        existing /media endpoint) and is now registering its metadata.'
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        document_type:
+          enum:
+          - birth_certificate
+          - death_certificate
+          - national_id
+          - passport
+          - bank_statement
+          - school_certificate
+          - medical_report
+          - photo_id
+          - family_record
+          - other
+          title: Document Type
+          type: string
+        expiry_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Expiry Date
+        file_hash:
+          anyOf:
+          - maxLength: 64
+            type: string
+          - type: 'null'
+          title: File Hash
+        file_mime_type:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: File Mime Type
+        file_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: File Name
+        file_size_bytes:
+          anyOf:
+          - minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: File Size Bytes
+        file_url:
+          maxLength: 500
+          minLength: 1
+          title: File Url
+          type: string
+        issue_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Issue Date
+        issuing_authority:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Issuing Authority
+        title:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Title
+      required:
+      - document_type
+      - file_url
+      title: DocumentCreate
+      type: object
+    DocumentRead:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        document_type:
+          enum:
+          - birth_certificate
+          - death_certificate
+          - national_id
+          - passport
+          - bank_statement
+          - school_certificate
+          - medical_report
+          - photo_id
+          - family_record
+          - other
+          title: Document Type
+          type: string
+        expiry_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Expiry Date
+        file_mime_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Mime Type
+        file_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Name
+        file_size_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: File Size Bytes
+        file_url:
+          title: File Url
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        issue_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Issue Date
+        issuing_authority:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Issuing Authority
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        uploaded_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Uploaded By
+        verification_status:
+          enum:
+          - pending
+          - verified
+          - rejected
+          - expired
+          title: Verification Status
+          type: string
+        verified_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Verified At
+      required:
+      - id
+      - orphan_id
+      - document_type
+      - title
+      - description
+      - file_url
+      - file_name
+      - file_size_bytes
+      - file_mime_type
+      - issue_date
+      - expiry_date
+      - issuing_authority
+      - verification_status
+      - verified_at
+      - uploaded_by
+      - created_at
+      title: DocumentRead
+      type: object
+    DocumentVerify:
+      properties:
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        status:
+          enum:
+          - pending
+          - verified
+          - rejected
+          - expired
+          title: Status
+          type: string
+      required:
+      - status
+      title: DocumentVerify
+      type: object
     DonationsByPartner:
       properties:
         items:
@@ -1615,6 +1830,29 @@ components:
       - limit
       - offset
       title: Page[AuditLogRead]
+      type: object
+    Page_DocumentRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/DocumentRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[DocumentRead]
       type: object
     Page_DonorRead_:
       properties:
@@ -3504,6 +3742,69 @@ paths:
       summary: Reset Password
       tags:
       - auth
+  /api/v1/documents/{document_id}:
+    delete:
+      description: 'Hard delete — the file in object storage is the source of truth
+
+        and is not removed here. Operators handle storage GC out of band.'
+      operationId: delete_document_api_v1_documents__document_id__delete
+      parameters:
+      - in: path
+        name: document_id
+        required: true
+        schema:
+          format: uuid
+          title: Document Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Delete Document
+      tags:
+      - documents
+  /api/v1/documents/{document_id}/verify:
+    post:
+      operationId: verify_document_api_v1_documents__document_id__verify_post
+      parameters:
+      - in: path
+        name: document_id
+        required: true
+        schema:
+          format: uuid
+          title: Document Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentVerify'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Verify Document
+      tags:
+      - documents
   /api/v1/donors:
     get:
       operationId: list_donors_api_v1_donors_get
@@ -4496,6 +4797,86 @@ paths:
       summary: Update Orphan
       tags:
       - orphans
+  /api/v1/orphans/{orphan_id}/documents:
+    get:
+      operationId: list_orphan_documents_api_v1_orphans__orphan_id__documents_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_DocumentRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Documents
+      tags:
+      - documents
+    post:
+      operationId: attach_document_to_orphan_api_v1_orphans__orphan_id__documents_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Attach Document To Orphan
+      tags:
+      - documents
   /api/v1/orphans/{orphan_id}/timeline:
     get:
       description: 'Chronological feed of everything that has happened around an orphan:
