@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عن رفقاء — قصّتنا، رؤيتنا، وقيمنا</title>
+<meta name="description" content="قصّة رفقاء: من حاجة في جمعيّة واحدة إلى وقف إلكتروني عالمي مفتوح المصدر. رؤيتنا، رسالتنا، قيمنا، والفريق وراء المنصّة.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — نظام تصميم رفقاء v0.1
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-50: #FDFEFE;
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --tranquil-400: #ADCBE5;
+  --sky-100: #C9DDED;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --sky-400: #7FAFD1;
+  --trust-100: #B8CFE3;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+  --trust-800: #142E4D;
+  --trust-900: #0B1E33;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-700: #047857;
+
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-700: #B45309;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.latin, .num { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.narrow {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--trust-600);
+  font-weight: 500;
+  padding: 5px 14px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-full);
+  letter-spacing: .01em;
+}
+
+.eyebrow .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success-500);
+}
+
+.section-title {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+}
+
+.section-lede {
+  font-size: 16px;
+  color: var(--gray-600);
+  line-height: 1.85;
+  max-width: 720px;
+}
+
+.section-head-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+}
+
+.section-head-center .section-lede { margin-inline: auto; }
+
+/* Icons */
+.icon {
+  width: 20px; height: 20px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 28px; height: 28px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV BAR
+   ═══════════════════════════════════════════════════════════════ */
+.nav {
+  background: rgba(247, 251, 252, 0.88);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--sky-200);
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+
+.brand-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+  letter-spacing: -.02em;
+  box-shadow: 0 2px 6px rgba(66, 109, 159, .25);
+}
+
+.brand-text h1 { font-size: 17px; font-weight: 600; color: var(--gray-900); line-height: 1.15; letter-spacing: -.01em; }
+.brand-text p { font-size: 11.5px; color: var(--gray-500); font-weight: 500; letter-spacing: .02em; }
+
+.nav-links { display: flex; align-items: center; gap: 4px; }
+
+.nav-link {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+}
+
+.nav-link:hover { background: var(--tranquil-100); color: var(--trust-600); }
+.nav-link.active { background: var(--tranquil-100); color: var(--trust-600); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.btn-ghost { color: var(--gray-700); }
+.btn-ghost:hover { background: var(--tranquil-100); color: var(--trust-600); }
+
+.btn-secondary { background: white; color: var(--trust-600); border-color: var(--sky-300); }
+.btn-secondary:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  color: white;
+  border-color: var(--trust-500);
+  box-shadow: 0 2px 6px rgba(66, 109, 159, .18);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  box-shadow: 0 4px 10px rgba(66, 109, 159, .28);
+  transform: translateY(-1px);
+}
+
+.btn-lg { padding: 14px 26px; font-size: 15.5px; border-radius: var(--radius-lg); }
+.btn-xl { padding: 16px 32px; font-size: 16px; border-radius: var(--radius-lg); }
+
+.btn-dark {
+  background: var(--gray-900);
+  color: white;
+  border-color: var(--gray-900);
+}
+.btn-dark:hover {
+  background: var(--gray-800);
+  border-color: var(--gray-800);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(11,30,51,.25);
+}
+
+@media (max-width: 900px) { .nav-links { display: none; } }
+@media (max-width: 540px) {
+  .brand-text p { display: none; }
+  .nav { padding: 12px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO — simpler than W-01
+   ═══════════════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0 64px;
+  background:
+    radial-gradient(circle at 80% 8%, rgba(118,159,205,.14) 0%, transparent 45%),
+    radial-gradient(circle at 6% 95%, rgba(185,215,234,.20) 0%, transparent 50%),
+    linear-gradient(180deg, var(--snow-100) 0%, var(--snow-200) 100%);
+  border-bottom: 1px solid var(--sky-200);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(118,159,205,.10) 1px, transparent 0);
+  background-size: 22px 22px;
+  opacity: .55;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%);
+}
+
+.hero-inner {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 52px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.025em;
+  line-height: 1.2;
+}
+
+.hero-title .accent {
+  background: linear-gradient(180deg, transparent 62%, var(--tranquil-200) 62%, var(--tranquil-200) 92%, transparent 92%);
+  padding: 0 6px;
+  color: var(--trust-700);
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--gray-600);
+  line-height: 1.85;
+  max-width: 640px;
+}
+
+.hero-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--gray-600);
+}
+
+.hero-meta .item { display: inline-flex; align-items: center; gap: 6px; }
+.hero-meta .item svg { color: var(--trust-400); }
+.hero-meta .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--gray-300); }
+
+@media (max-width: 760px) {
+  .hero { padding: 56px 0 44px; }
+  .hero-title { font-size: 36px; }
+  .hero-sub { font-size: 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STORY — narrative with 3 phases
+   ═══════════════════════════════════════════════════════════════ */
+.story {
+  padding: 88px 0;
+  background: var(--snow-100);
+}
+
+.story-head {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 56px;
+}
+
+.story-phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  position: relative;
+}
+
+.story-phases::before {
+  content: '';
+  position: absolute;
+  top: 48px;
+  right: 18%;
+  left: 18%;
+  height: 2px;
+  background-image: linear-gradient(to left, var(--sky-300) 50%, transparent 0%);
+  background-size: 14px 2px;
+  background-repeat: repeat-x;
+  z-index: 0;
+}
+
+@media (max-width: 900px) {
+  .story-phases { grid-template-columns: 1fr; gap: 16px; }
+  .story-phases::before { display: none; }
+}
+
+.phase-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px 24px;
+  position: relative;
+  z-index: 1;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.phase-card:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.phase-mark {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: var(--trust-500);
+  position: relative;
+}
+
+.phase-year {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  position: absolute;
+  bottom: -10px;
+  right: 50%;
+  transform: translateX(50%);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--trust-500);
+  color: white;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--snow-100);
+}
+
+.phase-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.phase-card-desc {
+  font-size: 14.5px;
+  color: var(--gray-600);
+  line-height: 1.85;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VISION + MISSION
+   ═══════════════════════════════════════════════════════════════ */
+.vm {
+  padding: 88px 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.vm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 860px) {
+  .vm-grid { grid-template-columns: 1fr; }
+}
+
+.vm-card {
+  background: var(--snow-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.vm-card:hover {
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-md);
+}
+
+.vm-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  inset-inline-end: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(118,159,205,.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.vm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.vm-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--trust-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  margin-bottom: 8px;
+}
+
+.vm-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.015em;
+  line-height: 1.35;
+  margin-bottom: 14px;
+}
+
+.vm-body {
+  font-size: 15.5px;
+  color: var(--gray-600);
+  line-height: 1.9;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VALUES — 4 cards
+   ═══════════════════════════════════════════════════════════════ */
+.values {
+  padding: 88px 0;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(118,159,205,.08) 0%, transparent 50%),
+    linear-gradient(180deg, var(--snow-100) 0%, var(--snow-200) 100%);
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 980px) { .values-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .values-grid { grid-template-columns: 1fr; } }
+
+.value-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 26px 22px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.value-card:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.value-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.value-card:nth-child(1) .value-icon { background: var(--tranquil-200); color: var(--trust-600); }
+.value-card:nth-child(2) .value-icon { background: var(--success-50); color: var(--success-700); }
+.value-card:nth-child(3) .value-icon { background: var(--snow-300); color: var(--trust-700); }
+.value-card:nth-child(4) .value-icon { background: var(--warning-50); color: var(--warning-700); }
+
+.value-name {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+}
+
+.value-desc {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.75;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HADITH + TAFSIR
+   ═══════════════════════════════════════════════════════════════ */
+.hadith {
+  padding: 88px 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.hadith-card {
+  max-width: 880px;
+  margin: 0 auto;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(118,159,205,.12) 0%, transparent 45%),
+    linear-gradient(160deg, var(--tranquil-100) 0%, var(--snow-200) 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 48px 40px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hadith-card::before {
+  content: '”';
+  position: absolute;
+  top: 8px;
+  right: 24px;
+  font-size: 120px;
+  line-height: 1;
+  color: var(--sky-300);
+  opacity: .45;
+  font-family: serif;
+  user-select: none;
+}
+
+.hadith-text {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--trust-700);
+  line-height: 1.9;
+  letter-spacing: -.005em;
+  text-align: center;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.hadith-attr {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.hadith-attr .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--trust-300); }
+
+.tafsir {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 22px 24px;
+  position: relative;
+}
+
+.tafsir-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--trust-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.tafsir-text {
+  font-size: 15px;
+  color: var(--gray-700);
+  line-height: 1.95;
+}
+
+.tafsir-text strong { color: var(--gray-900); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .hadith-card { padding: 36px 24px 28px; }
+  .hadith-text { font-size: 20px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OPEN SOURCE
+   ═══════════════════════════════════════════════════════════════ */
+.os {
+  padding: 88px 0;
+  background: var(--snow-100);
+}
+
+.os-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+@media (max-width: 960px) { .os-grid { grid-template-columns: 1fr; gap: 40px; } }
+
+.os-copy { display: flex; flex-direction: column; gap: 16px; }
+
+.os-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.os-point {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 14.5px;
+  color: var(--gray-700);
+  line-height: 1.8;
+}
+
+.os-point-tick {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--success-50);
+  color: var(--success-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.os-point strong { color: var(--gray-900); font-weight: 600; }
+
+.os-visual {
+  background: var(--gray-900);
+  border-radius: var(--radius-2xl);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.os-visual::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(118,159,205,.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.os-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.os-window-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.os-window-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--gray-700);
+}
+.os-window-dots span:nth-child(1) { background: #ef4444aa; }
+.os-window-dots span:nth-child(2) { background: #eab308aa; }
+.os-window-dots span:nth-child(3) { background: #10b981aa; }
+
+.os-window-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-inline-start: auto;
+}
+
+.os-repo-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.os-repo-name svg { color: var(--trust-300); }
+
+.os-repo-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.os-stat {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  position: relative;
+}
+
+.os-stat-label {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.os-stat-value {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -.01em;
+}
+
+.os-commit {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+.os-commit:last-child { margin-bottom: 0; }
+
+.os-commit-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+.os-commit-body { min-width: 0; flex: 1; }
+
+.os-commit-msg {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  color: var(--gray-300);
+  line-height: 1.55;
+}
+
+.os-commit-meta {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOUNDER
+   ═══════════════════════════════════════════════════════════════ */
+.founder {
+  padding: 88px 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+}
+
+.founder-card {
+  max-width: 920px;
+  margin: 0 auto;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(118,159,205,.10) 0%, transparent 50%),
+    linear-gradient(160deg, white 0%, var(--snow-100) 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+@media (max-width: 760px) {
+  .founder-card {
+    grid-template-columns: 1fr;
+    padding: 32px 24px;
+    text-align: center;
+    gap: 20px;
+  }
+}
+
+.founder-avatar {
+  width: 180px;
+  height: 180px;
+  border-radius: var(--radius-2xl);
+  background:
+    repeating-linear-gradient(135deg, var(--tranquil-100) 0, var(--tranquil-100) 8px, var(--tranquil-200) 8px, var(--tranquil-200) 16px);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-700);
+  font-size: 64px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 760px) {
+  .founder-avatar { width: 140px; height: 140px; margin: 0 auto; font-size: 52px; }
+}
+
+.founder-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,.25) 100%);
+  pointer-events: none;
+}
+
+.founder-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.founder-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--trust-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.founder-name {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.015em;
+}
+
+.founder-title-line {
+  font-size: 14.5px;
+  color: var(--trust-600);
+  font-weight: 500;
+}
+
+.founder-bio {
+  font-size: 15.5px;
+  color: var(--gray-700);
+  line-height: 1.95;
+  margin-top: 8px;
+}
+
+.founder-bio strong { color: var(--gray-900); font-weight: 600; }
+
+.founder-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+@media (max-width: 760px) {
+  .founder-links { justify-content: center; }
+}
+
+.founder-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--sky-200);
+  background: white;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  color: var(--gray-700);
+  transition: var(--transition);
+}
+
+.founder-link:hover {
+  background: var(--tranquil-100);
+  border-color: var(--trust-300);
+  color: var(--trust-600);
+}
+
+.founder-link svg { color: var(--trust-400); }
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM
+   ═══════════════════════════════════════════════════════════════ */
+.team {
+  padding: 88px 0;
+  background: var(--snow-100);
+}
+
+.team-head {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+}
+
+.team-head .sample-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  color: var(--warning-700);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 980px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .team-grid { grid-template-columns: 1fr; } }
+
+.team-card {
+  background: white;
+  border: 1px dashed var(--sky-300);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.team-card.filled { border-style: solid; border-color: var(--gray-200); }
+.team-card.filled:hover { border-color: var(--sky-300); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+
+.team-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 6px, var(--tranquil-100) 6px, var(--tranquil-100) 12px);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-700);
+  font-weight: 600;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.team-card.placeholder .team-avatar {
+  background: var(--gray-50);
+  border-style: dashed;
+  border-color: var(--gray-300);
+  color: var(--gray-400);
+}
+
+.team-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.team-role {
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+
+.team-card.placeholder .team-name { color: var(--gray-500); }
+.team-card.placeholder .team-role { color: var(--gray-400); font-style: italic; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA — join as contributor
+   ═══════════════════════════════════════════════════════════════ */
+.cta {
+  padding: 96px 0;
+  background: linear-gradient(135deg, var(--trust-600) 0%, var(--trust-800) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.08) 1px, transparent 0);
+  background-size: 28px 28px;
+  opacity: .5;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 70%);
+}
+
+.cta::after {
+  content: '';
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(150,183,214,.25) 0%, transparent 70%);
+  top: -180px;
+  inset-inline-end: -120px;
+  pointer-events: none;
+}
+
+.cta-inner {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cta-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--tranquil-200);
+  font-weight: 500;
+  padding: 6px 14px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--radius-full);
+}
+
+.cta-title {
+  font-size: 38px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -.025em;
+  line-height: 1.3;
+}
+
+.cta-title .soft { color: var(--tranquil-200); }
+
+.cta-lede {
+  font-size: 16.5px;
+  color: rgba(255,255,255,.78);
+  line-height: 1.85;
+  max-width: 580px;
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.btn-light {
+  background: white;
+  color: var(--trust-700);
+  border: 1px solid white;
+}
+.btn-light:hover {
+  background: var(--tranquil-100);
+  border-color: var(--tranquil-100);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-light {
+  background: rgba(255,255,255,.08);
+  color: white;
+  border: 1px solid rgba(255,255,255,.35);
+}
+.btn-outline-light:hover {
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.55);
+}
+
+@media (max-width: 540px) {
+  .cta { padding: 64px 0; }
+  .cta-title { font-size: 28px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+.footer {
+  background: var(--gray-900);
+  color: var(--gray-300);
+  padding: 64px 0 28px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+@media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
+
+.footer-brand { display: flex; flex-direction: column; gap: 14px; }
+.footer-brand-row { display: flex; align-items: center; gap: 12px; }
+
+.footer-brand-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+}
+
+.footer-brand-name { font-size: 17px; font-weight: 600; color: white; }
+.footer-brand-desc { font-size: 13.5px; color: var(--gray-400); line-height: 1.75; max-width: 320px; }
+
+.footer-social { display: flex; gap: 8px; margin-top: 8px; }
+
+.footer-social a {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gray-300);
+  transition: var(--transition);
+}
+
+.footer-social a:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-400);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.footer-col h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+.footer-col a {
+  font-size: 13.5px;
+  color: var(--gray-400);
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-col a:hover { color: white; }
+
+.footer-col .badge {
+  font-size: 10px;
+  background: var(--success-500);
+  color: white;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  margin-inline-start: 4px;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+
+.footer-bottom .license { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.footer-bottom .license code {
+  background: rgba(255,255,255,.06);
+  color: var(--gray-300);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+}
+
+.footer-bottom .made-with { color: var(--gray-400); }
+.footer-bottom .made-with .heart { color: var(--trust-300); }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NAV
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="nav" role="banner">
+  <div class="nav-inner">
+
+    <a class="brand" href="#" aria-label="رفقاء — الصفحة الرئيسية">
+      <span class="brand-mark" aria-hidden="true">ر</span>
+      <div class="brand-text">
+        <h1>رفقاء</h1>
+        <p>وقف إلكتروني عالمي</p>
+      </div>
+    </a>
+
+    <nav class="nav-links" aria-label="التنقّل الرئيسي">
+      <a class="nav-link" href="#">الرئيسية</a>
+      <a class="nav-link" href="#">كيف نعمل</a>
+      <a class="nav-link" href="#">الشفافية</a>
+      <a class="nav-link" href="#">الشركاء</a>
+      <a class="nav-link active" href="#" aria-current="page">عن رفقاء</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a class="btn btn-ghost" href="#">دخول</a>
+      <a class="btn btn-primary" href="#">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        كن كفيلاً
+      </a>
+    </div>
+
+  </div>
+</header>
+
+<main role="main">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero-inner">
+
+      <span class="eyebrow">
+        <span class="dot" aria-hidden="true"></span>
+        عن رفقاء
+      </span>
+
+      <h1 class="hero-title" id="hero-title">
+        قصّة <span class="accent">رفقاء</span>
+      </h1>
+
+      <p class="hero-sub">
+        ما يبدأ كحاجة في جمعيّة واحدة، يصبح ـ بإذن الله ـ وقفاً إلكترونياً يخدم آلاف الأيتام حول العالم. هذه قصّة كيف بدأنا، ولماذا ما زلنا نمضي.
+      </p>
+
+      <div class="hero-meta">
+        <span class="item">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          تأسّست <span class="latin">٢٠٢٤</span>
+        </span>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="item">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          مفتوحة المصدر · رخصة <span class="latin">MIT</span>
+        </span>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="item">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          مشروع وقف لا ربحي
+        </span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STORY — 3 phases
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="story" aria-labelledby="story-title">
+    <div class="container">
+
+      <div class="story-head">
+        <span class="eyebrow">القصّة</span>
+        <h2 class="section-title" id="story-title">من حاجة محلّيّة، <span style="color: var(--trust-500);">إلى وقف عالمي</span></h2>
+        <p class="section-lede">
+          لم نخطّط لرفقاء على ورقة بيضاء — وُلدت من احتكاك يومي بمؤسّسة خيريّة واحدة، ثمّ كبرت لأنّ آلاف الأيتام يحتاجون نفس الجواب.
+        </p>
+      </div>
+
+      <div class="story-phases">
+
+        <div class="phase-card">
+          <div class="phase-mark">
+            <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="phase-year latin">٢٠٢٣</span>
+          </div>
+          <h3 class="phase-card-title">بدأت كحاجة</h3>
+          <p class="phase-card-desc">
+            في إحدى الجمعيّات الخيريّة الكويتية، كانت إدارة كفالات الأيتام تتمّ على أوراق وجداول إكسل متفرّقة. التحويلات تُسجَّل يدوياً، والتقارير تتأخّر شهوراً. الحاجة كانت واضحة: نظام واحد، شفّاف، يخدم الجميع.
+          </p>
+        </div>
+
+        <div class="phase-card">
+          <div class="phase-mark">
+            <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="phase-year latin">٢٠٢٤</span>
+          </div>
+          <h3 class="phase-card-title">نمت لتشمل العالم</h3>
+          <p class="phase-card-desc">
+            جمعيّات شريكة أخرى رأت المنصّة وطلبت الانضمام — من مصر إلى فلسطين إلى السودان. أصبح الكفلاء يصلون أيتاماً عبر القارّات، والتقارير تتدفّق شهرياً بشكل آليّ، وعدد الجهات الموثّقة تجاوز <span class="latin">٢٠</span>.
+          </p>
+        </div>
+
+        <div class="phase-card">
+          <div class="phase-mark">
+            <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span class="phase-year latin">٢٠٢٥</span>
+          </div>
+          <h3 class="phase-card-title">أصبحت وقفاً إلكترونياً</h3>
+          <p class="phase-card-desc">
+            القرار النهائي: لا منظّمة ربحيّة، ولا احتكار. رفقاء وقف إلكتروني مفتوح المصدر برخصة <span class="latin">MIT</span> — أيّ مؤسّسة في العالم تستطيع استخدامه مجاناً، نسخه، أو المساهمة فيه. خير لا ينقطع، بإذن الله.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       VISION + MISSION
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="vm" aria-labelledby="vm-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">الرؤية والرسالة</span>
+        <h2 class="section-title" id="vm-title">إلى أين نمضي، <span style="color: var(--trust-500);">وكيف نمضي</span></h2>
+      </div>
+
+      <div class="vm-grid">
+
+        <article class="vm-card">
+          <div class="vm-icon" aria-hidden="true">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="vm-label">الرؤية</div>
+          <h3 class="vm-title">عالم لا يبقى فيه يتيمٌ بلا رفيق.</h3>
+          <p class="vm-body">
+            نحلم بمنصّة تَصِل كلّ يتيم ـ مهما بَعُد ـ بكفيل يدعو له، ويسأل عنه، ويكون له رفيقاً في الدنيا قبل الآخرة. نحلم بأن تختفي قوائم الانتظار، وأن تصبح كفالة اليتيم بسيطةً كإرسال رسالة.
+          </p>
+        </article>
+
+        <article class="vm-card">
+          <div class="vm-icon" aria-hidden="true">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="16" y1="14" x2="12" y2="12"/></svg>
+          </div>
+          <div class="vm-label">الرسالة</div>
+          <h3 class="vm-title">نربط الكفلاء بالأيتام بشفافيةٍ وكرامة.</h3>
+          <p class="vm-body">
+            نبني أداةً مفتوحة المصدر، آمنة، وسهلة الاستخدام، تُمكّن أيّ جمعيّة خيريّة موثّقة من إدارة كفالاتها بكفاءة، وتُمكّن أيّ كفيل من متابعة يتيمه بثقة ـ دون أن نمسّ كرامة الطفل أو خصوصيّته.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       VALUES
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="values" aria-labelledby="values-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">القيم</span>
+        <h2 class="section-title" id="values-title">أربع قيم <span style="color: var(--trust-500);">نُحاسَب عليها قبل الأرقام</span></h2>
+        <p class="section-lede">
+          القيم ليست شعارات على الجدار — هي معايير القرار. حين نقف أمام خيار تصميمي أو ماليّ، نسأل: هل يخدم الإخلاص؟ الشفافية؟ الكرامة؟ الإتقان؟
+        </p>
+      </div>
+
+      <div class="values-grid">
+
+        <article class="value-card">
+          <div class="value-icon" aria-hidden="true">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <h3 class="value-name">الإخلاص</h3>
+          <p class="value-desc">
+            «إنّما الأعمال بالنيّات». نعمل ابتغاءَ وجه الله ـ لا للسمعة ولا للجائزة. وحين تتعارض النيّة مع المصلحة، نختار النيّة.
+          </p>
+        </article>
+
+        <article class="value-card">
+          <div class="value-icon" aria-hidden="true">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="value-name">الشفافية</h3>
+          <p class="value-desc">
+            الكود مفتوح، الحسابات مدقَّقة، والقرارات موثَّقة. كلّ ريال يحمل رقماً تسلسلياً ـ من بطاقة الكفيل إلى يد الجهة المسلِّمة لليتيم.
+          </p>
+        </article>
+
+        <article class="value-card">
+          <div class="value-icon" aria-hidden="true">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3 class="value-name">الكرامة</h3>
+          <p class="value-desc">
+            اليتيم إنسانٌ كامل، لا قضيّةٌ تسويقيّة. لا صور حقيقيّة، ولا قصص بكائيّة لاستجلاب التبرّعات. نحفظ الخصوصيّة كما نحفظ المال.
+          </p>
+        </article>
+
+        <article class="value-card">
+          <div class="value-icon" aria-hidden="true">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3 class="value-name">الإتقان</h3>
+          <p class="value-desc">
+            «إنّ الله يحبّ إذا عمل أحدكم عملاً أن يُتقنه». نبني المنصّة كأنّها مسجدٌ نتعبّد فيه ـ كلّ سطر كود، كلّ زرّ، كلّ كلمة، نضعها بميزان.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HADITH + TAFSIR
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="hadith" aria-labelledby="hadith-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">من السنّة</span>
+        <h2 class="section-title" id="hadith-title">حديث <span style="color: var(--trust-500);">ينير الطريق</span></h2>
+      </div>
+
+      <div class="hadith-card">
+        <p class="hadith-text">
+          أنا وكافِلُ اليتيمِ في الجنّةِ هكذا
+        </p>
+        <div class="hadith-attr">
+          <span>صحيح البخاري · باب فضل من يعول يتيماً</span>
+          <span class="dot" aria-hidden="true"></span>
+          <span>عن سهل بن سعد ﵁</span>
+        </div>
+
+        <div class="tafsir">
+          <div class="tafsir-label">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            تفسير مختصر
+          </div>
+          <p class="tafsir-text">
+            ضمّ النبي ﷺ بين <strong>السبّابة والوسطى</strong>، وأشار إلى أنّ كافل اليتيم سيكون بهذا القرب من النبي يوم القيامة. والكفالة لا تعني فقط <strong>الإنفاق المالي</strong> ـ بل تشمل الرعاية، والدعاء، ومتابعة شؤون اليتيم في تعليمه وصحّته وأخلاقه. وقد عمّمها النبي ﷺ فلم يخصّها بقرابة، بل قال «له أو لغيره» ـ ليفتح الباب لكلّ مؤمن أن ينال هذا الفضل.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       OPEN SOURCE
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="os" aria-labelledby="os-title">
+    <div class="container">
+      <div class="os-grid">
+
+        <div class="os-copy">
+          <span class="eyebrow">المصدر مفتوح</span>
+          <h2 class="section-title" id="os-title">لماذا اخترنا أن نكون <span style="color: var(--trust-500);">مفتوحي المصدر؟</span></h2>
+          <p class="section-lede">
+            في عمل خيري، الثقة هي العملة. والكود المفتوح هو أقوى شكل من أشكال الثقة ـ لأنّك لا تأخذ كلمتنا، بل تقرأ بنفسك.
+          </p>
+
+          <div class="os-points">
+
+            <div class="os-point">
+              <div class="os-point-tick">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <strong>شفافية كاملة</strong> ـ كلّ سطر كود متاح للمراجعة العامّة. أيّ مطوّر أو مهندس أمن يستطيع التأكّد بنفسه من كيفية تخزين البيانات وحماية المعاملات.
+              </div>
+            </div>
+
+            <div class="os-point">
+              <div class="os-point-tick">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <strong>أيّ مؤسّسة تستطيع استخدامه مجاناً</strong> ـ بدون رسوم اشتراك، ولا اعتماد على رفقاء كشركة. تنزّل، تنشر، تعدّل ـ بحرّية، تحت رخصة <span class="latin mono">MIT</span>.
+              </div>
+            </div>
+
+            <div class="os-point">
+              <div class="os-point-tick">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <strong>مساهمات من المجتمع</strong> ـ مطوّرون من الكويت، السعودية، مصر، الأردن، وماليزيا ساهموا في الكود، الترجمة، والتدقيق. خير لا يقتصر على فريق واحد.
+              </div>
+            </div>
+
+            <div class="os-point">
+              <div class="os-point-tick">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <strong>وقفٌ لا ينقطع</strong> ـ حتى لو توقّف الفريق المؤسّس عن العمل غداً، يبقى الكود متاحاً للأبد لأيّ جهة تريد إكماله أو نسخه. صدقة جارية بصيغة برمجيّة.
+              </div>
+            </div>
+
+          </div>
+
+          <div style="margin-top: 18px;">
+            <a class="btn btn-dark btn-lg" href="https://github.com/samehshakeraly/rufaqaa-app" rel="noopener" target="_blank">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+              تصفّح المستودع على GitHub
+            </a>
+          </div>
+        </div>
+
+        <div class="os-visual" aria-hidden="true">
+
+          <div class="os-window-bar">
+            <div class="os-window-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="os-window-title latin">github.com</div>
+          </div>
+
+          <div class="os-repo-name">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+            samehshakeraly / rufaqaa-app
+          </div>
+
+          <div class="os-repo-stats">
+            <div class="os-stat">
+              <div class="os-stat-label">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                Stars
+              </div>
+              <div class="os-stat-value">847</div>
+            </div>
+            <div class="os-stat">
+              <div class="os-stat-label">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="6" cy="12" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Forks
+              </div>
+              <div class="os-stat-value">63</div>
+            </div>
+            <div class="os-stat">
+              <div class="os-stat-label">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Contributors
+              </div>
+              <div class="os-stat-value">24</div>
+            </div>
+          </div>
+
+          <div class="os-commit">
+            <div class="os-commit-dot"></div>
+            <div class="os-commit-body">
+              <div class="os-commit-msg">feat(donor): add MyFatoorah Apple Pay flow</div>
+              <div class="os-commit-meta">سامح · قبل ٣ ساعات · <span class="latin">e99b8b4</span></div>
+            </div>
+          </div>
+
+          <div class="os-commit">
+            <div class="os-commit-dot"></div>
+            <div class="os-commit-body">
+              <div class="os-commit-msg">design(public): W-01 Landing Page</div>
+              <div class="os-commit-meta">سامح · أمس · <span class="latin">2f4a91c</span></div>
+            </div>
+          </div>
+
+          <div class="os-commit">
+            <div class="os-commit-dot"></div>
+            <div class="os-commit-body">
+              <div class="os-commit-msg">i18n: translate guardian portal to Urdu</div>
+              <div class="os-commit-meta">مساهم خارجي · قبل يومين · <span class="latin">a17c3d2</span></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOUNDER
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="founder" aria-labelledby="founder-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">المؤسّس</span>
+        <h2 class="section-title" id="founder-title">من بدأ <span style="color: var(--trust-500);">رفقاء؟</span></h2>
+      </div>
+
+      <article class="founder-card">
+
+        <div class="founder-avatar" aria-hidden="true">س ع</div>
+
+        <div class="founder-info">
+          <div class="founder-label">المؤسّس · مطوّر · واقف</div>
+          <h3 class="founder-name">سامح عبدالعزيز</h3>
+          <p class="founder-title-line">مهندس برمجيات · مهتمّ بالأوقاف الإلكترونية</p>
+
+          <p class="founder-bio">
+            سامح مهندس برمجيات من <strong>الكويت</strong>، يعمل على بناء أدوات تقنيّة تخدم العمل الخيري والإسلامي. بدأ رفقاء عام <span class="latin">٢٠٢٣</span> كأداة لجمعيّة واحدة، ثمّ قرّر تحويلها إلى <strong>وقف إلكتروني مفتوح المصدر</strong> ـ ضمن سلسلة أوقاف إلكترونيّة هدفها أن يبقى أجرها جارياً بإذن الله بعد توقّفه عن العمل.
+          </p>
+
+          <p class="founder-bio">
+            لا يأخذ سامح أيّ مقابل ماديّ مقابل تطوير المنصّة، ويعتبرها صدقةً جارية بصيغة برمجيّة ـ على نيّة والديه ـ رحمهما الله وأطال أعمارهما ـ ومن يعرفهم من اليتامى.
+          </p>
+
+          <div class="founder-links">
+            <a class="founder-link" href="https://github.com/samehshakeraly" rel="noopener" target="_blank">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+              <span class="latin">@samehshakeraly</span>
+            </a>
+            <a class="founder-link" href="#">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>سلسلة الأوقاف الإلكترونية</span>
+            </a>
+            <a class="founder-link" href="mailto:hello@rufaqaa.app">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span class="latin">hello@rufaqaa.app</span>
+            </a>
+          </div>
+        </div>
+
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       TEAM
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="team" aria-labelledby="team-title">
+    <div class="container">
+
+      <div class="team-head">
+        <span class="sample-badge">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          الفريق قيد التشكيل — بطاقات المتطوّعين تُملأ تباعاً
+        </span>
+        <h2 class="section-title" id="team-title">الفريق <span style="color: var(--trust-500);">والمتطوّعون</span></h2>
+        <p class="section-lede">
+          رفقاء ليست عمل شخص واحد ـ بل ثمرة جهد متطوّعين من مختلف الدول. هذه أوّل بطاقات الفريق، وما زالت الباقية مفتوحة لمن أراد المساهمة.
+        </p>
+      </div>
+
+      <div class="team-grid">
+
+        <article class="team-card filled">
+          <div class="team-avatar" aria-hidden="true">س.ع</div>
+          <div class="team-name">سامح عبدالعزيز</div>
+          <div class="team-role">المؤسّس · المطوّر الرئيسي</div>
+        </article>
+
+        <article class="team-card placeholder">
+          <div class="team-avatar" aria-hidden="true">
+            <svg class="icon icon-xl" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="team-name">مكان متطوّع</div>
+          <div class="team-role">تصميم منتج (UI/UX)</div>
+        </article>
+
+        <article class="team-card placeholder">
+          <div class="team-avatar" aria-hidden="true">
+            <svg class="icon icon-xl" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="team-name">مكان متطوّع</div>
+          <div class="team-role">تدقيق شرعي ومراجعة</div>
+        </article>
+
+        <article class="team-card placeholder">
+          <div class="team-avatar" aria-hidden="true">
+            <svg class="icon icon-xl" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="team-name">مكان متطوّع</div>
+          <div class="team-role">دعم الجهات الشريكة</div>
+        </article>
+
+        <article class="team-card placeholder">
+          <div class="team-avatar" aria-hidden="true">
+            <svg class="icon icon-xl" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="team-name">مكان متطوّع</div>
+          <div class="team-role">ترجمة وتعريب</div>
+        </article>
+
+        <article class="team-card placeholder">
+          <div class="team-avatar" aria-hidden="true">
+            <svg class="icon icon-xl" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="team-name">مكان متطوّع</div>
+          <div class="team-role">محتوى وصياغة</div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       CTA — join as contributor
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-inner">
+
+        <span class="cta-eyebrow">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          انضمّ كمساهم
+        </span>
+
+        <h2 class="cta-title" id="cta-title">
+          مكانك في رفقاء <span class="soft">ينتظرك على GitHub.</span>
+        </h2>
+
+        <p class="cta-lede">
+          سواء كنت <strong style="color: white; font-weight: 600;">مطوّراً</strong> تفتح <span class="latin mono">Pull Request</span>، أو <strong style="color: white; font-weight: 600;">مصمّماً</strong> تقترح شاشة، أو <strong style="color: white; font-weight: 600;">طالب علم</strong> تراجع نصوصاً ـ ساهمتك ستكون صدقةً جارية في عمل يخدم أيتاماً لم تَلْتَقِ بهم.
+        </p>
+
+        <div class="cta-actions">
+          <a class="btn btn-light btn-xl" href="https://github.com/samehshakeraly/rufaqaa-app" rel="noopener" target="_blank">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+            انضمّ على GitHub
+          </a>
+          <a class="btn btn-outline-light btn-xl" href="#">
+            راسلنا — أريد المساعدة بطريقة أخرى
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+
+    <div class="footer-grid">
+
+      <div class="footer-brand">
+        <div class="footer-brand-row">
+          <span class="footer-brand-mark" aria-hidden="true">ر</span>
+          <span class="footer-brand-name">رفقاء</span>
+        </div>
+        <p class="footer-brand-desc">
+          منصّة وقف إلكتروني عالمي، مفتوحة المصدر، تربط الكفلاء بالأيتام بشفافية كاملة وكرامة محفوظة.
+        </p>
+        <div class="footer-social">
+          <a href="https://github.com/samehshakeraly/rufaqaa-app" aria-label="GitHub" rel="noopener" target="_blank">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+          </a>
+          <a href="#" aria-label="WhatsApp">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" aria-label="X (Twitter)">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="mailto:hello@rufaqaa.app" aria-label="البريد الإلكتروني">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>المنصّة</h3>
+        <ul>
+          <li><a href="#">تصفّح الأيتام</a></li>
+          <li><a href="#">كن كفيلاً</a></li>
+          <li><a href="#">كيف نعمل</a></li>
+          <li><a href="#">للمؤسّسات</a></li>
+          <li><a href="#">سجّل الدخول</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>الثقة والشفافية</h3>
+        <ul>
+          <li><a href="#">الشفافية المالية</a></li>
+          <li><a href="#">التقارير السنوية</a></li>
+          <li><a href="#">الجهات الشريكة</a></li>
+          <li><a href="#">سياسة الخصوصية</a></li>
+          <li><a href="#">شروط الاستخدام</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>المجتمع والكود</h3>
+        <ul>
+          <li>
+            <a href="https://github.com/samehshakeraly/rufaqaa-app" rel="noopener" target="_blank">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+              المستودع على GitHub
+              <span class="badge">مفتوح</span>
+            </a>
+          </li>
+          <li><a href="#">دليل المساهمة</a></li>
+          <li><a href="#">خارطة الطريق</a></li>
+          <li><a href="#">دفتر الإصدارات</a></li>
+          <li><a href="#">اتّصل بنا</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="license">
+        <span>© <span class="latin">٢٠٢٥</span> رفقاء — مرخّصة برخصة</span>
+        <code>MIT License</code>
+        <span>· يُسمح بالاستخدام والنسخ والتعديل بحرّية.</span>
+      </div>
+      <div class="made-with">
+        أحد مشاريع أوقاف <strong style="color: var(--gray-300); font-weight: 500;">سامح عبدالعزيز</strong> الإلكترونية
+        <span class="heart" aria-hidden="true">♥</span>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>
