@@ -57,7 +57,7 @@ export async function createBankTransfer(
 
 async function transition(
   id: string,
-  action: "approve" | "mark-completed" | "cancel" | "confirm-receipt",
+  action: "approve" | "mark-completed" | "cancel",
 ): Promise<BankTransfer> {
   const { data } = await api.post<BankTransfer>(`/bank-transfers/${id}/${action}`);
   return data;
@@ -67,5 +67,18 @@ export const approveBankTransfer = (id: string) => transition(id, "approve");
 export const markBankTransferCompleted = (id: string) =>
   transition(id, "mark-completed");
 export const cancelBankTransfer = (id: string) => transition(id, "cancel");
-export const confirmBankTransferReceipt = (id: string) =>
-  transition(id, "confirm-receipt");
+
+export interface ConfirmReceiptInput {
+  confirmation_document_id?: string;
+  notes?: string;
+}
+
+export async function confirmBankTransferReceipt(
+  id: string,
+  body?: ConfirmReceiptInput,
+): Promise<BankTransfer & { confirmation_document_id: string | null }> {
+  const { data } = await api.post<
+    BankTransfer & { confirmation_document_id: string | null }
+  >(`/bank-transfers/${id}/confirm-receipt`, body ?? {});
+  return data;
+}

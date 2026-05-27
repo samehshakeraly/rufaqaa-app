@@ -3,12 +3,12 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { ConfirmReceiptDialog } from "@/components/ConfirmReceiptDialog";
 import { TableSkeleton } from "@/components/Skeleton";
 import {
   approveBankTransfer,
   type BankTransferCreateInput,
   cancelBankTransfer,
-  confirmBankTransferReceipt,
   createBankTransfer,
   listBankTransfers,
   markBankTransferCompleted,
@@ -32,6 +32,7 @@ export function BankTransfersPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<string | null>(null);
 
   const transfersQ = useQuery({
     queryKey: QK,
@@ -72,15 +73,6 @@ export function BankTransfersPage() {
     },
     onError: (err) => toast.error(axiosMsg(err)),
   });
-  const confirmM = useMutation({
-    mutationFn: (id: string) => confirmBankTransferReceipt(id),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: QK });
-      toast.success(t("bankTransfers.confirmed"));
-    },
-    onError: (err) => toast.error(axiosMsg(err)),
-  });
-
   const partnerName = (id: string): string => {
     const p = partnersQ.data?.items.find((p) => p.id === id);
     if (!p) return id.slice(0, 8);
@@ -128,6 +120,17 @@ export function BankTransfersPage() {
 
       {transfersQ.data && transfersQ.data.items.length === 0 && (
         <div className="card text-center text-slate-500">{t("common.empty")}</div>
+      )}
+
+      {confirmTarget && (
+        <ConfirmReceiptDialog
+          transferId={confirmTarget}
+          onClose={() => setConfirmTarget(null)}
+          onConfirmed={async () => {
+            await qc.invalidateQueries({ queryKey: QK });
+            toast.success(t("bankTransfers.confirmed"));
+          }}
+        />
       )}
 
       {transfersQ.data && transfersQ.data.items.length > 0 && (
@@ -183,8 +186,7 @@ export function BankTransfersPage() {
                         !tx.confirmed_by_partner_at && (
                           <ActionBtn
                             label={t("bankTransfers.confirmReceipt")}
-                            onClick={() => confirmM.mutate(tx.id)}
-                            busy={confirmM.isPending}
+                            onClick={() => setConfirmTarget(tx.id)}
                           />
                         )}
                       {["pending", "approved", "processing"].includes(tx.status) && (
