@@ -21,6 +21,7 @@ export interface CurrentUser {
   role: string;
   first_name: string;
   last_name: string;
+  email_verified_at: string | null;
   notification_preferences: NotificationPreferences;
 }
 

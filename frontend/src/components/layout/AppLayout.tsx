@@ -30,58 +30,58 @@ export function AppLayout() {
     <div className="min-h-screen bg-snow dark:bg-slate-900">
       <header className="border-b border-sky bg-white dark:border-slate-700 dark:bg-slate-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link to="/" className="text-xl font-bold text-trust">
+          <Link to="/admin/dashboard" className="text-xl font-bold text-trust">
             {t("app.name")}
           </Link>
           <nav className="flex gap-2">
-            <NavLink to="/dashboard" className={navItemClass}>
+            <NavLink to="/admin/dashboard" className={navItemClass}>
               {t("nav.dashboard")}
             </NavLink>
-            <NavLink to="/orphans" className={navItemClass}>
+            <NavLink to="/admin/orphans" className={navItemClass}>
               {t("nav.orphans")}
             </NavLink>
-            <NavLink to="/donors" className={navItemClass}>
+            <NavLink to="/admin/donors" className={navItemClass}>
               {t("nav.donors")}
             </NavLink>
-            <NavLink to="/partners" className={navItemClass}>
+            <NavLink to="/admin/partners" className={navItemClass}>
               {t("nav.partners")}
             </NavLink>
-            <NavLink to="/families" className={navItemClass}>
+            <NavLink to="/admin/families" className={navItemClass}>
               {t("nav.families")}
             </NavLink>
-            <NavLink to="/sponsorships" className={navItemClass}>
+            <NavLink to="/admin/sponsorships" className={navItemClass}>
               {t("nav.sponsorships")}
             </NavLink>
-            <NavLink to="/payments" className={navItemClass}>
+            <NavLink to="/admin/payments" className={navItemClass}>
               {t("nav.payments")}
             </NavLink>
             {isAdmin && (
-              <NavLink to="/bank-transfers" className={navItemClass}>
+              <NavLink to="/admin/bank-transfers" className={navItemClass}>
                 {t("nav.bankTransfers")}
               </NavLink>
             )}
-            <NavLink to="/reports" className={navItemClass}>
+            <NavLink to="/admin/reports" className={navItemClass}>
               {t("nav.reports")}
             </NavLink>
             {isAdmin && (
-              <NavLink to="/users" className={navItemClass}>
+              <NavLink to="/admin/users" className={navItemClass}>
                 {t("nav.users")}
               </NavLink>
             )}
             {isAdmin && (
-              <NavLink to="/marketing-channels" className={navItemClass}>
+              <NavLink to="/admin/marketing-channels" className={navItemClass}>
                 {t("nav.marketingChannels")}
               </NavLink>
             )}
             {isAdmin && (
-              <NavLink to="/audit" className={navItemClass}>
+              <NavLink to="/admin/audit" className={navItemClass}>
                 {t("nav.audit")}
               </NavLink>
             )}
-            <NavLink to="/me" className={navItemClass}>
+            <NavLink to="/admin/me" className={navItemClass}>
               {t("nav.portal")}
             </NavLink>
-            <NavLink to="/settings" className={navItemClass}>
+            <NavLink to="/admin/settings" className={navItemClass}>
               {t("nav.settings")}
             </NavLink>
           </nav>
