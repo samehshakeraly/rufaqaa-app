@@ -749,6 +749,28 @@ export interface paths {
         patch: operations["update_orphan_api_v1_orphans__orphan_id__patch"];
         trace?: never;
     };
+    "/api/v1/orphans/{orphan_id}/assign-channel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Orphan Channel
+         * @description Attach (or detach) an orphan to a marketing channel. Validates
+         *     that the channel belongs to the same organization and is active;
+         *     null clears the assignment.
+         */
+        post: operations["assign_orphan_channel_api_v1_orphans__orphan_id__assign_channel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}/documents": {
         parameters: {
             query?: never;
@@ -1445,6 +1467,14 @@ export interface components {
             password: string;
             /** Token */
             token: string;
+        };
+        /**
+         * AssignChannelPayload
+         * @description Pass channel_id=null to unassign.
+         */
+        AssignChannelPayload: {
+            /** Channel Id */
+            channel_id: string | null;
         };
         /** AuditLogRead */
         AuditLogRead: {
@@ -4885,6 +4915,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["OrphanUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_orphan_channel_api_v1_orphans__orphan_id__assign_channel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignChannelPayload"];
             };
         };
         responses: {
