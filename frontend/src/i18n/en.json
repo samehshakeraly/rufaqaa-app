@@ -95,6 +95,12 @@
     "selectPartner": "Choose a partner",
     "balance": "Current balance",
     "timeline": "Timeline",
+    "bulkSelected": "{{count}} selected",
+    "bulkClear": "Clear",
+    "bulkArchive": "Archive selected",
+    "bulkArchiveConfirm": "Archive {{count}} orphans? This soft-deletes them.",
+    "bulkArchiveDone": "Archived {{ok}} orphans.",
+    "bulkArchivePartial": "Archived {{ok}}; {{fail}} failed.",
     "caseStatus": {
       "pending_review": "Pending review",
       "approved": "Approved",
