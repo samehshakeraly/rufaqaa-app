@@ -8,6 +8,7 @@
     "orphans": "الأيتام",
     "donors": "المتبرعون",
     "partners": "الشركاء",
+    "families": "الأسر",
     "sponsorships": "الكفالات",
     "payments": "المدفوعات",
     "reports": "التقارير",
@@ -354,6 +355,39 @@
     "status": "الحالة",
     "amount": "المبلغ المدفوع",
     "thanks": "شكراً لتبرعكم الكريم."
+  },
+  "families": {
+    "title": "الأسر",
+    "addNew": "إضافة أسرة",
+    "backToList": "العودة للأسر",
+    "code": "الرمز",
+    "familyName": "اسم الأسرة",
+    "deceasedFather": "اسم الأب المتوفى",
+    "country": "الدولة",
+    "city": "المدينة",
+    "housing": "السكن",
+    "guardians": "الأولياء",
+    "addGuardian": "إضافة ولي",
+    "guardianName": "الاسم الكامل",
+    "relation": "صلة القرابة",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "housingStatus": {
+      "owned": "ملك",
+      "rented": "إيجار",
+      "donated": "موهوب",
+      "homeless": "بلا مأوى"
+    },
+    "relations": {
+      "mother": "أم",
+      "father": "أب",
+      "grandfather": "جد",
+      "grandmother": "جدة",
+      "uncle": "عم/خال",
+      "aunt": "عمة/خالة",
+      "sibling": "أخ/أخت",
+      "other": "أخرى"
+    }
   },
   "donors": {
     "title": "المتبرعون",

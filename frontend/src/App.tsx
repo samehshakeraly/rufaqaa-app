@@ -6,6 +6,8 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { AuditPage } from "./pages/AuditPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorsPage } from "./pages/DonorsPage";
+import { FamiliesPage } from "./pages/FamiliesPage";
+import { FamilyDetailPage } from "./pages/FamilyDetailPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
@@ -40,6 +42,8 @@ export function App() {
         <Route path="/orphans" element={<OrphansPage />} />
         <Route path="/orphans/:id" element={<OrphanDetailPage />} />
         <Route path="/donors" element={<DonorsPage />} />
+        <Route path="/families" element={<FamiliesPage />} />
+        <Route path="/families/:id" element={<FamilyDetailPage />} />
         <Route path="/partners" element={<PartnersPage />} />
         <Route
           path="/marketing-channels"

@@ -8,6 +8,7 @@
     "orphans": "Orphans",
     "donors": "Donors",
     "partners": "Partners",
+    "families": "Families",
     "sponsorships": "Sponsorships",
     "payments": "Payments",
     "reports": "Reports",
@@ -349,6 +350,39 @@
     "status": "Status",
     "amount": "Amount paid",
     "thanks": "Thank you for your generous contribution."
+  },
+  "families": {
+    "title": "Families",
+    "addNew": "Add family",
+    "backToList": "Back to families",
+    "code": "Code",
+    "familyName": "Family name",
+    "deceasedFather": "Deceased father",
+    "country": "Country",
+    "city": "City",
+    "housing": "Housing",
+    "guardians": "Guardians",
+    "addGuardian": "Add guardian",
+    "guardianName": "Full name",
+    "relation": "Relation",
+    "phone": "Phone",
+    "email": "Email",
+    "housingStatus": {
+      "owned": "Owned",
+      "rented": "Rented",
+      "donated": "Donated",
+      "homeless": "Homeless"
+    },
+    "relations": {
+      "mother": "Mother",
+      "father": "Father",
+      "grandfather": "Grandfather",
+      "grandmother": "Grandmother",
+      "uncle": "Uncle",
+      "aunt": "Aunt",
+      "sibling": "Sibling",
+      "other": "Other"
+    }
   },
   "donors": {
     "title": "Donors",
