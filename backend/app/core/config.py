@@ -62,6 +62,11 @@ class Settings(BaseSettings):
     S3_REGION: str = "us-east-1"
     UPLOAD_MAX_BYTES: int = 10 * 1024 * 1024
 
+    # Error reporting (optional). Leave SENTRY_DSN empty to disable.
+    SENTRY_DSN: str = ""
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.0
+    SENTRY_RELEASE: str = ""
+
     @cached_property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
