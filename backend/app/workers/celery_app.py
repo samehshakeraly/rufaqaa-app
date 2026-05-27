@@ -23,6 +23,7 @@ celery_app = Celery(
     include=[
         "app.workers.tasks.sponsorships",
         "app.workers.tasks.notifications",
+        "app.workers.tasks.digest",
     ],
 )
 
@@ -44,5 +45,9 @@ celery_app.conf.beat_schedule = {
     "mark-overdue-sponsorships-daily": {
         "task": "app.workers.tasks.sponsorships.mark_overdue_sponsorships",
         "schedule": crontab(hour=2, minute=0),
+    },
+    "daily-admin-digest": {
+        "task": "app.workers.tasks.digest.send_daily_digest",
+        "schedule": crontab(hour=6, minute=0),
     },
 }
