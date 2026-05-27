@@ -159,7 +159,7 @@
     "devTokenNotice": "Dev mode: use this token directly to reset your password.",
     "resetTitle": "Choose a new password",
     "resetToken": "Reset token",
-    "resetSubmit": "Update password",
+    "resetSubmit": "Reset password",
     "resetDone": "Your password has been updated. You can sign in now.",
     "newPassword": "New password",
     "confirmPassword": "Confirm new password",
@@ -621,7 +621,7 @@
       "invalidDetails": "Show {{count}} invalid rows",
       "run": "Import {{n}} donors",
       "importing": "Importing… {{done}}/{{total}}",
-      "done": "Done. {{ok}} succeeded, {{fail}} failed."
+      "done": "Done. Succeeded: {{ok}}, failed: {{fail}}."
     },
     "code": "Code",
     "name": "Full name",
