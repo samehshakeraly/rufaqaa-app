@@ -20,7 +20,7 @@ jobs:
     name: 📁 Repository Structure
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Check required files exist
         run: |
@@ -56,7 +56,7 @@ jobs:
     name: 🐳 Docker Compose Config
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Seed .env for compose
         # docker-compose.yml references env_file: .env, which is
         # gitignored. Use the committed example as a stand-in just for
@@ -84,7 +84,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install PostgreSQL client
         run: sudo apt-get install -y postgresql-client
       - name: Apply schema
@@ -120,7 +120,7 @@ jobs:
       DATABASE_URL: postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa
       RUFAQAA_TEST_DATABASE_URL: postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -150,7 +150,7 @@ jobs:
       run:
         working-directory: mcp-server
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -172,7 +172,7 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -213,7 +213,7 @@ jobs:
     name: 🌐 OpenAPI Specification
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Validate OpenAPI YAML
         run: |
           if [ -f docs/technical/03_api_specification.yaml ]; then
@@ -236,7 +236,7 @@ jobs:
             context: frontend
             dockerfile: frontend/Dockerfile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: docker/setup-buildx-action@v3
       - name: Build ${{ matrix.service }}
         uses: docker/build-push-action@v6
@@ -285,7 +285,7 @@ jobs:
       E2E_ADMIN_EMAIL: admin@dev.rufaqaa.app
       E2E_ADMIN_PASSWORD: admin12345
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # ── Backend ──────────────────────────────────────────
       - uses: actions/setup-python@v5
@@ -352,7 +352,7 @@ jobs:
     name: 📝 Markdown Quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check for broken internal links
         uses: lycheeverse/lychee-action@v1
         with:
