@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Pagination } from "@/components/Pagination";
+import { TableSkeleton } from "@/components/Skeleton";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { listUsers, reactivateUser, suspendUser } from "@/lib/users";
 import { toast } from "@/store/toasts";
@@ -97,7 +98,7 @@ export function UsersPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={7} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}

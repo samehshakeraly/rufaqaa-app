@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { TableSkeleton } from "@/components/Skeleton";
 import { listAudit } from "@/lib/audit";
 
 const ENTITY_TYPES = ["", "donor", "orphan", "partner_organization", "media", "guardian", "family"];
@@ -43,7 +44,7 @@ export function AuditPage() {
         </div>
       </div>
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={5} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}

@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
 import {
   archiveMarketingChannel,
@@ -72,7 +73,7 @@ export function MarketingChannelsPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={4} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}
