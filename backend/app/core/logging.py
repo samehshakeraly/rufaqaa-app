@@ -11,7 +11,9 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from collections.abc import MutableMapping
 from contextvars import ContextVar
+from typing import Any
 
 import structlog
 from fastapi import Request
@@ -22,7 +24,9 @@ from app.core.config import settings
 _request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
 
 
-def _inject_request_id(_logger, _name, event_dict):
+def _inject_request_id(
+    _logger: Any, _name: str, event_dict: MutableMapping[str, Any]
+) -> MutableMapping[str, Any]:
     rid = _request_id_var.get()
     if rid:
         event_dict["request_id"] = rid
@@ -58,7 +62,7 @@ _log = structlog.get_logger("rufaqaa.http")
 class RequestLogMiddleware(BaseHTTPMiddleware):
     """Logs one structured line per request with timing and status."""
 
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Any:
         rid = request.headers.get("X-Request-ID") or uuid.uuid4().hex
         token = _request_id_var.set(rid)
         started = time.perf_counter()

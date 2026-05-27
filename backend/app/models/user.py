@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import Boolean, ForeignKey, Integer, String, func
@@ -34,7 +35,7 @@ class User(Base):
     timezone: Mapped[str | None] = mapped_column(String(50))
 
     role: Mapped[str] = mapped_column(String(50), nullable=False)
-    custom_permissions: Mapped[list] = mapped_column(JSONB, default=list)
+    custom_permissions: Mapped[list[str]] = mapped_column(JSONB, default=list)
 
     status: Mapped[str] = mapped_column(String(20), default="active")
     email_verified_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
@@ -44,7 +45,7 @@ class User(Base):
     failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0)
     locked_until: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
 
-    notification_preferences: Mapped[dict] = mapped_column(JSONB, default=dict)
+    notification_preferences: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
 
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()

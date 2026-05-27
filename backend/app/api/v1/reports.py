@@ -13,6 +13,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.exceptions import NotFound
@@ -138,7 +139,7 @@ async def update_report(
     return ReportRead.model_validate(report)
 
 
-async def _load_or_404(db, report_id: UUID) -> OrphanReport:
+async def _load_or_404(db: AsyncSession, report_id: UUID) -> OrphanReport:
     report = await db.scalar(select(OrphanReport).where(OrphanReport.id == report_id))
     if report is None:
         raise NotFound("Report")

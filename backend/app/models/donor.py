@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import Boolean, ForeignKey, Integer, Numeric, String, func
@@ -48,8 +49,8 @@ class Donor(Base):
     first_donation_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
     last_donation_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
 
-    notification_channels: Mapped[list] = mapped_column(JSONB, default=lambda: ["email"])
-    communication_preferences: Mapped[dict | None] = mapped_column(JSONB)
+    notification_channels: Mapped[list[str]] = mapped_column(JSONB, default=lambda: ["email"])
+    communication_preferences: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
 
     is_anonymous: Mapped[bool] = mapped_column(Boolean, default=False)
     is_zakat_donor: Mapped[bool] = mapped_column(Boolean, default=False)

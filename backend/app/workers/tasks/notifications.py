@@ -60,7 +60,9 @@ async def _stamp_notified(report_id: UUID) -> None:
             await db.commit()
 
 
-@celery_app.task(name="app.workers.tasks.notifications.notify_donors_of_report")
+@celery_app.task(  # type: ignore[untyped-decorator]
+    name="app.workers.tasks.notifications.notify_donors_of_report"
+)
 def notify_donors_of_report(report_id: str) -> dict[str, int | str]:
     """Email each donor sponsoring this orphan that a new report is live.
 

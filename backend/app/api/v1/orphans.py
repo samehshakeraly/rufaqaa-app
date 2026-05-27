@@ -1,7 +1,7 @@
 import csv
 import io
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -224,7 +224,7 @@ async def update_orphan(
     return OrphanRead.model_validate(orphan)
 
 
-def _stringify(v):  # noqa: ANN001, ANN202
+def _stringify(v: Any) -> Any:
     """JSON-safe representation for audit values (dates → ISO, UUIDs → str)."""
     if v is None:
         return None

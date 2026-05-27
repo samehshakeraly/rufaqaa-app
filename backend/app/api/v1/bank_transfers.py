@@ -14,6 +14,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
@@ -110,7 +111,7 @@ async def create_bank_transfer(
     return BankTransferRead.model_validate(transfer)
 
 
-async def _load_or_404(db, transfer_id: UUID) -> BankTransfer:
+async def _load_or_404(db: AsyncSession, transfer_id: UUID) -> BankTransfer:
     transfer = await db.scalar(select(BankTransfer).where(BankTransfer.id == transfer_id))
     if transfer is None:
         raise NotFound("Bank transfer")
@@ -118,7 +119,7 @@ async def _load_or_404(db, transfer_id: UUID) -> BankTransfer:
 
 
 async def _transition(
-    db,
+    db: AsyncSession,
     user: User,
     transfer_id: UUID,
     allowed_from: tuple[str, ...],

@@ -19,6 +19,7 @@ import asyncio
 import random
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import delete, select, text
@@ -35,7 +36,7 @@ from app.models.sponsorship import Sponsorship
 MARKER_EMAIL = "demo-marker@dev.rufaqaa.app"
 
 # Demo dataset — bilingual where it matters.
-ORPHAN_FIXTURES = [
+ORPHAN_FIXTURES: list[dict[str, Any]] = [
     {
         "first_name": "أحمد",
         "family_name": "العبدالله",
@@ -86,7 +87,7 @@ ORPHAN_FIXTURES = [
     },
 ]
 
-DONOR_FIXTURES = [
+DONOR_FIXTURES: list[dict[str, str]] = [
     {"full_name": "محسن خيّر", "email": "demo-donor-1@example.com", "currency": "KWD"},
     {"full_name": "أم اليتيم", "email": "demo-donor-2@example.com", "currency": "SAR"},
     {"full_name": "Abdullah Al-Mutairi", "email": "demo-donor-3@example.com", "currency": "USD"},
@@ -147,7 +148,7 @@ async def _wipe_demo() -> None:
 async def _seed_demo() -> dict[str, int]:
     org_id, partner_id = await _seed_org_and_partner()
     rng = random.Random(42)  # deterministic so screenshots stay stable
-    counts = {"orphans": 0, "donors": 0, "sponsorships": 0, "payments": 0}
+    counts: dict[str, int] = {"orphans": 0, "donors": 0, "sponsorships": 0, "payments": 0}
 
     async with make_session() as db:
         # Marker — sentinel donor for the idempotency check

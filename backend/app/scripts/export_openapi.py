@@ -29,7 +29,7 @@ DEFAULT_OUT = (
 def _spec_yaml() -> str:
     # Round-trip via JSON so Pydantic types serialize the same way FastAPI does.
     raw = json.loads(json.dumps(app.openapi(), sort_keys=True))
-    return yaml.safe_dump(raw, sort_keys=True, allow_unicode=True, width=120)
+    return str(yaml.safe_dump(raw, sort_keys=True, allow_unicode=True, width=120))
 
 
 def main() -> int:

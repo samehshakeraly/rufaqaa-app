@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from typing import Any
 from uuid import UUID
 
 import structlog
@@ -60,7 +61,7 @@ class DigestEntry:
         self.overdue_sponsorships_count = overdue_sponsorships_count
         self.recipients = recipients
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> dict[str, Any]:
         return {
             "organization_id": str(self.organization_id),
             "organization_name": self.organization_name,
@@ -136,7 +137,9 @@ async def compose_daily_digests() -> list[DigestEntry]:
     return [await compose_digest_for_org(org) for org in orgs]
 
 
-@celery_app.task(name="app.workers.tasks.digest.send_daily_digest")
+@celery_app.task(  # type: ignore[untyped-decorator]
+    name="app.workers.tasks.digest.send_daily_digest"
+)
 def send_daily_digest() -> int:
     """Composes the digest per org and renders the bilingual email
     template for each recipient. Returns the total email count

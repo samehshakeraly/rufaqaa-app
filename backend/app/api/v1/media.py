@@ -238,7 +238,9 @@ async def upload_generic_file(
     await ensure_bucket(bucket)
     ext = (file.filename or "").rsplit(".", 1)[-1].lower() or "bin"
     key = f"documents/{user.organization_id}/{uuid.uuid4().hex}.{ext}"
-    await put_object(bucket, key, body, content_type=file.content_type or "application/octet-stream")
+    await put_object(
+        bucket, key, body, content_type=file.content_type or "application/octet-stream"
+    )
     _ = db  # No DB row written; document/attach endpoints persist the link.
     return FileUploadResponse(
         file_url=f"s3://{bucket}/{key}",

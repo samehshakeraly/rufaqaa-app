@@ -15,6 +15,54 @@ components:
       - password
       title: AcceptInvite
       type: object
+    AdminInitiateOnBehalf:
+      description: 'The admin sits with a present-but-digitally-unable donor, picks
+
+        them from the existing donor records, and starts a hosted checkout
+
+        that the donor pays right now on a screen or their own phone.'
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        donor_id:
+          format: uuid
+          title: Donor Id
+          type: string
+        language:
+          default: ar
+          enum:
+          - ar
+          - en
+          title: Language
+          type: string
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+      required:
+      - donor_id
+      - amount
+      - currency
+      title: AdminInitiateOnBehalf
+      type: object
     AssignChannelPayload:
       description: Pass channel_id=null to unassign.
       properties:
@@ -98,6 +146,30 @@ components:
       - backup_codes
       title: BackupCodesResponse
       type: object
+    BankTransferConfirmReceipt:
+      description: 'Body of POST /bank-transfers/{id}/confirm-receipt.
+
+
+        Optional `confirmation_document_id` attaches an existing document
+
+        (proof of receipt) — see `POST /documents`. Optional `notes` lets
+
+        the operator add a free-text reason / context.'
+      properties:
+        confirmation_document_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Confirmation Document Id
+        notes:
+          anyOf:
+          - maxLength: 1000
+            type: string
+          - type: 'null'
+          title: Notes
+      title: BankTransferConfirmReceipt
+      type: object
     BankTransferCreate:
       properties:
         amount:
@@ -180,6 +252,12 @@ components:
         code:
           title: Code
           type: string
+        confirmation_document_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Confirmation Document Id
         confirmed_by_partner_at:
           anyOf:
           - format: date-time
@@ -260,6 +338,16 @@ components:
       - notes
       - created_at
       title: BankTransferRead
+      type: object
+    Body_upload_generic_file_api_v1_media_file_post:
+      properties:
+        file:
+          contentMediaType: application/octet-stream
+          title: File
+          type: string
+      required:
+      - file
+      title: Body_upload_generic_file_api_v1_media_file_post
       type: object
     Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post:
       properties:
@@ -1367,6 +1455,30 @@ components:
       - created_at
       - updated_at
       title: FamilyRead
+      type: object
+    FileUploadResponse:
+      description: 'Thin metadata blob the frontend hands straight to
+
+        POST /orphans/{id}/documents (or any other attach endpoint).'
+      properties:
+        file_mime_type:
+          title: File Mime Type
+          type: string
+        file_name:
+          title: File Name
+          type: string
+        file_size_bytes:
+          title: File Size Bytes
+          type: integer
+        file_url:
+          title: File Url
+          type: string
+      required:
+      - file_url
+      - file_name
+      - file_size_bytes
+      - file_mime_type
+      title: FileUploadResponse
       type: object
     ForgotPasswordRequest:
       properties:
@@ -4768,11 +4880,15 @@ paths:
       - bank-transfers
   /api/v1/bank-transfers/{transfer_id}/confirm-receipt:
     post:
-      description: 'Acknowledge that the partner has received the funds. Does not
+      description: 'Acknowledge that the partner has received the funds. Stamps
 
-        change `status` (a transfer can be `completed` without partner
+        confirmed_by_partner_at; optionally attaches a proof document
 
-        confirmation), only stamps confirmed_by_partner_at.'
+        via confirmation_document_id and a free-text note. Does not
+
+        change `status` — a transfer can be `completed` without partner
+
+        confirmation.'
       operationId: partner_confirm_receipt_api_v1_bank_transfers__transfer_id__confirm_receipt_post
       parameters:
       - in: path
@@ -4782,6 +4898,14 @@ paths:
           format: uuid
           title: Transfer Id
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/BankTransferConfirmReceipt'
+              - type: 'null'
+              title: Payload
       responses:
         '200':
           content:
@@ -4829,6 +4953,41 @@ paths:
       summary: Mark Bank Transfer Completed
       tags:
       - bank-transfers
+  /api/v1/documents:
+    post:
+      description: 'Create a documents row without an orphan/guardian/family link.
+
+
+        Used by flows that need a `document_id` to attach elsewhere — e.g.
+
+        bank-transfer confirmation proof, partner-org paperwork. The bytes
+
+        must already be in object storage via POST /media/file.'
+      operationId: create_unattached_document_api_v1_documents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Unattached Document
+      tags:
+      - documents
   /api/v1/documents/{document_id}:
     delete:
       description: 'Hard delete — the file in object storage is the source of truth
@@ -5431,6 +5590,86 @@ paths:
       summary: Create Guardian
       tags:
       - families
+  /api/v1/guardians/{guardian_id}/documents:
+    get:
+      operationId: list_guardian_documents_api_v1_guardians__guardian_id__documents_get
+      parameters:
+      - in: path
+        name: guardian_id
+        required: true
+        schema:
+          format: uuid
+          title: Guardian Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_DocumentRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Guardian Documents
+      tags:
+      - documents
+    post:
+      operationId: attach_document_to_guardian_api_v1_guardians__guardian_id__documents_post
+      parameters:
+      - in: path
+        name: guardian_id
+        required: true
+        schema:
+          format: uuid
+          title: Guardian Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Attach Document To Guardian
+      tags:
+      - documents
   /api/v1/health:
     get:
       operationId: health_api_v1_health_get
@@ -5721,6 +5960,40 @@ paths:
       summary: My Sponsorships
       tags:
       - donor-portal
+  /api/v1/media/file:
+    post:
+      description: 'Stage a file in object storage and return its s3:// URL plus
+
+        metadata. The frontend two-step upload-then-attach flow calls this
+
+        first, then passes the returned fields to an endpoint that records
+
+        the attachment (e.g. POST /orphans/{id}/documents).'
+      operationId: upload_generic_file_api_v1_media_file_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_generic_file_api_v1_media_file_post'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Upload Generic File
+      tags:
+      - media
   /api/v1/media/orphans/{orphan_id}/photo:
     post:
       operationId: upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post
@@ -6525,6 +6798,38 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Create Payment
+      tags:
+      - payments
+  /api/v1/payments/admin/initiate-on-behalf:
+    post:
+      description: 'Admin-driven MyFatoorah checkout. The Payment row records BOTH
+
+        the real donor and the admin who initiated. The webhook-side
+
+        completion flow is unchanged.'
+      operationId: admin_initiate_on_behalf_api_v1_payments_admin_initiate_on_behalf_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminInitiateOnBehalf'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInitiateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Admin Initiate On Behalf
       tags:
       - payments
   /api/v1/payments/export.csv:

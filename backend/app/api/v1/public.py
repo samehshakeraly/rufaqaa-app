@@ -80,7 +80,7 @@ def _to_card(orphan: Orphan, partner_name: str | None) -> PublicOrphanCard:
         code=orphan.code,
         first_name=orphan.first_name,
         age_years=_age_years(orphan.date_of_birth),
-        gender=orphan.gender,  # type: ignore[arg-type]
+        gender=orphan.gender,
         country=orphan.nationality,
         case_status=orphan.case_status,
         partner_organization_name=partner_name,

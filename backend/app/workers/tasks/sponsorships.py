@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from datetime import UTC, date, datetime
+from typing import Any, cast
 
 from sqlalchemy import update
 
@@ -36,10 +37,15 @@ async def _mark_overdue_async(today: date) -> int:
             )
         )
         await db.commit()
-        return result.rowcount or 0
+        # `result.rowcount` exists on CursorResult — narrow via cast.
+        from sqlalchemy.engine import CursorResult
+
+        return cast(CursorResult[Any], result).rowcount or 0
 
 
-@celery_app.task(name="app.workers.tasks.sponsorships.mark_overdue_sponsorships")
+@celery_app.task(  # type: ignore[untyped-decorator]
+    name="app.workers.tasks.sponsorships.mark_overdue_sponsorships"
+)
 def mark_overdue_sponsorships(today_iso: str | None = None) -> dict[str, int | str]:
     """Daily scheduled task: mark active sponsorships whose payment is due."""
     today = date.fromisoformat(today_iso) if today_iso else date.today()

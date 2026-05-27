@@ -13,11 +13,13 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.donor import Donor
 from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.report import ReportRead
 from app.schemas.sponsorship import SponsorshipRead
@@ -25,13 +27,13 @@ from app.schemas.sponsorship import SponsorshipRead
 router = APIRouter()
 
 
-async def _resolve_donor_id(db, current_user, requested: UUID | None) -> UUID:
+async def _resolve_donor_id(db: AsyncSession, current_user: User, requested: UUID | None) -> UUID:
     """Determine which donor's data the caller is allowed to see.
 
     Donors are pinned to their own record; staff may pass donor_id.
     """
     if current_user.role == "donor":
-        donor = await db.scalar(select(Donor).where(Donor.user_id == current_user.id))
+        donor: Donor | None = await db.scalar(select(Donor).where(Donor.user_id == current_user.id))
         if donor is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

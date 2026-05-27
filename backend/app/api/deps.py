@@ -1,5 +1,5 @@
 from collections.abc import AsyncIterator
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import Depends, Header
@@ -21,7 +21,7 @@ async def get_db() -> AsyncIterator[AsyncSession]:
         yield session
 
 
-async def get_token_payload(token: Annotated[str, Depends(oauth2_scheme)]) -> dict:
+async def get_token_payload(token: Annotated[str, Depends(oauth2_scheme)]) -> dict[str, Any]:
     try:
         payload = decode_token(token)
     except ValueError as exc:
@@ -32,7 +32,7 @@ async def get_token_payload(token: Annotated[str, Depends(oauth2_scheme)]) -> di
 
 
 async def get_current_user(
-    payload: Annotated[dict, Depends(get_token_payload)],
+    payload: Annotated[dict[str, Any], Depends(get_token_payload)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> User:
     user_id = payload.get("sub")

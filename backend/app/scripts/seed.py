@@ -11,6 +11,7 @@ Usage:
 import asyncio
 
 from sqlalchemy import select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import make_session
 from app.core.security import hash_password
@@ -24,7 +25,7 @@ SEED_ADMIN_EMAIL = "admin@dev.rufaqaa.app"
 SEED_ADMIN_PASSWORD = "admin12345"  # dev only
 
 
-async def _ensure_platform_org(db) -> Organization:
+async def _ensure_platform_org(db: AsyncSession) -> Organization:
     """The PLATFORM org owns every donor created via public signup.
 
     They don't belong to any partner / branch — they're 'just donors'

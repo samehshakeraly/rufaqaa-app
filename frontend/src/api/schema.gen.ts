@@ -363,9 +363,11 @@ export interface paths {
         put?: never;
         /**
          * Partner Confirm Receipt
-         * @description Acknowledge that the partner has received the funds. Does not
-         *     change `status` (a transfer can be `completed` without partner
-         *     confirmation), only stamps confirmed_by_partner_at.
+         * @description Acknowledge that the partner has received the funds. Stamps
+         *     confirmed_by_partner_at; optionally attaches a proof document
+         *     via confirmation_document_id and a free-text note. Does not
+         *     change `status` — a transfer can be `completed` without partner
+         *     confirmation.
          */
         post: operations["partner_confirm_receipt_api_v1_bank_transfers__transfer_id__confirm_receipt_post"];
         delete?: never;
@@ -385,6 +387,30 @@ export interface paths {
         put?: never;
         /** Mark Bank Transfer Completed */
         post: operations["mark_bank_transfer_completed_api_v1_bank_transfers__transfer_id__mark_completed_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Unattached Document
+         * @description Create a documents row without an orphan/guardian/family link.
+         *
+         *     Used by flows that need a `document_id` to attach elsewhere — e.g.
+         *     bank-transfer confirmation proof, partner-org paperwork. The bytes
+         *     must already be in object storage via POST /media/file.
+         */
+        post: operations["create_unattached_document_api_v1_documents_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -666,6 +692,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/guardians/{guardian_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Guardian Documents */
+        get: operations["list_guardian_documents_api_v1_guardians__guardian_id__documents_get"];
+        put?: never;
+        /** Attach Document To Guardian */
+        post: operations["attach_document_to_guardian_api_v1_guardians__guardian_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -769,6 +813,29 @@ export interface paths {
         get: operations["my_sponsorships_api_v1_me_sponsorships_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/media/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Generic File
+         * @description Stage a file in object storage and return its s3:// URL plus
+         *     metadata. The frontend two-step upload-then-attach flow calls this
+         *     first, then passes the returned fields to an endpoint that records
+         *     the attachment (e.g. POST /orphans/{id}/documents).
+         */
+        post: operations["upload_generic_file_api_v1_media_file_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1064,6 +1131,28 @@ export interface paths {
          *     handler is for staff entering offline payments by hand.
          */
         post: operations["create_payment_api_v1_payments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/admin/initiate-on-behalf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Admin Initiate On Behalf
+         * @description Admin-driven MyFatoorah checkout. The Payment row records BOTH
+         *     the real donor and the admin who initiated. The webhook-side
+         *     completion flow is unchanged.
+         */
+        post: operations["admin_initiate_on_behalf_api_v1_payments_admin_initiate_on_behalf_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1753,6 +1842,33 @@ export interface components {
             token: string;
         };
         /**
+         * AdminInitiateOnBehalf
+         * @description The admin sits with a present-but-digitally-unable donor, picks
+         *     them from the existing donor records, and starts a hosted checkout
+         *     that the donor pays right now on a screen or their own phone.
+         */
+        AdminInitiateOnBehalf: {
+            /** Amount */
+            amount: number | string;
+            /** Currency */
+            currency: string;
+            /**
+             * Donor Id
+             * Format: uuid
+             */
+            donor_id: string;
+            /**
+             * Language
+             * @default ar
+             * @enum {string}
+             */
+            language: "ar" | "en";
+            /** Orphan Id */
+            orphan_id?: string | null;
+            /** Sponsorship Id */
+            sponsorship_id?: string | null;
+        };
+        /**
          * AssignChannelPayload
          * @description Pass channel_id=null to unassign.
          */
@@ -1798,6 +1914,20 @@ export interface components {
             /** Backup Codes */
             backup_codes: string[];
         };
+        /**
+         * BankTransferConfirmReceipt
+         * @description Body of POST /bank-transfers/{id}/confirm-receipt.
+         *
+         *     Optional `confirmation_document_id` attaches an existing document
+         *     (proof of receipt) — see `POST /documents`. Optional `notes` lets
+         *     the operator add a free-text reason / context.
+         */
+        BankTransferConfirmReceipt: {
+            /** Confirmation Document Id */
+            confirmation_document_id?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
         /** BankTransferCreate */
         BankTransferCreate: {
             /** Amount */
@@ -1840,6 +1970,8 @@ export interface components {
             bank_reference: string | null;
             /** Code */
             code: string;
+            /** Confirmation Document Id */
+            confirmation_document_id?: string | null;
             /** Confirmed By Partner At */
             confirmed_by_partner_at: string | null;
             /**
@@ -1885,6 +2017,11 @@ export interface components {
              * @enum {string}
              */
             status: "pending" | "approved" | "processing" | "completed" | "failed" | "cancelled";
+        };
+        /** Body_upload_generic_file_api_v1_media_file_post */
+        Body_upload_generic_file_api_v1_media_file_post: {
+            /** File */
+            file: string;
         };
         /** Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post */
         Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post: {
@@ -2409,6 +2546,21 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /**
+         * FileUploadResponse
+         * @description Thin metadata blob the frontend hands straight to
+         *     POST /orphans/{id}/documents (or any other attach endpoint).
+         */
+        FileUploadResponse: {
+            /** File Mime Type */
+            file_mime_type: string;
+            /** File Name */
+            file_name: string;
+            /** File Size Bytes */
+            file_size_bytes: number;
+            /** File Url */
+            file_url: string;
         };
         /** ForgotPasswordRequest */
         ForgotPasswordRequest: {
@@ -4508,7 +4660,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["BankTransferConfirmReceipt"] | null;
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -4548,6 +4704,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BankTransferRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_unattached_document_api_v1_documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentRead"];
                 };
             };
             /** @description Validation Error */
@@ -5178,6 +5367,75 @@ export interface operations {
             };
         };
     };
+    list_guardian_documents_api_v1_guardians__guardian_id__documents_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                guardian_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_DocumentRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attach_document_to_guardian_api_v1_guardians__guardian_id__documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                guardian_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_api_v1_health_get: {
         parameters: {
             query?: never;
@@ -5436,6 +5694,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_SponsorshipRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_generic_file_api_v1_media_file_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_generic_file_api_v1_media_file_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileUploadResponse"];
                 };
             };
             /** @description Validation Error */
@@ -6176,6 +6467,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_initiate_on_behalf_api_v1_payments_admin_initiate_on_behalf_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminInitiateOnBehalf"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInitiateResponse"];
                 };
             };
             /** @description Validation Error */

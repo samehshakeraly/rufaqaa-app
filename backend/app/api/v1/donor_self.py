@@ -20,6 +20,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import require_verified_donor
@@ -91,7 +92,7 @@ class DonorSponsorshipCreate(BaseModel):
     frequency: Literal["monthly", "quarterly", "semi_annual", "annual", "one_time"] = "monthly"
 
 
-async def _load_donor_for_user(db, user: User) -> Donor:
+async def _load_donor_for_user(db: AsyncSession, user: User) -> Donor:
     donor = await db.scalar(select(Donor).where(Donor.user_id == user.id))
     if donor is None:
         # Should never happen — signup creates the row. Refusing keeps

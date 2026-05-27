@@ -12,6 +12,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
@@ -27,7 +28,7 @@ from app.services.audit import record_audit
 router = APIRouter()
 
 
-async def _load_orphan_or_404(db, orphan_id: UUID) -> Orphan:
+async def _load_orphan_or_404(db: AsyncSession, orphan_id: UUID) -> Orphan:
     orphan = await db.scalar(
         select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
     )

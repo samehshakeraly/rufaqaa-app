@@ -1,8 +1,11 @@
 import hashlib
 from datetime import UTC, datetime, timedelta
+from typing import Literal
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Request, status
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.config import settings
@@ -50,7 +53,9 @@ def _hash_refresh(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-async def _record_session(db, user_id, refresh_token: str, request: Request | None) -> None:
+async def _record_session(
+    db: AsyncSession, user_id: UUID, refresh_token: str, request: Request | None
+) -> None:
     expires = datetime.now(UTC) + timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     session = UserSession(
         user_id=user_id,
@@ -296,7 +301,7 @@ async def _send_verification_email(user: User) -> str:
     token = create_email_verification_token(user.id, expires_in_hours=_EMAIL_VERIFY_TTL_HOURS)
     base = settings.APP_BASE_URL.rstrip("/")
     verify_url = f"{base}/verify-email/confirm?token={token}"
-    locale = "en" if (user.language or "ar").lower().startswith("en") else "ar"
+    locale: Literal["ar", "en"] = "en" if (user.language or "ar").lower().startswith("en") else "ar"
     send_templated(
         to=user.email,
         template="donor_email_verification",
@@ -417,7 +422,9 @@ async def verify_email(payload: EmailVerifyRequest, db: DbSession, request: Requ
         user.email_verified_at = datetime.now(UTC)
         if user.status == "pending_verification":
             user.status = "active"
-        locale = "en" if (user.language or "ar").lower().startswith("en") else "ar"
+        locale: Literal["ar", "en"] = (
+            "en" if (user.language or "ar").lower().startswith("en") else "ar"
+        )
         send_templated(
             to=user.email,
             template="donor_email_verified",

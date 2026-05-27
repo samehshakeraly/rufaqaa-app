@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import Date, ForeignKey, Integer, String, Text, func
@@ -26,11 +27,11 @@ class OrphanReport(Base):
     period_start: Mapped[date] = mapped_column(Date, nullable=False)
     period_end: Mapped[date] = mapped_column(Date, nullable=False)
 
-    educational_progress: Mapped[dict | None] = mapped_column(JSONB)
-    quran_progress: Mapped[dict | None] = mapped_column(JSONB)
-    activities: Mapped[dict | None] = mapped_column(JSONB)
-    health_status: Mapped[dict | None] = mapped_column(JSONB)
-    psychological_status: Mapped[dict | None] = mapped_column(JSONB)
+    educational_progress: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    quran_progress: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    activities: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    health_status: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    psychological_status: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     summary: Mapped[str | None] = mapped_column(Text)
 
     photos_count: Mapped[int] = mapped_column(Integer, default=0)

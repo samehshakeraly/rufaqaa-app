@@ -60,7 +60,30 @@ ignore = ["E501"]
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
-exclude = ["migrations/"]
+# Tests use dynamic fixtures (monkeypatch, dict payloads from JSON,
+# fastapi.TestClient.json() returning Any) where strict typing creates
+# more noise than value. They still run through `ruff` and pytest in
+# CI; the strict gate guards production code.
+exclude = ["migrations/", "tests/"]
+
+# Third-party libraries that ship without type stubs / py.typed. These
+# packages are dynamically typed at runtime; ignoring missing imports
+# here is preferable to writing a wall of `# type: ignore` at each call
+# site. Revisit when upstream publishes types.
+[[tool.mypy.overrides]]
+module = [
+    "celery",
+    "celery.*",
+    "boto3",
+    "botocore",
+    "botocore.*",
+    "jose",
+    "jose.*",
+    "passlib",
+    "passlib.*",
+    "yaml",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

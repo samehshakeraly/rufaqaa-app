@@ -8,6 +8,7 @@ permissions on top of roles will follow.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -31,7 +32,7 @@ STAFF_ROLES: tuple[Role, ...] = (
 DONOR_ROLE: Role = "donor"
 
 
-def require_roles(*allowed: Role):
+def require_roles(*allowed: Role) -> Callable[..., Awaitable[User]]:
     """FastAPI dependency factory. Use as `Depends(require_roles("org_admin"))`."""
     if not allowed:
         raise ValueError("require_roles called without any roles")
@@ -50,7 +51,7 @@ def require_roles(*allowed: Role):
     return _checker
 
 
-def require_verified_donor():
+def require_verified_donor() -> Callable[..., Awaitable[User]]:
     """Donor-area gate: must hold role='donor' AND have a verified
     email. Browse routes don't need this; only state-changing routes
     (sponsorship create, payment initiate) do.

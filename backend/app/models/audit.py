@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import BigInteger, Boolean, String, Text, func
@@ -22,8 +23,8 @@ class AuditLogEntry(Base):
     entity_type: Mapped[str] = mapped_column(String(50), nullable=False)
     entity_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True))
 
-    old_values: Mapped[dict | None] = mapped_column(JSONB)
-    new_values: Mapped[dict | None] = mapped_column(JSONB)
+    old_values: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    new_values: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
 
     ip_address: Mapped[str | None] = mapped_column(INET)
     user_agent: Mapped[str | None] = mapped_column(Text)

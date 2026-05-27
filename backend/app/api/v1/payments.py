@@ -182,9 +182,7 @@ async def admin_initiate_on_behalf(
         code=generate_code("PAY"),
         donor_id=donor_id,
         sponsorship_id=sponsorship.id if sponsorship is not None else None,
-        orphan_id=(
-            sponsorship.orphan_id if sponsorship is not None else payload.orphan_id
-        ),
+        orphan_id=(sponsorship.orphan_id if sponsorship is not None else payload.orphan_id),
         amount=payload.amount,
         currency=payload.currency,
         payment_method="credit_card",

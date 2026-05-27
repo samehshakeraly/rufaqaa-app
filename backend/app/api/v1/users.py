@@ -13,6 +13,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
@@ -183,7 +184,7 @@ async def accept_invite(payload: AcceptInvite, db: DbSession) -> UserAdminRead:
     return UserAdminRead.model_validate(target)
 
 
-async def _load_user_or_404(db, user_id: UUID) -> User:
+async def _load_user_or_404(db: AsyncSession, user_id: UUID) -> User:
     target = await db.scalar(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     if target is None:
         raise NotFound("User")

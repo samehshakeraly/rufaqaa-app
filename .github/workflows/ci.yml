@@ -133,6 +133,8 @@ jobs:
         run: ruff check app tests
       - name: Format check (ruff)
         run: ruff format --check app tests
+      - name: Typecheck (mypy --strict)
+        run: mypy app
       - name: Apply migrations
         run: alembic upgrade head
       - name: Run tests

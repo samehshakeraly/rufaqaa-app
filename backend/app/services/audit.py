@@ -10,11 +10,13 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.audit import AuditLogEntry
 
 
 def record_audit(
-    db,
+    db: AsyncSession,
     *,
     organization_id: UUID,
     user_id: UUID | None,

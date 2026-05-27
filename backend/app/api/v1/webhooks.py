@@ -16,12 +16,13 @@ import hmac
 import json
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import desc, func, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
@@ -67,7 +68,7 @@ def _verify_myfatoorah_signature(raw_body: bytes, signature: str | None) -> None
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
-async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, Any]:
+async def _process_myfatoorah_payload(db: AsyncSession, payload: dict[str, Any]) -> dict[str, Any]:
     """Pure processing — no signature check, no logging. Used by both
     the live route and the replay path.
 
@@ -214,15 +215,12 @@ async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, 
             if sponsorship is not None and sponsorship.orphan_id is not None:
                 from app.models.orphan import Orphan as _Orphan
 
-                orphan = await db.scalar(
-                    select(_Orphan).where(_Orphan.id == sponsorship.orphan_id)
-                )
+                orphan = await db.scalar(select(_Orphan).where(_Orphan.id == sponsorship.orphan_id))
                 if orphan is not None:
                     orphan_label = (
-                        orphan.full_name_en
-                        or f"{orphan.first_name} {orphan.family_name}"
+                        orphan.full_name_en or f"{orphan.first_name} {orphan.family_name}"
                     )
-            locale = (
+            locale: Literal["ar", "en"] = (
                 "en" if (donor.country_of_residence or "").upper() in {"US", "GB", "CA"} else "ar"
             )
             send_templated(
@@ -236,8 +234,7 @@ async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, 
                 completed_date=now.date().isoformat(),
                 orphan_name=orphan_label or "—",
                 receipt_url=(
-                    f"{settings.APP_BASE_URL.rstrip('/')}"
-                    f"/admin/payments/{payment.id}/receipt"
+                    f"{settings.APP_BASE_URL.rstrip('/')}/admin/payments/{payment.id}/receipt"
                 ),
             )
         except Exception:  # noqa: BLE001 — never let a logging email block the webhook
@@ -263,7 +260,7 @@ _REFUND_STATUS_MAP = {
 
 
 async def _process_refund_event(
-    db, data: dict[str, Any], gateway_txn_id: str
+    db: AsyncSession, data: dict[str, Any], gateway_txn_id: str
 ) -> dict[str, Any]:
     """Apply a refund status update to an existing Payment row.
 
@@ -311,7 +308,6 @@ async def _process_refund_event(
         }
 
     old_status = payment.status
-    now = datetime.now(UTC)
     payment.status = new_status
     payment.failure_reason = data.get("RefundReason") or payment.failure_reason
 
@@ -323,7 +319,9 @@ async def _process_refund_event(
             select(Sponsorship).where(Sponsorship.id == payment.sponsorship_id)
         )
         if sponsorship is not None:
-            sponsorship.total_paid = (sponsorship.total_paid or 0) - (payment.amount or 0)
+            sponsorship.total_paid = Decimal(sponsorship.total_paid or 0) - Decimal(
+                payment.amount or 0
+            )
             sponsorship.payments_count = max((sponsorship.payments_count or 0) - 1, 0)
 
     await db.flush()
@@ -390,7 +388,7 @@ async def myfatoorah_webhook(
 
 
 async def _log_inbound(
-    db,
+    db: AsyncSession,
     *,
     source: str,
     payload: dict[str, Any],
@@ -415,7 +413,7 @@ async def _log_inbound(
 
 
 async def _run_and_log(
-    db,
+    db: AsyncSession,
     *,
     source: str,
     payload: dict[str, Any],
@@ -462,7 +460,7 @@ class InboundWebhookLogRead(BaseModel):
 
     id: UUID
     source: str
-    payload: dict
+    payload: dict[str, Any]
     signature: str | None
     response_status: int | None
     response_body: str | None
