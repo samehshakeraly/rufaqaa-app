@@ -207,6 +207,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/resend-verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resend Verification
+         * @description Generic-response resend. Same anti-enumeration posture as signup.
+         */
+        post: operations["resend_verification_api_v1_auth_resend_verification_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/reset-password": {
         parameters: {
             query?: never;
@@ -222,6 +242,58 @@ export interface paths {
          *     live refresh session so other devices have to sign in again.
          */
         post: operations["reset_password_api_v1_auth_reset_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Donor Signup
+         * @description Public donor signup.
+         *
+         *     Anti-enumeration: returns the same 'check your email' shape whether
+         *     the email is brand-new or already registered. New accounts land in
+         *     the PLATFORM org with role='donor' and status='pending_verification'
+         *     until they click the link in the verification email.
+         *
+         *     Rate-limited by the global middleware (per-IP). Pending donors can
+         *     browse but cannot sponsor — `require_verified_donor` enforces that.
+         */
+        post: operations["donor_signup_api_v1_auth_signup_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/verify-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Email
+         * @description Consume the email-verification token.
+         *
+         *     Marks `email_verified_at`, flips the user from `pending_verification`
+         *     to `active`, and returns a fresh access/refresh pair so the SPA can
+         *     log the donor in immediately.
+         */
+        post: operations["verify_email_api_v1_auth_verify_email_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -351,6 +423,107 @@ export interface paths {
         put?: never;
         /** Verify Document */
         post: operations["verify_document_api_v1_documents__document_id__verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/donor/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Donor Me */
+        get: operations["get_donor_me_api_v1_donor_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Donor Me */
+        patch: operations["update_donor_me_api_v1_donor_me_patch"];
+        trace?: never;
+    };
+    "/api/v1/donor/me/data-export-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Data Export
+         * @description GDPR Article 15 stub — log the request, surface a placeholder.
+         */
+        post: operations["request_data_export_api_v1_donor_me_data_export_request_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/donor/me/deletion-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Account Deletion
+         * @description GDPR Article 17 stub — log the request, surface a placeholder.
+         *
+         *     Actual deletion requires an admin review (legal hold on records
+         *     tied to completed payments, etc) and is intentionally out of band.
+         */
+        post: operations["request_account_deletion_api_v1_donor_me_deletion_request_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/donor/me/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Payments */
+        get: operations["list_my_payments_api_v1_donor_me_payments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/donor/me/sponsorships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Sponsorships */
+        get: operations["list_my_sponsorships_api_v1_donor_me_sponsorships_get"];
+        put?: never;
+        /**
+         * Create My Sponsorship
+         * @description Donor-driven sponsorship creation. The orphan is looked up by
+         *     its public code (not internal UUID) so the donor never sees it.
+         *     Only orphans that are publicly browseable can be sponsored.
+         */
+        post: operations["create_my_sponsorship_api_v1_donor_me_sponsorships_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1015,6 +1188,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/orphans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public List Orphans
+         * @description Anonymous-safe orphan listing. Always filters to case statuses a
+         *     visitor is allowed to sponsor; never exposes archived / deceased /
+         *     pending_review rows.
+         */
+        get: operations["public_list_orphans_api_v1_public_orphans_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/orphans/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Orphan Detail */
+        get: operations["public_orphan_detail_api_v1_public_orphans__code__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Stats
+         * @description Platform-wide counters for the landing page. Aggregates only —
+         *     no rowwise data leaves the database.
+         */
+        get: operations["public_stats_api_v1_public_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports": {
         parameters: {
             query?: never;
@@ -1672,6 +1905,8 @@ export interface components {
              * Format: email
              */
             email: string;
+            /** Email Verified At */
+            email_verified_at?: string | null;
             /** First Name */
             first_name: string;
             /**
@@ -1708,6 +1943,16 @@ export interface components {
             sponsorships_active: number;
             /** Sponsorships Overdue */
             sponsorships_overdue: number;
+        };
+        /** DataExportRequest */
+        DataExportRequest: {
+            /** Detail */
+            detail: string;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
         };
         /**
          * DocumentCreate
@@ -1837,6 +2082,75 @@ export interface components {
             /** Whatsapp */
             whatsapp?: string | null;
         };
+        /** DonorMeRead */
+        DonorMeRead: {
+            /** Active Sponsorships */
+            active_sponsorships: number;
+            /** Code */
+            code: string;
+            /** Country Of Residence */
+            country_of_residence: string | null;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Full Name */
+            full_name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            /** Preferred Currency */
+            preferred_currency: string | null;
+            /** Status */
+            status: string;
+            /** Total Donated */
+            total_donated: string;
+            /** Total Sponsorships */
+            total_sponsorships: number;
+            /** User Id */
+            user_id: string | null;
+        };
+        /** DonorMeUpdate */
+        DonorMeUpdate: {
+            /** Country Of Residence */
+            country_of_residence?: string | null;
+            /** Full Name */
+            full_name?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Preferred Currency */
+            preferred_currency?: string | null;
+        };
+        /** DonorPaymentMini */
+        DonorPaymentMini: {
+            /** Amount */
+            amount: string;
+            /** Code */
+            code: string;
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Currency */
+            currency: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Payment Method */
+            payment_method: string;
+            /** Status */
+            status: string;
+        };
         /** DonorRead */
         DonorRead: {
             /** Active Sponsorships */
@@ -1899,6 +2213,89 @@ export interface components {
             /** Whatsapp */
             whatsapp?: string | null;
         };
+        /**
+         * DonorSignupRequest
+         * @description Public signup. Email + password + name are required; everything
+         *     else is optional and can be filled later from the profile page.
+         */
+        DonorSignupRequest: {
+            /** Country Code */
+            country_code?: string | null;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Full Name */
+            full_name: string;
+            /** Password */
+            password: string;
+            /** Phone */
+            phone?: string | null;
+            /** Preferred Currency */
+            preferred_currency?: string | null;
+            /**
+             * Preferred Language
+             * @default ar
+             * @enum {string}
+             */
+            preferred_language: "ar" | "en";
+        };
+        /**
+         * DonorSignupResponse
+         * @description Anti-enumeration: the shape is identical whether the email is
+         *     brand-new or already on file. The detail string says 'check your
+         *     email' in both cases. Only the verification token is omitted on the
+         *     already-registered branch.
+         */
+        DonorSignupResponse: {
+            /** Debug Verify Token */
+            debug_verify_token?: string | null;
+            /** Detail */
+            detail: string;
+        };
+        /** DonorSponsorshipCreate */
+        DonorSponsorshipCreate: {
+            /** Currency */
+            currency: string;
+            /**
+             * Frequency
+             * @default monthly
+             * @enum {string}
+             */
+            frequency: "monthly" | "quarterly" | "semi_annual" | "annual" | "one_time";
+            /** Monthly Amount */
+            monthly_amount: number | string;
+            /** Orphan Code */
+            orphan_code: string;
+        };
+        /**
+         * DonorSponsorshipMini
+         * @description Lean projection — what the donor portal needs to render.
+         */
+        DonorSponsorshipMini: {
+            /** Code */
+            code: string;
+            /** Currency */
+            currency: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Monthly Amount */
+            monthly_amount: string;
+            /** Orphan Code */
+            orphan_code: string | null;
+            /** Orphan First Name */
+            orphan_first_name: string | null;
+            /** Start Date */
+            start_date: string | null;
+            /** Status */
+            status: string;
+            /** Total Paid */
+            total_paid: string;
+        };
         /** DonorUpdate */
         DonorUpdate: {
             /** Country Of Residence */
@@ -1923,6 +2320,11 @@ export interface components {
             status?: string | null;
             /** Whatsapp */
             whatsapp?: string | null;
+        };
+        /** EmailVerifyRequest */
+        EmailVerifyRequest: {
+            /** Token */
+            token: string;
         };
         /** FamilyCreate */
         FamilyCreate: {
@@ -2979,6 +3381,77 @@ export interface components {
             /** Months */
             months: components["schemas"]["MonthlyPoint"][];
         };
+        /**
+         * PublicOrphanCard
+         * @description Curated public projection of an orphan. Every field here was
+         *     chosen because it is safe to show an anonymous visitor.
+         */
+        PublicOrphanCard: {
+            /** Age Years */
+            age_years: number;
+            /** Case Status */
+            case_status: string;
+            /** Code */
+            code: string;
+            /** Country */
+            country: string | null;
+            /** First Name */
+            first_name: string;
+            /**
+             * Gender
+             * @enum {string}
+             */
+            gender: "M" | "F";
+            /** Partner Organization Name */
+            partner_organization_name: string | null;
+        };
+        /**
+         * PublicOrphanDetail
+         * @description Detail page — same fields as the card plus a short description.
+         */
+        PublicOrphanDetail: {
+            /** Age Years */
+            age_years: number;
+            /** Case Status */
+            case_status: string;
+            /** Code */
+            code: string;
+            /** Country */
+            country: string | null;
+            /** First Name */
+            first_name: string;
+            /**
+             * Gender
+             * @enum {string}
+             */
+            gender: "M" | "F";
+            /** Partner Organization Name */
+            partner_organization_name: string | null;
+            /** Short Description */
+            short_description?: string | null;
+        };
+        /** PublicPage */
+        PublicPage: {
+            /** Items */
+            items: components["schemas"]["PublicOrphanCard"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** PublicStats */
+        PublicStats: {
+            /** Countries Served */
+            countries_served: number;
+            /** Donors Total */
+            donors_total: number;
+            /** Orphans Available */
+            orphans_available: number;
+            /** Orphans Sponsored */
+            orphans_sponsored: number;
+        };
         /** RefreshRequest */
         RefreshRequest: {
             /** Refresh Token */
@@ -3128,6 +3601,14 @@ export interface components {
             } | null;
             /** Summary */
             summary?: string | null;
+        };
+        /** ResendVerificationRequest */
+        ResendVerificationRequest: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
         };
         /** ResetPasswordRequest */
         ResetPasswordRequest: {
@@ -3759,6 +4240,39 @@ export interface operations {
             };
         };
     };
+    resend_verification_api_v1_auth_resend_verification_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendVerificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorSignupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     reset_password_api_v1_auth_reset_password_post: {
         parameters: {
             query?: never;
@@ -3778,6 +4292,72 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    donor_signup_api_v1_auth_signup_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DonorSignupRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorSignupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_email_api_v1_auth_verify_email_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPair"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -4032,6 +4612,183 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_donor_me_api_v1_donor_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorMeRead"];
+                };
+            };
+        };
+    };
+    update_donor_me_api_v1_donor_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DonorMeUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorMeRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_data_export_api_v1_donor_me_data_export_request_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportRequest"];
+                };
+            };
+        };
+    };
+    request_account_deletion_api_v1_donor_me_deletion_request_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportRequest"];
+                };
+            };
+        };
+    };
+    list_my_payments_api_v1_donor_me_payments_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorPaymentMini"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_sponsorships_api_v1_donor_me_sponsorships_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorSponsorshipMini"][];
+                };
+            };
+        };
+    };
+    create_my_sponsorship_api_v1_donor_me_sponsorships_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DonorSponsorshipCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DonorSponsorshipMini"];
                 };
             };
             /** @description Validation Error */
@@ -5595,6 +6352,93 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_list_orphans_api_v1_public_orphans_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                country?: string | null;
+                gender?: ("M" | "F") | null;
+                min_age?: number | null;
+                max_age?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_orphan_detail_api_v1_public_orphans__code__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicOrphanDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_stats_api_v1_public_stats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicStats"];
                 };
             };
         };
