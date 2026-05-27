@@ -12,11 +12,18 @@ from app.api.deps import CurrentUser, DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.organization import Organization
+from app.models.orphan import Orphan
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.payment import PaymentCreate, PaymentRead, PaymentStatusUpdate
+from app.schemas.payment import (
+    PaymentCreate,
+    PaymentRead,
+    PaymentReceipt,
+    PaymentStatusUpdate,
+)
 from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
@@ -159,6 +166,67 @@ _CSV_COLUMNS = (
     "completed_at",
     "created_at",
 )
+
+
+@router.get("/{payment_id}/receipt", response_model=PaymentReceipt)
+async def payment_receipt(
+    payment_id: UUID,
+    db: DbSession,
+    _user: CurrentUser,
+) -> PaymentReceipt:
+    """One-shot bundle for the print-friendly receipt page.
+
+    Joins donor / orphan / sponsorship / org so the receipt renders
+    from a single response instead of fanning out."""
+    payment = await db.scalar(select(Payment).where(Payment.id == payment_id))
+    if payment is None:
+        raise NotFound("Payment")
+    donor = await db.scalar(select(Donor).where(Donor.id == payment.donor_id))
+    if donor is None:
+        raise NotFound("Donor")
+    org = await db.scalar(select(Organization).where(Organization.id == payment.organization_id))
+    if org is None:
+        raise NotFound("Organization")
+
+    sponsorship = None
+    if payment.sponsorship_id is not None:
+        sponsorship = await db.scalar(
+            select(Sponsorship).where(Sponsorship.id == payment.sponsorship_id)
+        )
+    orphan = None
+    if payment.orphan_id is not None:
+        orphan = await db.scalar(select(Orphan).where(Orphan.id == payment.orphan_id))
+
+    orphan_name: str | None = None
+    if orphan is not None:
+        orphan_name = (
+            orphan.full_name_en
+            if orphan.full_name_en
+            else f"{orphan.first_name} {orphan.family_name}"
+        )
+
+    return PaymentReceipt(
+        payment_id=payment.id,
+        payment_code=payment.code,
+        amount=payment.amount,
+        currency=payment.currency,
+        payment_method=payment.payment_method,
+        status=payment.status,
+        completed_at=payment.completed_at,
+        initiated_at=payment.initiated_at,
+        donor_id=donor.id,
+        donor_code=donor.code,
+        donor_name=donor.full_name,
+        donor_email=donor.email,
+        sponsorship_id=sponsorship.id if sponsorship is not None else None,
+        sponsorship_code=sponsorship.code if sponsorship is not None else None,
+        orphan_id=orphan.id if orphan is not None else None,
+        orphan_code=orphan.code if orphan is not None else None,
+        orphan_name=orphan_name,
+        organization_id=org.id,
+        organization_name_ar=org.name_ar,
+        organization_name_en=org.name_en,
+    )
 
 
 @router.get("/export.csv")

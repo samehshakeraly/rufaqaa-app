@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Link } from "react-router-dom";
+
 import { Pagination } from "@/components/Pagination";
 import { TableSkeleton } from "@/components/Skeleton";
 import { exportPaymentsCsv, listPayments } from "@/lib/payments";
@@ -114,6 +116,7 @@ export function PaymentsPage() {
                 <th className="px-4 py-3 font-medium">{t("payments.gateway")}</th>
                 <th className="px-4 py-3 font-medium">{t("payments.status")}</th>
                 <th className="px-4 py-3 font-medium">{t("payments.completedAt")}</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-sky/40 text-sm">
@@ -132,6 +135,14 @@ export function PaymentsPage() {
                   </td>
                   <td className="px-4 py-3">
                     {p.completed_at ? p.completed_at.slice(0, 10) : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-end">
+                    <Link
+                      to={`/payments/${p.id}/receipt`}
+                      className="text-xs text-trust underline"
+                    >
+                      {t("payments.viewReceipt")}
+                    </Link>
                   </td>
                 </tr>
               ))}

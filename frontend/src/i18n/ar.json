@@ -154,6 +154,7 @@
     "title": "المدفوعات",
     "exportCsv": "تصدير CSV",
     "allStatuses": "كل الحالات",
+    "viewReceipt": "إيصال",
     "code": "الرمز",
     "amount": "المبلغ",
     "method": "طريقة الدفع",
@@ -330,6 +331,23 @@
       "suspended": "موقوفة",
       "archived": "مؤرشفة"
     }
+  },
+  "receipt": {
+    "title": "إيصال تبرع",
+    "back": "العودة للمدفوعات",
+    "print": "طباعة",
+    "code": "رقم الإيصال",
+    "completedAt": "تاريخ الإكمال",
+    "donor": "المتبرع",
+    "donorCode": "رمز المتبرع",
+    "donorEmail": "البريد الإلكتروني",
+    "orphan": "اليتيم",
+    "orphanCode": "رمز اليتيم",
+    "sponsorshipCode": "رمز الكفالة",
+    "paymentMethod": "طريقة الدفع",
+    "status": "الحالة",
+    "amount": "المبلغ المدفوع",
+    "thanks": "شكراً لتبرعكم الكريم."
   },
   "donors": {
     "title": "المتبرعون",

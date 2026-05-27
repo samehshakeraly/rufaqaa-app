@@ -2144,6 +2144,141 @@ components:
       - created_at
       title: PaymentRead
       type: object
+    PaymentReceipt:
+      description: 'Self-contained snapshot of a payment for printing. Bundles the
+
+        donor + orphan + organization fields the receipt page needs so the
+
+        UI doesn''t have to fan out to 4 endpoints.'
+      properties:
+        amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+          type: string
+        completed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Completed At
+        currency:
+          title: Currency
+          type: string
+        donor_code:
+          title: Donor Code
+          type: string
+        donor_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Email
+        donor_id:
+          format: uuid
+          title: Donor Id
+          type: string
+        donor_name:
+          title: Donor Name
+          type: string
+        initiated_at:
+          format: date-time
+          title: Initiated At
+          type: string
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        organization_name_ar:
+          title: Organization Name Ar
+          type: string
+        organization_name_en:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Organization Name En
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        orphan_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Name
+        payment_code:
+          title: Payment Code
+          type: string
+        payment_id:
+          format: uuid
+          title: Payment Id
+          type: string
+        payment_method:
+          enum:
+          - credit_card
+          - debit_card
+          - bank_transfer
+          - knet
+          - paypal
+          - cash
+          - cheque
+          - standing_order
+          - mobile_payment
+          - other
+          title: Payment Method
+          type: string
+        sponsorship_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sponsorship Code
+        sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+        status:
+          enum:
+          - pending
+          - processing
+          - completed
+          - failed
+          - refunded
+          - partially_refunded
+          - chargeback
+          - disputed
+          - on_hold
+          title: Status
+          type: string
+      required:
+      - payment_id
+      - payment_code
+      - amount
+      - currency
+      - payment_method
+      - status
+      - completed_at
+      - initiated_at
+      - donor_id
+      - donor_code
+      - donor_name
+      - donor_email
+      - sponsorship_id
+      - sponsorship_code
+      - orphan_id
+      - orphan_code
+      - orphan_name
+      - organization_id
+      - organization_name_ar
+      - organization_name_en
+      title: PaymentReceipt
+      type: object
     PaymentStatusUpdate:
       description: 'Manual status transition by ops — e.g. marking a pending wire as
 
@@ -4656,6 +4791,41 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Export Payments Csv
+      tags:
+      - payments
+  /api/v1/payments/{payment_id}/receipt:
+    get:
+      description: 'One-shot bundle for the print-friendly receipt page.
+
+
+        Joins donor / orphan / sponsorship / org so the receipt renders
+
+        from a single response instead of fanning out.'
+      operationId: payment_receipt_api_v1_payments__payment_id__receipt_get
+      parameters:
+      - in: path
+        name: payment_id
+        required: true
+        schema:
+          format: uuid
+          title: Payment Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReceipt'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Payment Receipt
       tags:
       - payments
   /api/v1/payments/{payment_id}/status:

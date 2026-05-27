@@ -149,6 +149,7 @@
     "title": "Payments",
     "exportCsv": "Export CSV",
     "allStatuses": "All statuses",
+    "viewReceipt": "Receipt",
     "code": "Code",
     "amount": "Amount",
     "method": "Method",
@@ -325,6 +326,23 @@
       "suspended": "Suspended",
       "archived": "Archived"
     }
+  },
+  "receipt": {
+    "title": "Donation receipt",
+    "back": "Back to payments",
+    "print": "Print",
+    "code": "Receipt no.",
+    "completedAt": "Completed at",
+    "donor": "Donor",
+    "donorCode": "Donor code",
+    "donorEmail": "Email",
+    "orphan": "Orphan",
+    "orphanCode": "Orphan code",
+    "sponsorshipCode": "Sponsorship",
+    "paymentMethod": "Payment method",
+    "status": "Status",
+    "amount": "Amount paid",
+    "thanks": "Thank you for your generous contribution."
   },
   "donors": {
     "title": "Donors",
