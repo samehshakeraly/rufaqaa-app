@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { DocumentUploadCard } from "@/components/DocumentUploadCard";
 import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
 import { getOrphan, getOrphanTimeline } from "@/lib/orphans";
 
@@ -90,6 +91,8 @@ export function OrphanDetailPage() {
       </div>
 
       <OrphanPhotoUpload orphanId={id} />
+
+      <DocumentUploadCard target={{ kind: "orphan", orphanId: id }} />
 
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("orphans.timeline")}</h2>

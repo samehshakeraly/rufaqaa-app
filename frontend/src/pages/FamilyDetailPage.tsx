@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { DocumentUploadCard } from "@/components/DocumentUploadCard";
 import {
   createGuardian,
   getFamily,
@@ -133,6 +134,24 @@ export function FamilyDetailPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {guardiansQ.data && guardiansQ.data.items.length > 0 && (
+          <div className="space-y-4">
+            {guardiansQ.data.items.map((g) => (
+              <details
+                key={`docs-${g.id}`}
+                className="rounded-lg border border-sky bg-snow p-2"
+              >
+                <summary className="cursor-pointer px-2 py-1 text-sm font-medium text-slate-700">
+                  {t("documents.title")} — {g.full_name}
+                </summary>
+                <div className="pt-2">
+                  <DocumentUploadCard target={{ kind: "guardian", guardianId: g.id }} />
+                </div>
+              </details>
+            ))}
           </div>
         )}
       </div>

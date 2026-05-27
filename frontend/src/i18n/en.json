@@ -509,6 +509,14 @@
     "completed": "Transfer marked completed.",
     "cancelled": "Transfer cancelled.",
     "confirmed": "Partner receipt confirmed.",
+    "confirmDialog": {
+      "title": "Confirm partner receipt",
+      "body": "Attach a proof document (optional) and any notes the partner shared when acknowledging receipt.",
+      "attachDoc": "Upload proof document",
+      "notes": "Notes",
+      "submit": "Confirm",
+      "uploading": "Uploading file…"
+    },
     "statuses": {
       "pending": "Pending",
       "approved": "Approved",
@@ -517,6 +525,53 @@
       "failed": "Failed",
       "cancelled": "Cancelled"
     }
+  },
+  "documents": {
+    "title": "Documents",
+    "stepOne": "1. Upload the file",
+    "stepTwo": "2. Add metadata and attach",
+    "type": "Type",
+    "fieldTitle": "Title (optional)",
+    "issuingAuthority": "Issuing authority",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiry date",
+    "attach": "Attach document",
+    "uploading": "Uploading…",
+    "attached": "Document attached.",
+    "tooLarge": "File is too large (max 10 MB).",
+    "empty": "No documents on record yet.",
+    "verify": "Verify",
+    "reject": "Reject",
+    "types": {
+      "birth_certificate": "Birth certificate",
+      "death_certificate": "Death certificate",
+      "national_id": "National ID",
+      "passport": "Passport",
+      "bank_statement": "Bank statement",
+      "school_certificate": "School certificate",
+      "medical_report": "Medical report",
+      "photo_id": "Photo ID",
+      "family_record": "Family record",
+      "other": "Other"
+    }
+  },
+  "walkIn": {
+    "title": "Admin checkout (walk-in donor)",
+    "description": "Open a hosted-checkout link on behalf of a donor who is present in person. The donor pays on a screen here or their own phone via the QR code.",
+    "selectDonor": "Donor",
+    "amount": "Amount",
+    "currency": "Currency",
+    "language": "Language",
+    "start": "Start checkout",
+    "starting": "Opening checkout…",
+    "shareLink": "Share link with donor",
+    "openLink": "Open hosted-checkout page",
+    "qrHint": "Scan this QR with the donor's phone.",
+    "status": "Status",
+    "polling": "Polling for status…",
+    "completed": "Payment completed.",
+    "failed": "Payment failed.",
+    "newCheckout": "Start another checkout"
   },
   "families": {
     "title": "Families",
