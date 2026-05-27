@@ -252,6 +252,10 @@ jobs:
           --health-retries 5
     env:
       DATABASE_URL: postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa
+      # The preview server binds to 127.0.0.1:4173; the backend's CORS
+      # default doesn't include that origin, so widen it here so the
+      # browser-driven login POST clears the preflight.
+      CORS_ORIGINS: http://127.0.0.1:4173,http://localhost:4173
       E2E_BASE_URL: http://127.0.0.1:4173
       E2E_ADMIN_EMAIL: admin@dev.rufaqaa.app
       E2E_ADMIN_PASSWORD: admin12345

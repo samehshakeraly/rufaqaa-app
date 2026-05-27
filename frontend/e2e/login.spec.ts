@@ -32,5 +32,7 @@ test("invalid credentials show an error and stay on /login", async ({ page }) =>
   await page.getByRole("button", { name: /(sign in|دخول)/i }).click();
 
   await expect(page).toHaveURL(/\/login$/);
-  await expect(page.locator(".bg-red-50")).toBeVisible();
+  // Scope to the login form so a transient toast banner (also styled
+  // .bg-red-50 via the error variant) doesn't trip strict mode.
+  await expect(page.locator("form .bg-red-50").first()).toBeVisible();
 });
