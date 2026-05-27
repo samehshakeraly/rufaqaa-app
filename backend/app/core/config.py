@@ -74,6 +74,10 @@ class Settings(BaseSettings):
     EMAIL_ENABLED: bool = False  # flip to True once SMTP creds are set
     DEFAULT_LOCALE: Literal["ar", "en"] = "ar"
 
+    # Base URL the SPA is served at — used to build absolute links in
+    # transactional emails (invite, password reset, …).
+    APP_BASE_URL: str = "http://localhost:5173"
+
     # Error reporting (optional). Leave SENTRY_DSN empty to disable.
     SENTRY_DSN: str = ""
     SENTRY_TRACES_SAMPLE_RATE: float = 0.0

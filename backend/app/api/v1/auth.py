@@ -31,6 +31,7 @@ from app.schemas.auth import (
 from app.schemas.auth import (
     CurrentUser as CurrentUserSchema,
 )
+from app.services.email import send_templated
 
 router = APIRouter()
 
@@ -174,8 +175,14 @@ async def forgot_password(payload: ForgotPasswordRequest, db: DbSession) -> Forg
     token: str | None = None
     if user is not None and user.status == "active":
         token = create_password_reset_token(user.id)
-        # TODO: queue an email — for now the token is only returned in
-        # debug mode and the caller copy-pastes the reset link.
+        reset_url = f"{settings.APP_BASE_URL.rstrip('/')}/reset-password?token={token}"
+        send_templated(
+            to=user.email,
+            template="password_reset",
+            locale=settings.DEFAULT_LOCALE,
+            reset_url=reset_url,
+            expires_minutes=30,
+        )
     return ForgotPasswordResponse(
         sent=True,
         debug_token=token if settings.ENVIRONMENT != "production" else None,
