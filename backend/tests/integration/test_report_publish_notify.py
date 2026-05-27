@@ -21,9 +21,7 @@ async def _seed_partner_id() -> str:
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1"
-                )
+                text("SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1")
             )
         ).first()
         assert row is not None
@@ -73,9 +71,7 @@ async def _setup_report(api: AsyncClient, headers: dict[str, str]) -> tuple[str,
     )
     assert sp.status_code == 201
     # Move from pending → active so the notify-task picks it up.
-    await api.post(
-        f"/api/v1/sponsorships/{sp.json()['id']}/activate", headers=headers
-    )
+    await api.post(f"/api/v1/sponsorships/{sp.json()['id']}/activate", headers=headers)
 
     r = await api.post(
         "/api/v1/reports",
@@ -112,9 +108,7 @@ async def test_publish_marks_report_published(
     assert r.json()["status"] == "published_to_donor"
 
 
-async def test_notify_idempotency_helpers(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_notify_idempotency_helpers(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """We exercise the helpers directly because the Celery task body uses
     `asyncio.run`, which conflicts with the test's own running loop. The
     helpers are the unit of behaviour we care about: gating on
@@ -138,9 +132,7 @@ async def test_notify_idempotency_helpers(
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT donors_notified_at FROM orphan_reports WHERE id = :rid"
-                ),
+                text("SELECT donors_notified_at FROM orphan_reports WHERE id = :rid"),
                 {"rid": rid},
             )
         ).first()
@@ -150,9 +142,7 @@ async def test_notify_idempotency_helpers(
     async with make_session() as db:
         row2 = (
             await db.execute(
-                text(
-                    "SELECT donors_notified_at FROM orphan_reports WHERE id = :rid"
-                ),
+                text("SELECT donors_notified_at FROM orphan_reports WHERE id = :rid"),
                 {"rid": rid},
             )
         ).first()

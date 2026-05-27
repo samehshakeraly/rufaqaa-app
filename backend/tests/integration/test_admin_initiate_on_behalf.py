@@ -84,9 +84,7 @@ async def test_admin_initiate_returns_url_and_stamps_initiator(
         assert gateway == "myfatoorah"
 
 
-async def test_admin_initiate_requires_admin(
-    api: AsyncClient, fake_gateway
-) -> None:
+async def test_admin_initiate_requires_admin(api: AsyncClient, fake_gateway) -> None:
     r = await api.post(
         "/api/v1/payments/admin/initiate-on-behalf",
         json={"donor_id": str(uuid.uuid4()), "amount": "1.00", "currency": "KWD"},
@@ -116,9 +114,7 @@ async def test_admin_initiate_sponsorship_must_match_donor(
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1"
-                )
+                text("SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1")
             )
         ).first()
         assert row is not None
