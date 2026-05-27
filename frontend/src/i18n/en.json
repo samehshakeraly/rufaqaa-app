@@ -3,6 +3,126 @@
     "name": "Rufaqaa",
     "tagline": "Orphan sponsorship management platform"
   },
+  "public": {
+    "nav": {
+      "browseOrphans": "Browse orphans",
+      "login": "Sign in",
+      "signup": "Sign up",
+      "toMyArea": "My area",
+      "toHome": "Back home"
+    },
+    "footer": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "contact": "Contact"
+    },
+    "orphans": {
+      "title": "Orphans",
+      "subtitle": "Children waiting to be sponsored.",
+      "country": "Country",
+      "gender": "Gender",
+      "age": "{{age}} years",
+      "viewAndSponsor": "View & sponsor",
+      "sponsor": "Sponsor this child"
+    }
+  },
+  "landing": {
+    "hero": {
+      "title": "Sponsor an orphan, change a life.",
+      "subtitle": "Every donation goes directly to the children — fully transparent, fully tracked.",
+      "browse": "Browse orphans",
+      "signup": "Create an account"
+    },
+    "stats": {
+      "available": "Waiting for sponsorship",
+      "sponsored": "Currently sponsored",
+      "donors": "Donors who care",
+      "countries": "Countries served"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": "Browse the orphans waiting for sponsorship.",
+      "step2": "Create a free donor account in under a minute.",
+      "step3": "Pay securely through MyFatoorah — your card stays with them, never us."
+    }
+  },
+  "signup": {
+    "title": "Create your donor account",
+    "sponsorIntent": "You'll be sponsoring orphan {{code}} after verifying your email.",
+    "fullName": "Full name",
+    "phone": "Phone (optional)",
+    "country": "Country",
+    "currency": "Preferred currency",
+    "language": "Language",
+    "acceptTerms": "I accept the terms of service and privacy policy.",
+    "mustAccept": "Please accept the terms to continue.",
+    "submit": "Sign up",
+    "haveAccount": "Already have an account?",
+    "strength": {
+      "weak": "Too short (min 8 chars)",
+      "okay": "OK — add an uppercase letter and a digit for stronger",
+      "strong": "Strong"
+    }
+  },
+  "verifyPending": {
+    "title": "Check your inbox",
+    "body": "We sent a verification link to your email. Click it to finish creating your account.",
+    "didntGet": "Didn't get it?",
+    "resend": "Resend",
+    "resentNote": "If the address is registered and not yet verified, a fresh link is on its way.",
+    "bad": "Verification failed. Try the link in your email or request a fresh one."
+  },
+  "verifyConfirm": {
+    "missing": "No verification token found in the URL.",
+    "checking": "Verifying your email…",
+    "failed": "Could not verify",
+    "failedBody": "The link may have expired. Request a new one below."
+  },
+  "donorNav": {
+    "dashboard": "Dashboard",
+    "sponsorships": "My sponsorships",
+    "browseMore": "Browse more",
+    "profile": "Profile"
+  },
+  "donor": {
+    "dashboard": {
+      "welcome": "Welcome back, {{name}}",
+      "activeSponsorships": "Active sponsorships",
+      "totalSponsorships": "Total sponsorships",
+      "totalDonated": "Total donated",
+      "sponsorshipsHeader": "Your sponsorships",
+      "noSponsorshipsYet": "You haven't sponsored anyone yet —",
+      "browseNow": "browse now",
+      "recentPayments": "Recent payments",
+      "viewAll": "View all"
+    },
+    "profile": {
+      "title": "My profile",
+      "saved": "Profile saved"
+    },
+    "sponsorships": {
+      "title": "My sponsorships",
+      "none": "You haven't started any sponsorships yet.",
+      "code": "Code",
+      "orphan": "Orphan",
+      "amount": "Monthly",
+      "totalPaid": "Total paid",
+      "status": "Status",
+      "pay": "Pay"
+    }
+  },
+  "checkout": {
+    "title": "Sponsor this child",
+    "intro": "You're about to make a payment toward the orphan below. Card details are entered on MyFatoorah's secure page — we never see them.",
+    "sponsorThisChild": "Sponsor",
+    "donor": "Donor",
+    "amount": "Amount",
+    "currency": "Currency",
+    "payNow": "Pay now",
+    "redirecting": "Redirecting…",
+    "payingAs": "Paying as {{name}} ({{email}})",
+    "securityNote": "Your card data is processed by MyFatoorah. We never store it."
+  },
   "nav": {
     "dashboard": "Dashboard",
     "orphans": "Orphans",
@@ -340,17 +460,6 @@
       "suspended": "Suspended",
       "archived": "Archived"
     }
-  },
-  "checkout": {
-    "title": "Sponsor this child",
-    "intro": "You're about to make a payment toward the orphan below. Card details are entered on MyFatoorah's secure page — we never see them.",
-    "sponsorThisChild": "Sponsor",
-    "donor": "Donor",
-    "amount": "Amount",
-    "currency": "Currency",
-    "payNow": "Pay now",
-    "redirecting": "Redirecting…",
-    "securityNote": "Your card data is processed by MyFatoorah. We never store it."
   },
   "paymentSuccess": {
     "title": "Payment received",
