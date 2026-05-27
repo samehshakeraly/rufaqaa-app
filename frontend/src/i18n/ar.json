@@ -11,6 +11,7 @@
     "families": "الأسر",
     "sponsorships": "الكفالات",
     "payments": "المدفوعات",
+    "bankTransfers": "التحويلات البنكية",
     "reports": "التقارير",
     "users": "المستخدمون",
     "marketingChannels": "القنوات",
@@ -361,6 +362,35 @@
     "status": "الحالة",
     "amount": "المبلغ المدفوع",
     "thanks": "شكراً لتبرعكم الكريم."
+  },
+  "bankTransfers": {
+    "title": "التحويلات البنكية",
+    "addNew": "تحويل جديد",
+    "code": "الرمز",
+    "partner": "الشريك",
+    "amount": "المبلغ",
+    "currency": "العملة",
+    "period": "الفترة",
+    "periodStart": "بداية الفترة",
+    "periodEnd": "نهاية الفترة",
+    "bankName": "البنك",
+    "status": "الحالة",
+    "approve": "اعتماد",
+    "markCompleted": "تأكيد التنفيذ",
+    "cancel": "إلغاء",
+    "confirmReceipt": "تأكيد الاستلام",
+    "approved": "تم اعتماد التحويل.",
+    "completed": "تم وضع علامة التنفيذ.",
+    "cancelled": "تم إلغاء التحويل.",
+    "confirmed": "تم تأكيد استلام الشريك.",
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "approved": "معتمد",
+      "processing": "قيد المعالجة",
+      "completed": "مكتمل",
+      "failed": "فشل",
+      "cancelled": "ملغى"
+    }
   },
   "families": {
     "title": "الأسر",

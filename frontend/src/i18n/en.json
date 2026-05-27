@@ -11,6 +11,7 @@
     "families": "Families",
     "sponsorships": "Sponsorships",
     "payments": "Payments",
+    "bankTransfers": "Bank transfers",
     "reports": "Reports",
     "users": "Users",
     "marketingChannels": "Channels",
@@ -356,6 +357,35 @@
     "status": "Status",
     "amount": "Amount paid",
     "thanks": "Thank you for your generous contribution."
+  },
+  "bankTransfers": {
+    "title": "Bank transfers",
+    "addNew": "New transfer",
+    "code": "Code",
+    "partner": "Partner",
+    "amount": "Amount",
+    "currency": "Currency",
+    "period": "Period",
+    "periodStart": "Period start",
+    "periodEnd": "Period end",
+    "bankName": "Bank",
+    "status": "Status",
+    "approve": "Approve",
+    "markCompleted": "Mark completed",
+    "cancel": "Cancel",
+    "confirmReceipt": "Confirm receipt",
+    "approved": "Transfer approved.",
+    "completed": "Transfer marked completed.",
+    "cancelled": "Transfer cancelled.",
+    "confirmed": "Partner receipt confirmed.",
+    "statuses": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
   },
   "families": {
     "title": "Families",
