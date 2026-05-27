@@ -188,6 +188,14 @@ jobs:
         run: npm run build
       - name: Generated API schema is up to date
         run: npm run generate:api:check
+      - name: Build Storybook
+        run: npm run build-storybook -- --quiet
+      - name: Upload Storybook artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: frontend/storybook-static/
+          retention-days: 7
 
   # ─── Validate OpenAPI spec ────────────────────────────────
   openapi:
