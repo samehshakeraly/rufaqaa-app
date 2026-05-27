@@ -30,6 +30,25 @@ router = APIRouter()
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
+# Generic-document allow-list. Stays narrow so the bucket doesn't
+# become an arbitrary-file dumping ground.
+ALLOWED_DOCUMENT_TYPES = {
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+
+
+class FileUploadResponse(BaseModel):
+    """Thin metadata blob the frontend hands straight to
+    POST /orphans/{id}/documents (or any other attach endpoint)."""
+
+    file_url: str
+    file_name: str
+    file_size_bytes: int
+    file_mime_type: str
+
 
 class MediaUploadResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -186,6 +205,47 @@ async def list_orphan_photos(
             )
         )
     return out
+
+
+@router.post(
+    "/file",
+    response_model=FileUploadResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def upload_generic_file(
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+    file: Annotated[UploadFile, File()],
+) -> FileUploadResponse:
+    """Stage a file in object storage and return its s3:// URL plus
+    metadata. The frontend two-step upload-then-attach flow calls this
+    first, then passes the returned fields to an endpoint that records
+    the attachment (e.g. POST /orphans/{id}/documents)."""
+    if file.content_type not in ALLOWED_DOCUMENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Allowed types: {sorted(ALLOWED_DOCUMENT_TYPES)}",
+        )
+    body = await file.read()
+    if len(body) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Empty upload")
+    if len(body) > settings.UPLOAD_MAX_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Max upload is {settings.UPLOAD_MAX_BYTES} bytes",
+        )
+    bucket = settings.S3_BUCKET_PRIVATE
+    await ensure_bucket(bucket)
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower() or "bin"
+    key = f"documents/{user.organization_id}/{uuid.uuid4().hex}.{ext}"
+    await put_object(bucket, key, body, content_type=file.content_type or "application/octet-stream")
+    _ = db  # No DB row written; document/attach endpoints persist the link.
+    return FileUploadResponse(
+        file_url=f"s3://{bucket}/{key}",
+        file_name=file.filename or f"upload.{ext}",
+        file_size_bytes=len(body),
+        file_mime_type=file.content_type or "application/octet-stream",
+    )
 
 
 @router.get("/{media_id}/url")
