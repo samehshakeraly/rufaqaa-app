@@ -53,6 +53,7 @@ class OrphanReport(Base):
     org_approved_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
 
     published_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
+    donors_notified_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
 
     rejection_reason: Mapped[str | None] = mapped_column(Text)
 
