@@ -295,7 +295,7 @@ export function OrphansPage() {
                       />
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
-                      <Link to={`/admin/orphans/${o.id}`} className="text-trust hover:underline">
+                      <Link to={`/orphans/${o.id}`} className="text-trust hover:underline">
                         {o.code}
                       </Link>
                     </td>

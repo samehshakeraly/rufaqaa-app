@@ -54,7 +54,7 @@ export function FamilyDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link to="/admin/families" className="text-sm text-trust underline">
+        <Link to="/families" className="text-sm text-trust underline">
           ← {t("families.backToList")}
         </Link>
       </div>

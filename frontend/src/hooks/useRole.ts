@@ -9,24 +9,15 @@ export function useRole() {
   const { data } = useCurrentUser();
   const role = data?.role;
 
-  const isAdmin = role === "super_admin" || role === "org_admin";
-  const isStaff =
-    isAdmin ||
-    role === "partner_manager" ||
-    role === "partner_staff" ||
-    role === "marketing_manager" ||
-    role === "finance";
-  const isDonor = role === "donor";
-  const emailVerified = Boolean(data?.email_verified_at);
-
   return {
     role,
-    isAdmin,
-    isStaff,
-    isDonor,
-    emailVerified,
-    /** Where to send this user when they hit `/` or just signed in. */
-    homePath:
-      isStaff ? "/admin/dashboard" : isDonor ? "/donor/dashboard" : "/",
+    isAdmin: role === "super_admin" || role === "org_admin",
+    isStaff:
+      role === "super_admin" ||
+      role === "org_admin" ||
+      role === "partner_manager" ||
+      role === "partner_staff" ||
+      role === "marketing_manager" ||
+      role === "finance",
   };
 }

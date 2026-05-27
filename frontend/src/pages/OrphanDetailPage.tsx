@@ -55,7 +55,7 @@ export function OrphanDetailPage() {
             {t("checkout.sponsorThisChild")}
           </Link>
           <Link
-            to="/admin/orphans"
+            to="/orphans"
             className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
           >
             ← {t("orphans.title")}

@@ -9,11 +9,11 @@ import { useRole } from "@/hooks/useRole";
  * is signed in but lacks the privilege.
  */
 export function AdminRoute({ children }: { children: ReactNode }) {
-  const { isAdmin, role, homePath } = useRole();
+  const { isAdmin, role } = useRole();
 
   // While the /me query hasn't loaded yet `role` is undefined; render
   // nothing rather than flashing a redirect.
   if (role === undefined) return null;
-  if (!isAdmin) return <Navigate to={homePath} replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }

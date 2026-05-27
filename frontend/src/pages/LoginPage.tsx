@@ -42,9 +42,7 @@ export function LoginPage() {
     onSuccess: (data) => {
       setTokens(data.access_token, data.refresh_token);
       const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
-      // Land on `/` — the root route dispatches by role (admin →
-      // /admin/dashboard, donor → /donor/dashboard, else landing).
-      navigate(from ?? "/", { replace: true });
+      navigate(from ?? "/dashboard", { replace: true });
     },
     onError: (err) => {
       if (err instanceof AxiosError && err.response?.status === 401) {
@@ -56,7 +54,7 @@ export function LoginPage() {
   });
 
   if (token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (
