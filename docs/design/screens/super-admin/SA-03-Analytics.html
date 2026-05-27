@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحليلات المنصّة — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068; --trust-900: #0B1E33;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-700: #B91C1C;
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06); --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 14.5px; line-height: 1.6; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* SHELL */
+.shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+@media (max-width: 980px) { .shell { grid-template-columns: 1fr; } }
+.sidebar { background: var(--trust-900); color: var(--gray-300); padding: 20px 16px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+@media (max-width: 980px) { .sidebar { position: relative; height: auto; padding: 16px; flex-direction: row; align-items: center; overflow-x: auto; } }
+.sb-brand { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin-bottom: 24px; }
+@media (max-width: 980px) { .sb-brand { margin-bottom: 0; margin-inline-end: 16px; flex-shrink: 0; } }
+.sb-brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+.sb-brand-text h1 { font-size: 15px; font-weight: 600; color: white; line-height: 1.2; }
+.sb-brand-text small { font-size: 10.5px; color: var(--trust-300); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.sb-section-label { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .08em; text-transform: uppercase; padding: 0 12px; margin-top: 20px; margin-bottom: 8px; }
+@media (max-width: 980px) { .sb-section-label { display: none; } }
+.sb-nav { display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 980px) { .sb-nav { flex-direction: row; gap: 6px; } }
+.sb-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--gray-300); transition: var(--transition-fast); white-space: nowrap; }
+.sb-link:hover { background: rgba(255,255,255,.06); color: white; }
+.sb-link.active { background: var(--trust-500); color: white; }
+.sb-link .sb-link-count { margin-inline-start: auto; font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; padding: 1px 7px; background: rgba(255,255,255,.10); border-radius: var(--radius-full); font-weight: 600; }
+.sb-footer { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.10); display: flex; align-items: center; gap: 10px; }
+@media (max-width: 980px) { .sb-footer { display: none; } }
+.sb-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--trust-500); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+.sb-user-name { font-size: 13.5px; color: white; font-weight: 500; }
+.sb-user-role { font-size: 11px; color: var(--trust-300); }
+
+.main { padding: 0; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.topbar-title h2 { font-size: 20px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12.5px; color: var(--gray-500); margin-top: 2px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.date-range { display: inline-flex; gap: 4px; padding: 4px; background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-full); }
+.dr-btn { padding: 7px 13px; font-size: 12.5px; font-weight: 500; color: var(--gray-600); border-radius: var(--radius-full); transition: var(--transition-fast); }
+.dr-btn:hover { background: white; }
+.dr-btn.active { background: var(--trust-500); color: white; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13.5px; font-weight: 500; padding: 9px 14px; border-radius: var(--radius-md); transition: var(--transition); border: 1px solid transparent; white-space: nowrap; }
+.btn-secondary { background: white; color: var(--gray-700); border-color: var(--gray-200); }
+.btn-secondary:hover { background: var(--snow-100); border-color: var(--sky-300); color: var(--trust-600); }
+
+.content { padding: 24px 32px 48px; }
+@media (max-width: 600px) { .content { padding: 20px 16px 32px; } .topbar { padding: 14px 16px; } }
+
+/* Panels */
+.panel { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.panel-head { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.panel-title { font-size: 15px; font-weight: 600; color: var(--gray-900); display: inline-flex; align-items: center; gap: 8px; }
+.panel-title svg { color: var(--trust-400); }
+.panel-meta { font-size: 11.5px; color: var(--gray-500); }
+.panel-body { padding: 20px; }
+
+/* GROWTH (big chart) */
+.section { margin-bottom: 20px; }
+.growth-summary { display: flex; gap: 32px; align-items: baseline; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px dashed var(--gray-200); flex-wrap: wrap; }
+.summary-item { display: flex; flex-direction: column; gap: 4px; }
+.summary-label { font-size: 12px; color: var(--gray-500); }
+.summary-value { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 28px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; }
+.summary-value .unit { font-size: 13px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 4px; }
+.summary-trend { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
+.summary-trend.up { background: var(--success-50); color: var(--success-700); border: 1px solid #D1FAE5; }
+
+.growth-chart { width: 100%; height: 240px; }
+.chart-legend { display: flex; gap: 18px; margin-top: 12px; font-size: 12.5px; color: var(--gray-600); flex-wrap: wrap; }
+.chart-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+/* GRID ROW */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* MAP (geo distribution) */
+.geo-list { display: flex; flex-direction: column; gap: 10px; }
+.geo-row { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; align-items: center; padding: 8px 0; }
+.geo-flag { width: 32px; height: 32px; border-radius: 50%; background: var(--snow-200); border: 1px solid var(--sky-200); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.geo-info { min-width: 0; }
+.geo-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.geo-detail { font-size: 11.5px; color: var(--gray-500); }
+.geo-bar-wrap { display: flex; align-items: center; gap: 10px; }
+.geo-bar { width: 100px; height: 8px; background: var(--gray-100); border-radius: var(--radius-full); overflow: hidden; }
+.geo-bar-fill { height: 100%; background: var(--trust-400); border-radius: var(--radius-full); }
+.geo-count { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--gray-900); min-width: 28px; text-align: end; }
+
+/* PIE CHART (payment methods) */
+.pie-row { display: grid; grid-template-columns: 160px 1fr; gap: 24px; align-items: center; }
+@media (max-width: 520px) { .pie-row { grid-template-columns: 1fr; justify-items: center; } }
+.pie-wrap { position: relative; width: 160px; height: 160px; }
+.pie-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.pie-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.pie-total { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 24px; font-weight: 600; color: var(--gray-900); }
+.pie-total-label { font-size: 11px; color: var(--gray-500); }
+.pie-legend { display: flex; flex-direction: column; gap: 10px; }
+.pie-legend-row { display: grid; grid-template-columns: 12px 1fr auto auto; gap: 10px; align-items: center; font-size: 13px; }
+.pie-swatch { width: 12px; height: 12px; border-radius: 3px; }
+.pie-label-text { color: var(--gray-700); }
+.pie-percent { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; color: var(--gray-900); }
+.pie-count { font-family: 'IBM Plex Sans', sans-serif; font-size: 11.5px; color: var(--gray-500); }
+
+/* STAT BIG */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+@media (max-width: 760px) { .stat-grid { grid-template-columns: 1fr; } }
+.stat-big { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 22px; }
+.stat-big-label { font-size: 13px; color: var(--gray-600); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.stat-big-label svg { color: var(--trust-400); }
+.stat-big-value { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 36px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; line-height: 1.1; margin-bottom: 6px; }
+.stat-big-value .unit { font-size: 14px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 4px; }
+.stat-big-explain { font-size: 12.5px; color: var(--gray-600); line-height: 1.7; }
+.stat-big-explain strong { color: var(--gray-900); }
+
+/* CONVERSION FUNNEL */
+.funnel { display: flex; flex-direction: column; gap: 4px; }
+.funnel-step { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; padding: 14px 16px; background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); align-items: center; }
+.funnel-step-name { font-size: 14px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 10px; }
+.funnel-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--tranquil-100); color: var(--trust-600); display: flex; align-items: center; justify-content: center; }
+.funnel-step:nth-child(2) .funnel-icon { background: var(--tranquil-200); color: var(--trust-700); }
+.funnel-step:nth-child(3) .funnel-icon { background: var(--success-50); color: var(--success-700); }
+.funnel-step:nth-child(4) .funnel-icon { background: var(--success-50); color: var(--success-700); }
+.funnel-count { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 17px; font-weight: 600; color: var(--gray-900); }
+.funnel-rate { font-family: 'IBM Plex Sans', sans-serif; font-size: 11.5px; padding: 3px 8px; background: var(--trust-500); color: white; border-radius: var(--radius-full); font-weight: 600; min-width: 64px; text-align: center; }
+.funnel-rate.drop { background: var(--warning-700); }
+.funnel-arrow { display: flex; justify-content: center; padding: 2px 0; color: var(--gray-300); }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <span class="sb-brand-mark" aria-hidden="true">ر</span>
+      <div class="sb-brand-text"><h1>رفقاء</h1><small>مشرف المنصّة</small></div>
+    </div>
+    <div class="sb-section-label">عامّ</div>
+    <nav class="sb-nav">
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> لوحة عامّة</a>
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg> المؤسّسات <span class="sb-link-count latin">12</span></a>
+      <a class="sb-link active" href="#"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> تحليلات المنصّة</a>
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> الإعدادات</a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-avatar">س.ع</div>
+      <div><div class="sb-user-name">سامح ع.</div><div class="sb-user-role">Super Admin</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-title">
+        <h2>تحليلات المنصّة</h2>
+        <p>أداء رفقاء على المستوى العالمي</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="date-range">
+          <button class="dr-btn">٧ أيّام</button>
+          <button class="dr-btn">٣٠ يوماً</button>
+          <button class="dr-btn active">٩٠ يوماً</button>
+          <button class="dr-btn">السنة</button>
+        </div>
+        <button class="btn btn-secondary"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> تقرير PDF</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- GROWTH CHART -->
+      <div class="section">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              نموّ الكفالات
+            </div>
+            <span class="panel-meta">آخر ٩٠ يوماً · مقارنة بالفترة السابقة</span>
+          </div>
+          <div class="panel-body">
+
+            <div class="growth-summary">
+              <div class="summary-item">
+                <span class="summary-label">الكفالات الجديدة</span>
+                <span class="summary-value latin">+342 <span class="summary-trend up"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>+24%</span></span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">الإلغاءات</span>
+                <span class="summary-value latin">28 <span class="summary-trend up" style="background: var(--success-50);"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>-12%</span></span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">صافي النموّ</span>
+                <span class="summary-value latin">+314</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">إجمالي التبرّعات</span>
+                <span class="summary-value"><span class="latin">128K</span><span class="unit">د.ك</span></span>
+              </div>
+            </div>
+
+            <svg class="growth-chart" viewBox="0 0 900 240" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="fill1" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#769FCD" stop-opacity=".35"/>
+                  <stop offset="100%" stop-color="#769FCD" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="fill2" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#10B981" stop-opacity=".25"/>
+                  <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- grid -->
+              <g stroke="#E7EBEF" stroke-width="1">
+                <line x1="0" y1="50" x2="900" y2="50"/>
+                <line x1="0" y1="100" x2="900" y2="100"/>
+                <line x1="0" y1="150" x2="900" y2="150"/>
+                <line x1="0" y1="200" x2="900" y2="200"/>
+              </g>
+              <!-- Sponsorships -->
+              <path d="M 30 200 C 100 195, 150 180, 200 170 S 320 150, 400 130 S 540 100, 620 80 S 760 50, 870 35 L 870 240 L 30 240 Z" fill="url(#fill1)"/>
+              <path d="M 30 200 C 100 195, 150 180, 200 170 S 320 150, 400 130 S 540 100, 620 80 S 760 50, 870 35" fill="none" stroke="#426D9F" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Donations $ -->
+              <path d="M 30 220 C 100 215, 200 200, 300 185 S 500 145, 700 110 S 820 80, 870 60" fill="none" stroke="#10B981" stroke-width="2.2" stroke-dasharray="6 4" stroke-linecap="round"/>
+              <!-- labels -->
+              <g font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#7A8590" text-anchor="middle">
+                <text x="30" y="232">نوفمبر</text>
+                <text x="180" y="232">٢٠ نوفمبر</text>
+                <text x="330" y="232">١٠ ديسمبر</text>
+                <text x="480" y="232">٢٥ ديسمبر</text>
+                <text x="640" y="232">١٠ يناير</text>
+                <text x="790" y="232">٢٥ يناير</text>
+                <text x="870" y="232">الآن</text>
+              </g>
+              <!-- value axis -->
+              <g font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#A8B2BC">
+                <text x="888" y="200" text-anchor="end">0</text>
+                <text x="888" y="150" text-anchor="end">100</text>
+                <text x="888" y="100" text-anchor="end">200</text>
+                <text x="888" y="50" text-anchor="end">300</text>
+              </g>
+            </svg>
+
+            <div class="chart-legend">
+              <span class="chart-legend-item"><span class="chart-legend-dot" style="background: #426D9F;"></span>كفالات جديدة (التراكمي)</span>
+              <span class="chart-legend-item"><span class="chart-legend-dot" style="background: #10B981;"></span>تبرّعات (د.ك)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GEO + PIE -->
+      <div class="grid-2 section">
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              التوزيع الجغرافي للأيتام
+            </div>
+            <span class="panel-meta">٨ دول · ١٬٢٤٧ يتيماً</span>
+          </div>
+          <div class="panel-body">
+            <div class="geo-list">
+
+              <div class="geo-row">
+                <div class="geo-flag">🇰🇼</div>
+                <div class="geo-info"><div class="geo-name">الكويت</div><div class="geo-detail">٤ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 96%;"></div></div><span class="geo-count">280</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇪🇬</div>
+                <div class="geo-info"><div class="geo-name">مصر</div><div class="geo-detail">٣ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 80%;"></div></div><span class="geo-count">232</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇵🇸</div>
+                <div class="geo-info"><div class="geo-name">فلسطين</div><div class="geo-detail">٣ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 72%;"></div></div><span class="geo-count">198</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇸🇩</div>
+                <div class="geo-info"><div class="geo-name">السودان</div><div class="geo-detail">٣ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 56%;"></div></div><span class="geo-count">163</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇾🇪</div>
+                <div class="geo-info"><div class="geo-name">اليمن</div><div class="geo-detail">٢ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 48%;"></div></div><span class="geo-count">142</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇯🇴</div>
+                <div class="geo-info"><div class="geo-name">الأردن</div><div class="geo-detail">٢ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 38%;"></div></div><span class="geo-count">112</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇸🇦</div>
+                <div class="geo-info"><div class="geo-name">السعودية</div><div class="geo-detail">٢ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 28%;"></div></div><span class="geo-count">82</span></div>
+              </div>
+
+              <div class="geo-row">
+                <div class="geo-flag">🇸🇴</div>
+                <div class="geo-info"><div class="geo-name">الصومال</div><div class="geo-detail">٢ جهات شريكة</div></div>
+                <div class="geo-bar-wrap"><div class="geo-bar"><div class="geo-bar-fill" style="width: 14%;"></div></div><span class="geo-count">38</span></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+              وسائل الدفع المستخدَمة
+            </div>
+            <span class="panel-meta">آخر ٩٠ يوماً</span>
+          </div>
+          <div class="panel-body">
+
+            <div class="pie-row">
+              <div class="pie-wrap" aria-hidden="true">
+                <svg viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#EAF1F7" stroke-width="3.6"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#426D9F" stroke-width="3.6" stroke-dasharray="48 100" stroke-dashoffset="0"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#769FCD" stroke-width="3.6" stroke-dasharray="22 100" stroke-dashoffset="-48"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#9CC3DE" stroke-width="3.6" stroke-dasharray="18 100" stroke-dashoffset="-70"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#C2D8EC" stroke-width="3.6" stroke-dasharray="8 100" stroke-dashoffset="-88"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#D6E6F2" stroke-width="3.6" stroke-dasharray="4 100" stroke-dashoffset="-96"/>
+                </svg>
+                <div class="pie-center">
+                  <div class="pie-total latin">1,072</div>
+                  <div class="pie-total-label">إجمالي المعاملات</div>
+                </div>
+              </div>
+
+              <div class="pie-legend">
+                <div class="pie-legend-row"><span class="pie-swatch" style="background: #426D9F;"></span><span class="pie-label-text">بطاقة فيزا/ماستركارد</span><span class="pie-percent latin">48%</span><span class="pie-count latin">514</span></div>
+                <div class="pie-legend-row"><span class="pie-swatch" style="background: #769FCD;"></span><span class="pie-label-text latin">Apple Pay</span><span class="pie-percent latin">22%</span><span class="pie-count latin">236</span></div>
+                <div class="pie-legend-row"><span class="pie-swatch" style="background: #9CC3DE;"></span><span class="pie-label-text latin">K-NET</span><span class="pie-percent latin">18%</span><span class="pie-count latin">193</span></div>
+                <div class="pie-legend-row"><span class="pie-swatch" style="background: #C2D8EC;"></span><span class="pie-label-text">تحويل بنكي</span><span class="pie-percent latin">8%</span><span class="pie-count latin">86</span></div>
+                <div class="pie-legend-row"><span class="pie-swatch" style="background: #D6E6F2;"></span><span class="pie-label-text">أخرى</span><span class="pie-percent latin">4%</span><span class="pie-count latin">43</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP STATS -->
+      <div class="stat-grid">
+
+        <div class="stat-big">
+          <div class="stat-big-label">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            متوسّط مدّة الكفالة
+          </div>
+          <div class="stat-big-value latin">2.3<span class="unit">سنة</span></div>
+          <div class="stat-big-explain">من تاريخ بدء الكفالة إلى إلغائها. الأكثر استقراراً: <strong>كفالات مصر</strong> (٣.١ سنة في المتوسّط).</div>
+        </div>
+
+        <div class="stat-big">
+          <div class="stat-big-label">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            معدّل التحويل (Visitor → Donor)
+          </div>
+          <div class="stat-big-value latin">3.8<span class="unit">٪</span></div>
+          <div class="stat-big-explain">من زيارة الموقع إلى أوّل دفعة كفالة. أعلى مصدر: <strong>قناة WhatsApp Direct</strong> بـ ١٢٪.</div>
+        </div>
+
+        <div class="stat-big">
+          <div class="stat-big-label">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            معدّل قراءة التقارير الشهرية
+          </div>
+          <div class="stat-big-value latin">87<span class="unit">٪</span></div>
+          <div class="stat-big-explain">من الكفلاء يفتح تقرير شهر يتيمه خلال <span class="latin">٤٨</span> ساعة من وصوله.</div>
+        </div>
+
+      </div>
+
+      <!-- CONVERSION FUNNEL -->
+      <div class="section" style="margin-top: 20px;">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <svg class="icon" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              مسار التحويل من زائر إلى كفيل
+            </div>
+            <span class="panel-meta">آخر ٩٠ يوماً</span>
+          </div>
+          <div class="panel-body">
+            <div class="funnel">
+
+              <div class="funnel-step">
+                <div class="funnel-step-name">
+                  <span class="funnel-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                  ١. زوّار صفحة تصفّح الأيتام
+                </div>
+                <span class="funnel-count latin">24,892</span>
+                <span class="funnel-rate">100%</span>
+              </div>
+              <div class="funnel-arrow"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+
+              <div class="funnel-step">
+                <div class="funnel-step-name">
+                  <span class="funnel-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M9 19V6l11-3v13"/></svg></span>
+                  ٢. فتح ملفّ يتيم
+                </div>
+                <span class="funnel-count latin">8,743</span>
+                <span class="funnel-rate">35%</span>
+              </div>
+              <div class="funnel-arrow"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+
+              <div class="funnel-step">
+                <div class="funnel-step-name">
+                  <span class="funnel-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                  ٣. إنشاء حساب
+                </div>
+                <span class="funnel-count latin">1,420</span>
+                <span class="funnel-rate drop">16%</span>
+              </div>
+              <div class="funnel-arrow"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+
+              <div class="funnel-step">
+                <div class="funnel-step-name">
+                  <span class="funnel-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                  ٤. إتمام الدفعة الأولى
+                </div>
+                <span class="funnel-count latin">947</span>
+                <span class="funnel-rate">67%</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+</body>
+</html>
