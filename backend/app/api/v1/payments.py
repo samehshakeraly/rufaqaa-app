@@ -142,6 +142,22 @@ async def initiate_payment(
     if donor is None:
         raise NotFound("Donor")
 
+    # Authorization split:
+    #   - Donors can only initiate payments tied to their own Donor row,
+    #     and must have a verified email (PR #5).
+    #   - Staff / admins can initiate on behalf of any donor in their org.
+    if user.role == "donor":
+        if donor.user_id != user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Donors can only initiate payments for themselves",
+            )
+        if user.email_verified_at is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Email verification required before sponsoring",
+            )
+
     sponsorship: Sponsorship | None = None
     if payload.sponsorship_id is not None:
         sponsorship = await db.scalar(

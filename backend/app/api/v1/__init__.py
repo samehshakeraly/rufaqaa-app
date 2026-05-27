@@ -6,6 +6,7 @@ from app.api.v1 import (
     bank_transfers,
     documents,
     donor_portal,
+    donor_self,
     donors,
     families,
     health,
@@ -15,6 +16,7 @@ from app.api.v1 import (
     orphans,
     partners,
     payments,
+    public,
     reports,
     sponsorships,
     stats,
@@ -46,3 +48,5 @@ api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(organization.router, prefix="/organization", tags=["organization"])
 api_router.include_router(documents.router, tags=["documents"])
 api_router.include_router(bank_transfers.router, prefix="/bank-transfers", tags=["bank-transfers"])
+api_router.include_router(public.router, prefix="/public", tags=["public"])
+api_router.include_router(donor_self.router, prefix="/donor", tags=["donor-self"])

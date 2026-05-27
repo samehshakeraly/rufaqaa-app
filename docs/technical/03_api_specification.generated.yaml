@@ -294,6 +294,12 @@ components:
           format: email
           title: Email
           type: string
+        email_verified_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Email Verified At
         first_name:
           title: First Name
           type: string
@@ -359,6 +365,20 @@ components:
       - payments_last_30d_total
       - payments_last_30d_count
       title: DashboardSummary
+      type: object
+    DataExportRequest:
+      properties:
+        detail:
+          title: Detail
+          type: string
+        requested_at:
+          format: date-time
+          title: Requested At
+          type: string
+      required:
+      - detail
+      - requested_at
+      title: DataExportRequest
       type: object
     DocumentCreate:
       description: 'Caller has already uploaded the file to S3 / MinIO (via the
@@ -653,6 +673,145 @@ components:
       - email
       title: DonorCreate
       type: object
+    DonorMeRead:
+      properties:
+        active_sponsorships:
+          title: Active Sponsorships
+          type: integer
+        code:
+          title: Code
+          type: string
+        country_of_residence:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Of Residence
+        email:
+          format: email
+          title: Email
+          type: string
+        full_name:
+          title: Full Name
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Preferred Currency
+        status:
+          title: Status
+          type: string
+        total_donated:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Donated
+          type: string
+        total_sponsorships:
+          title: Total Sponsorships
+          type: integer
+        user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: User Id
+      required:
+      - id
+      - code
+      - user_id
+      - full_name
+      - email
+      - phone
+      - country_of_residence
+      - preferred_currency
+      - status
+      - total_sponsorships
+      - active_sponsorships
+      - total_donated
+      title: DonorMeRead
+      type: object
+    DonorMeUpdate:
+      properties:
+        country_of_residence:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Of Residence
+        full_name:
+          anyOf:
+          - maxLength: 255
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Full Name
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Preferred Currency
+      title: DonorMeUpdate
+      type: object
+    DonorPaymentMini:
+      properties:
+        amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+          type: string
+        code:
+          title: Code
+          type: string
+        completed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Completed At
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        currency:
+          title: Currency
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        payment_method:
+          title: Payment Method
+          type: string
+        status:
+          title: Status
+          type: string
+      required:
+      - id
+      - code
+      - amount
+      - currency
+      - status
+      - payment_method
+      - completed_at
+      - created_at
+      title: DonorPaymentMini
+      type: object
     DonorRead:
       properties:
         active_sponsorships:
@@ -757,6 +916,166 @@ components:
       - updated_at
       title: DonorRead
       type: object
+    DonorSignupRequest:
+      description: 'Public signup. Email + password + name are required; everything
+
+        else is optional and can be filled later from the profile page.'
+      properties:
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        email:
+          format: email
+          title: Email
+          type: string
+        full_name:
+          maxLength: 255
+          minLength: 2
+          title: Full Name
+          type: string
+        password:
+          maxLength: 128
+          minLength: 8
+          title: Password
+          type: string
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Preferred Currency
+        preferred_language:
+          default: ar
+          enum:
+          - ar
+          - en
+          title: Preferred Language
+          type: string
+      required:
+      - email
+      - password
+      - full_name
+      title: DonorSignupRequest
+      type: object
+    DonorSignupResponse:
+      description: 'Anti-enumeration: the shape is identical whether the email is
+
+        brand-new or already on file. The detail string says ''check your
+
+        email'' in both cases. Only the verification token is omitted on the
+
+        already-registered branch.'
+      properties:
+        debug_verify_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Debug Verify Token
+        detail:
+          title: Detail
+          type: string
+      required:
+      - detail
+      title: DonorSignupResponse
+      type: object
+    DonorSponsorshipCreate:
+      properties:
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        frequency:
+          default: monthly
+          enum:
+          - monthly
+          - quarterly
+          - semi_annual
+          - annual
+          - one_time
+          title: Frequency
+          type: string
+        monthly_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Monthly Amount
+        orphan_code:
+          maxLength: 20
+          minLength: 1
+          title: Orphan Code
+          type: string
+      required:
+      - orphan_code
+      - monthly_amount
+      - currency
+      title: DonorSponsorshipCreate
+      type: object
+    DonorSponsorshipMini:
+      description: Lean projection — what the donor portal needs to render.
+      properties:
+        code:
+          title: Code
+          type: string
+        currency:
+          title: Currency
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        monthly_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Monthly Amount
+          type: string
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
+        orphan_first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan First Name
+        start_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Start Date
+        status:
+          title: Status
+          type: string
+        total_paid:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Paid
+          type: string
+      required:
+      - id
+      - code
+      - monthly_amount
+      - currency
+      - status
+      - start_date
+      - total_paid
+      - orphan_code
+      - orphan_first_name
+      title: DonorSponsorshipMini
+      type: object
     DonorUpdate:
       properties:
         country_of_residence:
@@ -828,6 +1147,15 @@ components:
           - type: 'null'
           title: Whatsapp
       title: DonorUpdate
+      type: object
+    EmailVerifyRequest:
+      properties:
+        token:
+          title: Token
+          type: string
+      required:
+      - token
+      title: EmailVerifyRequest
       type: object
     FamilyCreate:
       properties:
@@ -2954,6 +3282,139 @@ components:
       - months
       title: PaymentsTimeseries
       type: object
+    PublicOrphanCard:
+      description: 'Curated public projection of an orphan. Every field here was
+
+        chosen because it is safe to show an anonymous visitor.'
+      properties:
+        age_years:
+          title: Age Years
+          type: integer
+        case_status:
+          title: Case Status
+          type: string
+        code:
+          title: Code
+          type: string
+        country:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        partner_organization_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Partner Organization Name
+      required:
+      - code
+      - first_name
+      - age_years
+      - gender
+      - country
+      - case_status
+      - partner_organization_name
+      title: PublicOrphanCard
+      type: object
+    PublicOrphanDetail:
+      description: Detail page — same fields as the card plus a short description.
+      properties:
+        age_years:
+          title: Age Years
+          type: integer
+        case_status:
+          title: Case Status
+          type: string
+        code:
+          title: Code
+          type: string
+        country:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        partner_organization_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Partner Organization Name
+        short_description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Short Description
+      required:
+      - code
+      - first_name
+      - age_years
+      - gender
+      - country
+      - case_status
+      - partner_organization_name
+      title: PublicOrphanDetail
+      type: object
+    PublicPage:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PublicOrphanCard'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: PublicPage
+      type: object
+    PublicStats:
+      properties:
+        countries_served:
+          title: Countries Served
+          type: integer
+        donors_total:
+          title: Donors Total
+          type: integer
+        orphans_available:
+          title: Orphans Available
+          type: integer
+        orphans_sponsored:
+          title: Orphans Sponsored
+          type: integer
+      required:
+      - orphans_available
+      - orphans_sponsored
+      - donors_total
+      - countries_served
+      title: PublicStats
+      type: object
     RefreshRequest:
       properties:
         refresh_token:
@@ -3193,6 +3654,16 @@ components:
           - type: 'null'
           title: Summary
       title: ReportUpdate
+      type: object
+    ResendVerificationRequest:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+      required:
+      - email
+      title: ResendVerificationRequest
       type: object
     ResetPasswordRequest:
       properties:
@@ -4032,6 +4503,32 @@ paths:
       summary: Refresh
       tags:
       - auth
+  /api/v1/auth/resend-verification:
+    post:
+      description: Generic-response resend. Same anti-enumeration posture as signup.
+      operationId: resend_verification_api_v1_auth_resend_verification_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorSignupResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Resend Verification
+      tags:
+      - auth
   /api/v1/auth/reset-password:
     post:
       description: 'Consume a reset token, set the new password, and revoke every
@@ -4054,6 +4551,79 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Reset Password
+      tags:
+      - auth
+  /api/v1/auth/signup:
+    post:
+      description: 'Public donor signup.
+
+
+        Anti-enumeration: returns the same ''check your email'' shape whether
+
+        the email is brand-new or already registered. New accounts land in
+
+        the PLATFORM org with role=''donor'' and status=''pending_verification''
+
+        until they click the link in the verification email.
+
+
+        Rate-limited by the global middleware (per-IP). Pending donors can
+
+        browse but cannot sponsor — `require_verified_donor` enforces that.'
+      operationId: donor_signup_api_v1_auth_signup_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorSignupRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorSignupResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Donor Signup
+      tags:
+      - auth
+  /api/v1/auth/verify-email:
+    post:
+      description: 'Consume the email-verification token.
+
+
+        Marks `email_verified_at`, flips the user from `pending_verification`
+
+        to `active`, and returns a fresh access/refresh pair so the SPA can
+
+        log the donor in immediately.'
+      operationId: verify_email_api_v1_auth_verify_email_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerifyRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Verify Email
       tags:
       - auth
   /api/v1/bank-transfers:
@@ -4322,6 +4892,167 @@ paths:
       summary: Verify Document
       tags:
       - documents
+  /api/v1/donor/me:
+    get:
+      operationId: get_donor_me_api_v1_donor_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorMeRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Donor Me
+      tags:
+      - donor-self
+    patch:
+      operationId: update_donor_me_api_v1_donor_me_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorMeUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorMeRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Donor Me
+      tags:
+      - donor-self
+  /api/v1/donor/me/data-export-request:
+    post:
+      description: GDPR Article 15 stub — log the request, surface a placeholder.
+      operationId: request_data_export_api_v1_donor_me_data_export_request_post
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportRequest'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Request Data Export
+      tags:
+      - donor-self
+  /api/v1/donor/me/deletion-request:
+    post:
+      description: 'GDPR Article 17 stub — log the request, surface a placeholder.
+
+
+        Actual deletion requires an admin review (legal hold on records
+
+        tied to completed payments, etc) and is intentionally out of band.'
+      operationId: request_account_deletion_api_v1_donor_me_deletion_request_post
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportRequest'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Request Account Deletion
+      tags:
+      - donor-self
+  /api/v1/donor/me/payments:
+    get:
+      operationId: list_my_payments_api_v1_donor_me_payments_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DonorPaymentMini'
+                title: Response List My Payments Api V1 Donor Me Payments Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Payments
+      tags:
+      - donor-self
+  /api/v1/donor/me/sponsorships:
+    get:
+      operationId: list_my_sponsorships_api_v1_donor_me_sponsorships_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DonorSponsorshipMini'
+                title: Response List My Sponsorships Api V1 Donor Me Sponsorships Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Sponsorships
+      tags:
+      - donor-self
+    post:
+      description: 'Donor-driven sponsorship creation. The orphan is looked up by
+
+        its public code (not internal UUID) so the donor never sees it.
+
+        Only orphans that are publicly browseable can be sponsored.'
+      operationId: create_my_sponsorship_api_v1_donor_me_sponsorships_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorSponsorshipCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorSponsorshipMini'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create My Sponsorship
+      tags:
+      - donor-self
   /api/v1/donors:
     get:
       operationId: list_donors_api_v1_donors_get
@@ -6007,6 +6738,131 @@ paths:
       summary: Update Payment Status
       tags:
       - payments
+  /api/v1/public/orphans:
+    get:
+      description: 'Anonymous-safe orphan listing. Always filters to case statuses a
+
+        visitor is allowed to sponsor; never exposes archived / deceased /
+
+        pending_review rows.'
+      operationId: public_list_orphans_api_v1_public_orphans_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: country
+        required: false
+        schema:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country
+      - in: query
+        name: gender
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - M
+            - F
+            type: string
+          - type: 'null'
+          title: Gender
+      - in: query
+        name: min_age
+        required: false
+        schema:
+          anyOf:
+          - maximum: 25
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Age
+      - in: query
+        name: max_age
+        required: false
+        schema:
+          anyOf:
+          - maximum: 25
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Max Age
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicPage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Public List Orphans
+      tags:
+      - public
+  /api/v1/public/orphans/{code}:
+    get:
+      operationId: public_orphan_detail_api_v1_public_orphans__code__get
+      parameters:
+      - in: path
+        name: code
+        required: true
+        schema:
+          title: Code
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicOrphanDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Public Orphan Detail
+      tags:
+      - public
+  /api/v1/public/stats:
+    get:
+      description: 'Platform-wide counters for the landing page. Aggregates only —
+
+        no rowwise data leaves the database.'
+      operationId: public_stats_api_v1_public_stats_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicStats'
+          description: Successful Response
+      summary: Public Stats
+      tags:
+      - public
   /api/v1/reports:
     get:
       operationId: list_reports_api_v1_reports_get
