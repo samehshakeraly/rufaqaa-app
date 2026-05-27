@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     RATE_LIMIT_PUBLIC: int = 60  # per minute, anonymous
     RATE_LIMIT_AUTHENTICATED: int = 300  # per minute, with Bearer token
     RATE_LIMIT_ENABLED: bool = True
+    # "memory" — per-process (fine for a single worker).
+    # "redis"  — shared across workers, recommended in production.
+    RATE_LIMIT_BACKEND: Literal["memory", "redis"] = "memory"
 
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     LOG_FORMAT: Literal["json", "text"] = "json"

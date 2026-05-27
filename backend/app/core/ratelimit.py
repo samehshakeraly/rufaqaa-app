@@ -1,13 +1,16 @@
 """Per-IP / per-user rate limiting.
 
-A tiny in-memory token bucket implementation. It's fine for a single
-worker process; for multi-worker production deployments swap the
-in-process counters for Redis (the abstraction below is structured to
-make that mechanical).
+Two backends:
 
-The middleware is intentionally lenient on routes the client doesn't
-control well: /health is exempt so liveness probes never trip the
-limiter.
+  - InMemoryLimiter: per-process token bucket; fine for a single worker
+    and the default in tests / dev.
+  - RedisLimiter:    sliding-window counter implemented on a Redis sorted
+    set via a Lua script (atomic). Shared across all workers, recommended
+    for any production deployment with > 1 backend process.
+
+Pick the backend via `RATE_LIMIT_BACKEND=memory|redis`.
+
+/health is exempt so liveness probes never trip the limiter.
 """
 
 from __future__ import annotations
@@ -16,12 +19,18 @@ import asyncio
 import time
 from collections import deque
 from dataclasses import dataclass
+from typing import Protocol
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from app.core.config import settings
+
+
+class Limiter(Protocol):
+    async def hit(self, key: str, capacity: int, window: float) -> tuple[bool, int]: ...
+
 
 EXEMPT_PREFIXES = ("/api/v1/health", "/docs", "/redoc", "/openapi.json", "/")
 
@@ -57,7 +66,60 @@ class InMemoryLimiter:
             return True, capacity - len(b.timestamps)
 
 
-_limiter = InMemoryLimiter()
+class RedisLimiter:
+    """Sliding-window counter backed by a sorted-set per key.
+
+    Each request adds a timestamped entry and trims anything outside the
+    window. The whole hit is one Lua script so reads/writes are atomic
+    — no race between workers."""
+
+    _SCRIPT = """
+    local key = KEYS[1]
+    local now = tonumber(ARGV[1])
+    local window = tonumber(ARGV[2])
+    local capacity = tonumber(ARGV[3])
+    redis.call('ZREMRANGEBYSCORE', key, 0, now - window)
+    local count = redis.call('ZCARD', key)
+    if count >= capacity then
+      return {0, 0}
+    end
+    redis.call('ZADD', key, now, now)
+    redis.call('EXPIRE', key, math.ceil(window))
+    return {1, capacity - count - 1}
+    """
+
+    def __init__(self, url: str) -> None:
+        # Import lazily so test environments without a Redis dep don't
+        # have to install it just to import the module.
+        import redis.asyncio as aioredis
+
+        self._redis = aioredis.from_url(url, decode_responses=True)
+        self._script = self._redis.register_script(self._SCRIPT)
+
+    async def hit(self, key: str, capacity: int, window: float) -> tuple[bool, int]:
+        now_ms = int(time.time() * 1000)
+        window_ms = int(window * 1000)
+        try:
+            result = await self._script(
+                keys=[f"rl:{key}"],
+                args=[now_ms, window_ms, capacity],
+            )
+        except Exception:
+            # Fail-open: if Redis is down, prefer letting the request
+            # through over locking everyone out. The structured logger
+            # already captures the underlying error.
+            return True, capacity
+        allowed, remaining = int(result[0]), int(result[1])
+        return bool(allowed), remaining
+
+
+def _build_limiter() -> Limiter:
+    if settings.RATE_LIMIT_BACKEND == "redis":
+        return RedisLimiter(settings.REDIS_URL)
+    return InMemoryLimiter()
+
+
+_limiter: Limiter = _build_limiter()
 
 
 def _client_key(request: Request) -> tuple[str, int]:
