@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { TableSkeleton } from "@/components/Skeleton";
 import { listDonors, type Donor } from "@/lib/donors";
 import { listOrphans, type Orphan } from "@/lib/orphans";
 import {
@@ -103,7 +104,7 @@ export function SponsorshipsPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={7} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}

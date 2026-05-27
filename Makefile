@@ -68,6 +68,11 @@ logs-redis: ## 📜 سجلات Redis فقط
 psql: ## 🐘 الاتصال بـ PostgreSQL CLI
 	@docker compose exec postgres psql -U rufaqaa -d rufaqaa
 
+backup-db: ## 💾 نسخة احتياطية فورية من قاعدة البيانات
+	@BACKUP_DIR=$${BACKUP_DIR:-./backups} \
+		POSTGRES_PASSWORD=$${POSTGRES_PASSWORD:-rufaqaa_dev_password} \
+		bash infrastructure/scripts/backup_postgres.sh
+
 redis-cli: ## 🔴 الاتصال بـ Redis CLI
 	@docker compose exec redis redis-cli
 

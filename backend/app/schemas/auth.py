@@ -54,3 +54,20 @@ class CurrentUser(BaseModel):
 class ChangePasswordRequest(BaseModel):
     current_password: str = Field(min_length=1, max_length=128)
     new_password: str = Field(min_length=8, max_length=128)
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    # Same shape whether or not the email exists, to avoid enumeration.
+    sent: bool = True
+    # Only populated in dev/test, where we don't have an email transport
+    # yet. Lets the caller exercise the full flow end-to-end.
+    debug_token: str | None = None
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=128)

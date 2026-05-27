@@ -5,9 +5,7 @@ from __future__ import annotations
 from httpx import AsyncClient
 
 
-async def test_me_returns_default_prefs(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_me_returns_default_prefs(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     r = await api.get("/api/v1/auth/me", headers=auth_headers)
     assert r.status_code == 200
     prefs = r.json()["notification_preferences"]
@@ -21,9 +19,7 @@ async def test_me_returns_default_prefs(
     }
 
 
-async def test_patch_prefs_is_partial(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_patch_prefs_is_partial(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     # Flip whatsapp on, leave the rest alone
     r = await api.patch(
         "/api/v1/auth/me/notifications",

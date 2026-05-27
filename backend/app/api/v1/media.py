@@ -130,6 +130,64 @@ async def upload_orphan_photo(
     )
 
 
+class OrphanPhoto(BaseModel):
+    id: UUID
+    file_url: str
+    presigned_url: str
+    file_size_bytes: int
+    moderation_status: str
+    created_at: datetime
+
+
+@router.get("/orphans/{orphan_id}/photos", response_model=list[OrphanPhoto])
+async def list_orphan_photos(
+    orphan_id: UUID,
+    db: DbSession,
+    _user: CurrentUser,
+) -> list[OrphanPhoto]:
+    """Photos attached to an orphan, newest first. Each row carries a
+    fresh presigned URL so the UI can render the image without exposing
+    the bucket."""
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+    rows = (
+        await db.execute(
+            text(
+                """
+                SELECT id, file_url, file_size_bytes, moderation_status, created_at
+                FROM media
+                WHERE orphan_id = :orphan AND media_type = 'photo'
+                ORDER BY created_at DESC
+                """
+            ),
+            {"orphan": str(orphan_id)},
+        )
+    ).all()
+
+    out: list[OrphanPhoto] = []
+    for row in rows:
+        file_url = str(row[1])
+        presigned = file_url
+        if file_url.startswith("s3://"):
+            _, _, rest = file_url.partition("s3://")
+            bucket, _, key = rest.partition("/")
+            presigned = await presigned_get_url(bucket, key)
+        out.append(
+            OrphanPhoto(
+                id=row[0],
+                file_url=file_url,
+                presigned_url=presigned,
+                file_size_bytes=int(row[2] or 0),
+                moderation_status=str(row[3] or "pending"),
+                created_at=row[4],
+            )
+        )
+    return out
+
+
 @router.get("/{media_id}/url")
 async def get_media_presigned_url(
     media_id: UUID,

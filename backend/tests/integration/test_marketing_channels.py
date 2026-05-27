@@ -7,9 +7,7 @@ import uuid
 from httpx import AsyncClient
 
 
-async def test_marketing_channel_full_crud(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_marketing_channel_full_crud(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     suffix = uuid.uuid4().hex[:6]
     r = await api.post(
         "/api/v1/marketing-channels",
@@ -47,16 +45,10 @@ async def test_marketing_channel_full_crud(
     assert all(item["id"] != cid for item in r.json()["items"])
 
     # but is included when include_inactive=true
-    r = await api.get(
-        "/api/v1/marketing-channels?include_inactive=true", headers=auth_headers
-    )
+    r = await api.get("/api/v1/marketing-channels?include_inactive=true", headers=auth_headers)
     assert any(item["id"] == cid for item in r.json()["items"])
 
 
-async def test_get_unknown_channel_404(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
-    r = await api.get(
-        f"/api/v1/marketing-channels/{uuid.uuid4()}", headers=auth_headers
-    )
+async def test_get_unknown_channel_404(api: AsyncClient, auth_headers: dict[str, str]) -> None:
+    r = await api.get(f"/api/v1/marketing-channels/{uuid.uuid4()}", headers=auth_headers)
     assert r.status_code == 404

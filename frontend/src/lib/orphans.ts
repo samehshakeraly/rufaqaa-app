@@ -79,3 +79,7 @@ export async function getOrphanTimeline(id: string): Promise<Timeline> {
   const { data } = await api.get<Timeline>(`/orphans/${id}/timeline`);
   return data;
 }
+
+export async function archiveOrphan(id: string): Promise<void> {
+  await api.delete(`/orphans/${id}`);
+}

@@ -35,3 +35,24 @@ export async function createPartner(payload: PartnerCreateInput): Promise<Partne
 export async function archivePartner(id: string): Promise<void> {
   await api.delete(`/partners/${id}`);
 }
+
+export async function getPartner(id: string): Promise<Partner> {
+  const { data } = await api.get<Partner>(`/partners/${id}`);
+  return data;
+}
+
+export interface PartnerStats {
+  partner_id: string;
+  orphans_total: number;
+  orphans_sponsored: number;
+  orphans_available: number;
+  sponsorships_active: number;
+  sponsorships_overdue: number;
+  payments_last_30d_total: string;
+  payments_last_30d_count: number;
+}
+
+export async function getPartnerStats(id: string): Promise<PartnerStats> {
+  const { data } = await api.get<PartnerStats>(`/partners/${id}/stats`);
+  return data;
+}

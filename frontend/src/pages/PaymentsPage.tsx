@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Link } from "react-router-dom";
+
 import { Pagination } from "@/components/Pagination";
+import { TableSkeleton } from "@/components/Skeleton";
 import { exportPaymentsCsv, listPayments } from "@/lib/payments";
 import { toast } from "@/store/toasts";
 
@@ -91,7 +94,7 @@ export function PaymentsPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={6} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}
@@ -113,6 +116,7 @@ export function PaymentsPage() {
                 <th className="px-4 py-3 font-medium">{t("payments.gateway")}</th>
                 <th className="px-4 py-3 font-medium">{t("payments.status")}</th>
                 <th className="px-4 py-3 font-medium">{t("payments.completedAt")}</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-sky/40 text-sm">
@@ -131,6 +135,14 @@ export function PaymentsPage() {
                   </td>
                   <td className="px-4 py-3">
                     {p.completed_at ? p.completed_at.slice(0, 10) : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-end">
+                    <Link
+                      to={`/payments/${p.id}/receipt`}
+                      className="text-xs text-trust underline"
+                    >
+                      {t("payments.viewReceipt")}
+                    </Link>
                   </td>
                 </tr>
               ))}

@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
+import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
 import {
   archivePartner,
@@ -59,7 +61,7 @@ export function PartnersPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={5} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}
@@ -85,7 +87,14 @@ export function PartnersPage() {
             <tbody className="divide-y divide-sky/40 text-sm">
               {data.items.map((p) => (
                 <tr key={p.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">{p.code}</td>
+                  <td className="px-4 py-3 font-mono text-xs">
+                    <Link
+                      to={`/partners/${p.id}`}
+                      className="text-trust hover:underline"
+                    >
+                      {p.code}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {i18n.language === "ar" ? p.name_ar : p.name_en ?? p.name_ar}
                   </td>

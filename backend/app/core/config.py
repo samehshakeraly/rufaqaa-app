@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     RATE_LIMIT_PUBLIC: int = 60  # per minute, anonymous
     RATE_LIMIT_AUTHENTICATED: int = 300  # per minute, with Bearer token
     RATE_LIMIT_ENABLED: bool = True
+    # "memory" — per-process (fine for a single worker).
+    # "redis"  — shared across workers, recommended in production.
+    RATE_LIMIT_BACKEND: Literal["memory", "redis"] = "memory"
 
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     LOG_FORMAT: Literal["json", "text"] = "json"
@@ -61,6 +64,27 @@ class Settings(BaseSettings):
     S3_BUCKET_PUBLIC: str = "rufaqaa-public"
     S3_REGION: str = "us-east-1"
     UPLOAD_MAX_BYTES: int = 10 * 1024 * 1024
+
+    # Outbound email. Defaults target the MailHog dev container; in
+    # production set SMTP_HOST/PORT/USER/PASSWORD to a real relay.
+    SMTP_HOST: str = "localhost"
+    SMTP_PORT: int = 1025
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_TLS: bool = False
+    EMAIL_FROM: str = "noreply@rufaqaa.app"
+    EMAIL_FROM_NAME: str = "رفقاء"
+    EMAIL_ENABLED: bool = False  # flip to True once SMTP creds are set
+    DEFAULT_LOCALE: Literal["ar", "en"] = "ar"
+
+    # Base URL the SPA is served at — used to build absolute links in
+    # transactional emails (invite, password reset, …).
+    APP_BASE_URL: str = "http://localhost:5173"
+
+    # Error reporting (optional). Leave SENTRY_DSN empty to disable.
+    SENTRY_DSN: str = ""
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.0
+    SENTRY_RELEASE: str = ""
 
     @cached_property
     def cors_origins_list(self) -> list[str]:

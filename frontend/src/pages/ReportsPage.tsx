@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { Link } from "react-router-dom";
 
+import { TableSkeleton } from "@/components/Skeleton";
 import {
   listReports,
   transitionReport,
@@ -43,7 +44,7 @@ export function ReportsPage() {
         )}
       </div>
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={5} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}

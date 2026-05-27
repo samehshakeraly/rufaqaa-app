@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -114,6 +114,13 @@ export function LoginPage() {
           <button type="submit" className="btn-primary w-full" disabled={isSubmitting}>
             {isSubmitting ? t("auth.submitting") : t("auth.submit")}
           </button>
+
+          <Link
+            to="/forgot-password"
+            className="block text-center text-sm text-trust underline"
+          >
+            {t("auth.forgotLink")}
+          </Link>
         </form>
       </div>
     </div>

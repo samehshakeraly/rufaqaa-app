@@ -27,5 +27,8 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./tests/setup.ts"],
     css: false,
+    // e2e/ is driven by Playwright, not vitest. Excluding here keeps
+    // `npm test` from trying to import @playwright/test in jsdom.
+    exclude: ["node_modules", "dist", "e2e/**"],
   },
 });

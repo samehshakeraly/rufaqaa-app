@@ -1,0 +1,166 @@
+"""Documents — file attachments scoped to an orphan.
+
+The actual bytes live in object storage; this endpoint manages the
+metadata row (type, title, file_url, verification status, etc).
+Callers upload the file separately via /media first."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from typing import Annotated
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy import desc, func, select
+
+from app.api.deps import DbSession
+from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
+from app.core.exceptions import NotFound
+from app.models.document import Document
+from app.models.orphan import Orphan
+from app.models.user import User
+from app.schemas.common import Page
+from app.schemas.document import DocumentCreate, DocumentRead, DocumentVerify
+from app.services.audit import record_audit
+
+router = APIRouter()
+
+
+async def _load_orphan_or_404(db, orphan_id: UUID) -> Orphan:
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+    return orphan
+
+
+@router.get("/orphans/{orphan_id}/documents", response_model=Page[DocumentRead])
+async def list_orphan_documents(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> Page[DocumentRead]:
+    await _load_orphan_or_404(db, orphan_id)
+    _ = user
+    stmt = (
+        select(Document).where(Document.orphan_id == orphan_id).order_by(desc(Document.created_at))
+    )
+    total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows = (await db.scalars(stmt.limit(limit).offset(offset))).all()
+    return Page(
+        items=[DocumentRead.model_validate(r) for r in rows],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@router.post(
+    "/orphans/{orphan_id}/documents",
+    response_model=DocumentRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def attach_document_to_orphan(
+    orphan_id: UUID,
+    payload: DocumentCreate,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> DocumentRead:
+    orphan = await _load_orphan_or_404(db, orphan_id)
+    doc = Document(
+        organization_id=orphan.organization_id,
+        orphan_id=orphan.id,
+        document_type=payload.document_type,
+        title=payload.title,
+        description=payload.description,
+        file_url=payload.file_url,
+        file_name=payload.file_name,
+        file_size_bytes=payload.file_size_bytes,
+        file_mime_type=payload.file_mime_type,
+        file_hash=payload.file_hash,
+        issue_date=payload.issue_date,
+        expiry_date=payload.expiry_date,
+        issuing_authority=payload.issuing_authority,
+        verification_status="pending",
+        uploaded_by=user.id,
+    )
+    db.add(doc)
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=orphan.organization_id,
+        user_id=user.id,
+        action="document.attached",
+        entity_type="document",
+        entity_id=doc.id,
+        new_values={
+            "orphan_id": str(orphan.id),
+            "document_type": doc.document_type,
+            "file_name": doc.file_name,
+        },
+    )
+    await db.commit()
+    await db.refresh(doc)
+    return DocumentRead.model_validate(doc)
+
+
+@router.post("/documents/{document_id}/verify", response_model=DocumentRead)
+async def verify_document(
+    document_id: UUID,
+    payload: DocumentVerify,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> DocumentRead:
+    doc = await db.scalar(select(Document).where(Document.id == document_id))
+    if doc is None:
+        raise NotFound("Document")
+    old_status = doc.verification_status
+    doc.verification_status = payload.status
+    doc.verification_notes = payload.notes
+    doc.verified_by = user.id
+    doc.verified_at = datetime.now(UTC)
+    record_audit(
+        db,
+        organization_id=doc.organization_id,
+        user_id=user.id,
+        action="document.verified",
+        entity_type="document",
+        entity_id=doc.id,
+        old_values={"verification_status": old_status},
+        new_values={"verification_status": payload.status},
+        is_sensitive=True,
+    )
+    await db.commit()
+    await db.refresh(doc)
+    return DocumentRead.model_validate(doc)
+
+
+@router.delete("/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_document(
+    document_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> None:
+    """Hard delete — the file in object storage is the source of truth
+    and is not removed here. Operators handle storage GC out of band."""
+    doc = await db.scalar(select(Document).where(Document.id == document_id))
+    if doc is None:
+        raise NotFound("Document")
+    record_audit(
+        db,
+        organization_id=doc.organization_id,
+        user_id=user.id,
+        action="document.deleted",
+        entity_type="document",
+        entity_id=doc.id,
+        old_values={
+            "document_type": doc.document_type,
+            "file_name": doc.file_name,
+        },
+        is_sensitive=True,
+    )
+    await db.delete(doc)
+    await db.commit()

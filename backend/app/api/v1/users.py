@@ -16,17 +16,20 @@ from sqlalchemy import func, select
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.config import settings
 from app.core.exceptions import NotFound
 from app.core.security import (
     create_invite_token,
     decode_invite_token,
     hash_password,
 )
+from app.models.organization import Organization
 from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.user_admin import UserAdminRead
 from app.services.audit import record_audit
+from app.services.email import send_templated
 
 router = APIRouter()
 
@@ -79,9 +82,7 @@ async def list_users(
 _INVITE_TTL_DAYS = 7
 
 
-@router.post(
-    "/invite", response_model=UserInviteResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/invite", response_model=UserInviteResponse, status_code=status.HTTP_201_CREATED)
 async def invite_user(
     payload: UserInvite,
     db: DbSession,
@@ -122,6 +123,23 @@ async def invite_user(
     )
     await db.commit()
     await db.refresh(invited)
+
+    # Best-effort email — when SMTP isn't wired the sender just logs.
+    # The token still comes back in the API response either way.
+    org = await db.scalar(select(Organization).where(Organization.id == user.organization_id))
+    org_name = org.name_ar if org else "Rufaqaa"
+    accept_url = f"{settings.APP_BASE_URL.rstrip('/')}/accept-invite?token={token}"
+    send_templated(
+        to=invited.email,
+        template="user_invite",
+        locale=settings.DEFAULT_LOCALE,
+        first_name=invited.first_name,
+        inviter_name=f"{user.first_name} {user.last_name}".strip() or user.email,
+        org_name=org_name,
+        accept_url=accept_url,
+        expires_days=_INVITE_TTL_DAYS,
+    )
+
     return UserInviteResponse(
         user=UserAdminRead.model_validate(invited),
         invite_token=token,
@@ -140,9 +158,7 @@ async def accept_invite(payload: AcceptInvite, db: DbSession) -> UserAdminRead:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired invite token",
         ) from exc
-    target = await db.scalar(
-        select(User).where(User.id == user_id, User.deleted_at.is_(None))
-    )
+    target = await db.scalar(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
     if target is None:
         raise NotFound("User")
     if target.status != "pending_verification":

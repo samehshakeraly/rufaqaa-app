@@ -1,0 +1,137 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa — Production stack
+# ═══════════════════════════════════════════════════════════════
+#
+# A reference compose file for a single-host deployment behind one
+# nginx reverse proxy. For real production, prefer terminating TLS
+# at the load balancer / ingress layer; this file is the simplest
+# "give me one VPS" path.
+#
+# Required env vars (typically via an .env file in this directory):
+#   POSTGRES_PASSWORD       postgres password (no default)
+#   SECRET_KEY              backend secret key (no default)
+#   JWT_SECRET_KEY          jwt signing key  (no default)
+#   PUBLIC_HOST             host/domain serving the app (no default)
+#
+# Usage:
+#   cd infrastructure/docker/production
+#   cp .env.example .env && edit .env
+#   docker compose -f docker-compose.prod.yml up -d
+#   docker compose -f docker-compose.prod.yml exec backend \
+#       alembic upgrade head
+# ═══════════════════════════════════════════════════════════════
+
+name: rufaqaa-prod
+
+x-backend-env: &backend-env
+  ENVIRONMENT: production
+  DEBUG: "false"
+  DATABASE_URL: postgresql+asyncpg://rufaqaa:${POSTGRES_PASSWORD}@postgres:5432/rufaqaa
+  REDIS_URL: redis://redis:6379/0
+  CELERY_BROKER_URL: redis://redis:6379/1
+  CELERY_RESULT_BACKEND: redis://redis:6379/2
+  SECRET_KEY: ${SECRET_KEY}
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+  CORS_ORIGINS: https://${PUBLIC_HOST}
+  LOG_FORMAT: json
+  LOG_LEVEL: INFO
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.4-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rufaqaa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: rufaqaa
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rufaqaa -d rufaqaa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb"]
+    volumes:
+      - redis-data:/data
+
+  backend:
+    build:
+      context: ../../../backend
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "4"
+
+  worker:
+    build:
+      context: ../../../backend
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    command:
+      - celery
+      - -A
+      - app.workers.celery_app
+      - worker
+      - --loglevel=info
+
+  beat:
+    build:
+      context: ../../../backend
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+    depends_on:
+      redis:
+        condition: service_started
+    command:
+      - celery
+      - -A
+      - app.workers.celery_app
+      - beat
+      - --loglevel=info
+
+  frontend:
+    build:
+      context: ../../../frontend
+      args:
+        VITE_API_URL: /api/v1
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  postgres-data:
+  redis-data:

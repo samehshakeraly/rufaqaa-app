@@ -8,7 +8,9 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 import { Pagination } from "@/components/Pagination";
+import { TableSkeleton } from "@/components/Skeleton";
 import {
+  archiveOrphan,
   createOrphan,
   exportOrphansCsv,
   listOrphans,
@@ -56,6 +58,8 @@ export function OrphansPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [caseStatus, setCaseStatus] = useState<string>("");
   const [offset, setOffset] = useState(0);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   // 300ms debounce on the search box so we don't spam the API on every keystroke.
   useEffect(() => {
@@ -68,6 +72,12 @@ export function OrphansPage() {
   useEffect(() => {
     setOffset(0);
   }, [debouncedSearch, caseStatus]);
+
+  // Clear bulk selection when the filter / page changes — selected IDs
+  // would otherwise refer to rows that aren't visible anymore.
+  useEffect(() => {
+    setSelected(new Set());
+  }, [debouncedSearch, caseStatus, offset]);
 
   const queryKey = orphanQueryKey(debouncedSearch, caseStatus, offset);
   const { data, isLoading, error } = useQuery({
@@ -154,7 +164,7 @@ export function OrphansPage() {
         />
       )}
 
-      {isLoading && <p className="text-slate-500">{t("common.loading")}</p>}
+      {isLoading && <TableSkeleton columns={6} />}
       {error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {t("common.loadError")}
@@ -175,40 +185,136 @@ export function OrphansPage() {
       )}
 
       {data && data.items.length > 0 && (
-        <div className="card overflow-x-auto p-0">
-          <table className="min-w-full text-start">
-            <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
-              <tr>
-                <th className="px-4 py-3 font-medium">{t("orphans.code")}</th>
-                <th className="px-4 py-3 font-medium">{t("orphans.name")}</th>
-                <th className="px-4 py-3 font-medium">{t("orphans.dateOfBirth")}</th>
-                <th className="px-4 py-3 font-medium">{t("orphans.gender")}</th>
-                <th className="px-4 py-3 font-medium">{t("orphans.status")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sky/40 text-sm">
-              {data.items.map((o) => (
-                <tr key={o.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">
-                    <Link to={`/orphans/${o.id}`} className="text-trust hover:underline">
-                      {o.code}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">
-                    {o.first_name} {o.family_name}
-                  </td>
-                  <td className="px-4 py-3">{o.date_of_birth}</td>
-                  <td className="px-4 py-3">
-                    {o.gender === "M" ? t("orphans.male") : t("orphans.female")}
-                  </td>
-                  <td className="px-4 py-3">
-                    {t(`orphans.caseStatus.${o.case_status}`, o.case_status)}
-                  </td>
+        <>
+          {selected.size > 0 && (
+            <div className="flex items-center justify-between rounded-lg border border-trust bg-tranquil/40 px-4 py-2 text-sm">
+              <span className="font-medium text-trust">
+                {t("orphans.bulkSelected", { count: selected.size })}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded-lg border border-sky px-3 py-1 text-slate-700 hover:bg-snow"
+                  onClick={() => setSelected(new Set())}
+                  disabled={bulkBusy}
+                >
+                  {t("orphans.bulkClear")}
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50"
+                  onClick={async () => {
+                    if (
+                      !window.confirm(
+                        t("orphans.bulkArchiveConfirm", { count: selected.size }),
+                      )
+                    ) {
+                      return;
+                    }
+                    setBulkBusy(true);
+                    let ok = 0;
+                    let fail = 0;
+                    for (const id of selected) {
+                      try {
+                        await archiveOrphan(id);
+                        ok++;
+                      } catch {
+                        fail++;
+                      }
+                    }
+                    setBulkBusy(false);
+                    setSelected(new Set());
+                    await qc.invalidateQueries({ queryKey: ["orphans"] });
+                    if (fail === 0) {
+                      toast.success(t("orphans.bulkArchiveDone", { ok }));
+                    } else {
+                      toast.error(
+                        t("orphans.bulkArchivePartial", { ok, fail }),
+                      );
+                    }
+                  }}
+                  disabled={bulkBusy}
+                >
+                  {bulkBusy
+                    ? t("common.saving")
+                    : t("orphans.bulkArchive")}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="card overflow-x-auto p-0">
+            <table className="min-w-full text-start">
+              <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
+                <tr>
+                  <th className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      aria-label="select-all"
+                      checked={
+                        data.items.length > 0 &&
+                        data.items.every((o) => selected.has(o.id))
+                      }
+                      onChange={(e) => {
+                        const next = new Set(selected);
+                        if (e.target.checked) {
+                          data.items.forEach((o) => next.add(o.id));
+                        } else {
+                          data.items.forEach((o) => next.delete(o.id));
+                        }
+                        setSelected(next);
+                      }}
+                    />
+                  </th>
+                  <th className="px-4 py-3 font-medium">{t("orphans.code")}</th>
+                  <th className="px-4 py-3 font-medium">{t("orphans.name")}</th>
+                  <th className="px-4 py-3 font-medium">{t("orphans.dateOfBirth")}</th>
+                  <th className="px-4 py-3 font-medium">{t("orphans.gender")}</th>
+                  <th className="px-4 py-3 font-medium">{t("orphans.status")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-sky/40 text-sm">
+                {data.items.map((o) => (
+                  <tr
+                    key={o.id}
+                    className={`hover:bg-snow ${
+                      selected.has(o.id) ? "bg-tranquil/30" : ""
+                    }`}
+                  >
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`select-${o.code}`}
+                        checked={selected.has(o.id)}
+                        onChange={(e) => {
+                          const next = new Set(selected);
+                          if (e.target.checked) next.add(o.id);
+                          else next.delete(o.id);
+                          setSelected(next);
+                        }}
+                      />
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs">
+                      <Link to={`/orphans/${o.id}`} className="text-trust hover:underline">
+                        {o.code}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      {o.first_name} {o.family_name}
+                    </td>
+                    <td className="px-4 py-3">{o.date_of_birth}</td>
+                    <td className="px-4 py-3">
+                      {o.gender === "M" ? t("orphans.male") : t("orphans.female")}
+                    </td>
+                    <td className="px-4 py-3">
+                      {t(`orphans.caseStatus.${o.case_status}`, o.case_status)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

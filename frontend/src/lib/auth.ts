@@ -43,3 +43,25 @@ export async function fetchMe(): Promise<CurrentUser> {
   const { data } = await api.get<CurrentUser>("/auth/me");
   return data;
 }
+
+export interface ForgotPasswordResponse {
+  sent: boolean;
+  debug_token: string | null;
+}
+
+export async function requestPasswordReset(
+  email: string,
+): Promise<ForgotPasswordResponse> {
+  const { data } = await api.post<ForgotPasswordResponse>(
+    "/auth/forgot-password",
+    { email },
+  );
+  return data;
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await api.post("/auth/reset-password", {
+    token,
+    new_password: newPassword,
+  });
+}

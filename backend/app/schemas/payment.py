@@ -70,3 +70,33 @@ class PaymentRead(BaseModel):
     initiated_at: datetime
     completed_at: datetime | None
     created_at: datetime
+
+
+class PaymentReceipt(BaseModel):
+    """Self-contained snapshot of a payment for printing. Bundles the
+    donor + orphan + organization fields the receipt page needs so the
+    UI doesn't have to fan out to 4 endpoints."""
+
+    payment_id: UUID
+    payment_code: str
+    amount: Decimal
+    currency: str
+    payment_method: PaymentMethod
+    status: PaymentStatus
+    completed_at: datetime | None
+    initiated_at: datetime
+
+    donor_id: UUID
+    donor_code: str
+    donor_name: str
+    donor_email: str | None
+
+    sponsorship_id: UUID | None
+    sponsorship_code: str | None
+    orphan_id: UUID | None
+    orphan_code: str | None
+    orphan_name: str | None
+
+    organization_id: UUID
+    organization_name_ar: str
+    organization_name_en: str | None

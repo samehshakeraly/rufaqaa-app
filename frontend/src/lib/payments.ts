@@ -66,3 +66,31 @@ export async function exportPaymentsCsv(params?: {
   });
   return r.data as Blob;
 }
+
+export interface PaymentReceipt {
+  payment_id: string;
+  payment_code: string;
+  amount: string;
+  currency: string;
+  payment_method: PaymentMethod;
+  status: string;
+  completed_at: string | null;
+  initiated_at: string;
+  donor_id: string;
+  donor_code: string;
+  donor_name: string;
+  donor_email: string | null;
+  sponsorship_id: string | null;
+  sponsorship_code: string | null;
+  orphan_id: string | null;
+  orphan_code: string | null;
+  orphan_name: string | null;
+  organization_id: string;
+  organization_name_ar: string;
+  organization_name_en: string | null;
+}
+
+export async function fetchPaymentReceipt(paymentId: string): Promise<PaymentReceipt> {
+  const { data } = await api.get<PaymentReceipt>(`/payments/${paymentId}/receipt`);
+  return data;
+}

@@ -4,8 +4,9 @@ Currently only a MyFatoorah stub: validates a shared-secret header, records
 the payment, and bumps sponsorship totals. Real signature verification will
 be added when we move beyond the sandbox.
 
-Every inbound delivery — successful or not — is logged into
-webhook_deliveries so operators can replay or diagnose failures.
+Every inbound delivery — success, validation failure, or processing error
+— is recorded in `inbound_webhook_log` so operators can replay them
+later from the admin UI.
 """
 
 from __future__ import annotations
@@ -14,16 +15,24 @@ import hashlib
 import hmac
 import json
 from datetime import UTC, datetime
+from decimal import Decimal
 from typing import Annotated, Any
+from uuid import UUID
 
-from fastapi import APIRouter, Header, HTTPException, Request, status
-from sqlalchemy import select, text
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import desc, func, select, text
 
 from app.api.deps import DbSession
+from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.config import settings
+from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.inbound_webhook import InboundWebhookLog
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
+from app.models.user import User
+from app.schemas.common import Page
 from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
@@ -45,41 +54,22 @@ def _sign_payload(secret: str, body: bytes) -> str:
     return hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
 
 
-@router.post("/myfatoorah")
-async def myfatoorah_webhook(
-    request: Request,
-    db: DbSession,
-    x_myfatoorah_signature: Annotated[str | None, Header()] = None,
-) -> dict[str, Any]:
-    """Receive payment status updates from MyFatoorah.
-
-    Authentication: when `MYFATOORAH_WEBHOOK_SECRET` is configured the
-    caller must include `X-MyFatoorah-Signature` set to the hex
-    HMAC-SHA256 of the raw request body keyed by the shared secret. A
-    raw equality with the secret is also accepted for backward
-    compatibility with the original sandbox configuration.
-
-    The handler is idempotent: a webhook delivered twice for the same
-    `gateway_transaction_id` only inserts the payment row once.
-    """
-    raw_body = await request.body()
+def _verify_myfatoorah_signature(raw_body: bytes, signature: str | None) -> None:
     expected = getattr(settings, "MYFATOORAH_WEBHOOK_SECRET", None)
-    if expected:
-        if x_myfatoorah_signature is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-        sig_ok = hmac.compare_digest(
-            x_myfatoorah_signature, _sign_payload(expected, raw_body)
-        ) or hmac.compare_digest(x_myfatoorah_signature, expected)
-        if not sig_ok:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    if not expected:
+        return
+    if signature is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    sig_ok = hmac.compare_digest(
+        signature, _sign_payload(expected, raw_body)
+    ) or hmac.compare_digest(signature, expected)
+    if not sig_ok:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
-    try:
-        payload: dict[str, Any] = json.loads(raw_body) if raw_body else {}
-    except json.JSONDecodeError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON body"
-        ) from exc
 
+async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, Any]:
+    """Pure processing — no signature check, no logging. Used by both
+    the live route and the replay path."""
     data = payload.get("Data") or payload
     gateway_txn_id = str(data.get("InvoiceId") or data.get("TransactionId") or "")
     if not gateway_txn_id:
@@ -107,15 +97,11 @@ async def myfatoorah_webhook(
         donor = await db.scalar(select(Donor).where(Donor.email == donor_email))
 
     if donor is None:
-        # Without a donor we can't satisfy the payments.donor_id NOT NULL
-        # constraint, so reject early but with a clear message so the
-        # gateway operator can re-link.
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Could not match payment to a known donor or sponsorship",
         )
 
-    # Scope subsequent queries by the donor's organization (RLS)
     await db.execute(
         text("SELECT set_config('app.current_org_id', :v, true)"),
         {"v": str(donor.organization_id)},
@@ -128,8 +114,6 @@ async def myfatoorah_webhook(
         return {"status": "duplicate", "payment_id": str(existing.id)}
 
     amount_str = str(data.get("InvoiceValue") or data.get("Amount") or "0")
-    from decimal import Decimal
-
     amount = Decimal(amount_str)
     currency = str(data.get("InvoiceDisplayValue", "")[-3:] or data.get("Currency") or "KWD")
 
@@ -159,9 +143,6 @@ async def myfatoorah_webhook(
     db.add(payment)
     await db.flush()
 
-    # Audit trail — there's no acting user for an inbound webhook, so
-    # user_id stays NULL. organization_id is the donor's, which is what
-    # gives us the per-tenant filter when admins later inspect the log.
     record_audit(
         db,
         organization_id=donor.organization_id,
@@ -176,11 +157,185 @@ async def myfatoorah_webhook(
             "currency": currency,
         },
     )
-    await db.commit()
     await db.refresh(payment)
-
     return {
         "status": "ok",
         "payment_id": str(payment.id),
         "payment_status": our_status,
     }
+
+
+@router.post("/myfatoorah")
+async def myfatoorah_webhook(
+    request: Request,
+    db: DbSession,
+    x_myfatoorah_signature: Annotated[str | None, Header()] = None,
+) -> dict[str, Any]:
+    """Receive payment status updates from MyFatoorah.
+
+    Every delivery is logged into `inbound_webhook_log` before the
+    handler returns — successful, validation-failure, or processing
+    error — so operators can replay it later from /webhooks/log."""
+    raw_body = await request.body()
+    _verify_myfatoorah_signature(raw_body, x_myfatoorah_signature)
+
+    try:
+        payload: dict[str, Any] = json.loads(raw_body) if raw_body else {}
+    except json.JSONDecodeError as exc:
+        # Log the raw body as a string so the operator can see what came in
+        await _log_inbound(
+            db,
+            source="myfatoorah",
+            payload={"_raw": raw_body.decode("utf-8", errors="replace")},
+            signature=x_myfatoorah_signature,
+            response_status=400,
+            error="Invalid JSON body",
+        )
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON body"
+        ) from exc
+
+    return await _run_and_log(
+        db,
+        source="myfatoorah",
+        payload=payload,
+        signature=x_myfatoorah_signature,
+    )
+
+
+async def _log_inbound(
+    db,
+    *,
+    source: str,
+    payload: dict[str, Any],
+    signature: str | None,
+    response_status: int,
+    response_body: dict[str, Any] | None = None,
+    error: str | None = None,
+    replayed_from: UUID | None = None,
+) -> InboundWebhookLog:
+    log = InboundWebhookLog(
+        source=source,
+        payload=payload,
+        signature=signature,
+        response_status=response_status,
+        response_body=json.dumps(response_body) if response_body is not None else None,
+        error=error,
+        replayed_from=replayed_from,
+    )
+    db.add(log)
+    await db.flush()
+    return log
+
+
+async def _run_and_log(
+    db,
+    *,
+    source: str,
+    payload: dict[str, Any],
+    signature: str | None,
+    replayed_from: UUID | None = None,
+) -> dict[str, Any]:
+    """Process a payload and persist exactly one log row reflecting the
+    outcome. Re-raises HTTPException after logging so the HTTP response
+    still reflects the error."""
+    try:
+        result = await _process_myfatoorah_payload(db, payload)
+        await _log_inbound(
+            db,
+            source=source,
+            payload=payload,
+            signature=signature,
+            response_status=200,
+            response_body=result,
+            replayed_from=replayed_from,
+        )
+        await db.commit()
+        return result
+    except HTTPException as exc:
+        await _log_inbound(
+            db,
+            source=source,
+            payload=payload,
+            signature=signature,
+            response_status=exc.status_code,
+            error=str(exc.detail),
+            replayed_from=replayed_from,
+        )
+        await db.commit()
+        raise
+
+
+# ────────────────────────────────────────────────────────────────────
+# Admin: inspect + replay
+# ────────────────────────────────────────────────────────────────────
+
+
+class InboundWebhookLogRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    source: str
+    payload: dict
+    signature: str | None
+    response_status: int | None
+    response_body: str | None
+    error: str | None
+    received_at: datetime
+    replayed_from: UUID | None
+    replayed_count: int
+
+
+@router.get("/log", response_model=Page[InboundWebhookLogRead])
+async def list_inbound_webhook_log(
+    db: DbSession,
+    _user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    source: str | None = None,
+    only_failed: bool = False,
+) -> Page[InboundWebhookLogRead]:
+    stmt = select(InboundWebhookLog)
+    if source:
+        stmt = stmt.where(InboundWebhookLog.source == source)
+    if only_failed:
+        stmt = stmt.where(InboundWebhookLog.response_status != 200)
+    total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows = (
+        await db.scalars(
+            stmt.order_by(desc(InboundWebhookLog.received_at)).limit(limit).offset(offset)
+        )
+    ).all()
+    return Page(
+        items=[InboundWebhookLogRead.model_validate(r) for r in rows],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@router.post("/log/{log_id}/replay")
+async def replay_inbound_webhook(
+    log_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> dict[str, Any]:
+    """Re-feed a logged payload through the original handler. A new log
+    row is created with replayed_from pointing at the original. The
+    payment-side dedupe (gateway_transaction_id UNIQUE) keeps successful
+    replays idempotent — they'll come back as `duplicate`."""
+    original = await db.scalar(select(InboundWebhookLog).where(InboundWebhookLog.id == log_id))
+    if original is None:
+        raise NotFound("Webhook log entry")
+    original.replayed_count = (original.replayed_count or 0) + 1
+    await db.flush()
+    result = await _run_and_log(
+        db,
+        source=original.source,
+        payload=original.payload,
+        signature=original.signature,
+        replayed_from=original.id,
+    )
+    _ = user  # acting admin is captured implicitly via require_roles
+    return result

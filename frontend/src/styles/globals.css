@@ -36,3 +36,19 @@
       dark:border-slate-700 dark:bg-slate-800;
   }
 }
+
+@media print {
+  /* On the receipt page, strip the app shell (header/nav) and any non-
+     receipt content so a clean A4-friendly page renders. */
+  body:has(.receipt-page) header,
+  body:has(.receipt-page) nav {
+    display: none !important;
+  }
+  body:has(.receipt-page) main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}

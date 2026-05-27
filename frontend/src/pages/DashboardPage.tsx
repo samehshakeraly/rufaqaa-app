@@ -1,9 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import { PartnerDonationsBar } from "@/components/PartnerDonationsBar";
 import { PaymentsChart } from "@/components/PaymentsChart";
+import { Skeleton, StatGridSkeleton } from "@/components/Skeleton";
+import { SponsorshipsDonut } from "@/components/SponsorshipsDonut";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { fetchPaymentsTimeseries, fetchSummary } from "@/lib/stats";
+import {
+  fetchDonationsByPartner,
+  fetchPaymentsTimeseries,
+  fetchSponsorshipsByStatus,
+  fetchSummary,
+} from "@/lib/stats";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -16,11 +24,22 @@ export function DashboardPage() {
     queryKey: ["stats", "payments-timeseries"],
     queryFn: fetchPaymentsTimeseries,
   });
+  const { data: byStatus } = useQuery({
+    queryKey: ["stats", "sponsorships-by-status"],
+    queryFn: fetchSponsorshipsByStatus,
+  });
+  const { data: byPartner } = useQuery({
+    queryKey: ["stats", "donations-by-partner"],
+    queryFn: fetchDonationsByPartner,
+  });
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-900">{t("dashboard.title")}</h1>
 
+      {!summary && <StatGridSkeleton cards={7} />}
+
+      {summary && (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label={t("dashboard.orphansTotal")} value={summary?.orphans_total} />
         <Stat
@@ -52,6 +71,14 @@ export function DashboardPage() {
           }
         />
       </div>
+      )}
+
+      {!timeseries && (
+        <div className="card space-y-3">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+      )}
 
       {timeseries && (
         <div className="card">
@@ -61,6 +88,25 @@ export function DashboardPage() {
           <PaymentsChart data={timeseries} />
         </div>
       )}
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {byStatus && (
+          <div className="card">
+            <h2 className="mb-3 text-lg font-semibold">
+              {t("dashboard.sponsorshipsByStatus")}
+            </h2>
+            <SponsorshipsDonut data={byStatus} />
+          </div>
+        )}
+        {byPartner && (
+          <div className="card">
+            <h2 className="mb-3 text-lg font-semibold">
+              {t("dashboard.donationsByPartner", { days: byPartner.window_days })}
+            </h2>
+            <PartnerDonationsBar data={byPartner} />
+          </div>
+        )}
+      </div>
 
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("dashboard.accountInfo")}</h2>

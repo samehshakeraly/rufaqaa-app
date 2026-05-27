@@ -10,7 +10,11 @@ from app.core.config import settings
 from app.core.database import engine
 from app.core.logging import RequestLogMiddleware, configure_logging
 from app.core.ratelimit import RateLimitMiddleware
+from app.core.sentry import init_sentry
 
+# Init Sentry BEFORE configuring logging so its breadcrumbs pick up
+# every log record. No-op when SENTRY_DSN is empty.
+init_sentry()
 configure_logging()
 
 
