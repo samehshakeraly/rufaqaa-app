@@ -42,7 +42,7 @@ export function PaymentReceiptPage() {
   return (
     <div className="receipt-page mx-auto max-w-2xl bg-white p-8 text-slate-900">
       <div className="print:hidden mb-4 flex items-center justify-between">
-        <Link to="/payments" className="text-sm text-trust underline">
+        <Link to="/admin/payments" className="text-sm text-trust underline">
           ← {t("receipt.back")}
         </Link>
         <button

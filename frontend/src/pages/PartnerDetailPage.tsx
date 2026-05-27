@@ -42,7 +42,7 @@ export function PartnerDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link to="/partners" className="text-sm text-trust underline">
+        <Link to="/admin/partners" className="text-sm text-trust underline">
           ← {t("partners.title")}
         </Link>
       </div>

@@ -81,7 +81,7 @@ export function FamiliesPage() {
                 <tr key={f.id} className="hover:bg-snow">
                   <td className="px-4 py-3 font-mono text-xs">
                     <Link
-                      to={`/families/${f.id}`}
+                      to={`/admin/families/${f.id}`}
                       className="text-trust hover:underline"
                     >
                       {f.code}

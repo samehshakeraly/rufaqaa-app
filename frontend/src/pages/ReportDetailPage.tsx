@@ -70,7 +70,7 @@ export function ReportDetailPage() {
           </p>
         </div>
         <Link
-          to="/reports"
+          to="/admin/reports"
           className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
         >
           ← {t("reports.title")}
