@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حالات الفراغ — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 8px; }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+
+/* PAGE LAYOUT — showcase */
+.showcase-head { background: white; border-bottom: 1px solid var(--sky-200); padding: 32px; }
+.showcase-head-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.showcase-title h1 { font-size: 22px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+.showcase-title p { font-size: 13.5px; color: var(--gray-500); }
+.brand-mini { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-600); }
+.brand-mini-mark { width: 28px; height: 28px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+.scope-pill { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 4px 10px; background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); border-radius: var(--radius-full); }
+
+.showcase { max-width: 1200px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 860px) { .showcase { grid-template-columns: 1fr; padding: 20px; } }
+
+.case-frame { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+.case-label { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--snow-100); border-bottom: 1px solid var(--gray-200); }
+.case-label-code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--trust-600); background: var(--tranquil-100); padding: 3px 9px; border-radius: var(--radius-full); font-weight: 600; border: 1px solid var(--sky-200); }
+.case-label-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.case-label-route { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--gray-500); }
+
+.empty { padding: 56px 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; min-height: 380px; justify-content: center; }
+.empty-art { width: 140px; height: 140px; margin-bottom: 8px; opacity: .95; }
+.empty-art svg { width: 100%; height: 100%; }
+.empty-title { font-size: 20px; font-weight: 600; color: var(--gray-900); letter-spacing: -.01em; }
+.empty-desc { font-size: 14px; color: var(--gray-600); line-height: 1.85; max-width: 360px; }
+.empty-desc strong { color: var(--gray-800); }
+.empty-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13.5px; font-weight: 500; padding: 10px 18px; border-radius: var(--radius-md); transition: var(--transition); border: 1px solid transparent; }
+.btn-primary { background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%); color: white; border-color: var(--trust-500); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%); transform: translateY(-1px); }
+.btn-secondary { background: white; color: var(--trust-600); border-color: var(--sky-300); }
+.btn-secondary:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+.btn-ghost { background: transparent; color: var(--gray-600); }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.usage { padding: 14px 16px; background: var(--snow-100); border-top: 1px solid var(--gray-200); font-size: 11.5px; color: var(--gray-600); display: flex; gap: 8px; align-items: center; }
+.usage strong { color: var(--gray-800); }
+.usage code { font-family: 'IBM Plex Mono', monospace; background: var(--tranquil-100); color: var(--trust-600); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+
+.intro-band { background: var(--warning-50); border: 1px solid var(--warning-100); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 24px; max-width: 1136px; margin: 0 auto 24px; display: flex; gap: 14px; align-items: center; }
+.intro-band-icon { width: 36px; height: 36px; border-radius: 50%; background: white; color: var(--warning-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.intro-band-text { font-size: 13.5px; color: var(--gray-700); line-height: 1.7; }
+.intro-band-text strong { color: var(--warning-700); font-weight: 600; display: block; margin-bottom: 2px; }
+
+</style>
+</head>
+<body>
+
+<div class="showcase-head">
+  <div class="showcase-head-inner">
+    <div class="showcase-title">
+      <h1>حالات الفراغ — Empty States</h1>
+      <p>أربع شاشات نراها حين لا يوجد شيء يُعرض بعد · مرجع تصميم</p>
+    </div>
+    <div class="brand-mini">
+      <span class="brand-mini-mark">ر</span>
+      <span>رفقاء — نظام التصميم</span>
+      <span class="scope-pill">S-01 → S-04</span>
+    </div>
+  </div>
+</div>
+
+<div style="max-width: 1200px; margin: 24px auto 0; padding: 0 32px;">
+  <div class="intro-band">
+    <div class="intro-band-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <div class="intro-band-text">
+      <strong>مرجع نمطي ـ لا يُعرض للمستخدم النهائي مجمَّعاً</strong>
+      كلّ بطاقة هنا هي لقطة من شاشة منفصلة. عند البناء، انسخ مكوّن الـ <code>.empty</code> المناسب فقط داخل كرتك المستهدفة.
+    </div>
+  </div>
+</div>
+
+<div class="showcase">
+
+  <!-- S-01 — NO ORPHANS YET -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-01 · لا أيتام بعد</span>
+      <span class="case-label-code">PartnerStaff</span>
+    </div>
+    <div class="empty">
+      <div class="empty-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g-s01" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D6E6F2"/><stop offset="100%" stop-color="#B9D7EA"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="80" fill="url(#g-s01)" opacity=".6"/>
+          <rect x="55" y="65" width="90" height="70" rx="8" fill="white" stroke="#769FCD" stroke-width="2"/>
+          <line x1="65" y1="80" x2="135" y2="80" stroke="#9CC3DE" stroke-width="2" stroke-dasharray="3 4"/>
+          <line x1="65" y1="95" x2="120" y2="95" stroke="#9CC3DE" stroke-width="2" stroke-dasharray="3 4"/>
+          <line x1="65" y1="110" x2="100" y2="110" stroke="#9CC3DE" stroke-width="2" stroke-dasharray="3 4"/>
+          <circle cx="150" cy="60" r="20" fill="#769FCD"/>
+          <line x1="143" y1="60" x2="157" y2="60" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <line x1="150" y1="53" x2="150" y2="67" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">لا توجد أيتام مسجَّلون بعد</h2>
+      <p class="empty-desc">ابدأ بتسجيل أوّل يتيم في جمعيّتك ـ يحتاج <strong>شهادة ميلاد، وثيقة وفاة الأب، تقرير اجتماعي</strong>. الباقي نشرحه أثناء التسجيل.</p>
+      <div class="empty-actions">
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>سجّل أوّل يتيم</button>
+        <a class="btn btn-ghost" href="#">دليل التسجيل</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>/partner/orphans</code> حين <code>count=0</code></div>
+  </div>
+
+  <!-- S-02 — NO SPONSORSHIPS -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-02 · لا كفالات بعد</span>
+      <span class="case-label-code">Donor</span>
+    </div>
+    <div class="empty">
+      <div class="empty-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g-s02" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EAF1F7"/><stop offset="100%" stop-color="#D6E6F2"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="78" fill="url(#g-s02)"/>
+          <path d="M 70 95 C 70 78, 130 78, 130 95 C 130 115, 100 135, 100 135 C 100 135, 70 115, 70 95 Z" fill="white" stroke="#769FCD" stroke-width="2.5"/>
+          <line x1="80" y1="95" x2="120" y2="95" stroke="#B9D7EA" stroke-width="2" stroke-dasharray="3 5"/>
+          <circle cx="150" cy="60" r="6" fill="#769FCD"/>
+          <circle cx="55" cy="55" r="4" fill="#9CC3DE"/>
+          <circle cx="160" cy="135" r="5" fill="#9CC3DE"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">ما زلت لم تبدأ رحلة الكفالة</h2>
+      <p class="empty-desc">حساباتك جاهز ـ كلّ ما تنتظره: <strong>اختيار يتيم</strong> تكون رفيقه. تصفّح من <span class="latin">١٢٨</span> طفلاً متاحاً الآن.</p>
+      <div class="empty-actions">
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>تصفّح الأيتام المتاحين</button>
+        <a class="btn btn-secondary" href="#">كيف تعمل الكفالة؟</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>/donor/orphans</code> حين <code>sponsorships=0</code></div>
+  </div>
+
+  <!-- S-03 — NO REPORTS -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-03 · لا تقارير بعد</span>
+      <span class="case-label-code">Donor / Guardian</span>
+    </div>
+    <div class="empty">
+      <div class="empty-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g-s03" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EAF1F7"/><stop offset="100%" stop-color="#C2D8EC"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="78" fill="url(#g-s03)"/>
+          <rect x="60" y="55" width="68" height="86" rx="6" fill="white" stroke="#769FCD" stroke-width="2"/>
+          <path d="M 110 55 L 110 75 L 128 75" fill="none" stroke="#769FCD" stroke-width="2"/>
+          <line x1="72" y1="92" x2="116" y2="92" stroke="#B9D7EA" stroke-width="2" stroke-dasharray="3 4"/>
+          <line x1="72" y1="105" x2="105" y2="105" stroke="#B9D7EA" stroke-width="2" stroke-dasharray="3 4"/>
+          <line x1="72" y1="118" x2="116" y2="118" stroke="#B9D7EA" stroke-width="2" stroke-dasharray="3 4"/>
+          <circle cx="145" cy="135" r="22" fill="white" stroke="#769FCD" stroke-width="2"/>
+          <line x1="139" y1="135" x2="151" y2="135" stroke="#769FCD" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="145" y1="129" x2="145" y2="141" stroke="#769FCD" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">لم يصلك تقرير بعد</h2>
+      <p class="empty-desc">تصدر التقارير عادة في <strong>الأسبوع الأخير من كلّ شهر</strong>. ستصلك إشعاراً فور وصوله ـ لا حاجة لتتفقّد الصفحة.</p>
+      <div class="empty-actions">
+        <a class="btn btn-secondary" href="#">جدول التقارير المتوقّع</a>
+        <a class="btn btn-ghost" href="#">إعدادات الإشعارات</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>/donor/reports</code> حين <code>count=0</code> (بداية شهر مثلاً)</div>
+  </div>
+
+  <!-- S-04 — NO MESSAGES -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-04 · لا رسائل بعد</span>
+      <span class="case-label-code">Donor / Orphan / Guardian</span>
+    </div>
+    <div class="empty">
+      <div class="empty-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g-s04" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D6E6F2"/><stop offset="100%" stop-color="#EAF1F7"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="78" fill="url(#g-s04)"/>
+          <path d="M 55 75 L 55 130 Q 55 138 63 138 L 110 138 L 122 152 L 130 138 L 137 138 Q 145 138 145 130 L 145 75 Q 145 67 137 67 L 63 67 Q 55 67 55 75 Z" fill="white" stroke="#769FCD" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="80" cy="103" r="3" fill="#9CC3DE"/>
+          <circle cx="100" cy="103" r="3" fill="#9CC3DE"/>
+          <circle cx="120" cy="103" r="3" fill="#9CC3DE"/>
+          <circle cx="155" cy="60" r="8" fill="#769FCD" opacity=".4"/>
+          <circle cx="155" cy="60" r="5" fill="#769FCD"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">صندوق رسائلك فارغ</h2>
+      <p class="empty-desc">حين يكتب لك يتيمك أو وليّ أمره ـ ستجد رسالته هنا، بعد <strong>المراجعة البشريّة</strong>. يمكنك أيضاً أن تبادر برسالة شكر أو دعاء.</p>
+      <div class="empty-actions">
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>اكتب رسالة جديدة</button>
+        <a class="btn btn-ghost" href="#">سياسة مراجعة الرسائل</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>/{role}/messages</code> حين <code>count=0</code></div>
+  </div>
+
+</div>
+
+</body>
+</html>
