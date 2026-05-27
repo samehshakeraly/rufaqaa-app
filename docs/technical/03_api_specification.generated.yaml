@@ -15,6 +15,54 @@ components:
       - password
       title: AcceptInvite
       type: object
+    AdminInitiateOnBehalf:
+      description: 'The admin sits with a present-but-digitally-unable donor, picks
+
+        them from the existing donor records, and starts a hosted checkout
+
+        that the donor pays right now on a screen or their own phone.'
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        donor_id:
+          format: uuid
+          title: Donor Id
+          type: string
+        language:
+          default: ar
+          enum:
+          - ar
+          - en
+          title: Language
+          type: string
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+      required:
+      - donor_id
+      - amount
+      - currency
+      title: AdminInitiateOnBehalf
+      type: object
     AssignChannelPayload:
       description: Pass channel_id=null to unassign.
       properties:
@@ -98,6 +146,30 @@ components:
       - backup_codes
       title: BackupCodesResponse
       type: object
+    BankTransferConfirmReceipt:
+      description: 'Body of POST /bank-transfers/{id}/confirm-receipt.
+
+
+        Optional `confirmation_document_id` attaches an existing document
+
+        (proof of receipt) — see `POST /documents`. Optional `notes` lets
+
+        the operator add a free-text reason / context.'
+      properties:
+        confirmation_document_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Confirmation Document Id
+        notes:
+          anyOf:
+          - maxLength: 1000
+            type: string
+          - type: 'null'
+          title: Notes
+      title: BankTransferConfirmReceipt
+      type: object
     BankTransferCreate:
       properties:
         amount:
@@ -180,6 +252,12 @@ components:
         code:
           title: Code
           type: string
+        confirmation_document_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Confirmation Document Id
         confirmed_by_partner_at:
           anyOf:
           - format: date-time
@@ -261,6 +339,16 @@ components:
       - created_at
       title: BankTransferRead
       type: object
+    Body_upload_generic_file_api_v1_media_file_post:
+      properties:
+        file:
+          contentMediaType: application/octet-stream
+          title: File
+          type: string
+      required:
+      - file
+      title: Body_upload_generic_file_api_v1_media_file_post
+      type: object
     Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post:
       properties:
         file:
@@ -294,6 +382,12 @@ components:
           format: email
           title: Email
           type: string
+        email_verified_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Email Verified At
         first_name:
           title: First Name
           type: string
@@ -359,6 +453,20 @@ components:
       - payments_last_30d_total
       - payments_last_30d_count
       title: DashboardSummary
+      type: object
+    DataExportRequest:
+      properties:
+        detail:
+          title: Detail
+          type: string
+        requested_at:
+          format: date-time
+          title: Requested At
+          type: string
+      required:
+      - detail
+      - requested_at
+      title: DataExportRequest
       type: object
     DocumentCreate:
       description: 'Caller has already uploaded the file to S3 / MinIO (via the
@@ -653,6 +761,145 @@ components:
       - email
       title: DonorCreate
       type: object
+    DonorMeRead:
+      properties:
+        active_sponsorships:
+          title: Active Sponsorships
+          type: integer
+        code:
+          title: Code
+          type: string
+        country_of_residence:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Of Residence
+        email:
+          format: email
+          title: Email
+          type: string
+        full_name:
+          title: Full Name
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Preferred Currency
+        status:
+          title: Status
+          type: string
+        total_donated:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Donated
+          type: string
+        total_sponsorships:
+          title: Total Sponsorships
+          type: integer
+        user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: User Id
+      required:
+      - id
+      - code
+      - user_id
+      - full_name
+      - email
+      - phone
+      - country_of_residence
+      - preferred_currency
+      - status
+      - total_sponsorships
+      - active_sponsorships
+      - total_donated
+      title: DonorMeRead
+      type: object
+    DonorMeUpdate:
+      properties:
+        country_of_residence:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Of Residence
+        full_name:
+          anyOf:
+          - maxLength: 255
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Full Name
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Preferred Currency
+      title: DonorMeUpdate
+      type: object
+    DonorPaymentMini:
+      properties:
+        amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+          type: string
+        code:
+          title: Code
+          type: string
+        completed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Completed At
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        currency:
+          title: Currency
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        payment_method:
+          title: Payment Method
+          type: string
+        status:
+          title: Status
+          type: string
+      required:
+      - id
+      - code
+      - amount
+      - currency
+      - status
+      - payment_method
+      - completed_at
+      - created_at
+      title: DonorPaymentMini
+      type: object
     DonorRead:
       properties:
         active_sponsorships:
@@ -757,6 +1004,166 @@ components:
       - updated_at
       title: DonorRead
       type: object
+    DonorSignupRequest:
+      description: 'Public signup. Email + password + name are required; everything
+
+        else is optional and can be filled later from the profile page.'
+      properties:
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        email:
+          format: email
+          title: Email
+          type: string
+        full_name:
+          maxLength: 255
+          minLength: 2
+          title: Full Name
+          type: string
+        password:
+          maxLength: 128
+          minLength: 8
+          title: Password
+          type: string
+        phone:
+          anyOf:
+          - maxLength: 30
+            type: string
+          - type: 'null'
+          title: Phone
+        preferred_currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Preferred Currency
+        preferred_language:
+          default: ar
+          enum:
+          - ar
+          - en
+          title: Preferred Language
+          type: string
+      required:
+      - email
+      - password
+      - full_name
+      title: DonorSignupRequest
+      type: object
+    DonorSignupResponse:
+      description: 'Anti-enumeration: the shape is identical whether the email is
+
+        brand-new or already on file. The detail string says ''check your
+
+        email'' in both cases. Only the verification token is omitted on the
+
+        already-registered branch.'
+      properties:
+        debug_verify_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Debug Verify Token
+        detail:
+          title: Detail
+          type: string
+      required:
+      - detail
+      title: DonorSignupResponse
+      type: object
+    DonorSponsorshipCreate:
+      properties:
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        frequency:
+          default: monthly
+          enum:
+          - monthly
+          - quarterly
+          - semi_annual
+          - annual
+          - one_time
+          title: Frequency
+          type: string
+        monthly_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Monthly Amount
+        orphan_code:
+          maxLength: 20
+          minLength: 1
+          title: Orphan Code
+          type: string
+      required:
+      - orphan_code
+      - monthly_amount
+      - currency
+      title: DonorSponsorshipCreate
+      type: object
+    DonorSponsorshipMini:
+      description: Lean projection — what the donor portal needs to render.
+      properties:
+        code:
+          title: Code
+          type: string
+        currency:
+          title: Currency
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        monthly_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Monthly Amount
+          type: string
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
+        orphan_first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan First Name
+        start_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Start Date
+        status:
+          title: Status
+          type: string
+        total_paid:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Paid
+          type: string
+      required:
+      - id
+      - code
+      - monthly_amount
+      - currency
+      - status
+      - start_date
+      - total_paid
+      - orphan_code
+      - orphan_first_name
+      title: DonorSponsorshipMini
+      type: object
     DonorUpdate:
       properties:
         country_of_residence:
@@ -828,6 +1235,15 @@ components:
           - type: 'null'
           title: Whatsapp
       title: DonorUpdate
+      type: object
+    EmailVerifyRequest:
+      properties:
+        token:
+          title: Token
+          type: string
+      required:
+      - token
+      title: EmailVerifyRequest
       type: object
     FamilyCreate:
       properties:
@@ -1039,6 +1455,30 @@ components:
       - created_at
       - updated_at
       title: FamilyRead
+      type: object
+    FileUploadResponse:
+      description: 'Thin metadata blob the frontend hands straight to
+
+        POST /orphans/{id}/documents (or any other attach endpoint).'
+      properties:
+        file_mime_type:
+          title: File Mime Type
+          type: string
+        file_name:
+          title: File Name
+          type: string
+        file_size_bytes:
+          title: File Size Bytes
+          type: integer
+        file_url:
+          title: File Url
+          type: string
+      required:
+      - file_url
+      - file_name
+      - file_size_bytes
+      - file_mime_type
+      title: FileUploadResponse
       type: object
     ForgotPasswordRequest:
       properties:
@@ -2589,6 +3029,71 @@ components:
       - payment_method
       title: PaymentCreate
       type: object
+    PaymentInitiate:
+      description: 'Start a hosted-checkout flow with MyFatoorah for either a
+
+        one-off donation or an existing sponsorship.'
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        donor_id:
+          format: uuid
+          title: Donor Id
+          type: string
+        language:
+          default: ar
+          enum:
+          - ar
+          - en
+          title: Language
+          type: string
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+      required:
+      - donor_id
+      - amount
+      - currency
+      title: PaymentInitiate
+      type: object
+    PaymentInitiateResponse:
+      description: Returned to the caller so the SPA can redirect the donor.
+      properties:
+        invoice_id:
+          title: Invoice Id
+          type: string
+        payment_id:
+          format: uuid
+          title: Payment Id
+          type: string
+        payment_url:
+          title: Payment Url
+          type: string
+      required:
+      - payment_id
+      - invoice_id
+      - payment_url
+      title: PaymentInitiateResponse
+      type: object
     PaymentRead:
       properties:
         amount:
@@ -2829,6 +3334,25 @@ components:
       - organization_name_en
       title: PaymentReceipt
       type: object
+    PaymentRefund:
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        reason:
+          maxLength: 500
+          minLength: 1
+          title: Reason
+          type: string
+      required:
+      - amount
+      - reason
+      title: PaymentRefund
+      type: object
     PaymentStatusUpdate:
       description: 'Manual status transition by ops — e.g. marking a pending wire as
 
@@ -2869,6 +3393,139 @@ components:
       required:
       - months
       title: PaymentsTimeseries
+      type: object
+    PublicOrphanCard:
+      description: 'Curated public projection of an orphan. Every field here was
+
+        chosen because it is safe to show an anonymous visitor.'
+      properties:
+        age_years:
+          title: Age Years
+          type: integer
+        case_status:
+          title: Case Status
+          type: string
+        code:
+          title: Code
+          type: string
+        country:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        partner_organization_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Partner Organization Name
+      required:
+      - code
+      - first_name
+      - age_years
+      - gender
+      - country
+      - case_status
+      - partner_organization_name
+      title: PublicOrphanCard
+      type: object
+    PublicOrphanDetail:
+      description: Detail page — same fields as the card plus a short description.
+      properties:
+        age_years:
+          title: Age Years
+          type: integer
+        case_status:
+          title: Case Status
+          type: string
+        code:
+          title: Code
+          type: string
+        country:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        partner_organization_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Partner Organization Name
+        short_description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Short Description
+      required:
+      - code
+      - first_name
+      - age_years
+      - gender
+      - country
+      - case_status
+      - partner_organization_name
+      title: PublicOrphanDetail
+      type: object
+    PublicPage:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PublicOrphanCard'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: PublicPage
+      type: object
+    PublicStats:
+      properties:
+        countries_served:
+          title: Countries Served
+          type: integer
+        donors_total:
+          title: Donors Total
+          type: integer
+        orphans_available:
+          title: Orphans Available
+          type: integer
+        orphans_sponsored:
+          title: Orphans Sponsored
+          type: integer
+      required:
+      - orphans_available
+      - orphans_sponsored
+      - donors_total
+      - countries_served
+      title: PublicStats
       type: object
     RefreshRequest:
       properties:
@@ -3109,6 +3766,16 @@ components:
           - type: 'null'
           title: Summary
       title: ReportUpdate
+      type: object
+    ResendVerificationRequest:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+      required:
+      - email
+      title: ResendVerificationRequest
       type: object
     ResetPasswordRequest:
       properties:
@@ -3948,6 +4615,32 @@ paths:
       summary: Refresh
       tags:
       - auth
+  /api/v1/auth/resend-verification:
+    post:
+      description: Generic-response resend. Same anti-enumeration posture as signup.
+      operationId: resend_verification_api_v1_auth_resend_verification_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorSignupResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Resend Verification
+      tags:
+      - auth
   /api/v1/auth/reset-password:
     post:
       description: 'Consume a reset token, set the new password, and revoke every
@@ -3970,6 +4663,79 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Reset Password
+      tags:
+      - auth
+  /api/v1/auth/signup:
+    post:
+      description: 'Public donor signup.
+
+
+        Anti-enumeration: returns the same ''check your email'' shape whether
+
+        the email is brand-new or already registered. New accounts land in
+
+        the PLATFORM org with role=''donor'' and status=''pending_verification''
+
+        until they click the link in the verification email.
+
+
+        Rate-limited by the global middleware (per-IP). Pending donors can
+
+        browse but cannot sponsor — `require_verified_donor` enforces that.'
+      operationId: donor_signup_api_v1_auth_signup_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorSignupRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorSignupResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Donor Signup
+      tags:
+      - auth
+  /api/v1/auth/verify-email:
+    post:
+      description: 'Consume the email-verification token.
+
+
+        Marks `email_verified_at`, flips the user from `pending_verification`
+
+        to `active`, and returns a fresh access/refresh pair so the SPA can
+
+        log the donor in immediately.'
+      operationId: verify_email_api_v1_auth_verify_email_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerifyRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Verify Email
       tags:
       - auth
   /api/v1/bank-transfers:
@@ -4114,11 +4880,15 @@ paths:
       - bank-transfers
   /api/v1/bank-transfers/{transfer_id}/confirm-receipt:
     post:
-      description: 'Acknowledge that the partner has received the funds. Does not
+      description: 'Acknowledge that the partner has received the funds. Stamps
 
-        change `status` (a transfer can be `completed` without partner
+        confirmed_by_partner_at; optionally attaches a proof document
 
-        confirmation), only stamps confirmed_by_partner_at.'
+        via confirmation_document_id and a free-text note. Does not
+
+        change `status` — a transfer can be `completed` without partner
+
+        confirmation.'
       operationId: partner_confirm_receipt_api_v1_bank_transfers__transfer_id__confirm_receipt_post
       parameters:
       - in: path
@@ -4128,6 +4898,14 @@ paths:
           format: uuid
           title: Transfer Id
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/BankTransferConfirmReceipt'
+              - type: 'null'
+              title: Payload
       responses:
         '200':
           content:
@@ -4175,6 +4953,41 @@ paths:
       summary: Mark Bank Transfer Completed
       tags:
       - bank-transfers
+  /api/v1/documents:
+    post:
+      description: 'Create a documents row without an orphan/guardian/family link.
+
+
+        Used by flows that need a `document_id` to attach elsewhere — e.g.
+
+        bank-transfer confirmation proof, partner-org paperwork. The bytes
+
+        must already be in object storage via POST /media/file.'
+      operationId: create_unattached_document_api_v1_documents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Unattached Document
+      tags:
+      - documents
   /api/v1/documents/{document_id}:
     delete:
       description: 'Hard delete — the file in object storage is the source of truth
@@ -4238,6 +5051,167 @@ paths:
       summary: Verify Document
       tags:
       - documents
+  /api/v1/donor/me:
+    get:
+      operationId: get_donor_me_api_v1_donor_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorMeRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Donor Me
+      tags:
+      - donor-self
+    patch:
+      operationId: update_donor_me_api_v1_donor_me_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorMeUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorMeRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Donor Me
+      tags:
+      - donor-self
+  /api/v1/donor/me/data-export-request:
+    post:
+      description: GDPR Article 15 stub — log the request, surface a placeholder.
+      operationId: request_data_export_api_v1_donor_me_data_export_request_post
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportRequest'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Request Data Export
+      tags:
+      - donor-self
+  /api/v1/donor/me/deletion-request:
+    post:
+      description: 'GDPR Article 17 stub — log the request, surface a placeholder.
+
+
+        Actual deletion requires an admin review (legal hold on records
+
+        tied to completed payments, etc) and is intentionally out of band.'
+      operationId: request_account_deletion_api_v1_donor_me_deletion_request_post
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataExportRequest'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Request Account Deletion
+      tags:
+      - donor-self
+  /api/v1/donor/me/payments:
+    get:
+      operationId: list_my_payments_api_v1_donor_me_payments_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DonorPaymentMini'
+                title: Response List My Payments Api V1 Donor Me Payments Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Payments
+      tags:
+      - donor-self
+  /api/v1/donor/me/sponsorships:
+    get:
+      operationId: list_my_sponsorships_api_v1_donor_me_sponsorships_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DonorSponsorshipMini'
+                title: Response List My Sponsorships Api V1 Donor Me Sponsorships Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Sponsorships
+      tags:
+      - donor-self
+    post:
+      description: 'Donor-driven sponsorship creation. The orphan is looked up by
+
+        its public code (not internal UUID) so the donor never sees it.
+
+        Only orphans that are publicly browseable can be sponsored.'
+      operationId: create_my_sponsorship_api_v1_donor_me_sponsorships_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorSponsorshipCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonorSponsorshipMini'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create My Sponsorship
+      tags:
+      - donor-self
   /api/v1/donors:
     get:
       operationId: list_donors_api_v1_donors_get
@@ -4616,6 +5590,86 @@ paths:
       summary: Create Guardian
       tags:
       - families
+  /api/v1/guardians/{guardian_id}/documents:
+    get:
+      operationId: list_guardian_documents_api_v1_guardians__guardian_id__documents_get
+      parameters:
+      - in: path
+        name: guardian_id
+        required: true
+        schema:
+          format: uuid
+          title: Guardian Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_DocumentRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Guardian Documents
+      tags:
+      - documents
+    post:
+      operationId: attach_document_to_guardian_api_v1_guardians__guardian_id__documents_post
+      parameters:
+      - in: path
+        name: guardian_id
+        required: true
+        schema:
+          format: uuid
+          title: Guardian Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Attach Document To Guardian
+      tags:
+      - documents
   /api/v1/health:
     get:
       operationId: health_api_v1_health_get
@@ -4906,6 +5960,40 @@ paths:
       summary: My Sponsorships
       tags:
       - donor-portal
+  /api/v1/media/file:
+    post:
+      description: 'Stage a file in object storage and return its s3:// URL plus
+
+        metadata. The frontend two-step upload-then-attach flow calls this
+
+        first, then passes the returned fields to an endpoint that records
+
+        the attachment (e.g. POST /orphans/{id}/documents).'
+      operationId: upload_generic_file_api_v1_media_file_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_generic_file_api_v1_media_file_post'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Upload Generic File
+      tags:
+      - media
   /api/v1/media/orphans/{orphan_id}/photo:
     post:
       operationId: upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post
@@ -5712,6 +6800,38 @@ paths:
       summary: Create Payment
       tags:
       - payments
+  /api/v1/payments/admin/initiate-on-behalf:
+    post:
+      description: 'Admin-driven MyFatoorah checkout. The Payment row records BOTH
+
+        the real donor and the admin who initiated. The webhook-side
+
+        completion flow is unchanged.'
+      operationId: admin_initiate_on_behalf_api_v1_payments_admin_initiate_on_behalf_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminInitiateOnBehalf'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInitiateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Admin Initiate On Behalf
+      tags:
+      - payments
   /api/v1/payments/export.csv:
     get:
       description: 'Stream payments matching the same filters as the list endpoint, as
@@ -5766,6 +6886,45 @@ paths:
       summary: Export Payments Csv
       tags:
       - payments
+  /api/v1/payments/initiate:
+    post:
+      description: 'Open a hosted-checkout flow against MyFatoorah.
+
+
+        Inserts a Payment row in ``pending`` state, calls MyFatoorah''s
+
+        SendPayment to get a hosted-page URL, then returns the URL for the
+
+        SPA to redirect to. The donor enters card data on MyFatoorah''s
+
+        page — it never touches our server. The webhook handler picks up
+
+        the resulting completion and flips this same row to ``completed``.'
+      operationId: initiate_payment_api_v1_payments_initiate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInitiate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInitiateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Initiate Payment
+      tags:
+      - payments
   /api/v1/payments/{payment_id}/receipt:
     get:
       description: 'One-shot bundle for the print-friendly receipt page.
@@ -5799,6 +6958,51 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Payment Receipt
+      tags:
+      - payments
+  /api/v1/payments/{payment_id}/refund:
+    post:
+      description: 'Admin-only: reverse a MyFatoorah charge.
+
+
+        Refuses to refund anything except a ``completed`` MyFatoorah payment
+
+        (the gateway has nothing to refund otherwise). On success the row
+
+        moves to ``refunded`` (full) or ``partially_refunded`` (partial) —
+
+        the difference is the requested amount vs the original.'
+      operationId: refund_payment_api_v1_payments__payment_id__refund_post
+      parameters:
+      - in: path
+        name: payment_id
+        required: true
+        schema:
+          format: uuid
+          title: Payment Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRefund'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Refund Payment
       tags:
       - payments
   /api/v1/payments/{payment_id}/status:
@@ -5839,6 +7043,131 @@ paths:
       summary: Update Payment Status
       tags:
       - payments
+  /api/v1/public/orphans:
+    get:
+      description: 'Anonymous-safe orphan listing. Always filters to case statuses a
+
+        visitor is allowed to sponsor; never exposes archived / deceased /
+
+        pending_review rows.'
+      operationId: public_list_orphans_api_v1_public_orphans_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: country
+        required: false
+        schema:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country
+      - in: query
+        name: gender
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - M
+            - F
+            type: string
+          - type: 'null'
+          title: Gender
+      - in: query
+        name: min_age
+        required: false
+        schema:
+          anyOf:
+          - maximum: 25
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Age
+      - in: query
+        name: max_age
+        required: false
+        schema:
+          anyOf:
+          - maximum: 25
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Max Age
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicPage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Public List Orphans
+      tags:
+      - public
+  /api/v1/public/orphans/{code}:
+    get:
+      operationId: public_orphan_detail_api_v1_public_orphans__code__get
+      parameters:
+      - in: path
+        name: code
+        required: true
+        schema:
+          title: Code
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicOrphanDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Public Orphan Detail
+      tags:
+      - public
+  /api/v1/public/stats:
+    get:
+      description: 'Platform-wide counters for the landing page. Aggregates only —
+
+        no rowwise data leaves the database.'
+      operationId: public_stats_api_v1_public_stats_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicStats'
+          description: Successful Response
+      summary: Public Stats
+      tags:
+      - public
   /api/v1/reports:
     get:
       operationId: list_reports_api_v1_reports_get

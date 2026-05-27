@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import ForeignKey, String, func
@@ -26,7 +27,7 @@ class UserSession(Base):
         nullable=False,
     )
     token_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    device_info: Mapped[dict | None] = mapped_column(JSONB)
+    device_info: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     ip_address: Mapped[str | None] = mapped_column(INET)
     expires_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     revoked_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))

@@ -19,7 +19,7 @@ import asyncio
 import time
 from collections import deque
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
@@ -93,7 +93,7 @@ class RedisLimiter:
         # have to install it just to import the module.
         import redis.asyncio as aioredis
 
-        self._redis = aioredis.from_url(url, decode_responses=True)
+        self._redis = aioredis.from_url(url, decode_responses=True)  # type: ignore[no-untyped-call]
         self._script = self._redis.register_script(self._SCRIPT)
 
     async def hit(self, key: str, capacity: int, window: float) -> tuple[bool, int]:
@@ -137,7 +137,7 @@ def _client_key(request: Request) -> tuple[str, int]:
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """Enforces per-minute request caps. Exempts health + docs paths."""
 
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Any:
         # Read the toggle each request so tests can flip it at runtime.
         if not settings.RATE_LIMIT_ENABLED:
             return await call_next(request)

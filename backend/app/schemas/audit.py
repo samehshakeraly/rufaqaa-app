@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -13,7 +14,7 @@ class AuditLogRead(BaseModel):
     action: str
     entity_type: str
     entity_id: UUID | None
-    old_values: dict | None
-    new_values: dict | None
+    old_values: dict[str, Any] | None
+    new_values: dict[str, Any] | None
     is_sensitive: bool
     created_at: datetime

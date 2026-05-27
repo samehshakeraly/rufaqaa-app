@@ -4,7 +4,7 @@ around assignment quotas live elsewhere."""
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
@@ -103,7 +103,7 @@ async def update_marketing_channel(
     channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
     if channel is None:
         raise NotFound("Marketing channel")
-    changes: dict = {}
+    changes: dict[str, Any] = {}
     for field in ("name_ar", "name_en", "channel_type", "description", "status"):
         v = getattr(payload, field)
         if v is not None:

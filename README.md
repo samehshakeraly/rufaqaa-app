@@ -57,7 +57,7 @@
 | **Frontend** | React 18 · TypeScript · Vite · TanStack Query |
 | **Mobile** | React Native · Expo |
 | **AI Integration** | MCP (Model Context Protocol) — Python SDK من Anthropic |
-| **Payments** | MyFatoorah (K-Net · Cards · Apple Pay · STC Pay) |
+| **Payments** | MyFatoorah (K-Net · Cards · Apple Pay · STC Pay) — setup at [`docs/integrations/myfatoorah.md`](docs/integrations/myfatoorah.md) |
 | **DevOps** | Docker · GitHub Actions · Kubernetes (للإنتاج) |
 
 ---
@@ -107,6 +107,19 @@ make status
 | MailHog | http://localhost:8025 | البريد الإلكتروني (للتطوير) |
 | API | http://localhost:8000 | (لاحقاً عند تطوير Backend) |
 | Web | http://localhost:3000 | (لاحقاً عند تطوير Frontend) |
+
+## Donor onboarding flow
+
+A brand-new donor can browse → sign up → verify their email → sponsor an orphan and pay with a card, end-to-end, without admin intervention. The full surface is documented in [`docs/donor-portal.md`](docs/donor-portal.md). Key routes:
+
+- `/` — public landing
+- `/orphans` and `/orphans/:code` — public browse (curated fields only, see [`docs/api/public-endpoints.md`](docs/api/public-endpoints.md))
+- `/signup`, `/verify-email`, `/verify-email/confirm` — public signup + verification
+- `/donor/dashboard`, `/donor/profile`, `/donor/sponsorships` — authenticated donor area
+- `/sponsor/:code/checkout` — kicks off MyFatoorah hosted checkout
+- `/admin/*` — staff/admin area (existing routes, moved from root for the public reshuffle)
+
+The role + route-guard model is documented in [`docs/architecture/authorization.md`](docs/architecture/authorization.md).
 
 ---
 

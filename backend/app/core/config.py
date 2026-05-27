@@ -21,7 +21,9 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
 
     DATABASE_URL: PostgresDsn = Field(
-        default="postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa"
+        default=PostgresDsn(
+            "postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa"
+        )
     )
     DB_ECHO: bool = False
     DB_POOL_SIZE: int = 10

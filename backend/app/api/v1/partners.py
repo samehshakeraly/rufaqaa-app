@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
@@ -121,7 +121,7 @@ async def update_partner(
     )
     if partner is None:
         raise NotFound("Partner")
-    changes: dict = {}
+    changes: dict[str, Any] = {}
     for field in ("name_ar", "name_en", "country_code", "status"):
         v = getattr(payload, field)
         if v is not None:

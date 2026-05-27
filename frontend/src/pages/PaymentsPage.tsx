@@ -82,6 +82,9 @@ export function PaymentsPage() {
           >
             {t("payments.exportCsv")}
           </button>
+          <Link to="/admin/payments/walk-in" className="btn-primary">
+            {t("walkIn.title")}
+          </Link>
         </div>
       </div>
 
@@ -138,7 +141,7 @@ export function PaymentsPage() {
                   </td>
                   <td className="px-4 py-3 text-end">
                     <Link
-                      to={`/payments/${p.id}/receipt`}
+                      to={`/admin/payments/${p.id}/receipt`}
                       className="text-xs text-trust underline"
                     >
                       {t("payments.viewReceipt")}

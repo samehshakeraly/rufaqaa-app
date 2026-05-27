@@ -133,6 +133,8 @@ jobs:
         run: ruff check app tests
       - name: Format check (ruff)
         run: ruff format --check app tests
+      - name: Typecheck (mypy --strict)
+        run: mypy app
       - name: Apply migrations
         run: alembic upgrade head
       - name: Run tests
@@ -184,6 +186,15 @@ jobs:
         run: npm run typecheck
       - name: Test (Vitest)
         run: npm test
+      - name: Coverage (Vitest --coverage, thresholds enforced)
+        run: npm run test:coverage
+      - name: Upload coverage HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          retention-days: 14
       - name: Build (Vite)
         run: npm run build
       - name: Generated API schema is up to date
@@ -264,6 +275,12 @@ jobs:
       # default doesn't include that origin, so widen it here so the
       # browser-driven login POST clears the preflight.
       CORS_ORIGINS: http://127.0.0.1:4173,http://localhost:4173
+      # 14+ specs hit /public/*, /auth/login, /auth/signup etc. as the
+      # same client IP (127.0.0.1). The default 60/min anonymous cap
+      # is well below that — explicitly disable rate limiting for the
+      # E2E job. The dedicated `test_rate_limit.py` integration test
+      # still exercises the limiter via its own fixture.
+      RATE_LIMIT_ENABLED: "false"
       E2E_BASE_URL: http://127.0.0.1:4173
       E2E_ADMIN_EMAIL: admin@dev.rufaqaa.app
       E2E_ADMIN_PASSWORD: admin12345

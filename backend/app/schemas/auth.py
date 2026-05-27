@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
@@ -46,6 +48,7 @@ class CurrentUser(BaseModel):
     role: str
     first_name: str
     last_name: str
+    email_verified_at: datetime | None = None
     notification_preferences: NotificationPreferences = Field(
         default_factory=NotificationPreferences
     )
@@ -71,3 +74,36 @@ class ForgotPasswordResponse(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str = Field(min_length=8, max_length=128)
+
+
+class DonorSignupRequest(BaseModel):
+    """Public signup. Email + password + name are required; everything
+    else is optional and can be filled later from the profile page."""
+
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+    full_name: str = Field(min_length=2, max_length=255)
+    phone: str | None = Field(default=None, max_length=30)
+    country_code: str | None = Field(default=None, min_length=2, max_length=2)
+    preferred_currency: str | None = Field(default=None, min_length=3, max_length=3)
+    preferred_language: Literal["ar", "en"] = "ar"
+
+
+class DonorSignupResponse(BaseModel):
+    """Anti-enumeration: the shape is identical whether the email is
+    brand-new or already on file. The detail string says 'check your
+    email' in both cases. Only the verification token is omitted on the
+    already-registered branch."""
+
+    detail: str
+    # Only present in non-production environments so the e2e suite can
+    # follow the verification link without an SMTP server.
+    debug_verify_token: str | None = None
+
+
+class EmailVerifyRequest(BaseModel):
+    token: str
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr

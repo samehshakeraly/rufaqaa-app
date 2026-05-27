@@ -77,6 +77,95 @@ _TEMPLATES: dict[str, dict[Locale, TemplateVariant]] = {
             ),
         ),
     },
+    "donor_welcome": {
+        "en": TemplateVariant(
+            subject="Welcome to Rufaqaa, {first_name}",
+            body=(
+                "Hello {first_name},\n\n"
+                "Thank you for joining Rufaqaa. Your account is ready —\n"
+                "you can browse orphans and sponsor as soon as you verify\n"
+                "your email address.\n\n"
+                "If you didn't sign up, you can safely ignore this message.\n\n"
+                "— The Rufaqaa team"
+            ),
+        ),
+        "ar": TemplateVariant(
+            subject="مرحباً بك في رفقاء، {first_name}",
+            body=(
+                "مرحباً {first_name}،\n\n"
+                "شكراً لانضمامك إلى رفقاء. حسابك جاهز — يمكنك تصفّح الأيتام\n"
+                "وكفالتهم فور تأكيد بريدك الإلكتروني.\n\n"
+                "إن لم تكن أنت من سجّل، يمكنك تجاهل هذه الرسالة.\n\n"
+                "— فريق رفقاء"
+            ),
+        ),
+    },
+    "donor_email_verification": {
+        "en": TemplateVariant(
+            subject="Verify your Rufaqaa email",
+            body=(
+                "Hello {first_name},\n\n"
+                "Click the link below to verify your email address. It expires\n"
+                "in {expires_hours} hours.\n\n"
+                "  {verify_url}\n\n"
+                "If you didn't request this, you can ignore the message.\n"
+            ),
+        ),
+        "ar": TemplateVariant(
+            subject="تأكيد بريدك الإلكتروني — رفقاء",
+            body=(
+                "مرحباً {first_name}،\n\n"
+                "اضغط على الرابط التالي لتأكيد بريدك الإلكتروني. ينتهي صلاحيته\n"
+                "خلال {expires_hours} ساعة.\n\n"
+                "  {verify_url}\n\n"
+                "إن لم تكن أنت من طلب ذلك، يمكنك تجاهل الرسالة.\n"
+            ),
+        ),
+    },
+    "donor_email_verified": {
+        "en": TemplateVariant(
+            subject="Your Rufaqaa email is verified",
+            body=(
+                "Hello {first_name},\n\n"
+                "Your email is verified — you can now sponsor orphans directly\n"
+                "from {app_base_url}.\n\n"
+                "— The Rufaqaa team"
+            ),
+        ),
+        "ar": TemplateVariant(
+            subject="تم تأكيد بريدك في رفقاء",
+            body=(
+                "مرحباً {first_name}،\n\n"
+                "تم تأكيد بريدك — يمكنك الآن كفالة الأيتام مباشرة من\n"
+                "{app_base_url}.\n\n"
+                "— فريق رفقاء"
+            ),
+        ),
+    },
+    "payment_succeeded": {
+        "en": TemplateVariant(
+            subject="Receipt for your donation — {payment_code}",
+            body=(
+                "Hello {donor_name},\n\n"
+                "Thank you for your contribution of {amount} {currency}.\n\n"
+                "  Receipt no.: {payment_code}\n"
+                "  Date:        {completed_date}\n\n"
+                "View or print the full receipt:\n  {receipt_url}\n\n"
+                "— The Rufaqaa team"
+            ),
+        ),
+        "ar": TemplateVariant(
+            subject="إيصال تبرعك — {payment_code}",
+            body=(
+                "مرحباً {donor_name}،\n\n"
+                "شكراً لتبرعك بمبلغ {amount} {currency}.\n\n"
+                "  رقم الإيصال: {payment_code}\n"
+                "  التاريخ:     {completed_date}\n\n"
+                "عرض أو طباعة الإيصال الكامل:\n  {receipt_url}\n\n"
+                "— فريق رفقاء"
+            ),
+        ),
+    },
     "daily_digest": {
         "en": TemplateVariant(
             subject="{org_name} daily digest — {date}",

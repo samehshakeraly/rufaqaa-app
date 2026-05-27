@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import Date, ForeignKey, Numeric, String, Text, func
@@ -74,7 +75,7 @@ class Guardian(Base):
     literacy_level: Mapped[str] = mapped_column(String(20), default="low")
     preferred_communication: Mapped[str] = mapped_column(String(20), default="whatsapp")
 
-    bank_account_info: Mapped[dict | None] = mapped_column(JSONB)
+    bank_account_info: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     status: Mapped[str] = mapped_column(String(20), default="active")
 
     created_at: Mapped[datetime] = mapped_column(

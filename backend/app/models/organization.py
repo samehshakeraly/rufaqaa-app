@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import CheckConstraint, String, func
@@ -32,7 +33,7 @@ class Organization(Base):
     subscription_plan: Mapped[str | None] = mapped_column(String(20), default="free")
     subscription_expires_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
 
-    settings: Mapped[dict] = mapped_column(JSONB, default=dict)
+    settings: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
 
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()

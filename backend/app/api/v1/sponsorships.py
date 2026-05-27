@@ -1,5 +1,6 @@
 import csv
 import io
+from collections.abc import Sequence
 from datetime import UTC, date, datetime
 from typing import Annotated
 from uuid import UUID
@@ -72,9 +73,13 @@ async def list_sponsorships(
     # Batch-fetch donor + orphan rows for the page so we don't N+1.
     donor_ids = {r.donor_id for r in rows}
     orphan_ids = {r.orphan_id for r in rows}
-    donors = await db.scalars(select(Donor).where(Donor.id.in_(donor_ids))) if donor_ids else []
-    orphans = (
-        await db.scalars(select(Orphan).where(Orphan.id.in_(orphan_ids))) if orphan_ids else []
+    donors: Sequence[Donor] = (
+        (await db.scalars(select(Donor).where(Donor.id.in_(donor_ids)))).all() if donor_ids else []
+    )
+    orphans: Sequence[Orphan] = (
+        (await db.scalars(select(Orphan).where(Orphan.id.in_(orphan_ids)))).all()
+        if orphan_ids
+        else []
     )
     donor_by_id = {d.id: d for d in donors}
     orphan_by_id = {o.id: o for o in orphans}

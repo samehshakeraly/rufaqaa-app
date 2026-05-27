@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import ForeignKey, Numeric, String, Text, func
@@ -58,7 +59,7 @@ class Payment(Base):
         PG_UUID(as_uuid=True), ForeignKey("marketing_channels.id")
     )
 
-    payment_metadata: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)
+    payment_metadata: Mapped[dict[str, Any]] = mapped_column("metadata", JSONB, default=dict)
     notes: Mapped[str | None] = mapped_column(Text)
 
     created_at: Mapped[datetime] = mapped_column(
@@ -68,3 +69,8 @@ class Payment(Base):
         TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
     )
     created_by: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("users.id"))
+    # Admin who started the hosted-checkout on behalf of a present
+    # donor. NULL on donor self-initiated payments.
+    initiated_by_user_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id")
+    )

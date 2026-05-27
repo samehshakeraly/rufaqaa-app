@@ -3,6 +3,126 @@
     "name": "Rufaqaa",
     "tagline": "Orphan sponsorship management platform"
   },
+  "public": {
+    "nav": {
+      "browseOrphans": "Browse orphans",
+      "login": "Sign in",
+      "signup": "Sign up",
+      "toMyArea": "My area",
+      "toHome": "Back home"
+    },
+    "footer": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "contact": "Contact"
+    },
+    "orphans": {
+      "title": "Orphans",
+      "subtitle": "Children waiting to be sponsored.",
+      "country": "Country",
+      "gender": "Gender",
+      "age": "{{age}} years",
+      "viewAndSponsor": "View & sponsor",
+      "sponsor": "Sponsor this child"
+    }
+  },
+  "landing": {
+    "hero": {
+      "title": "Sponsor an orphan, change a life.",
+      "subtitle": "Every donation goes directly to the children — fully transparent, fully tracked.",
+      "browse": "Browse orphans",
+      "signup": "Create an account"
+    },
+    "stats": {
+      "available": "Waiting for sponsorship",
+      "sponsored": "Currently sponsored",
+      "donors": "Donors who care",
+      "countries": "Countries served"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": "Browse the orphans waiting for sponsorship.",
+      "step2": "Create a free donor account in under a minute.",
+      "step3": "Pay securely through MyFatoorah — your card stays with them, never us."
+    }
+  },
+  "signup": {
+    "title": "Create your donor account",
+    "sponsorIntent": "You'll be sponsoring orphan {{code}} after verifying your email.",
+    "fullName": "Full name",
+    "phone": "Phone (optional)",
+    "country": "Country",
+    "currency": "Preferred currency",
+    "language": "Language",
+    "acceptTerms": "I accept the terms of service and privacy policy.",
+    "mustAccept": "Please accept the terms to continue.",
+    "submit": "Sign up",
+    "haveAccount": "Already have an account?",
+    "strength": {
+      "weak": "Too short (min 8 chars)",
+      "okay": "OK — add an uppercase letter and a digit for stronger",
+      "strong": "Strong"
+    }
+  },
+  "verifyPending": {
+    "title": "Check your inbox",
+    "body": "We sent a verification link to your email. Click it to finish creating your account.",
+    "didntGet": "Didn't get it?",
+    "resend": "Resend",
+    "resentNote": "If the address is registered and not yet verified, a fresh link is on its way.",
+    "bad": "Verification failed. Try the link in your email or request a fresh one."
+  },
+  "verifyConfirm": {
+    "missing": "No verification token found in the URL.",
+    "checking": "Verifying your email…",
+    "failed": "Could not verify",
+    "failedBody": "The link may have expired. Request a new one below."
+  },
+  "donorNav": {
+    "dashboard": "Dashboard",
+    "sponsorships": "My sponsorships",
+    "browseMore": "Browse more",
+    "profile": "Profile"
+  },
+  "donor": {
+    "dashboard": {
+      "welcome": "Welcome back, {{name}}",
+      "activeSponsorships": "Active sponsorships",
+      "totalSponsorships": "Total sponsorships",
+      "totalDonated": "Total donated",
+      "sponsorshipsHeader": "Your sponsorships",
+      "noSponsorshipsYet": "You haven't sponsored anyone yet —",
+      "browseNow": "browse now",
+      "recentPayments": "Recent payments",
+      "viewAll": "View all"
+    },
+    "profile": {
+      "title": "My profile",
+      "saved": "Profile saved"
+    },
+    "sponsorships": {
+      "title": "My sponsorships",
+      "none": "You haven't started any sponsorships yet.",
+      "code": "Code",
+      "orphan": "Orphan",
+      "amount": "Monthly",
+      "totalPaid": "Total paid",
+      "status": "Status",
+      "pay": "Pay"
+    }
+  },
+  "checkout": {
+    "title": "Sponsor this child",
+    "intro": "You're about to make a payment toward the orphan below. Card details are entered on MyFatoorah's secure page — we never see them.",
+    "sponsorThisChild": "Sponsor",
+    "donor": "Donor",
+    "amount": "Amount",
+    "currency": "Currency",
+    "payNow": "Pay now",
+    "redirecting": "Redirecting…",
+    "payingAs": "Paying as {{name}} ({{email}})",
+    "securityNote": "Your card data is processed by MyFatoorah. We never store it."
+  },
   "nav": {
     "dashboard": "Dashboard",
     "orphans": "Orphans",
@@ -35,11 +155,11 @@
     "forgotTitle": "Reset your password",
     "forgotDescription": "Enter your email and we'll send a reset link.",
     "forgotSubmit": "Send reset link",
-    "forgotSent": "If an account exists for that email, a reset link has been sent.",
+    "forgotSent": "Check your email — if an account exists for that address, a reset link has been sent.",
     "devTokenNotice": "Dev mode: use this token directly to reset your password.",
     "resetTitle": "Choose a new password",
     "resetToken": "Reset token",
-    "resetSubmit": "Update password",
+    "resetSubmit": "Reset password",
     "resetDone": "Your password has been updated. You can sign in now.",
     "newPassword": "New password",
     "confirmPassword": "Confirm new password",
@@ -341,6 +461,17 @@
       "archived": "Archived"
     }
   },
+  "paymentSuccess": {
+    "title": "Payment received",
+    "body": "Thank you — your contribution has been processed.",
+    "downloadReceipt": "Download receipt",
+    "backToDashboard": "Back to dashboard"
+  },
+  "paymentFailure": {
+    "title": "Payment could not be completed",
+    "body": "Something stopped your payment from going through. You can try again.",
+    "tryAgain": "Try again"
+  },
   "receipt": {
     "title": "Donation receipt",
     "back": "Back to payments",
@@ -378,6 +509,14 @@
     "completed": "Transfer marked completed.",
     "cancelled": "Transfer cancelled.",
     "confirmed": "Partner receipt confirmed.",
+    "confirmDialog": {
+      "title": "Confirm partner receipt",
+      "body": "Attach a proof document (optional) and any notes the partner shared when acknowledging receipt.",
+      "attachDoc": "Upload proof document",
+      "notes": "Notes",
+      "submit": "Confirm",
+      "uploading": "Uploading file…"
+    },
     "statuses": {
       "pending": "Pending",
       "approved": "Approved",
@@ -386,6 +525,53 @@
       "failed": "Failed",
       "cancelled": "Cancelled"
     }
+  },
+  "documents": {
+    "title": "Documents",
+    "stepOne": "1. Upload the file",
+    "stepTwo": "2. Add metadata and attach",
+    "type": "Type",
+    "fieldTitle": "Title (optional)",
+    "issuingAuthority": "Issuing authority",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiry date",
+    "attach": "Attach document",
+    "uploading": "Uploading…",
+    "attached": "Document attached.",
+    "tooLarge": "File is too large (max 10 MB).",
+    "empty": "No documents on record yet.",
+    "verify": "Verify",
+    "reject": "Reject",
+    "types": {
+      "birth_certificate": "Birth certificate",
+      "death_certificate": "Death certificate",
+      "national_id": "National ID",
+      "passport": "Passport",
+      "bank_statement": "Bank statement",
+      "school_certificate": "School certificate",
+      "medical_report": "Medical report",
+      "photo_id": "Photo ID",
+      "family_record": "Family record",
+      "other": "Other"
+    }
+  },
+  "walkIn": {
+    "title": "Admin checkout (walk-in donor)",
+    "description": "Open a hosted-checkout link on behalf of a donor who is present in person. The donor pays on a screen here or their own phone via the QR code.",
+    "selectDonor": "Donor",
+    "amount": "Amount",
+    "currency": "Currency",
+    "language": "Language",
+    "start": "Start checkout",
+    "starting": "Opening checkout…",
+    "shareLink": "Share link with donor",
+    "openLink": "Open hosted-checkout page",
+    "qrHint": "Scan this QR with the donor's phone.",
+    "status": "Status",
+    "polling": "Polling for status…",
+    "completed": "Payment completed.",
+    "failed": "Payment failed.",
+    "newCheckout": "Start another checkout"
   },
   "families": {
     "title": "Families",
@@ -435,7 +621,7 @@
       "invalidDetails": "Show {{count}} invalid rows",
       "run": "Import {{n}} donors",
       "importing": "Importing… {{done}}/{{total}}",
-      "done": "Done. {{ok}} created, {{fail}} failed."
+      "done": "Done. Succeeded: {{ok}}, failed: {{fail}}."
     },
     "code": "Code",
     "name": "Full name",

@@ -82,7 +82,7 @@ export function ReportsPage() {
                     </td>
                     <td className="px-4 py-3 text-end">
                       <Link
-                        to={`/reports/${r.id}`}
+                        to={`/admin/reports/${r.id}`}
                         className="me-2 rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
                       >
                         {t("reports.open")}

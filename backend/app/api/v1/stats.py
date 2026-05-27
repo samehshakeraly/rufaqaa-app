@@ -114,7 +114,7 @@ async def payments_timeseries(db: DbSession, _user: CurrentUser) -> PaymentsTime
             MonthlyPoint(
                 month=r.month.date() if hasattr(r.month, "date") else r.month,
                 payments_total=Decimal(r.total),
-                payments_count=int(r.count),
+                payments_count=int(r._mapping["count"]),
             )
             for r in rows
         ]

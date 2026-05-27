@@ -44,10 +44,37 @@ async def _donor_emails_for_report(report_id: UUID) -> list[tuple[str, str]]:
         return [(d.email, d.full_name) for d in donors if d.email]
 
 
-@celery_app.task(name="app.workers.tasks.notifications.notify_donors_of_report")
+async def _already_notified(report_id: UUID) -> bool:
+    async with make_session() as db:
+        report = await db.scalar(select(OrphanReport).where(OrphanReport.id == report_id))
+        return report is not None and report.donors_notified_at is not None
+
+
+async def _stamp_notified(report_id: UUID) -> None:
+    from datetime import UTC, datetime
+
+    async with make_session() as db:
+        report = await db.scalar(select(OrphanReport).where(OrphanReport.id == report_id))
+        if report is not None and report.donors_notified_at is None:
+            report.donors_notified_at = datetime.now(UTC)
+            await db.commit()
+
+
+@celery_app.task(  # type: ignore[untyped-decorator]
+    name="app.workers.tasks.notifications.notify_donors_of_report"
+)
 def notify_donors_of_report(report_id: str) -> dict[str, int | str]:
-    """Email each donor sponsoring this orphan that a new report is live."""
-    recipients = asyncio.run(_donor_emails_for_report(UUID(report_id)))
+    """Email each donor sponsoring this orphan that a new report is live.
+
+    Idempotent: checks `orphan_reports.donors_notified_at` first and
+    stamps it on success so a Celery retry won't double-send.
+    """
+    rid = UUID(report_id)
+    if asyncio.run(_already_notified(rid)):
+        logger.info("Skipping notify for %s — already notified", report_id)
+        return {"report_id": report_id, "notified": 0, "skipped": "already"}
+
+    recipients = asyncio.run(_donor_emails_for_report(rid))
     for email, name in recipients:
         try:
             send_email(
@@ -63,5 +90,6 @@ def notify_donors_of_report(report_id: str) -> dict[str, int | str]:
         except Exception as exc:  # noqa: BLE001
             # Best-effort: one bad recipient must not abort the rest.
             logger.warning("Failed to email %s: %s", email, exc)
+    asyncio.run(_stamp_notified(rid))
     logger.info("Notified %d donor(s) of report %s", len(recipients), report_id)
     return {"report_id": report_id, "notified": len(recipients)}

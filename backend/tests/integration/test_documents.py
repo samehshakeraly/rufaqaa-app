@@ -86,6 +86,60 @@ async def test_attach_to_unknown_orphan_404(api: AsyncClient, auth_headers: dict
     assert r.status_code == 404
 
 
+async def test_guardian_documents_attach_and_list(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A guardian record can carry its own documents (e.g. national ID,
+    custody papers). The attach/list endpoints mirror the orphan path."""
+    # Create family + guardian
+    r = await api.post(
+        "/api/v1/families",
+        json={"family_name": f"Smith-{uuid.uuid4().hex[:4]}"},
+        headers=auth_headers,
+    )
+    assert r.status_code == 201, r.text
+    family_id = r.json()["id"]
+    r = await api.post(
+        f"/api/v1/families/{family_id}/guardians",
+        json={
+            "full_name": "Test Guardian",
+            "relation": "mother",
+            "phone": "+96599000000",
+        },
+        headers=auth_headers,
+    )
+    assert r.status_code == 201, r.text
+    guardian_id = r.json()["id"]
+
+    r = await api.post(
+        f"/api/v1/guardians/{guardian_id}/documents",
+        json={
+            "document_type": "national_id",
+            "file_url": "s3://rufaqaa-private/guardians/x/id.pdf",
+            "file_name": "id.pdf",
+            "file_mime_type": "application/pdf",
+        },
+        headers=auth_headers,
+    )
+    assert r.status_code == 201, r.text
+    assert r.json()["document_type"] == "national_id"
+
+    r = await api.get(f"/api/v1/guardians/{guardian_id}/documents", headers=auth_headers)
+    assert r.status_code == 200
+    assert len(r.json()["items"]) == 1
+
+
+async def test_guardian_documents_unknown_guardian_404(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    r = await api.post(
+        f"/api/v1/guardians/{uuid.uuid4()}/documents",
+        json={"document_type": "other", "file_url": "s3://x.pdf"},
+        headers=auth_headers,
+    )
+    assert r.status_code == 404
+
+
 async def test_invalid_document_type_422(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     orphan_id = await _make_orphan(api, auth_headers)
     r = await api.post(

@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -22,11 +22,11 @@ class ReportCreate(BaseModel):
     period_start: date
     period_end: date
     summary: str | None = None
-    educational_progress: dict | None = None
-    quran_progress: dict | None = None
-    activities: dict | None = None
-    health_status: dict | None = None
-    psychological_status: dict | None = None
+    educational_progress: dict[str, Any] | None = None
+    quran_progress: dict[str, Any] | None = None
+    activities: dict[str, Any] | None = None
+    health_status: dict[str, Any] | None = None
+    psychological_status: dict[str, Any] | None = None
 
 
 class ReportRead(BaseModel):
@@ -61,8 +61,8 @@ class ReportUpdate(BaseModel):
     report is still in `draft` (the workflow refuses edits after submit)."""
 
     summary: str | None = None
-    educational_progress: dict | None = None
-    quran_progress: dict | None = None
-    activities: dict | None = None
-    health_status: dict | None = None
-    psychological_status: dict | None = None
+    educational_progress: dict[str, Any] | None = None
+    quran_progress: dict[str, Any] | None = None
+    activities: dict[str, Any] | None = None
+    health_status: dict[str, Any] | None = None
+    psychological_status: dict[str, Any] | None = None

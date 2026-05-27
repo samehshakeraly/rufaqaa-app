@@ -94,3 +94,59 @@ export async function fetchPaymentReceipt(paymentId: string): Promise<PaymentRec
   const { data } = await api.get<PaymentReceipt>(`/payments/${paymentId}/receipt`);
   return data;
 }
+
+export interface PaymentInitiateInput {
+  donor_id: string;
+  sponsorship_id?: string;
+  orphan_id?: string;
+  amount: string;
+  currency: string;
+  language?: "ar" | "en";
+}
+
+export interface PaymentInitiateResponse {
+  payment_id: string;
+  invoice_id: string;
+  payment_url: string;
+}
+
+export async function initiatePayment(
+  payload: PaymentInitiateInput,
+): Promise<PaymentInitiateResponse> {
+  const { data } = await api.post<PaymentInitiateResponse>(
+    "/payments/initiate",
+    payload,
+  );
+  return data;
+}
+
+export interface AdminInitiateOnBehalfInput {
+  donor_id: string;
+  sponsorship_id?: string;
+  orphan_id?: string;
+  amount: string;
+  currency: string;
+  language?: "ar" | "en";
+}
+
+export async function adminInitiateOnBehalf(
+  payload: AdminInitiateOnBehalfInput,
+): Promise<PaymentInitiateResponse> {
+  const { data } = await api.post<PaymentInitiateResponse>(
+    "/payments/admin/initiate-on-behalf",
+    payload,
+  );
+  return data;
+}
+
+export async function refundPayment(
+  paymentId: string,
+  amount: string,
+  reason: string,
+): Promise<Payment> {
+  const { data } = await api.post<Payment>(`/payments/${paymentId}/refund`, {
+    amount,
+    reason,
+  });
+  return data;
+}

@@ -72,6 +72,31 @@ class PaymentRead(BaseModel):
     created_at: datetime
 
 
+class PaymentInitiate(BaseModel):
+    """Start a hosted-checkout flow with MyFatoorah for either a
+    one-off donation or an existing sponsorship."""
+
+    donor_id: UUID
+    sponsorship_id: UUID | None = None
+    orphan_id: UUID | None = None
+    amount: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    currency: str = Field(min_length=3, max_length=3)
+    language: Literal["ar", "en"] = "ar"
+
+
+class PaymentInitiateResponse(BaseModel):
+    """Returned to the caller so the SPA can redirect the donor."""
+
+    payment_id: UUID
+    invoice_id: str
+    payment_url: str
+
+
+class PaymentRefund(BaseModel):
+    amount: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    reason: str = Field(min_length=1, max_length=500)
+
+
 class PaymentReceipt(BaseModel):
     """Self-contained snapshot of a payment for printing. Bundles the
     donor + orphan + organization fields the receipt page needs so the

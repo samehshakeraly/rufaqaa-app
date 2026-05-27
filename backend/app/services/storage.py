@@ -55,10 +55,12 @@ async def put_object(
 
 
 def _presigned_get_sync(bucket: str, key: str, expires_in: int) -> str:
-    return _s3_client().generate_presigned_url(
-        "get_object",
-        Params={"Bucket": bucket, "Key": key},
-        ExpiresIn=expires_in,
+    return str(
+        _s3_client().generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": key},
+            ExpiresIn=expires_in,
+        )
     )
 
 

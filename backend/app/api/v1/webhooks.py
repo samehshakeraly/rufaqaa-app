@@ -16,12 +16,13 @@ import hmac
 import json
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import desc, func, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
@@ -67,9 +68,19 @@ def _verify_myfatoorah_signature(raw_body: bytes, signature: str | None) -> None
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
-async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, Any]:
+async def _process_myfatoorah_payload(db: AsyncSession, payload: dict[str, Any]) -> dict[str, Any]:
     """Pure processing — no signature check, no logging. Used by both
-    the live route and the replay path."""
+    the live route and the replay path.
+
+    Handles two event families on the same endpoint:
+
+      1. Payment status updates  (Paid / Captured / Authorized / Failed / ...)
+      2. Refund status updates   (presence of RefundReference / IsRefunded /
+         RefundStatus in the payload).
+
+    Refund events are forwarded to `_process_refund_event` which mutates
+    the existing Payment row without going through the regular payment
+    creation path."""
     data = payload.get("Data") or payload
     gateway_txn_id = str(data.get("InvoiceId") or data.get("TransactionId") or "")
     if not gateway_txn_id:
@@ -77,6 +88,16 @@ async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, 
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing InvoiceId / TransactionId",
         )
+
+    # Refund event detection. MyFatoorah varies slightly by integration
+    # tier; we accept any of these markers.
+    refund_status = (
+        data.get("RefundStatus")
+        or data.get("RefundState")
+        or (data.get("EventType") if "refund" in str(data.get("EventType", "")).lower() else None)
+    )
+    if refund_status or data.get("RefundReference") or data.get("IsRefunded"):
+        return await _process_refund_event(db, data, gateway_txn_id)
 
     gateway_status = str(data.get("InvoiceStatus") or data.get("TransactionStatus") or "")
     our_status = _STATUS_MAP.get(gateway_status, "pending")
@@ -107,40 +128,63 @@ async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, 
         {"v": str(donor.organization_id)},
     )
 
-    existing = await db.scalar(
-        select(Payment).where(Payment.gateway_transaction_id == gateway_txn_id)
-    )
-    if existing is not None:
-        return {"status": "duplicate", "payment_id": str(existing.id)}
-
     amount_str = str(data.get("InvoiceValue") or data.get("Amount") or "0")
     amount = Decimal(amount_str)
     currency = str(data.get("InvoiceDisplayValue", "")[-3:] or data.get("Currency") or "KWD")
 
     now = datetime.now(UTC)
-    payment = Payment(
-        organization_id=donor.organization_id,
-        code=generate_code("PAY"),
-        donor_id=donor.id,
-        sponsorship_id=sponsorship.id if sponsorship is not None else None,
-        orphan_id=sponsorship.orphan_id if sponsorship is not None else None,
-        amount=amount,
-        currency=currency,
-        payment_method="knet",
-        payment_gateway="myfatoorah",
-        gateway_transaction_id=gateway_txn_id,
-        status=our_status,
-        completed_at=now if our_status == "completed" else None,
-        payment_metadata=data,
+
+    existing = await db.scalar(
+        select(Payment).where(Payment.gateway_transaction_id == gateway_txn_id)
     )
-
-    if our_status == "completed" and sponsorship is not None:
-        sponsorship.total_paid = (sponsorship.total_paid or 0) + amount
-        sponsorship.payments_count = (sponsorship.payments_count or 0) + 1
-        sponsorship.last_payment_date = now.date()
-        sponsorship.last_payment_amount = amount
-
-    db.add(payment)
+    if existing is not None:
+        # A SendPayment flow already created the row in `pending`. The
+        # gateway is now telling us how it ended — flip it. If the row
+        # was already in a terminal state, treat as a duplicate delivery.
+        if existing.status in ("pending", "processing"):
+            existing.status = our_status
+            if our_status == "completed":
+                existing.completed_at = now
+                if sponsorship is not None:
+                    sponsorship.total_paid = (sponsorship.total_paid or 0) + amount
+                    sponsorship.payments_count = (sponsorship.payments_count or 0) + 1
+                    sponsorship.last_payment_date = now.date()
+                    sponsorship.last_payment_amount = amount
+                    if sponsorship.status == "pending":
+                        sponsorship.status = "active"
+            payment = existing
+        else:
+            return {
+                "status": "duplicate",
+                "payment_id": str(existing.id),
+                "payment_status": existing.status,
+            }
+    else:
+        # Legacy / gateway-driven path: webhook arrives with no
+        # corresponding /initiate row. Insert one.
+        payment = Payment(
+            organization_id=donor.organization_id,
+            code=generate_code("PAY"),
+            donor_id=donor.id,
+            sponsorship_id=sponsorship.id if sponsorship is not None else None,
+            orphan_id=sponsorship.orphan_id if sponsorship is not None else None,
+            amount=amount,
+            currency=currency,
+            payment_method="knet",
+            payment_gateway="myfatoorah",
+            gateway_transaction_id=gateway_txn_id,
+            status=our_status,
+            completed_at=now if our_status == "completed" else None,
+            payment_metadata=data,
+        )
+        if our_status == "completed" and sponsorship is not None:
+            sponsorship.total_paid = (sponsorship.total_paid or 0) + amount
+            sponsorship.payments_count = (sponsorship.payments_count or 0) + 1
+            sponsorship.last_payment_date = now.date()
+            sponsorship.last_payment_amount = amount
+            if sponsorship.status == "pending":
+                sponsorship.status = "active"
+        db.add(payment)
     await db.flush()
 
     record_audit(
@@ -158,10 +202,149 @@ async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, 
         },
     )
     await db.refresh(payment)
+
+    # Send the receipt email when the charge has just completed.
+    # `payment.status == 'completed'` here means the flip happened in
+    # this very request (we either created a fresh row in `completed`
+    # or transitioned the pending one — duplicates returned early above).
+    if payment.status == "completed":
+        try:
+            from app.services.email import send_templated
+
+            orphan_label: str | None = None
+            if sponsorship is not None and sponsorship.orphan_id is not None:
+                from app.models.orphan import Orphan as _Orphan
+
+                orphan = await db.scalar(select(_Orphan).where(_Orphan.id == sponsorship.orphan_id))
+                if orphan is not None:
+                    orphan_label = (
+                        orphan.full_name_en or f"{orphan.first_name} {orphan.family_name}"
+                    )
+            locale: Literal["ar", "en"] = (
+                "en" if (donor.country_of_residence or "").upper() in {"US", "GB", "CA"} else "ar"
+            )
+            send_templated(
+                to=donor.email,
+                template="payment_succeeded",
+                locale=locale,
+                donor_name=donor.full_name,
+                payment_code=payment.code,
+                amount=str(amount),
+                currency=currency,
+                completed_date=now.date().isoformat(),
+                orphan_name=orphan_label or "—",
+                receipt_url=(
+                    f"{settings.APP_BASE_URL.rstrip('/')}/admin/payments/{payment.id}/receipt"
+                ),
+            )
+        except Exception:  # noqa: BLE001 — never let a logging email block the webhook
+            pass
+
     return {
         "status": "ok",
         "payment_id": str(payment.id),
         "payment_status": our_status,
+    }
+
+
+# MyFatoorah refund status → our internal payment status.
+# A `partially_refunded` payment retains its original totals on the
+# sponsorship side; a fully-`refunded` payment reverses them.
+_REFUND_STATUS_MAP = {
+    "Refunded": "refunded",
+    "FullyRefunded": "refunded",
+    "PartiallyRefunded": "partially_refunded",
+    "RefundFailed": "failed",
+    "Failed": "failed",
+}
+
+
+async def _process_refund_event(
+    db: AsyncSession, data: dict[str, Any], gateway_txn_id: str
+) -> dict[str, Any]:
+    """Apply a refund status update to an existing Payment row.
+
+    We never create a Payment from a refund event — refunds always
+    reference a charge we already processed. If the original payment is
+    missing we 404 (the operator can replay the original payment webhook
+    first and then replay the refund)."""
+    payment = await db.scalar(
+        select(Payment).where(Payment.gateway_transaction_id == gateway_txn_id)
+    )
+    if payment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Refund references an unknown payment",
+        )
+
+    raw_status = str(
+        data.get("RefundStatus") or data.get("RefundState") or data.get("EventType") or ""
+    )
+    new_status = _REFUND_STATUS_MAP.get(raw_status)
+    if new_status is None:
+        # Fall back on the boolean / amount hints.
+        refund_amount_raw = data.get("RefundAmount") or data.get("RefundedAmount") or "0"
+        try:
+            refund_amount = Decimal(str(refund_amount_raw))
+        except (ValueError, ArithmeticError):
+            refund_amount = Decimal("0")
+        if data.get("IsRefunded") is True or refund_amount >= (payment.amount or 0):
+            new_status = "refunded"
+        elif refund_amount > 0:
+            new_status = "partially_refunded"
+        else:
+            new_status = "failed"
+
+    await db.execute(
+        text("SELECT set_config('app.current_org_id', :v, true)"),
+        {"v": str(payment.organization_id)},
+    )
+
+    if payment.status in ("refunded", "partially_refunded") and payment.status == new_status:
+        return {
+            "status": "duplicate",
+            "payment_id": str(payment.id),
+            "payment_status": payment.status,
+        }
+
+    old_status = payment.status
+    payment.status = new_status
+    payment.failure_reason = data.get("RefundReason") or payment.failure_reason
+
+    # Reverse sponsorship totals only when a previously-completed payment
+    # is now fully refunded. Partial refunds leave the books alone — the
+    # adjustment is captured on the payment row itself.
+    if new_status == "refunded" and old_status == "completed" and payment.sponsorship_id:
+        sponsorship = await db.scalar(
+            select(Sponsorship).where(Sponsorship.id == payment.sponsorship_id)
+        )
+        if sponsorship is not None:
+            sponsorship.total_paid = Decimal(sponsorship.total_paid or 0) - Decimal(
+                payment.amount or 0
+            )
+            sponsorship.payments_count = max((sponsorship.payments_count or 0) - 1, 0)
+
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=payment.organization_id,
+        user_id=None,
+        action="webhook.myfatoorah.refund",
+        entity_type="payment",
+        entity_id=payment.id,
+        old_values={"status": old_status},
+        new_values={
+            "status": new_status,
+            "refund_reference": data.get("RefundReference"),
+            "raw_refund_status": raw_status or None,
+        },
+        is_sensitive=True,
+    )
+    return {
+        "status": "ok",
+        "payment_id": str(payment.id),
+        "payment_status": new_status,
+        "event": "refund",
     }
 
 
@@ -205,7 +388,7 @@ async def myfatoorah_webhook(
 
 
 async def _log_inbound(
-    db,
+    db: AsyncSession,
     *,
     source: str,
     payload: dict[str, Any],
@@ -230,7 +413,7 @@ async def _log_inbound(
 
 
 async def _run_and_log(
-    db,
+    db: AsyncSession,
     *,
     source: str,
     payload: dict[str, Any],
@@ -277,7 +460,7 @@ class InboundWebhookLogRead(BaseModel):
 
     id: UUID
     source: str
-    payload: dict
+    payload: dict[str, Any]
     signature: str | None
     response_status: int | None
     response_body: str | None

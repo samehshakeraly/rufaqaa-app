@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { DocumentUploadCard } from "@/components/DocumentUploadCard";
 import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
 import { getOrphan, getOrphanTimeline } from "@/lib/orphans";
 
@@ -47,12 +48,20 @@ export function OrphanDetailPage() {
             {t(`orphans.caseStatus.${orphan.case_status}`, orphan.case_status)}
           </p>
         </div>
-        <Link
-          to="/orphans"
-          className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
-        >
-          ← {t("orphans.title")}
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to={`/sponsor/${orphan.id}/checkout`}
+            className="btn-primary"
+          >
+            {t("checkout.sponsorThisChild")}
+          </Link>
+          <Link
+            to="/admin/orphans"
+            className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
+          >
+            ← {t("orphans.title")}
+          </Link>
+        </div>
       </div>
 
       <div className="card">
@@ -82,6 +91,8 @@ export function OrphanDetailPage() {
       </div>
 
       <OrphanPhotoUpload orphanId={id} />
+
+      <DocumentUploadCard target={{ kind: "orphan", orphanId: id }} />
 
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("orphans.timeline")}</h2>

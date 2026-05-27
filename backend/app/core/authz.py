@@ -8,6 +8,7 @@ permissions on top of roles will follow.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -28,9 +29,10 @@ STAFF_ROLES: tuple[Role, ...] = (
     "marketing_manager",
     "finance",
 )
+DONOR_ROLE: Role = "donor"
 
 
-def require_roles(*allowed: Role):
+def require_roles(*allowed: Role) -> Callable[..., Awaitable[User]]:
     """FastAPI dependency factory. Use as `Depends(require_roles("org_admin"))`."""
     if not allowed:
         raise ValueError("require_roles called without any roles")
@@ -45,5 +47,31 @@ def require_roles(*allowed: Role):
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Requires one of: {sorted(allowed_set)}",
         )
+
+    return _checker
+
+
+def require_verified_donor() -> Callable[..., Awaitable[User]]:
+    """Donor-area gate: must hold role='donor' AND have a verified
+    email. Browse routes don't need this; only state-changing routes
+    (sponsorship create, payment initiate) do.
+
+    Public routes use no auth at all; admin routes use require_roles.
+    """
+
+    async def _checker(
+        user: Annotated[User, Depends(get_current_user)],
+    ) -> User:
+        if user.role != DONOR_ROLE and user.role != "super_admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Donor account required",
+            )
+        if user.email_verified_at is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Email verification required",
+            )
+        return user
 
     return _checker

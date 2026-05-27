@@ -89,7 +89,7 @@ export function PartnersPage() {
                 <tr key={p.id} className="hover:bg-snow">
                   <td className="px-4 py-3 font-mono text-xs">
                     <Link
-                      to={`/partners/${p.id}`}
+                      to={`/admin/partners/${p.id}`}
                       className="text-trust hover:underline"
                     >
                       {p.code}

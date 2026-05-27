@@ -35,6 +35,9 @@ class BankTransfer(Base):
     executed_by: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("users.id"))
     executed_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
     confirmed_by_partner_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
+    confirmation_document_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("documents.id")
+    )
     notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()
