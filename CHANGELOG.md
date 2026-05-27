@@ -8,6 +8,45 @@ This project adheres to [Semantic Versioning](https://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+### Polish & gap-filling (PR #7)
+
+#### Added
+- **Backend**
+  - `donors_notified_at` column on `orphan_reports` (migration 0003) gates the Celery `notify_donors_of_report` task so a duplicate run doesn't re-email donors.
+  - Webhook payment-success path now dispatches the bilingual `payment_succeeded` receipt email (locale picked from donor's country).
+  - `POST /webhooks/myfatoorah` handles refund events (`Refunded`, `PartiallyRefunded`, `RefundFailed`) by flipping the existing payment row; sponsorship totals are reversed only on a full refund of a previously-completed payment. Duplicate refund deliveries are idempotent.
+  - `POST /bank-transfers/{id}/confirm-receipt` accepts `confirmation_document_id` + `notes`; `confirmation_document_id` exposed on `GET` responses (migration 0005).
+  - `POST /payments/admin/initiate-on-behalf` (admin-only) — walk-in donor flow that records both the real `donor_id` and the admin `initiated_by_user_id` (migration 0004 + partial index).
+  - `POST /media/file` — generic staff-only multipart upload; returns the s3:// URL + metadata so the frontend's two-step attach flow can pass it to a document endpoint.
+  - `POST /documents` (no parent) — for attach-elsewhere flows (e.g. bank-transfer proof).
+  - `GET/POST /guardians/{id}/documents` — guardians can now own documents directly.
+
+- **Frontend**
+  - `DocumentUploadCard` two-step UI mounted on orphan detail (admin) and on every guardian row of the family detail page.
+  - `ConfirmReceiptDialog` modal on the bank-transfers page — optional proof upload + notes, calls the upgraded confirm-receipt endpoint.
+  - `WalkInCheckoutPage` at `/admin/payments/walk-in` — admin-only checkout for a present donor, with QR code, copy-link, and live status polling every 4 s until `completed`/`failed`/`refunded`.
+
+- **Quality gates**
+  - `mypy --strict` is a required CI step (backend job). 94 prior errors fixed; tests excluded from the gate with a documented note.
+  - `npm run test:coverage` (vitest v8) added with a scoped starting threshold and HTML coverage artifact uploaded by CI (14-day retention).
+
+- **E2E**
+  - 8 new Playwright specs covering: sponsorship-create, report-workflow, bank-transfer-lifecycle, photo-upload, donor-csv-import, family-guardian-create, webhook-replay, forgot-password-full-loop. Shared `e2e/helpers/auth.ts`.
+
+- **Docs**
+  - `docs/architecture/notifications.md` — when each email/Celery task fires + idempotency contract.
+  - `docs/admin/walk-in-donors.md` — operator runbook for the elderly walk-in checkout flow.
+  - `docs/integrations/myfatoorah.md` updated with refund-webhook + admin-on-behalf sections.
+
+#### Changed
+- `confirmBankTransferReceipt` lib signature is now `(id, { confirmation_document_id?, notes? })`.
+- DocumentType enum in the frontend lib reconciled with backend (`bank_statement`, `school_certificate`, `medical_report`, `photo_id`, `family_record` replaced the earlier guesses).
+
+#### Out of scope (deferred to a later PR)
+- MCP server expansion, production deployment, recurring/subscription payments, GDPR data-export pipelines (PR #5 left these as stubs and they remain stubs).
+
+---
+
 ### Donor self-service (PR #5 backend + PR #6 frontend)
 
 #### Added

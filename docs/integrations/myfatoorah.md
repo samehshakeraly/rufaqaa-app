@@ -175,3 +175,73 @@ curl -sX POST "http://localhost:8000/api/v1/payments/$PAYMENT_ID/refund" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"amount":"25.00","reason":"test refund"}'
 ```
+
+---
+
+## Refund webhooks (asynchronous)
+
+The synchronous `POST /payments/{id}/refund` above takes effect when
+the gateway responds; in practice MyFatoorah may also send an
+**asynchronous** refund status update later (e.g. a card-network
+delay). The same `POST /webhooks/myfatoorah` endpoint handles those.
+
+### Detection
+
+A delivery is treated as a refund event when the payload (under
+`Data`) contains any of:
+
+- `RefundStatus` (`Refunded`, `FullyRefunded`, `PartiallyRefunded`, `RefundFailed`)
+- `RefundReference` — the gateway's refund id
+- `IsRefunded: true`
+- `EventType` matching `*refund*` (case-insensitive)
+
+### Behaviour
+
+The existing payment row is found by `gateway_transaction_id`. If
+unknown, the webhook 404s (the operator can replay the original
+payment delivery first, then replay the refund). On a match:
+
+| RefundStatus | New payment.status |
+| --- | --- |
+| Refunded / FullyRefunded | `refunded` |
+| PartiallyRefunded | `partially_refunded` |
+| RefundFailed / Failed | `failed` |
+| _unknown but `IsRefunded=true` or `RefundAmount ≥ amount`_ | `refunded` |
+| _unknown but `RefundAmount > 0`_ | `partially_refunded` |
+| _otherwise_ | `failed` |
+
+Sponsorship totals are **only** reversed when a previously-`completed`
+payment is now **fully** `refunded`. Partial refunds leave the
+sponsorship books alone — the adjustment lives on the payment row.
+
+Duplicate deliveries (same `gateway_transaction_id`, same new status)
+return `{"status": "duplicate", ...}` and do not double-adjust totals.
+
+### Replay
+
+Every refund event is logged into `inbound_webhook_log` like any other
+inbound delivery. From the admin UI, "Replay" against a failed refund
+attempt re-runs the handler; the partial-refund accumulator only
+moves forward (we never re-add funds we already subtracted).
+
+---
+
+## Admin-initiated checkout (walk-in donors)
+
+For the elderly walk-in donor scenario, the admin starts a hosted
+checkout *on behalf of* an existing donor:
+
+```bash
+curl -sX POST http://localhost:8000/api/v1/payments/admin/initiate-on-behalf \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "{\"donor_id\":\"$DONOR_ID\",\"amount\":\"50.00\",\"currency\":\"KWD\",\"language\":\"ar\"}"
+# → {"payment_id":"...", "invoice_id":"...", "payment_url":"https://apitest..."}
+```
+
+The `payments` row records `initiated_by_user_id = <admin id>` in
+addition to `donor_id`. The webhook flip-to-`completed` is unchanged;
+the receipt email goes to the donor's address (locale picked from the
+donor's country).
+
+See `docs/admin/walk-in-donors.md` for the operator runbook.
