@@ -232,6 +232,92 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,scope=${{ matrix.service }},mode=max
 
+  # ─── E2E: Playwright against a live stack ────────────────
+  e2e:
+    name: 🎭 Playwright E2E
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        env:
+          POSTGRES_USER: rufaqaa
+          POSTGRES_PASSWORD: rufaqaa_dev_password
+          POSTGRES_DB: rufaqaa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+asyncpg://rufaqaa:rufaqaa_dev_password@localhost:5432/rufaqaa
+      E2E_BASE_URL: http://127.0.0.1:4173
+      E2E_ADMIN_EMAIL: admin@dev.rufaqaa.app
+      E2E_ADMIN_PASSWORD: admin12345
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Backend ──────────────────────────────────────────
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install backend
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Apply schema + seed
+        working-directory: backend
+        run: |
+          alembic upgrade head
+          python -m app.scripts.seed
+      - name: Start backend
+        working-directory: backend
+        run: |
+          nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 \
+            > backend.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8000/api/v1/health && break || sleep 1
+          done
+
+      # ── Frontend ─────────────────────────────────────────
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Build + preview
+        working-directory: frontend
+        env:
+          VITE_API_URL: http://127.0.0.1:8000/api/v1
+        run: |
+          npm run build
+          nohup npx vite preview --host 127.0.0.1 --port 4173 \
+            > preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4173/ && break || sleep 1
+          done
+
+      # ── Playwright ───────────────────────────────────────
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E
+        working-directory: frontend
+        run: npx playwright test
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
+
   # ─── Markdown linting ─────────────────────────────────────
   markdown:
     name: 📝 Markdown Quality
