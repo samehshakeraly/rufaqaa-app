@@ -8,6 +8,27 @@ This project adheres to [Semantic Versioning](https://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+### Donor self-service (PR #5 backend + PR #6 frontend)
+
+#### Added
+- Public donor signup at `POST /auth/signup` with anti-enumeration response shape
+- Email verification: `POST /auth/verify-email`, `POST /auth/resend-verification`
+- Public read endpoints under `/public/*` (orphans, orphan detail, stats) — curated card projection only
+- Donor self-service endpoints under `/donor/me/*` (profile, sponsorships, payments, GDPR stubs)
+- 4 new bilingual email templates: `donor_welcome`, `donor_email_verification`, `donor_email_verified`, `payment_succeeded`
+- **9 new frontend pages**:
+  - public: `LandingPage`, `PublicOrphansPage`, `PublicOrphanDetailPage`, `SignupPage`, `VerifyEmailPendingPage`, `VerifyEmailConfirmPage`
+  - donor area: `DonorDashboardPage`, `DonorProfilePage`, `DonorSponsorshipsPage`
+- `PublicLayout` + `DonorLayout` chrome, `DonorRoute` guard
+- 4 new Playwright specs: `donor-signup-full-loop`, `donor-full-payment-loop`, `donor-isolation`, `public-orphan-data-leak`
+- Docs: `docs/donor-portal.md`, `docs/api/public-endpoints.md`, `docs/architecture/authorization.md`
+
+#### Changed
+- All admin SPA pages relocated from `/<resource>` to `/admin/<resource>` to free the root namespace for the public surface
+- `/payments/initiate` now enforces donor ownership (`donor.user_id == current_user.id`) and email verification when called by a `role='donor'` user
+- `/sponsor/:code/checkout` is donor-only; no donor dropdown — pays as the current authenticated donor
+- `/auth/me` response includes `email_verified_at`
+
 ### Phase 0 — Project Foundation
 
 #### Added
