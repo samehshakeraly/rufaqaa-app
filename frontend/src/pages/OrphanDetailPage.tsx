@@ -47,12 +47,20 @@ export function OrphanDetailPage() {
             {t(`orphans.caseStatus.${orphan.case_status}`, orphan.case_status)}
           </p>
         </div>
-        <Link
-          to="/orphans"
-          className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
-        >
-          ← {t("orphans.title")}
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to={`/sponsor/${orphan.id}/checkout`}
+            className="btn-primary"
+          >
+            {t("checkout.sponsorThisChild")}
+          </Link>
+          <Link
+            to="/orphans"
+            className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
+          >
+            ← {t("orphans.title")}
+          </Link>
+        </div>
       </div>
 
       <div className="card">

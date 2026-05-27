@@ -341,6 +341,28 @@
       "archived": "Archived"
     }
   },
+  "checkout": {
+    "title": "Sponsor this child",
+    "intro": "You're about to make a payment toward the orphan below. Card details are entered on MyFatoorah's secure page — we never see them.",
+    "sponsorThisChild": "Sponsor",
+    "donor": "Donor",
+    "amount": "Amount",
+    "currency": "Currency",
+    "payNow": "Pay now",
+    "redirecting": "Redirecting…",
+    "securityNote": "Your card data is processed by MyFatoorah. We never store it."
+  },
+  "paymentSuccess": {
+    "title": "Payment received",
+    "body": "Thank you — your contribution has been processed.",
+    "downloadReceipt": "Download receipt",
+    "backToDashboard": "Back to dashboard"
+  },
+  "paymentFailure": {
+    "title": "Payment could not be completed",
+    "body": "Something stopped your payment from going through. You can try again.",
+    "tryAgain": "Try again"
+  },
   "receipt": {
     "title": "Donation receipt",
     "back": "Back to payments",

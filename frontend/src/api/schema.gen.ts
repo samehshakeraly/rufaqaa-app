@@ -920,6 +920,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/payments/initiate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Initiate Payment
+         * @description Open a hosted-checkout flow against MyFatoorah.
+         *
+         *     Inserts a Payment row in ``pending`` state, calls MyFatoorah's
+         *     SendPayment to get a hosted-page URL, then returns the URL for the
+         *     SPA to redirect to. The donor enters card data on MyFatoorah's
+         *     page — it never touches our server. The webhook handler picks up
+         *     the resulting completion and flips this same row to ``completed``.
+         */
+        post: operations["initiate_payment_api_v1_payments_initiate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/payments/{payment_id}/receipt": {
         parameters: {
             query?: never;
@@ -937,6 +963,31 @@ export interface paths {
         get: operations["payment_receipt_api_v1_payments__payment_id__receipt_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/{payment_id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refund Payment
+         * @description Admin-only: reverse a MyFatoorah charge.
+         *
+         *     Refuses to refund anything except a ``completed`` MyFatoorah payment
+         *     (the gateway has nothing to refund otherwise). On success the row
+         *     moves to ``refunded`` (full) or ``partially_refunded`` (partial) —
+         *     the difference is the requested amount vs the original.
+         */
+        post: operations["refund_payment_api_v1_payments__payment_id__refund_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2740,6 +2791,47 @@ export interface components {
             /** Sponsorship Id */
             sponsorship_id?: string | null;
         };
+        /**
+         * PaymentInitiate
+         * @description Start a hosted-checkout flow with MyFatoorah for either a
+         *     one-off donation or an existing sponsorship.
+         */
+        PaymentInitiate: {
+            /** Amount */
+            amount: number | string;
+            /** Currency */
+            currency: string;
+            /**
+             * Donor Id
+             * Format: uuid
+             */
+            donor_id: string;
+            /**
+             * Language
+             * @default ar
+             * @enum {string}
+             */
+            language: "ar" | "en";
+            /** Orphan Id */
+            orphan_id?: string | null;
+            /** Sponsorship Id */
+            sponsorship_id?: string | null;
+        };
+        /**
+         * PaymentInitiateResponse
+         * @description Returned to the caller so the SPA can redirect the donor.
+         */
+        PaymentInitiateResponse: {
+            /** Invoice Id */
+            invoice_id: string;
+            /**
+             * Payment Id
+             * Format: uuid
+             */
+            payment_id: string;
+            /** Payment Url */
+            payment_url: string;
+        };
         /** PaymentRead */
         PaymentRead: {
             /** Amount */
@@ -2859,6 +2951,13 @@ export interface components {
              * @enum {string}
              */
             status: "pending" | "processing" | "completed" | "failed" | "refunded" | "partially_refunded" | "chargeback" | "disputed" | "on_hold";
+        };
+        /** PaymentRefund */
+        PaymentRefund: {
+            /** Amount */
+            amount: number | string;
+            /** Reason */
+            reason: string;
         };
         /**
          * PaymentStatusUpdate
@@ -5366,6 +5465,39 @@ export interface operations {
             };
         };
     };
+    initiate_payment_api_v1_payments_initiate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentInitiate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentInitiateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     payment_receipt_api_v1_payments__payment_id__receipt_get: {
         parameters: {
             query?: never;
@@ -5384,6 +5516,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentReceipt"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refund_payment_api_v1_payments__payment_id__refund_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentRefund"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentRead"];
                 };
             };
             /** @description Validation Error */

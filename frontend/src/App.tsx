@@ -22,7 +22,10 @@ import { PaymentsPage } from "./pages/PaymentsPage";
 import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { PaymentFailurePage } from "./pages/PaymentFailurePage";
+import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { SponsorCheckoutPage } from "./pages/SponsorCheckoutPage";
 import { SponsorshipsPage } from "./pages/SponsorshipsPage";
 import { UsersPage } from "./pages/UsersPage";
 
@@ -59,6 +62,12 @@ export function App() {
         <Route path="/sponsorships" element={<SponsorshipsPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
         <Route path="/payments/:id/receipt" element={<PaymentReceiptPage />} />
+        <Route
+          path="/sponsor/:orphan_id/checkout"
+          element={<SponsorCheckoutPage />}
+        />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+        <Route path="/payment/failure" element={<PaymentFailurePage />} />
         <Route
           path="/bank-transfers"
           element={

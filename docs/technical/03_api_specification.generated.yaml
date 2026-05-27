@@ -2589,6 +2589,71 @@ components:
       - payment_method
       title: PaymentCreate
       type: object
+    PaymentInitiate:
+      description: 'Start a hosted-checkout flow with MyFatoorah for either a
+
+        one-off donation or an existing sponsorship.'
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        donor_id:
+          format: uuid
+          title: Donor Id
+          type: string
+        language:
+          default: ar
+          enum:
+          - ar
+          - en
+          title: Language
+          type: string
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+      required:
+      - donor_id
+      - amount
+      - currency
+      title: PaymentInitiate
+      type: object
+    PaymentInitiateResponse:
+      description: Returned to the caller so the SPA can redirect the donor.
+      properties:
+        invoice_id:
+          title: Invoice Id
+          type: string
+        payment_id:
+          format: uuid
+          title: Payment Id
+          type: string
+        payment_url:
+          title: Payment Url
+          type: string
+      required:
+      - payment_id
+      - invoice_id
+      - payment_url
+      title: PaymentInitiateResponse
+      type: object
     PaymentRead:
       properties:
         amount:
@@ -2828,6 +2893,25 @@ components:
       - organization_name_ar
       - organization_name_en
       title: PaymentReceipt
+      type: object
+    PaymentRefund:
+      properties:
+        amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Amount
+        reason:
+          maxLength: 500
+          minLength: 1
+          title: Reason
+          type: string
+      required:
+      - amount
+      - reason
+      title: PaymentRefund
       type: object
     PaymentStatusUpdate:
       description: 'Manual status transition by ops — e.g. marking a pending wire as
@@ -5766,6 +5850,45 @@ paths:
       summary: Export Payments Csv
       tags:
       - payments
+  /api/v1/payments/initiate:
+    post:
+      description: 'Open a hosted-checkout flow against MyFatoorah.
+
+
+        Inserts a Payment row in ``pending`` state, calls MyFatoorah''s
+
+        SendPayment to get a hosted-page URL, then returns the URL for the
+
+        SPA to redirect to. The donor enters card data on MyFatoorah''s
+
+        page — it never touches our server. The webhook handler picks up
+
+        the resulting completion and flips this same row to ``completed``.'
+      operationId: initiate_payment_api_v1_payments_initiate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInitiate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInitiateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Initiate Payment
+      tags:
+      - payments
   /api/v1/payments/{payment_id}/receipt:
     get:
       description: 'One-shot bundle for the print-friendly receipt page.
@@ -5799,6 +5922,51 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Payment Receipt
+      tags:
+      - payments
+  /api/v1/payments/{payment_id}/refund:
+    post:
+      description: 'Admin-only: reverse a MyFatoorah charge.
+
+
+        Refuses to refund anything except a ``completed`` MyFatoorah payment
+
+        (the gateway has nothing to refund otherwise). On success the row
+
+        moves to ``refunded`` (full) or ``partially_refunded`` (partial) —
+
+        the difference is the requested amount vs the original.'
+      operationId: refund_payment_api_v1_payments__payment_id__refund_post
+      parameters:
+      - in: path
+        name: payment_id
+        required: true
+        schema:
+          format: uuid
+          title: Payment Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRefund'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Refund Payment
       tags:
       - payments
   /api/v1/payments/{payment_id}/status:
