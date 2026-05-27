@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — تقرير شهر شوّال · أحمد محمد</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — نظام تصميم رفقاء v0.1
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-50: #FDFEFE;
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --sky-100: #C9DDED;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-100: #B8CFE3;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+  --trust-800: #142E4D;
+  --trust-900: #0B1E33;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --warning-700: #B45309;
+
+  --danger-50: #FEF2F2;
+  --danger-100: #FEE2E2;
+  --danger-600: #DC2626;
+
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, textarea { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+/* ═══════════════════════════════════════════════════════════════
+   APP HEADER — مبسّط (Wizard mode)
+   ═══════════════════════════════════════════════════════════════ */
+.wiz-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.wiz-header-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wiz-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.wiz-back:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+.wiz-back svg { color: var(--gray-500); }
+
+.wiz-title-area {
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.wiz-title-area h1 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.3;
+}
+
+.wiz-title-area p {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.wiz-save-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-full);
+  color: var(--success-700);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.wiz-save-pill svg { color: var(--success-600); }
+
+@media (max-width: 540px) {
+  .wiz-save-pill { display: none; }
+  .wiz-back span:not(.sr-only) { display: none; }
+  .wiz-back { padding: 8px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS BAR
+   ═══════════════════════════════════════════════════════════════ */
+.progress-wrap {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 16px 24px 20px;
+}
+
+.progress-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+}
+
+.progress-head-label {
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.progress-head-count {
+  color: var(--trust-600);
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--trust-300) 0%, var(--trust-400) 100%);
+  border-radius: var(--radius-full);
+  transition: width 350ms cubic-bezier(.4,0,.2,1);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  gap: 8px;
+}
+
+.progress-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.progress-step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: var(--transition);
+  position: relative;
+  z-index: 1;
+}
+
+.progress-step.done .progress-step-dot {
+  background: var(--success-500);
+  border-color: var(--success-500);
+  color: white;
+}
+
+.progress-step.active .progress-step-dot {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(118,159,205,.18);
+}
+
+.progress-step-label {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.progress-step.done .progress-step-label,
+.progress-step.active .progress-step-label {
+  color: var(--gray-800);
+}
+
+.progress-step.active .progress-step-label {
+  color: var(--trust-600);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .progress-step-label { display: none; }
+  .progress-steps { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STAGE — حاوية الخطوات
+   ═══════════════════════════════════════════════════════════════ */
+.stage {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 24px 140px;
+}
+
+.step-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+.step-context-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.step-context-text { flex: 1; min-width: 0; line-height: 1.4; }
+.step-context-text strong { display: block; font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.step-context-text span { font-size: 12.5px; color: var(--gray-500); }
+
+.step-context-month {
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  color: var(--trust-600);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* عرض/إخفاء الخطوات */
+.step {
+  display: none;
+  animation: stepIn 280ms cubic-bezier(.4,0,.2,1);
+}
+
+.step.active { display: block; }
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-prompt {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.step-prompt h2 {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.step-prompt p {
+  font-size: 15px;
+  color: var(--gray-600);
+  line-height: 1.55;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.step-prompt .step-prompt-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 4px 12px;
+  background: var(--snow-200);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STEP 1 — حالة اليتيم
+   ═══════════════════════════════════════════════════════════════ */
+.mood-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mood-card {
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 22px 22px;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  text-align: right;
+  width: 100%;
+  transition: var(--transition);
+  font-family: inherit;
+  color: inherit;
+}
+
+.mood-card:hover {
+  border-color: var(--sky-300);
+  background: var(--snow-100);
+}
+
+.mood-card.selected {
+  border-color: var(--trust-300);
+  background: var(--tranquil-100);
+  box-shadow: 0 0 0 4px rgba(118,159,205,.12);
+}
+
+.mood-face {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.mood-face.good    { background: var(--success-50); color: var(--success-600); }
+.mood-face.okay    { background: var(--snow-200);    color: var(--trust-500); }
+.mood-face.attn    { background: var(--warning-50); color: var(--warning-600); }
+
+.mood-card.selected .mood-face { transform: scale(1.05); }
+
+.mood-face svg { width: 36px; height: 36px; stroke-width: 1.6; }
+
+.mood-text { min-width: 0; }
+.mood-title { font-size: 17px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.mood-sub { font-size: 13.5px; color: var(--gray-500); margin-top: 4px; line-height: 1.5; }
+
+.mood-radio {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.mood-card.selected .mood-radio {
+  border-color: var(--trust-400);
+  background: var(--trust-400);
+}
+
+.mood-card.selected .mood-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+/* حقل التوضيح للحالة "يحتاج اهتمام" */
+.mood-detail {
+  display: none;
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-xl);
+  animation: stepIn 240ms ease;
+}
+
+.mood-detail.show { display: block; }
+
+.mood-detail-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--warning-700);
+  margin-bottom: 10px;
+}
+
+.mood-detail-label svg { color: var(--warning-600); }
+
+.mood-detail textarea {
+  width: 100%;
+  min-height: 110px;
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-lg);
+  font-size: 14.5px;
+  color: var(--gray-900);
+  line-height: 1.6;
+  resize: vertical;
+  transition: var(--transition);
+}
+
+.mood-detail textarea:focus {
+  outline: none;
+  border-color: var(--warning-500);
+  box-shadow: 0 0 0 3px rgba(245,158,11,.2);
+}
+
+.mood-detail-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--gray-600);
+}
+
+.mood-detail-hint .latin { color: var(--gray-500); }
+
+/* ═══════════════════════════════════════════════════════════════
+   STEP 2 — التعليم
+   ═══════════════════════════════════════════════════════════════ */
+.stars-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px 24px;
+  margin-bottom: 20px;
+}
+
+.stars-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.star-btn {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--gray-300);
+  transition: transform 120ms ease, color 120ms ease;
+  border-radius: var(--radius-md);
+}
+
+.star-btn:hover { transform: scale(1.1); }
+.star-btn.lit { color: var(--warning-500); }
+.star-btn.lit svg { fill: currentColor; }
+
+.star-btn svg { width: 40px; height: 40px; }
+
+.stars-label {
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray-600);
+  min-height: 22px;
+  font-weight: 500;
+}
+
+.stars-label .selected-text { color: var(--trust-600); font-weight: 600; }
+
+.input-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.input-card-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.input-card-label strong {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.input-card-label .opt {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 500;
+  background: var(--gray-100);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.input-card textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  font-size: 14.5px;
+  color: var(--gray-900);
+  line-height: 1.65;
+  resize: vertical;
+  transition: var(--transition);
+}
+
+.input-card textarea:focus {
+  outline: none;
+  background: white;
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.input-card textarea::placeholder { color: var(--gray-400); }
+
+/* مسجّل صوتي */
+.voice-card {
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 22px 20px;
+  text-align: center;
+}
+
+.voice-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--trust-600);
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.voice-mic-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.voice-mic {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.voice-mic:hover { background: var(--trust-400); transform: scale(1.04); }
+
+.voice-mic svg { width: 28px; height: 28px; }
+
+.voice-mic.recording {
+  background: var(--danger-600);
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,.4); }
+  50%      { box-shadow: 0 0 0 12px rgba(220,38,38,0); }
+}
+
+.voice-meter {
+  flex: 1;
+  height: 8px;
+  background: var(--sky-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  max-width: 240px;
+  position: relative;
+}
+
+.voice-meter-fill {
+  height: 100%;
+  background: var(--trust-300);
+  border-radius: var(--radius-full);
+  width: 0%;
+  transition: width 200ms linear;
+}
+
+.voice-time {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--trust-700);
+  min-width: 44px;
+}
+
+.voice-hint {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STEP 3 — صورة
+   ═══════════════════════════════════════════════════════════════ */
+.photo-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 480px) {
+  .photo-actions { grid-template-columns: 1fr; }
+}
+
+.photo-big-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 36px 24px;
+  background: white;
+  border: 2px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  color: var(--trust-600);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+  transition: var(--transition);
+}
+
+.photo-big-btn:hover {
+  border-color: var(--trust-300);
+  background: var(--tranquil-100);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.photo-big-btn-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-big-btn-icon svg { width: 30px; height: 30px; }
+
+.photo-big-btn-sub {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--gray-500);
+  margin-top: -8px;
+}
+
+.photo-skip {
+  text-align: center;
+  padding: 14px;
+  font-size: 13.5px;
+  color: var(--gray-500);
+  background: transparent;
+  border: none;
+  width: 100%;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.photo-skip:hover { color: var(--gray-700); background: var(--gray-100); }
+
+/* معاينة الصورة بعد الاختيار */
+.photo-preview {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  display: none;
+  margin-bottom: 16px;
+}
+
+.photo-preview.show { display: block; }
+
+.photo-preview-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 12px, var(--tranquil-100) 12px, var(--tranquil-100) 24px);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-500);
+  gap: 8px;
+}
+
+.photo-preview-img .latin { font-size: 12px; color: var(--gray-500); }
+
+.photo-preview-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+.photo-preview-meta .photo-name { font-weight: 600; color: var(--gray-800); }
+
+.photo-preview-change {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.photo-preview-change:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+.photo-tip {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+
+.photo-tip-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  color: var(--trust-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.photo-tip-text {
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.55;
+}
+
+.photo-tip-text strong { color: var(--gray-900); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════════════
+   STEP 4 — مراجعة
+   ═══════════════════════════════════════════════════════════════ */
+.review-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.review-section {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.review-section:last-child { border-bottom: none; }
+
+.review-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.review-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-500);
+  letter-spacing: .02em;
+}
+
+.review-section-title svg { color: var(--trust-400); }
+
+.review-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--trust-500);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.review-edit:hover { background: var(--tranquil-100); color: var(--trust-600); }
+
+.review-value {
+  font-size: 15px;
+  color: var(--gray-900);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.review-value .extra {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray-600);
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  line-height: 1.65;
+}
+
+.review-stars { display: inline-flex; gap: 2px; color: var(--warning-500); align-items: center; }
+.review-stars svg { width: 18px; height: 18px; fill: currentColor; }
+.review-stars .dim { color: var(--gray-300); }
+.review-stars-label {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin-right: 8px;
+  font-weight: 400;
+}
+
+.review-mood-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  color: var(--success-700);
+  border-radius: var(--radius-full);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.review-mood-pill.okay { background: var(--snow-200); border-color: var(--sky-200); color: var(--trust-600); }
+.review-mood-pill.attn { background: var(--warning-50); border-color: var(--warning-100); color: var(--warning-700); }
+
+.review-mood-pill svg { width: 18px; height: 18px; }
+
+.review-photo-thumb {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 8px, var(--tranquil-100) 8px, var(--tranquil-100) 16px);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-500);
+  font-size: 12px;
+  gap: 4px;
+}
+
+.review-empty {
+  font-size: 13.5px;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+/* أمانة / تذكير */
+.privacy-notice {
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  color: var(--info-700);
+  line-height: 1.55;
+  margin-top: 8px;
+}
+
+.privacy-notice svg { color: var(--info-700); flex-shrink: 0; margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER BAR — السابق / التالي
+   ═══════════════════════════════════════════════════════════════ */
+.foot-bar {
+  position: fixed;
+  bottom: 0;
+  inset-inline: 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  padding: 16px 24px;
+  z-index: 40;
+  box-shadow: 0 -2px 12px rgba(11,30,51,.05);
+}
+
+.foot-bar-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.foot-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  transition: var(--transition);
+  border: 1px solid transparent;
+  line-height: 1;
+  min-height: 48px;
+}
+
+.foot-btn[disabled],
+.foot-btn[aria-disabled="true"] {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.foot-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+}
+
+.foot-btn-secondary:hover:not([disabled]) {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+  background: var(--snow-100);
+}
+
+.foot-btn-primary {
+  background: var(--trust-300);
+  color: white;
+  border-color: var(--trust-300);
+  flex: 1;
+  max-width: 280px;
+}
+
+.foot-btn-primary:hover:not([disabled]) {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+  box-shadow: var(--shadow-md);
+}
+
+.foot-btn-send {
+  background: var(--success-600);
+  color: white;
+  border-color: var(--success-600);
+}
+
+.foot-btn-send:hover:not([disabled]) {
+  background: var(--success-700);
+  border-color: var(--success-700);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SUCCESS STATE
+   ═══════════════════════════════════════════════════════════════ */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(247,251,252,.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.success-overlay.show { display: flex; animation: stepIn 320ms ease; }
+
+.success-card {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 40px 32px 32px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.success-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--success-50);
+  color: var(--success-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  position: relative;
+}
+
+.success-icon::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--success-100);
+}
+
+.success-icon svg { width: 44px; height: 44px; stroke-width: 2.2; }
+
+.success-card h2 {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  margin-bottom: 10px;
+}
+
+.success-card .verse {
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, var(--snow-100) 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 15px;
+  color: var(--trust-700);
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.success-card .verse-attr {
+  display: block;
+  font-size: 12px;
+  color: var(--trust-500);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+.success-card > p {
+  font-size: 14.5px;
+  color: var(--gray-600);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.success-meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+
+.success-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.success-meta-item .num { color: var(--gray-700); font-weight: 600; }
+
+.success-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .success-actions { grid-template-columns: 1fr; }
+  .success-card { padding: 32px 22px 24px; }
+  .success-card h2 { font-size: 22px; }
+}
+
+.success-actions button {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-700);
+  transition: var(--transition);
+}
+
+.success-actions button.primary {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+  color: white;
+}
+
+.success-actions button:hover { border-color: var(--sky-300); }
+.success-actions button.primary:hover { background: var(--trust-400); border-color: var(--trust-400); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ICON
+   ═══════════════════════════════════════════════════════════════ */
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 28px; height: 28px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* تصغير على شاشات صغيرة */
+@media (max-width: 540px) {
+  .step-prompt h2 { font-size: 22px; }
+  .step-prompt p { font-size: 14px; }
+  .mood-card { padding: 16px 18px; grid-template-columns: 52px 1fr auto; gap: 14px; }
+  .mood-face { width: 52px; height: 52px; }
+  .mood-face svg { width: 30px; height: 30px; }
+  .mood-title { font-size: 15.5px; }
+  .stage { padding: 18px 16px 140px; }
+  .wiz-header { padding: 12px 16px; }
+  .progress-wrap { padding: 14px 16px 18px; }
+  .foot-bar { padding: 14px 16px; }
+  .foot-btn { padding: 12px 16px; font-size: 14.5px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="wiz-header" role="banner">
+  <div class="wiz-header-inner">
+    <a href="G-03 Orphan Detail.html" class="wiz-back" aria-label="العودة لصفحة أحمد">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>صفحة أحمد</span>
+    </a>
+    <div class="wiz-title-area">
+      <h1>تقرير شهر شوّال</h1>
+      <p>عن أحمد محمد</p>
+    </div>
+    <div class="wiz-save-pill" role="status" aria-live="polite" id="save-pill">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>محفوظ تلقائياً</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PROGRESS
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="progress-wrap" aria-label="تقدّمك في التقرير">
+  <div class="progress-inner">
+    <div class="progress-head">
+      <span class="progress-head-label">تقدّمك في كتابة التقرير</span>
+      <span class="progress-head-count"><span id="step-current">١</span> من ٤</span>
+    </div>
+    <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1">
+      <div class="progress-fill" id="progress-fill" style="width: 25%;"></div>
+    </div>
+    <div class="progress-steps">
+      <div class="progress-step active" data-step-marker="1">
+        <div class="progress-step-dot">١</div>
+        <div class="progress-step-label">حال أحمد</div>
+      </div>
+      <div class="progress-step" data-step-marker="2">
+        <div class="progress-step-dot">٢</div>
+        <div class="progress-step-label">التعليم</div>
+      </div>
+      <div class="progress-step" data-step-marker="3">
+        <div class="progress-step-dot">٣</div>
+        <div class="progress-step-label">صورة</div>
+      </div>
+      <div class="progress-step" data-step-marker="4">
+        <div class="progress-step-dot">٤</div>
+        <div class="progress-step-label">المراجعة</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STAGE
+     ═══════════════════════════════════════════════════════════════ -->
+<main class="stage" role="main">
+
+  <!-- بطاقة سياق ثابتة -->
+  <div class="step-context" aria-hidden="false">
+    <div class="step-context-avatar">أ</div>
+    <div class="step-context-text">
+      <strong>أحمد محمد</strong>
+      <span>الصف الخامس الابتدائي · ١٠ سنوات</span>
+    </div>
+    <span class="step-context-month">شوّال ١٤٤٧</span>
+  </div>
+
+  <!-- ─────────── STEP 1 — حال اليتيم ─────────── -->
+  <section class="step active" data-step="1" aria-labelledby="s1-title">
+    <div class="step-prompt">
+      <h2 id="s1-title">كيف حال أحمد هذا الشهر؟</h2>
+      <p>اختاري الإجابة الأقرب لحاله — بإمكانك إضافة تفاصيل بعدها.</p>
+    </div>
+
+    <div class="mood-grid" role="radiogroup" aria-labelledby="s1-title">
+
+      <button type="button" class="mood-card" role="radio" aria-checked="false" data-mood="good">
+        <div class="mood-face good" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </div>
+        <div class="mood-text">
+          <div class="mood-title">بخير والحمد لله</div>
+          <div class="mood-sub">الشهر مرّ بسلام، أحمد سعيد ومتفاعل.</div>
+        </div>
+        <div class="mood-radio" aria-hidden="true"></div>
+      </button>
+
+      <button type="button" class="mood-card" role="radio" aria-checked="false" data-mood="okay">
+        <div class="mood-face okay" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </div>
+        <div class="mood-text">
+          <div class="mood-title">عاديّ</div>
+          <div class="mood-sub">لا جديد يُذكر، الحياة كالمعتاد.</div>
+        </div>
+        <div class="mood-radio" aria-hidden="true"></div>
+      </button>
+
+      <button type="button" class="mood-card" role="radio" aria-checked="false" data-mood="attn">
+        <div class="mood-face attn" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </div>
+        <div class="mood-text">
+          <div class="mood-title">يحتاج اهتمامكم</div>
+          <div class="mood-sub">هناك ما يقلقني وأودّ أن تطّلع عليه الجهة.</div>
+        </div>
+        <div class="mood-radio" aria-hidden="true"></div>
+      </button>
+
+    </div>
+
+    <div class="mood-detail" id="mood-detail">
+      <div class="mood-detail-label">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        اكتبي ما تودّين أن نعرفه
+      </div>
+      <textarea id="mood-detail-text" placeholder="مثلاً: أحمد بدا قلقاً هذا الشهر بعد..." aria-label="تفاصيل ما يحتاج اهتمامه"></textarea>
+      <div class="mood-detail-hint">
+        <span>تصلكِ الجهة المسؤولة خلال ٢٤ ساعة لمتابعة الأمر.</span>
+        <span class="latin"><span id="mood-detail-count">0</span> / 500</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── STEP 2 — التعليم ─────────── -->
+  <section class="step" data-step="2" aria-labelledby="s2-title">
+    <div class="step-prompt">
+      <h2 id="s2-title">التعليم</h2>
+      <p>كيف كانت دراسة أحمد هذا الشهر؟</p>
+    </div>
+
+    <div class="stars-card">
+      <div class="stars-row" role="radiogroup" aria-labelledby="s2-title">
+        <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="نجمة واحدة" data-star="1">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+        </button>
+        <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="نجمتان" data-star="2">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+        </button>
+        <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="ثلاث نجوم" data-star="3">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+        </button>
+        <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="أربع نجوم" data-star="4">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+        </button>
+        <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="خمس نجوم" data-star="5">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+        </button>
+      </div>
+      <div class="stars-label" id="stars-label">اضغطي على عدد النجوم</div>
+    </div>
+
+    <div class="input-card">
+      <div class="input-card-label">
+        <strong>ملاحظات إضافية</strong>
+        <span class="opt">اختياري</span>
+      </div>
+      <textarea id="edu-notes" placeholder="مثلاً: أحمد بدأ يحبّ مادّة العلوم أكثر، وحصل على شهادة تقدير في الرسم..." aria-label="ملاحظات تعليمية"></textarea>
+    </div>
+
+    <div class="voice-card">
+      <div class="voice-card-head">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        أو سجّلي رسالة صوتية بدل الكتابة
+      </div>
+      <div class="voice-mic-wrap">
+        <button type="button" class="voice-mic" id="voice-btn" aria-label="ابدئي التسجيل">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <div class="voice-meter" aria-hidden="true">
+          <div class="voice-meter-fill" id="voice-meter"></div>
+        </div>
+        <span class="voice-time latin" id="voice-time">0:00</span>
+      </div>
+      <p class="voice-hint">الحدّ الأقصى ٦٠ ثانية · يصل صوتك كما هو للجهة المسؤولة فقط</p>
+    </div>
+  </section>
+
+  <!-- ─────────── STEP 3 — صورة ─────────── -->
+  <section class="step" data-step="3" aria-labelledby="s3-title">
+    <div class="step-prompt">
+      <h2 id="s3-title">أضيفي صورة لأحمد</h2>
+      <p>صورة واحدة من هذا الشهر تكفي. الكفيل سيسعد كثيراً برؤيتها.</p>
+      <span class="step-prompt-hint">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        هذه الخطوة اختياريّة — يمكنك تخطّيها
+      </span>
+    </div>
+
+    <div class="photo-actions">
+      <button type="button" class="photo-big-btn" id="photo-camera">
+        <div class="photo-big-btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <span>التقطي صورة الآن</span>
+        <span class="photo-big-btn-sub">باستخدام كاميرا جهازك</span>
+      </button>
+
+      <button type="button" class="photo-big-btn" id="photo-upload">
+        <div class="photo-big-btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <span>ارفعي من المعرض</span>
+        <span class="photo-big-btn-sub">اختاري صورة محفوظة</span>
+      </button>
+    </div>
+
+    <div class="photo-preview" id="photo-preview">
+      <div class="photo-preview-img">
+        <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.45;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="latin">IMG_0837.jpg</span>
+      </div>
+      <div class="photo-preview-meta">
+        <span class="photo-name">صورة من المدرسة · <span class="latin">2.4MB</span></span>
+        <button type="button" class="photo-preview-change" id="photo-change">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          غيّري الصورة
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="photo-skip" id="photo-skip">تخطّي هذه الخطوة</button>
+
+    <div class="photo-tip" style="margin-top: 18px;">
+      <div class="photo-tip-icon" aria-hidden="true">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="photo-tip-text">
+        <strong>الخصوصية محفوظة:</strong> الصورة تمرّ بمراجعة الجهة المسؤولة قبل وصولها للكفيل. لا تُنشر علناً، ولن تظهر مع وجه أي طفل آخر.
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── STEP 4 — مراجعة ─────────── -->
+  <section class="step" data-step="4" aria-labelledby="s4-title">
+    <div class="step-prompt">
+      <h2 id="s4-title">راجعي تقريرك قبل الإرسال</h2>
+      <p>تأكّدي من المعلومات. يمكنكِ تعديل أي قسم بسهولة.</p>
+    </div>
+
+    <div class="review-card">
+
+      <div class="review-section">
+        <div class="review-section-head">
+          <div class="review-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>
+            حال أحمد هذا الشهر
+          </div>
+          <button type="button" class="review-edit" data-edit-step="1">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            تعديل
+          </button>
+        </div>
+        <div class="review-value" id="review-mood">
+          <span class="review-empty">لم تختاري بعد</span>
+        </div>
+        <div class="review-value" id="review-mood-detail" style="margin-top: 4px;"></div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-head">
+          <div class="review-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            التعليم
+          </div>
+          <button type="button" class="review-edit" data-edit-step="2">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            تعديل
+          </button>
+        </div>
+        <div class="review-value" id="review-stars">
+          <span class="review-empty">لم تقيّمي بعد</span>
+        </div>
+        <div class="review-value" id="review-edu-notes" style="margin-top: 4px;"></div>
+        <div class="review-value" id="review-voice" style="margin-top: 4px;"></div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-head">
+          <div class="review-section-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            الصورة
+          </div>
+          <button type="button" class="review-edit" data-edit-step="3">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            تعديل
+          </button>
+        </div>
+        <div class="review-value" id="review-photo">
+          <span class="review-empty">لم تُرفع صورة (الخطوة اختيارية)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="privacy-notice">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>
+        تقريرك يصل للجهة المسؤولة أوّلاً للمراجعة، ثم للكفيل خلال يوم إلى ٣ أيام عادةً.
+        كل ما كتبتِه يبقى محفوظاً ولن يطّلع عليه أحد خارج هذه الدائرة.
+      </span>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOT BAR
+     ═══════════════════════════════════════════════════════════════ -->
+<nav class="foot-bar" aria-label="التنقّل بين الخطوات">
+  <div class="foot-bar-inner">
+    <button type="button" class="foot-btn foot-btn-secondary" id="btn-prev" aria-disabled="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      السابق
+    </button>
+
+    <button type="button" class="foot-btn foot-btn-primary" id="btn-next" aria-disabled="true">
+      التالي
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <button type="button" class="foot-btn foot-btn-send" id="btn-send" style="display: none;">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      أرسلي التقرير
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SUCCESS
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="success-overlay" id="success" role="dialog" aria-modal="true" aria-labelledby="success-title">
+  <div class="success-card">
+    <div class="success-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 id="success-title">جزاكِ الله خيراً</h2>
+    <p>وصل تقرير شوّال عن أحمد بسلام. ستراجعه الجهة المسؤولة، وتصلكِ رسالة عند اعتماده.</p>
+
+    <blockquote class="verse">
+      «وما تقدّموا لأنفسكم من خيرٍ تجدوه عند الله»
+      <span class="verse-attr">— البقرة: ١١٠</span>
+    </blockquote>
+
+    <div class="success-meta">
+      <span class="success-meta-item">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        أُرسل <span class="num">الآن</span>
+      </span>
+      <span class="success-meta-item">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        رقم التقرير <span class="num">RPT-2841</span>
+      </span>
+    </div>
+
+    <div class="success-actions">
+      <button type="button" onclick="location.href='G-03 Orphan Detail.html'">العودة لصفحة أحمد</button>
+      <button type="button" class="primary" onclick="location.href='G-03 Orphan Detail.html'">تم</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SCRIPT
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+/* ─── State ─────────────────────────────────────────────────────── */
+const STORAGE_KEY = 'rufaqaa-g04-report-draft';
+const arabicNum = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+const toArNum = n => String(n).split('').map(c => /\d/.test(c) ? arabicNum[+c] : c).join('');
+
+let state = {
+  step: 1,
+  mood: null,           // 'good' | 'okay' | 'attn'
+  moodDetail: '',
+  stars: 0,
+  eduNotes: '',
+  voiceSeconds: 0,      // > 0 means a recording exists
+  photo: null,          // {name, size} | null
+};
+
+const starsLabels = {
+  1: 'احتاج لمساعدة',
+  2: 'هناك صعوبات',
+  3: 'مستوى مقبول',
+  4: 'مستوى جيّد',
+  5: 'ممتاز ومتفوّق',
+};
+
+const moodLabels = {
+  good: 'بخير والحمد لله',
+  okay: 'عاديّ',
+  attn: 'يحتاج اهتمامكم',
+};
+
+/* ─── Persistence ───────────────────────────────────────────────── */
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showSavedPill();
+  } catch (e) { /* swallow */ }
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    Object.assign(state, parsed);
+  } catch (e) { /* swallow */ }
+}
+
+let savePillTimer;
+function showSavedPill() {
+  const pill = document.getElementById('save-pill');
+  pill.style.opacity = '1';
+  clearTimeout(savePillTimer);
+  pill.querySelector('span').textContent = 'محفوظ تلقائياً';
+  savePillTimer = setTimeout(() => { pill.style.opacity = '.6'; }, 1500);
+}
+
+/* ─── Navigation ────────────────────────────────────────────────── */
+function goToStep(n) {
+  state.step = Math.max(1, Math.min(4, n));
+  document.querySelectorAll('.step').forEach(el => {
+    el.classList.toggle('active', +el.dataset.step === state.step);
+  });
+
+  // Progress
+  document.getElementById('progress-fill').style.width = (state.step * 25) + '%';
+  document.querySelector('.progress-track').setAttribute('aria-valuenow', state.step);
+  document.getElementById('step-current').textContent = toArNum(state.step);
+
+  document.querySelectorAll('.progress-step').forEach(el => {
+    const s = +el.dataset.stepMarker;
+    el.classList.toggle('active', s === state.step);
+    el.classList.toggle('done', s < state.step);
+  });
+
+  // Foot bar
+  const prevBtn = document.getElementById('btn-prev');
+  const nextBtn = document.getElementById('btn-next');
+  const sendBtn = document.getElementById('btn-send');
+
+  prevBtn.setAttribute('aria-disabled', state.step === 1 ? 'true' : 'false');
+  if (state.step === 4) {
+    nextBtn.style.display = 'none';
+    sendBtn.style.display = 'inline-flex';
+    renderReview();
+  } else {
+    nextBtn.style.display = 'inline-flex';
+    sendBtn.style.display = 'none';
+  }
+  updateNextEnabled();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  save();
+}
+
+function updateNextEnabled() {
+  const nextBtn = document.getElementById('btn-next');
+  let ok = false;
+  if (state.step === 1) ok = !!state.mood && (state.mood !== 'attn' || state.moodDetail.trim().length > 4);
+  else if (state.step === 2) ok = state.stars > 0;
+  else if (state.step === 3) ok = true; // optional
+  nextBtn.setAttribute('aria-disabled', ok ? 'false' : 'true');
+}
+
+/* ─── Step 1 — mood ─────────────────────────────────────────────── */
+document.querySelectorAll('.mood-card').forEach(card => {
+  card.addEventListener('click', () => {
+    state.mood = card.dataset.mood;
+    document.querySelectorAll('.mood-card').forEach(c => {
+      c.classList.toggle('selected', c === card);
+      c.setAttribute('aria-checked', c === card ? 'true' : 'false');
+    });
+    document.getElementById('mood-detail').classList.toggle('show', state.mood === 'attn');
+    save();
+    updateNextEnabled();
+  });
+});
+
+const moodDetailText = document.getElementById('mood-detail-text');
+moodDetailText.addEventListener('input', e => {
+  state.moodDetail = e.target.value.slice(0, 500);
+  if (e.target.value.length > 500) e.target.value = state.moodDetail;
+  document.getElementById('mood-detail-count').textContent = state.moodDetail.length;
+  save();
+  updateNextEnabled();
+});
+
+/* ─── Step 2 — stars ────────────────────────────────────────────── */
+const starBtns = document.querySelectorAll('.star-btn');
+starBtns.forEach(btn => {
+  btn.addEventListener('mouseenter', () => paintStars(+btn.dataset.star, true));
+  btn.addEventListener('mouseleave', () => paintStars(state.stars, false));
+  btn.addEventListener('click', () => {
+    state.stars = +btn.dataset.star;
+    paintStars(state.stars, false);
+    save();
+    updateNextEnabled();
+  });
+});
+
+function paintStars(n, hovering) {
+  starBtns.forEach(b => b.classList.toggle('lit', +b.dataset.star <= n));
+  const label = document.getElementById('stars-label');
+  if (n > 0) {
+    label.innerHTML = `<span class="selected-text">${starsLabels[n]}</span> · ${toArNum(n)} من ٥`;
+  } else {
+    label.textContent = 'اضغطي على عدد النجوم';
+  }
+}
+
+const eduNotes = document.getElementById('edu-notes');
+eduNotes.addEventListener('input', e => {
+  state.eduNotes = e.target.value;
+  save();
+});
+
+/* ─── Step 2 — voice (محاكاة) ───────────────────────────────────── */
+let recording = false, recordTimer = null;
+const voiceBtn = document.getElementById('voice-btn');
+const voiceTime = document.getElementById('voice-time');
+const voiceMeter = document.getElementById('voice-meter');
+
+voiceBtn.addEventListener('click', () => {
+  if (!recording) startRecording();
+  else stopRecording();
+});
+
+function startRecording() {
+  recording = true;
+  voiceBtn.classList.add('recording');
+  voiceBtn.setAttribute('aria-label', 'أوقفي التسجيل');
+  state.voiceSeconds = 0;
+  recordTimer = setInterval(() => {
+    state.voiceSeconds++;
+    voiceTime.textContent = formatTime(state.voiceSeconds);
+    voiceMeter.style.width = Math.min(100, (state.voiceSeconds / 60) * 100) + '%';
+    if (state.voiceSeconds >= 60) stopRecording();
+  }, 1000);
+}
+
+function stopRecording() {
+  recording = false;
+  clearInterval(recordTimer);
+  voiceBtn.classList.remove('recording');
+  voiceBtn.setAttribute('aria-label', 'ابدئي تسجيلاً جديداً');
+  save();
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60), sec = s % 60;
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+/* ─── Step 3 — photo ────────────────────────────────────────────── */
+document.getElementById('photo-camera').addEventListener('click', simulatePhoto);
+document.getElementById('photo-upload').addEventListener('click', simulatePhoto);
+document.getElementById('photo-change').addEventListener('click', simulatePhoto);
+
+function simulatePhoto() {
+  const names = ['IMG_0837.jpg', 'IMG_0921.jpg', 'photo_ahmad_school.jpg'];
+  const sizes = ['1.8', '2.4', '3.1'];
+  const i = Math.floor(Math.random() * names.length);
+  state.photo = { name: names[i], size: sizes[i] + 'MB' };
+  const preview = document.getElementById('photo-preview');
+  preview.classList.add('show');
+  preview.querySelector('.latin').textContent = state.photo.name;
+  preview.querySelector('.photo-name').innerHTML = `صورة جاهزة للرفع · <span class="latin">${state.photo.size}</span>`;
+  save();
+}
+
+document.getElementById('photo-skip').addEventListener('click', () => {
+  state.photo = null;
+  document.getElementById('photo-preview').classList.remove('show');
+  goToStep(4);
+});
+
+/* ─── Step 4 — review ───────────────────────────────────────────── */
+function renderReview() {
+  // Mood
+  const moodEl = document.getElementById('review-mood');
+  if (state.mood) {
+    const cls = state.mood === 'good' ? '' : state.mood;
+    const iconGood = '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
+    moodEl.innerHTML = `<span class="review-mood-pill ${cls}">${iconGood}${moodLabels[state.mood]}</span>`;
+  } else {
+    moodEl.innerHTML = '<span class="review-empty">لم تختاري بعد</span>';
+  }
+
+  const detailEl = document.getElementById('review-mood-detail');
+  detailEl.innerHTML = (state.mood === 'attn' && state.moodDetail.trim())
+    ? `<div class="extra">${escapeHtml(state.moodDetail)}</div>` : '';
+
+  // Stars
+  const starsEl = document.getElementById('review-stars');
+  if (state.stars > 0) {
+    let starsHtml = '<span class="review-stars">';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += `<svg viewBox="0 0 24 24" class="${i <= state.stars ? '' : 'dim'}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>`;
+    }
+    starsHtml += `</span><span class="review-stars-label">${starsLabels[state.stars]}</span>`;
+    starsEl.innerHTML = starsHtml;
+  } else {
+    starsEl.innerHTML = '<span class="review-empty">لم تقيّمي بعد</span>';
+  }
+
+  const notesEl = document.getElementById('review-edu-notes');
+  notesEl.innerHTML = state.eduNotes.trim() ? `<div class="extra">${escapeHtml(state.eduNotes)}</div>` : '';
+
+  const voiceEl = document.getElementById('review-voice');
+  voiceEl.innerHTML = state.voiceSeconds > 0
+    ? `<div class="extra"><svg class="icon icon-sm" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px;" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>تسجيل صوتي · <span class="latin">${formatTime(state.voiceSeconds)}</span></div>`
+    : '';
+
+  // Photo
+  const photoEl = document.getElementById('review-photo');
+  if (state.photo) {
+    photoEl.innerHTML = `
+      <div class="review-photo-thumb">
+        <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="latin">${state.photo.name}</span>
+      </div>`;
+  } else {
+    photoEl.innerHTML = '<span class="review-empty">لم تُرفع صورة (الخطوة اختيارية)</span>';
+  }
+}
+
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+/* Edit links in review */
+document.querySelectorAll('.review-edit').forEach(btn => {
+  btn.addEventListener('click', () => goToStep(+btn.dataset.editStep));
+});
+
+/* ─── Foot navigation ───────────────────────────────────────────── */
+document.getElementById('btn-prev').addEventListener('click', e => {
+  if (e.currentTarget.getAttribute('aria-disabled') === 'true') return;
+  goToStep(state.step - 1);
+});
+
+document.getElementById('btn-next').addEventListener('click', e => {
+  if (e.currentTarget.getAttribute('aria-disabled') === 'true') return;
+  goToStep(state.step + 1);
+});
+
+document.getElementById('btn-send').addEventListener('click', () => {
+  document.getElementById('success').classList.add('show');
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+});
+
+/* ─── Restore + init ────────────────────────────────────────────── */
+function hydrate() {
+  load();
+  // Mood
+  if (state.mood) {
+    const card = document.querySelector(`.mood-card[data-mood="${state.mood}"]`);
+    if (card) {
+      card.classList.add('selected');
+      card.setAttribute('aria-checked', 'true');
+    }
+    document.getElementById('mood-detail').classList.toggle('show', state.mood === 'attn');
+  }
+  if (state.moodDetail) {
+    moodDetailText.value = state.moodDetail;
+    document.getElementById('mood-detail-count').textContent = state.moodDetail.length;
+  }
+  // Stars
+  if (state.stars) paintStars(state.stars, false);
+  // Notes
+  if (state.eduNotes) eduNotes.value = state.eduNotes;
+  // Voice
+  if (state.voiceSeconds > 0) {
+    voiceTime.textContent = formatTime(state.voiceSeconds);
+    voiceMeter.style.width = Math.min(100, (state.voiceSeconds / 60) * 100) + '%';
+  }
+  // Photo
+  if (state.photo) {
+    const preview = document.getElementById('photo-preview');
+    preview.classList.add('show');
+    preview.querySelector('.latin').textContent = state.photo.name;
+    preview.querySelector('.photo-name').innerHTML = `صورة جاهزة للرفع · <span class="latin">${state.photo.size}</span>`;
+  }
+
+  goToStep(state.step || 1);
+}
+
+hydrate();
+</script>
+
+</body>
+</html>

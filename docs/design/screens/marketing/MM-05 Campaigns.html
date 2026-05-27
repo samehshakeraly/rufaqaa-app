@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — الحملات · مدير تسويق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-300: #93C5FD; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-500: #F43F5E; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* App shell */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.channel-switcher { display: flex; align-items: center; gap: 8px; padding: 9px 10px; background: linear-gradient(135deg, var(--info-50), white); border: 1px solid var(--info-100); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.channel-switcher .ch-logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.channel-switcher .ch-logo svg { width: 15px; height: 15px; stroke-width: 2; }
+.channel-switcher .ch-text { flex: 1; min-width: 0; text-align: right; }
+.channel-switcher .ch-text .nm { font-size: 12.5px; font-weight: 600; color: var(--gray-900); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.channel-switcher .ch-text .role { font-size: 10px; color: var(--info-700); font-weight: 500; }
+.channel-switcher .chev { color: var(--gray-400); }
+
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--info-50); color: var(--info-700); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--info-700); }
+.nav-item-badge { margin-inline-start: auto; background: var(--info-700); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--info-50); color: var(--info-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--info-700); font-weight: 500; }
+
+/* Main */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--info-700); color: white; border: 1px solid var(--info-700); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: #1A40A8; }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--info-100); color: var(--info-700); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.page { padding: 22px 28px 56px; max-width: 1480px; margin: 0 auto; width: 100%; }
+
+/* Stats */
+.stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+@media (max-width: 980px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
+.stat { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+.stat-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--tranquil-100); color: var(--trust-600); }
+.stat-icon.live { background: var(--success-50); color: var(--success-700); }
+.stat-icon.scheduled { background: var(--info-50); color: var(--info-700); }
+.stat-icon.budget { background: var(--gold-50); color: var(--gold-700); }
+.stat-text .lbl { font-size: 11px; color: var(--gray-500); font-weight: 500; }
+.stat-text .val { font-size: 18px; font-weight: 600; color: var(--gray-900); font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; letter-spacing: -.01em; line-height: 1.2; }
+.stat-text .val .unit { font-size: 11.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--gray-200); }
+.tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 8px; transition: color var(--transition-fast); }
+.tab:hover { color: var(--gray-900); }
+.tab.active { color: var(--info-700); border-bottom-color: var(--info-500); font-weight: 600; }
+.tab .pp { font-family: 'IBM Plex Sans', sans-serif; font-size: 10.5px; padding: 1px 6px; border-radius: var(--radius-full); background: var(--gray-200); color: var(--gray-600); font-weight: 600; }
+.tab.active .pp { background: var(--info-100); color: var(--info-700); }
+
+/* Filter */
+.filter-bar { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.search-input { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); height: 36px; }
+.search-input:focus-within { border-color: var(--info-300); background: white; box-shadow: var(--shadow-focus); }
+.search-input svg { color: var(--gray-400); }
+.search-input input { flex: 1; border: none; background: transparent; outline: none; font-size: 13px; color: var(--gray-900); }
+.filter-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700); }
+.filter-pill:hover { border-color: var(--sky-300); }
+.filter-pill svg { color: var(--gray-400); }
+
+/* Campaigns grid */
+.camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 14px; }
+.camp-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: all var(--transition-fast); }
+.camp-card:hover { border-color: var(--info-300); box-shadow: var(--shadow-sm); }
+.camp-card.scheduled { background: var(--info-50); border-color: var(--info-100); }
+.camp-card.ended { opacity: .85; background: var(--gray-50); }
+
+/* Stripe */
+.camp-stripe { position: absolute; top: 0; right: 0; left: 0; height: 4px; }
+.camp-stripe.ramadan { background: linear-gradient(90deg, #25D366, #128C7E); }
+.camp-stripe.eid { background: linear-gradient(90deg, #F59E0B, #D97706); }
+.camp-stripe.hajj { background: linear-gradient(90deg, var(--info-500), var(--trust-600)); }
+.camp-stripe.shaaban { background: linear-gradient(90deg, var(--purple-500, #8B5CF6), var(--purple-700)); }
+.camp-stripe.moms { background: linear-gradient(90deg, var(--rose-500), var(--rose-700)); }
+.camp-stripe.friday { background: linear-gradient(90deg, var(--teal-700), var(--success-700)); }
+
+/* Header */
+.camp-head { padding: 18px 20px 14px; display: flex; align-items: flex-start; gap: 14px; }
+.camp-icon { width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.camp-icon svg { width: 22px; height: 22px; stroke-width: 1.7; }
+.camp-icon.ramadan { background: linear-gradient(135deg, #25D366, #128C7E); color: white; }
+.camp-icon.eid { background: linear-gradient(135deg, #F59E0B, #D97706); color: white; }
+.camp-icon.hajj { background: linear-gradient(135deg, var(--info-500), var(--trust-600)); color: white; }
+.camp-icon.shaaban { background: linear-gradient(135deg, var(--purple-500, #8B5CF6), var(--purple-700)); color: white; }
+.camp-icon.moms { background: linear-gradient(135deg, var(--rose-500), var(--rose-700)); color: white; }
+.camp-icon.friday { background: linear-gradient(135deg, var(--teal-700), var(--success-700)); color: white; }
+.camp-info { flex: 1; min-width: 0; }
+.camp-name { font-size: 15.5px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.camp-meta { font-size: 11.5px; color: var(--gray-500); margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.camp-meta .dot-sep { color: var(--gray-300); }
+.camp-meta svg { width: 11px; height: 11px; color: var(--gray-400); }
+
+/* Status */
+.camp-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); border: 1px solid; white-space: nowrap; flex-shrink: 0; }
+.camp-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; }
+.camp-status.live { background: var(--success-50); color: var(--success-700); border-color: var(--success-100); }
+.camp-status.live::before { background: var(--success-500); animation: pulse 1.8s ease-in-out infinite; box-shadow: 0 0 0 4px rgba(16,185,129,.18); }
+.camp-status.scheduled { background: var(--info-50); color: var(--info-700); border-color: var(--info-100); }
+.camp-status.scheduled::before { background: var(--info-500); }
+.camp-status.paused { background: var(--gold-50); color: var(--gold-700); border-color: var(--gold-100); }
+.camp-status.paused::before { background: var(--warning-500); }
+.camp-status.ended { background: var(--gray-100); color: var(--gray-600); border-color: var(--gray-200); }
+.camp-status.ended::before { background: var(--gray-400); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+
+/* Body */
+.camp-body { padding: 0 20px 14px; }
+
+/* Goal block */
+.goal-block { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 12px; }
+.goal-block .gh { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.goal-block .gh .lab { font-size: 11.5px; color: var(--gray-500); font-weight: 500; }
+.goal-block .gh .lab strong { color: var(--gray-800); font-weight: 600; }
+.goal-block .gh .pct { font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-900); font-feature-settings: "tnum" 1; }
+.goal-block .gh .pct.good { color: var(--success-700); }
+.goal-block .gh .pct.warn { color: var(--warning-700); }
+.goal-block .gh .pct.over { color: var(--gold-700); }
+.goal-block .track { height: 8px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-full); overflow: hidden; }
+.goal-block .fill { height: 100%; border-radius: var(--radius-full); }
+.goal-block .fill.good { background: var(--success-500); }
+.goal-block .fill.warn { background: var(--warning-500); }
+.goal-block .fill.over { background: linear-gradient(90deg, #F59E0B, #D97706); }
+.goal-block .nums { display: flex; justify-content: space-between; font-size: 11px; color: var(--gray-500); margin-top: 6px; font-family: 'IBM Plex Sans', sans-serif; }
+.goal-block .nums strong { color: var(--gray-800); font-weight: 600; }
+
+/* Stats inline */
+.camp-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cs { padding: 8px 10px; background: white; border: 1px solid var(--gray-100); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 2px; }
+.cs .pl { font-size: 10px; color: var(--gray-500); font-weight: 500; }
+.cs .pv { font-size: 13px; font-weight: 700; color: var(--gray-900); font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; line-height: 1.2; }
+.cs .pv .u { font-size: 10px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 2px; }
+
+/* UTM */
+.utm-row { padding: 10px 14px; background: var(--gray-900); margin: 12px -20px 0; display: flex; align-items: center; gap: 8px; }
+.utm-row .lab { font-size: 10px; color: var(--gray-400); font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; text-transform: uppercase; letter-spacing: .04em; }
+.utm-row code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #93C5FD; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: ltr; }
+.utm-row .copy { width: 24px; height: 24px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); color: var(--gray-300); border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.utm-row .copy:hover { background: rgba(255,255,255,.16); color: white; }
+.utm-row .copy svg { width: 11px; height: 11px; }
+
+/* Footer */
+.camp-foot { padding: 12px 20px; border-top: 1px solid var(--gray-100); background: var(--gray-50); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.camp-foot .meta { font-size: 11.5px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 6px; }
+.camp-foot .meta svg { width: 12px; height: 12px; color: var(--gray-400); }
+.camp-actions { display: flex; gap: 4px; }
+.foot-btn { padding: 5px 10px; font-size: 12px; font-weight: 600; color: var(--info-700); background: transparent; border: none; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 4px; }
+.foot-btn:hover { background: var(--info-50); }
+.foot-btn.muted { color: var(--gray-600); }
+.foot-btn.muted:hover { background: var(--gray-100); }
+
+/* Create card */
+.camp-card.create { background: linear-gradient(180deg, var(--info-50), white); border: 1.5px dashed var(--info-300); cursor: pointer; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; min-height: 340px; display: flex; flex-direction: column; gap: 8px; transition: all var(--transition-fast); }
+.camp-card.create:hover { border-color: var(--info-500); background: var(--info-50); }
+.camp-card.create .ci { width: 56px; height: 56px; border-radius: 50%; background: white; color: var(--info-700); display: flex; align-items: center; justify-content: center; border: 1.5px dashed var(--info-300); }
+.camp-card.create .ci svg { width: 24px; height: 24px; }
+.camp-card.create:hover .ci { border-color: var(--info-500); }
+.camp-card.create .ti { font-size: 14.5px; font-weight: 600; color: var(--gray-900); }
+.camp-card.create .ds { font-size: 12px; color: var(--gray-500); max-width: 280px; line-height: 1.5; }
+
+/* Modal */
+.scrim { position: fixed; inset: 0; background: rgba(11,30,51,.45); backdrop-filter: blur(2px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+.scrim.show { display: flex; }
+.modal { background: white; border-radius: var(--radius-xl); width: 760px; max-width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+.modal-head { padding: 16px 22px; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: flex-start; }
+.modal-head h3 { font-size: 16px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.modal-head h3 svg { color: var(--info-500); }
+.modal-head p { font-size: 12.5px; color: var(--gray-500); margin-top: 3px; }
+.modal-close { width: 30px; height: 30px; background: transparent; border: none; color: var(--gray-500); border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--gray-100); }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+.modal-foot { padding: 14px 22px; background: var(--gray-50); border-top: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+.stepper { display: flex; align-items: center; gap: 0; margin-bottom: 18px; }
+.step { display: flex; align-items: center; gap: 8px; padding: 4px 0; flex: 1; min-width: 0; }
+.step .num { width: 22px; height: 22px; border-radius: 50%; background: var(--gray-100); color: var(--gray-500); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Sans', sans-serif; flex-shrink: 0; }
+.step.done .num { background: var(--success-500); color: white; }
+.step.active .num { background: var(--info-700); color: white; }
+.step .lbl { font-size: 12px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.step.done .lbl, .step.active .lbl { color: var(--gray-900); font-weight: 600; }
+.step-line { height: 2px; background: var(--gray-100); flex: 1; margin: 0 8px; min-width: 12px; }
+.step-line.done { background: var(--success-500); }
+
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; }
+.form-label .opt { color: var(--gray-500); font-weight: 400; }
+.form-input { width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-size: 13.5px; color: var(--gray-900); }
+.form-input:focus { outline: none; border-color: var(--info-300); box-shadow: var(--shadow-focus); }
+.form-help { font-size: 11.5px; color: var(--gray-500); margin-top: 5px; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Template grid in modal */
+.tmpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tmpl { display: flex; align-items: flex-start; gap: 10px; padding: 11px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); background: white; cursor: pointer; transition: all var(--transition-fast); text-align: right; }
+.tmpl:hover { border-color: var(--info-300); }
+.tmpl.selected { border-color: var(--info-500); background: var(--info-50); }
+.tmpl .ti { width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: white; }
+.tmpl .ti svg { width: 16px; height: 16px; }
+.tmpl .ti.ramadan { background: linear-gradient(135deg, #25D366, #128C7E); }
+.tmpl .ti.eid { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.tmpl .ti.hajj { background: linear-gradient(135deg, var(--info-500), var(--trust-600)); }
+.tmpl .ti.moms { background: linear-gradient(135deg, var(--rose-500), var(--rose-700)); }
+.tmpl .ti.friday { background: linear-gradient(135deg, var(--teal-700), var(--success-700)); }
+.tmpl .ti.custom { background: linear-gradient(135deg, var(--gray-700), var(--gray-900)); }
+.tmpl .tn { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.tmpl .td { font-size: 11px; color: var(--gray-500); margin-top: 2px; line-height: 1.4; }
+
+/* UTM preview */
+.utm-builder { background: var(--gray-900); border-radius: var(--radius-md); padding: 14px 16px; }
+.utm-builder code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #A8D586; word-break: break-all; line-height: 1.7; direction: ltr; display: block; }
+.utm-builder .params { color: #93C5FD; }
+.utm-builder .source { color: #FCD34D; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>قناة تسويق</p>
+      </div>
+    </div>
+
+    <button class="channel-switcher">
+      <div class="ch-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <div class="ch-text">
+        <div class="nm">واتساب — الخليج</div>
+        <div class="role">قناتي · مدير</div>
+      </div>
+      <svg class="icon icon-sm chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <div class="nav-section">قناتي</div>
+    <a class="nav-item" href="MM-01 Channel Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسيّة
+    </a>
+    <a class="nav-item" href="MM-02 Annual Goals.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="12 6 14 11 19 12 14 13 12 18 10 13 5 12 10 11 12 6"/></svg>
+      الأهداف السنويّة
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      الحملات
+      <span class="nav-item-badge"><span class="latin">3</span></span>
+    </a>
+
+    <div class="nav-section">العمليّات</div>
+    <a class="nav-item" href="MM-03 Assigned Orphans.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg>
+      الأيتام المخصّصة
+      <span class="nav-item-badge muted"><span class="latin">340</span></span>
+    </a>
+    <a class="nav-item" href="MM-04 Acquired Donors.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      الكفلاء المكتسبون
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      تقارير القناة
+    </a>
+
+    <div class="nav-section">مكتبة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/></svg>
+      أصول تسويقيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+      روابط UTM
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+      قوالب الرسائل
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">ل.م</div>
+      <div class="user-info">
+        <div class="user-name">ليلى المنصور</div>
+        <div class="user-role">مدير قناة</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>الحملات</h2>
+        <p>أنشئي حملاتك التسويقيّة وتابعي أداءها — لكلّ حملة رابط UTM يميّزها</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          عرض التقويم
+        </button>
+        <button class="btn-primary" id="openCreate">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          حملة جديدة
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Stats -->
+      <section class="stat-strip">
+        <div class="stat">
+          <div class="stat-icon live"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="stat-text"><div class="lbl">حملات نشطة</div><div class="val"><span class="latin">3</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon scheduled"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-text"><div class="lbl">مجدوَلة</div><div class="val"><span class="latin">2</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="stat-text"><div class="lbl">منتهية بنجاح هذا العام</div><div class="val"><span class="latin">8</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon budget"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-text"><div class="lbl">ميزانيّة محجوزة</div><div class="val"><span class="latin">8,420</span><span class="unit">دك</span></div></div>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <nav class="tabs" role="tablist">
+        <button class="tab active">الكلّ <span class="pp"><span class="latin">13</span></span></button>
+        <button class="tab">نشطة <span class="pp"><span class="latin">3</span></span></button>
+        <button class="tab">مجدوَلة <span class="pp"><span class="latin">2</span></span></button>
+        <button class="tab">منتهية <span class="pp"><span class="latin">8</span></span></button>
+        <button class="tab">مسوّدات <span class="pp"><span class="latin">0</span></span></button>
+      </nav>
+
+      <!-- Filter -->
+      <section class="filter-bar">
+        <div class="search-input">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="ابحث باسم الحملة أو الـ UTM…">
+        </div>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+          الموسم
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/></svg>
+          الترتيب: الأعلى أداءً
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </section>
+
+      <!-- Grid -->
+      <section class="camp-grid">
+
+        <!-- Ramadan -->
+        <article class="camp-card">
+          <span class="camp-stripe ramadan"></span>
+          <header class="camp-head">
+            <div class="camp-icon ramadan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </div>
+            <div class="camp-info">
+              <div class="camp-name">رمضان معاً <span class="latin">1446</span></div>
+              <div class="camp-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>من <span class="latin">1</span> رمضان</span>
+                <span class="dot-sep">·</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <span>الكويت + السعوديّة</span>
+              </div>
+            </div>
+            <span class="camp-status live">نشطة</span>
+          </header>
+          <div class="camp-body">
+            <div class="goal-block">
+              <div class="gh">
+                <div class="lab">الهدف <strong>كفلاء جدد</strong></div>
+                <div class="pct over"><span class="latin">142</span>%</div>
+              </div>
+              <div class="track"><div class="fill over" style="width: 100%"></div></div>
+              <div class="nums">
+                <span><strong><span class="latin">312</span></strong> / <span class="latin">220</span> كفيل</span>
+                <span><strong>متبقّي <span class="latin">8</span> أيّام</strong></span>
+              </div>
+            </div>
+            <div class="camp-stats">
+              <div class="cs"><div class="pl">رسائل أُرسلت</div><div class="pv"><span class="latin">8.4</span><span class="u">ك</span></div></div>
+              <div class="cs"><div class="pl">معدّل الفتح</div><div class="pv"><span class="latin">82</span><span class="u">%</span></div></div>
+              <div class="cs"><div class="pl">قيمة مكتسَبة</div><div class="pv"><span class="latin">142</span><span class="u">ك</span></div></div>
+              <div class="cs"><div class="pl">CPA</div><div class="pv"><span class="latin">3.2</span><span class="u">دك</span></div></div>
+            </div>
+            <div class="utm-row">
+              <span class="lab">UTM</span>
+              <code>?utm_source=whatsapp&utm_medium=gulf&utm_campaign=ramadan-46</code>
+              <button class="copy" aria-label="نسخ">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+          <footer class="camp-foot">
+            <span class="meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              آخر تحديث قبل دقيقتين
+            </span>
+            <div class="camp-actions">
+              <button class="foot-btn muted">إيقاف</button>
+              <button class="foot-btn">
+                التفاصيل
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Moms groups -->
+        <article class="camp-card">
+          <span class="camp-stripe moms"></span>
+          <header class="camp-head">
+            <div class="camp-icon moms">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+            </div>
+            <div class="camp-info">
+              <div class="camp-name">مجموعات الأمّهات</div>
+              <div class="camp-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/></svg>
+                <span>دائمة (متجدّدة)</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">42</span> مجموعة فعّالة
+              </div>
+            </div>
+            <span class="camp-status live">نشطة</span>
+          </header>
+          <div class="camp-body">
+            <div class="goal-block">
+              <div class="gh">
+                <div class="lab">الهدف الشهري <strong>كفلاء جدد</strong></div>
+                <div class="pct good"><span class="latin">98</span>%</div>
+              </div>
+              <div class="track"><div class="fill good" style="width: 98%"></div></div>
+              <div class="nums">
+                <span><strong><span class="latin">42</span></strong> / <span class="latin">43</span> كفيل</span>
+                <span>هذا الشهر</span>
+              </div>
+            </div>
+            <div class="camp-stats">
+              <div class="cs"><div class="pl">مجموعات</div><div class="pv"><span class="latin">42</span></div></div>
+              <div class="cs"><div class="pl">مشاركات</div><div class="pv"><span class="latin">1.2</span><span class="u">ك</span></div></div>
+              <div class="cs"><div class="pl">إحالات</div><div class="pv"><span class="latin">198</span></div></div>
+              <div class="cs"><div class="pl">CPA</div><div class="pv"><span class="latin">0.8</span><span class="u">دك</span></div></div>
+            </div>
+            <div class="utm-row">
+              <span class="lab">UTM</span>
+              <code>?utm_source=whatsapp&utm_medium=gulf&utm_campaign=moms-grp</code>
+              <button class="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+            </div>
+          </div>
+          <footer class="camp-foot">
+            <span class="meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+              يومي · صباح ٩:٠٠
+            </span>
+            <div class="camp-actions">
+              <button class="foot-btn muted">إيقاف</button>
+              <button class="foot-btn">التفاصيل <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Shaaban (in draft / approval) -->
+        <article class="camp-card scheduled">
+          <span class="camp-stripe shaaban"></span>
+          <header class="camp-head">
+            <div class="camp-icon shaaban">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23z"/></svg>
+            </div>
+            <div class="camp-info">
+              <div class="camp-name">شعبان الخير</div>
+              <div class="camp-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+                <span>تبدأ <span class="latin">1</span> شعبان <span class="latin">1447</span></span>
+                <span class="dot-sep">·</span>
+                <span>قيد المراجعة</span>
+              </div>
+            </div>
+            <span class="camp-status paused">في انتظار الاعتماد</span>
+          </header>
+          <div class="camp-body">
+            <div class="goal-block">
+              <div class="gh">
+                <div class="lab">الهدف <strong>كفلاء جدد</strong></div>
+                <div class="pct" style="color: var(--gray-500);">—</div>
+              </div>
+              <div class="track"><div class="fill" style="width: 0;"></div></div>
+              <div class="nums">
+                <span><strong><span class="latin">0</span></strong> / <span class="latin">150</span> كفيل</span>
+                <span style="color: var(--warning-700); font-weight: 600;">بانتظار سامح ع.</span>
+              </div>
+            </div>
+            <div style="background: var(--gold-50); border: 1px solid var(--gold-100); border-radius: var(--radius-md); padding: 10px 12px; font-size: 12.5px; color: var(--gold-700); display: flex; align-items: flex-start; gap: 8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>المسوّدة جاهزة · بانتظار اعتماد <strong style="font-weight: 600;">سامح عبدالعزيز</strong> منذ يومين</div>
+            </div>
+            <div class="utm-row" style="margin-top: 12px;">
+              <span class="lab">UTM</span>
+              <code>?utm_source=whatsapp&utm_medium=gulf&utm_campaign=shaban-47</code>
+              <button class="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+            </div>
+          </div>
+          <footer class="camp-foot">
+            <span class="meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+              مسوّدة محدّثة قبل يومين
+            </span>
+            <div class="camp-actions">
+              <button class="foot-btn muted">تذكير المعتمِد</button>
+              <button class="foot-btn">تحرير <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Hajj scheduled -->
+        <article class="camp-card scheduled">
+          <span class="camp-stripe hajj"></span>
+          <header class="camp-head">
+            <div class="camp-icon hajj">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 21 12 3 21 21 3 21"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            </div>
+            <div class="camp-info">
+              <div class="camp-name">حجّ المبرور</div>
+              <div class="camp-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>تبدأ <span class="latin">15</span> ذو الحجّة</span>
+                <span class="dot-sep">·</span>
+                <span>بعد <span class="latin">22</span> يوماً</span>
+              </div>
+            </div>
+            <span class="camp-status scheduled">مجدوَلة</span>
+          </header>
+          <div class="camp-body">
+            <div class="goal-block">
+              <div class="gh">
+                <div class="lab">الهدف <strong>كفلاء جدد</strong></div>
+                <div class="pct" style="color: var(--gray-500);">—</div>
+              </div>
+              <div class="track"><div class="fill" style="width: 0;"></div></div>
+              <div class="nums">
+                <span><strong><span class="latin">0</span></strong> / <span class="latin">120</span> كفيل</span>
+                <span>تبدأ خلال <span class="latin">22</span> يوماً</span>
+              </div>
+            </div>
+            <div class="camp-stats">
+              <div class="cs"><div class="pl">جمهور مقدَّر</div><div class="pv"><span class="latin">2.4</span><span class="u">ك</span></div></div>
+              <div class="cs"><div class="pl">مدّة</div><div class="pv"><span class="latin">10</span><span class="u">أيّام</span></div></div>
+              <div class="cs"><div class="pl">ميزانيّة</div><div class="pv"><span class="latin">800</span><span class="u">دك</span></div></div>
+              <div class="cs"><div class="pl">رسائل</div><div class="pv"><span class="latin">5</span></div></div>
+            </div>
+            <div class="utm-row">
+              <span class="lab">UTM</span>
+              <code>?utm_source=whatsapp&utm_medium=gulf&utm_campaign=hajj-46</code>
+              <button class="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+            </div>
+          </div>
+          <footer class="camp-foot">
+            <span class="meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              مُعتَمدة · جاهزة للإطلاق
+            </span>
+            <div class="camp-actions">
+              <button class="foot-btn muted">تأخير</button>
+              <button class="foot-btn">إطلاق الآن <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Friday dua -->
+        <article class="camp-card">
+          <span class="camp-stripe friday"></span>
+          <header class="camp-head">
+            <div class="camp-icon friday">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="camp-info">
+              <div class="camp-name">دعوات يوم الجمعة</div>
+              <div class="camp-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/></svg>
+                <span>أسبوعيّة · صبيحة الجمعة</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">48</span> إرسالاً
+              </div>
+            </div>
+            <span class="camp-status live">نشطة</span>
+          </header>
+          <div class="camp-body">
+            <div class="goal-block">
+              <div class="gh">
+                <div class="lab">الهدف الأسبوعي <strong>كفلاء جدد</strong></div>
+                <div class="pct warn"><span class="latin">68</span>%</div>
+              </div>
+              <div class="track"><div class="fill warn" style="width: 68%"></div></div>
+              <div class="nums">
+                <span><strong><span class="latin">17</span></strong> / <span class="latin">25</span> كفيل</span>
+                <span>هذا الأسبوع</span>
+              </div>
+            </div>
+            <div class="camp-stats">
+              <div class="cs"><div class="pl">رسائل</div><div class="pv"><span class="latin">3.1</span><span class="u">ك</span></div></div>
+              <div class="cs"><div class="pl">معدّل الفتح</div><div class="pv"><span class="latin">68</span><span class="u">%</span></div></div>
+              <div class="cs"><div class="pl">تحويلات</div><div class="pv"><span class="latin">2.2</span><span class="u">%</span></div></div>
+              <div class="cs"><div class="pl">CPA</div><div class="pv"><span class="latin">1.1</span><span class="u">دك</span></div></div>
+            </div>
+            <div class="utm-row">
+              <span class="lab">UTM</span>
+              <code>?utm_source=whatsapp&utm_medium=gulf&utm_campaign=friday-dua</code>
+              <button class="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+            </div>
+          </div>
+          <footer class="camp-foot">
+            <span class="meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+              الإرسال القادم الجمعة <span class="latin">٢٨</span>
+            </span>
+            <div class="camp-actions">
+              <button class="foot-btn muted">إيقاف</button>
+              <button class="foot-btn">التفاصيل <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Eid (ended successfully) -->
+        <article class="camp-card ended">
+          <span class="camp-stripe eid"></span>
+          <header class="camp-head">
+            <div class="camp-icon eid">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div class="camp-info">
+              <div class="camp-name">عيد الفطر <span class="latin">1446</span></div>
+              <div class="camp-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>انتهت <span class="latin">15</span> شوّال</span>
+                <span class="dot-sep">·</span>
+                <span><span class="latin">30</span> يوماً</span>
+              </div>
+            </div>
+            <span class="camp-status ended">منتهية</span>
+          </header>
+          <div class="camp-body">
+            <div class="goal-block">
+              <div class="gh">
+                <div class="lab">النتيجة <strong>كفلاء</strong></div>
+                <div class="pct over"><span class="latin">112</span>%</div>
+              </div>
+              <div class="track"><div class="fill over" style="width: 100%"></div></div>
+              <div class="nums">
+                <span><strong><span class="latin">168</span></strong> / <span class="latin">150</span> كفيل</span>
+                <span style="color: var(--success-700);">تجاوزت الهدف</span>
+              </div>
+            </div>
+            <div class="camp-stats">
+              <div class="cs"><div class="pl">قيمة سنويّة</div><div class="pv"><span class="latin">308</span><span class="u">ك دك</span></div></div>
+              <div class="cs"><div class="pl">احتفاظ ٦ش</div><div class="pv"><span class="latin">92</span><span class="u">%</span></div></div>
+              <div class="cs"><div class="pl">CPA</div><div class="pv"><span class="latin">2.8</span><span class="u">دك</span></div></div>
+              <div class="cs"><div class="pl">ROI</div><div class="pv" style="color: var(--success-700);"><span class="latin">14×</span></div></div>
+            </div>
+          </div>
+          <footer class="camp-foot">
+            <span class="meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+              تقرير ختامي متاح
+            </span>
+            <div class="camp-actions">
+              <button class="foot-btn muted">إعادة استخدام</button>
+              <button class="foot-btn">عرض التقرير <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Create -->
+        <button class="camp-card create" type="button" id="openCreate2">
+          <div class="ci">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="ti">حملة جديدة</div>
+          <div class="ds">ابني حملةً بهدف محدّد، فترة زمنيّة، ورابط UTM يميّزها — في أقلّ من <span class="latin">3</span> دقائق</div>
+        </button>
+
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Create modal -->
+<div class="scrim" id="createScrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cTitle">
+    <header class="modal-head">
+      <div>
+        <h3 id="cTitle">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          إطلاق حملة جديدة
+        </h3>
+        <p>اختاري قالباً أو ابدئي من الصفر — كلّ الخطوات قابلة للتعديل لاحقاً</p>
+      </div>
+      <button class="modal-close" id="cClose" aria-label="إغلاق">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="modal-body">
+
+      <div class="stepper">
+        <div class="step active"><span class="num">1</span><span class="lbl">القالب</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">2</span><span class="lbl">الأهداف والفترة</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">3</span><span class="lbl">رسائل الحملة</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="num">4</span><span class="lbl">مراجعة وإطلاق</span></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">اختاري قالباً</label>
+        <div class="tmpl-grid">
+          <button class="tmpl selected" type="button">
+            <div class="ti ramadan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+            <div><div class="tn">رمضاني</div><div class="td">رسائل دافئة وآيات لشهر الرحمة</div></div>
+          </button>
+          <button class="tmpl" type="button">
+            <div class="ti eid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/></svg></div>
+            <div><div class="tn">عيد</div><div class="td">للفطر أو الأضحى</div></div>
+          </button>
+          <button class="tmpl" type="button">
+            <div class="ti hajj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 21 12 3 21 21 3 21"/></svg></div>
+            <div><div class="tn">حجّ المبرور</div><div class="td">للعشر الأوائل من ذي الحجّة</div></div>
+          </button>
+          <button class="tmpl" type="button">
+            <div class="ti moms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v1"/></svg></div>
+            <div><div class="tn">مجموعات الأمّهات</div><div class="td">إحالات دائمة</div></div>
+          </button>
+          <button class="tmpl" type="button">
+            <div class="ti friday"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div><div class="tn">دعوات الجمعة</div><div class="td">رسائل أسبوعيّة دافئة</div></div>
+          </button>
+          <button class="tmpl" type="button">
+            <div class="ti custom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <div><div class="tn">مخصّص</div><div class="td">من الصفر</div></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">اسم الحملة</label>
+        <input type="text" class="form-input" value="رمضان معاً 1447" placeholder="مثلاً: رمضان معاً 1447">
+        <div class="form-help">اسم وصفي يميّزها في التقارير</div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">تاريخ البداية</label>
+          <input type="text" class="form-input" value="1 رمضان 1447" placeholder="اختاري التاريخ">
+        </div>
+        <div class="form-group">
+          <label class="form-label">تاريخ النهاية</label>
+          <input type="text" class="form-input" value="30 رمضان 1447" placeholder="اختاري التاريخ">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">معاينة رابط الـ UTM</label>
+        <div class="utm-builder">
+          <code><span class="latin">https://rufaqaa.app/sponsor</span><span class="params">?</span><br>
+            <span class="params">&nbsp;&nbsp;utm_source=</span><span class="source">whatsapp</span><span class="params">&</span><br>
+            <span class="params">&nbsp;&nbsp;utm_medium=</span><span class="source">gulf</span><span class="params">&</span><br>
+            <span class="params">&nbsp;&nbsp;utm_campaign=</span><span class="source">ramadan-47</span>
+          </code>
+        </div>
+        <div class="form-help">يُولَّد آلياً من اسم الحملة وقناتك — يمكن تخصيصه يدوياً لاحقاً</div>
+      </div>
+
+    </div>
+    <footer class="modal-foot">
+      <button class="btn-ghost" id="cCancel">إلغاء</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-secondary" disabled style="opacity:.5; cursor:not-allowed;">السابق</button>
+        <button class="btn-primary">
+          التالي
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  const scrim = document.getElementById('createScrim');
+  document.getElementById('openCreate').addEventListener('click', () => scrim.classList.add('show'));
+  document.getElementById('openCreate2').addEventListener('click', () => scrim.classList.add('show'));
+  document.getElementById('cClose').addEventListener('click', () => scrim.classList.remove('show'));
+  document.getElementById('cCancel').addEventListener('click', () => scrim.classList.remove('show'));
+  scrim.addEventListener('click', e => { if (e.target === scrim) scrim.classList.remove('show'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') scrim.classList.remove('show'); });
+
+  document.querySelectorAll('.tmpl').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tmpl').forEach(o => o.classList.remove('selected'));
+      t.classList.add('selected');
+    });
+  });
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(o => o.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

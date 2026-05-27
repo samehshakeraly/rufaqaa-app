@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — الدفع الآمن</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-700: #B45309;
+  --danger-50: #FEF2F2;
+  --danger-100: #FEE2E2;
+  --danger-500: #EF4444;
+  --danger-600: #DC2626;
+  --danger-700: #B91C1C;
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(214,230,242,.4) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(214,230,242,.3) 0%, transparent 50%),
+    var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ═══ HEADER ═══ */
+.pay-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 24px;
+}
+.pay-header-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 36px; height: 36px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 18px;
+}
+.brand-info h1 { font-size: 15px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 11px; color: var(--gray-500); display: flex; align-items: center; gap: 5px; }
+.brand-info p svg { color: var(--success-600); }
+
+.pay-via {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pay-via .latin {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--gray-700);
+  font-weight: 600;
+  font-size: 10.5px;
+}
+
+@media (max-width: 480px) {
+  .pay-via { display: none; }
+  .brand-info p { display: none; }
+}
+
+/* ═══ MAIN ═══ */
+.pay-stage {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+}
+
+/* Order summary */
+.order-summary {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.os-photo {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 8px, var(--tranquil-100) 8px, var(--tranquil-100) 16px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 600;
+  color: var(--trust-700);
+  position: relative;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
+}
+
+.os-photo .flag {
+  position: absolute;
+  bottom: -3px; left: -3px;
+  width: 20px; height: 20px;
+  border-radius: 50%; background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  box-shadow: var(--shadow-xs);
+}
+
+.os-text { min-width: 0; }
+.os-title { font-size: 13px; color: var(--gray-500); font-weight: 500; }
+.os-name { font-size: 15.5px; font-weight: 600; color: var(--gray-900); margin-top: 2px; }
+.os-plan { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+.os-amount {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.01em;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  text-align: left;
+}
+
+.os-amount .unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Payment card */
+.pay-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.pay-card-head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  background: var(--gray-50);
+}
+
+.pay-card-head h2 {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pay-card-head p {
+  font-size: 12px; color: var(--gray-500); margin-top: 2px;
+}
+
+/* Method tabs */
+.method-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 8px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-100);
+}
+
+@media (max-width: 480px) { .method-tabs { grid-template-columns: repeat(2, 1fr); gap: 6px; } }
+
+.method-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 10px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--gray-600);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: inherit;
+}
+
+.method-tab:hover { background: white; color: var(--gray-800); }
+
+.method-tab.active {
+  background: white;
+  border-color: var(--trust-300);
+  color: var(--trust-700);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.method-logo {
+  width: 42px; height: 28px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: white;
+}
+.method-logo.knet { background: linear-gradient(135deg, #1a8754, #146943); }
+.method-logo.visa { background: var(--gray-900); }
+.method-logo.apay { background: black; font-family: -apple-system, sans-serif; }
+.method-logo.stc  { background: linear-gradient(135deg, #6610f2, #4a0ec5); }
+.method-logo.apay::after { content: ''; }
+
+/* Method body */
+.method-body {
+  padding: 22px;
+  display: none;
+}
+
+.method-body.active { display: block; animation: slideIn 240ms ease; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* K-Net specific */
+.knet-banks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+@media (max-width: 480px) { .knet-banks { grid-template-columns: repeat(2, 1fr); } }
+
+.knet-bank {
+  padding: 10px 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  text-align: center;
+  font-weight: 500;
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+}
+
+.knet-bank:hover { background: white; border-color: var(--sky-300); color: var(--trust-600); }
+
+.knet-redirect {
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.knet-redirect svg { flex-shrink: 0; color: var(--trust-500); }
+
+/* Card fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.field label {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--gray-700); letter-spacing: .02em;
+}
+
+.field-input-wrap {
+  position: relative;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--gray-900);
+  transition: var(--transition);
+  letter-spacing: .02em;
+}
+
+.field input.latin {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.field input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.field-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+  width: 18px; height: 18px;
+}
+
+.field-card-brand {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 36px; height: 22px;
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  background: var(--gray-900);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/* Save card toggle */
+.save-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--gray-700);
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.save-check {
+  width: 18px; height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.save-card.checked .save-check {
+  background: var(--trust-400); border-color: var(--trust-400);
+}
+.save-card.checked .save-check::after {
+  content: '';
+  width: 10px; height: 5px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* Apple Pay state */
+.apay-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 22px;
+  background: black;
+  border-radius: var(--radius-xl);
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: var(--transition);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.apay-cta:hover { background: #1a1a1a; }
+
+.apay-cta svg { width: 28px; height: 28px; }
+
+.apay-note {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* STC Pay */
+.stc-form-note {
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* Bottom CTAs */
+.pay-foot {
+  padding: 18px 22px 22px;
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-100);
+}
+
+.btn-pay {
+  width: 100%;
+  padding: 15px 20px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.btn-pay:hover { background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-md); }
+
+.btn-pay[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+.btn-pay svg { width: 18px; height: 18px; }
+
+.btn-cancel {
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--gray-600);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.btn-cancel:hover { color: var(--gray-900); }
+
+/* Security row */
+.security-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 14px;
+  flex-wrap: wrap;
+}
+
+.sec-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.sec-badge svg { color: var(--success-600); width: 16px; height: 16px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PROCESSING OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(247,251,252,.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.overlay.show { display: flex; animation: stepIn 320ms ease; }
+@keyframes stepIn { from { opacity: 0; } to { opacity: 1; } }
+
+.overlay-card {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 38px 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Processing */
+.spinner {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 4px solid var(--gray-100);
+  border-top-color: var(--trust-400);
+  animation: spin 800ms linear infinite;
+  margin: 0 auto 18px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.processing-title {
+  font-size: 22px; font-weight: 600;
+  color: var(--gray-900); margin-bottom: 6px;
+}
+.processing-sub {
+  font-size: 14px; color: var(--gray-600);
+  margin-bottom: 16px; line-height: 1.55;
+}
+.processing-steps {
+  list-style: none;
+  text-align: right;
+  margin-top: 14px;
+  border-top: 1px solid var(--gray-200);
+  padding-top: 14px;
+}
+.processing-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.processing-step.done { color: var(--success-700); }
+.processing-step.live { color: var(--gray-900); font-weight: 500; }
+
+.processing-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+.processing-step.done .processing-dot { background: var(--success-500); }
+.processing-step.live .processing-dot {
+  background: var(--trust-300);
+  animation: pulse-dot 1s infinite;
+}
+.processing-dot svg { width: 11px; height: 11px; }
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(118,159,205,.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(118,159,205,0); }
+}
+
+/* Success */
+.success-icon {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  background: var(--success-50);
+  color: var(--success-600);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  position: relative;
+}
+.success-icon::before {
+  content: ''; position: absolute; inset: -6px;
+  border-radius: 50%; border: 2px solid var(--success-100);
+}
+.success-icon svg { width: 40px; height: 40px; stroke-width: 2.2; }
+
+.overlay-card h2 {
+  font-size: 24px; font-weight: 600;
+  color: var(--gray-900); letter-spacing: -.02em;
+  margin-bottom: 8px;
+}
+
+.overlay-card .lede {
+  font-size: 14.5px; color: var(--gray-600);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.receipt-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 18px;
+  text-align: right;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.receipt-row + .receipt-row { border-top: 1px dashed var(--gray-200); }
+.receipt-row-label { color: var(--gray-600); }
+.receipt-row-value {
+  color: var(--gray-900); font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.overlay-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) { .overlay-actions { grid-template-columns: 1fr; } }
+
+.btn-overlay {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-700);
+  transition: var(--transition);
+}
+.btn-overlay:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.btn-overlay.primary {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+  color: white;
+}
+.btn-overlay.primary:hover { background: var(--trust-400); border-color: var(--trust-400); }
+
+/* Failure */
+.fail-icon {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  background: var(--danger-50);
+  color: var(--danger-600);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  position: relative;
+}
+.fail-icon::before {
+  content: ''; position: absolute; inset: -6px;
+  border-radius: 50%; border: 2px solid var(--danger-100);
+}
+.fail-icon svg { width: 40px; height: 40px; stroke-width: 2.2; }
+
+.fail-reason {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 13.5px;
+  color: var(--gray-700);
+  margin-bottom: 16px;
+  text-align: right;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.55;
+}
+
+.fail-reason svg { color: var(--gray-500); flex-shrink: 0; margin-top: 2px; }
+
+.fail-reason strong { color: var(--gray-900); font-weight: 600; }
+
+/* ═══ TWEAKS — small state switcher (top-right) ═══ */
+.state-switcher {
+  position: fixed;
+  bottom: 16px;
+  inset-inline-start: 16px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 200px;
+}
+
+.state-switcher-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.state-switcher-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.state-btn {
+  padding: 5px 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--gray-700);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.state-btn:hover { background: white; border-color: var(--sky-300); }
+.state-btn.active { background: var(--trust-300); border-color: var(--trust-300); color: white; }
+
+/* Icon */
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+@media (max-width: 480px) {
+  .pay-stage { padding: 20px 14px 64px; }
+  .order-summary { padding: 14px; gap: 10px; }
+  .os-photo { width: 48px; height: 48px; font-size: 20px; }
+  .os-amount { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="pay-header" role="banner">
+  <div class="pay-header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>الدفع الآمن — رفقاء</h1>
+        <p>
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          اتّصال مشفّر
+        </p>
+      </div>
+    </div>
+    <span class="pay-via">
+      عبر <span class="latin">MyFatoorah</span>
+    </span>
+  </div>
+</header>
+
+<!-- ═══ STAGE ═══ -->
+<main class="pay-stage" role="main">
+
+  <!-- Order summary -->
+  <div class="order-summary" aria-label="ملخّص الكفالة">
+    <div class="os-photo" aria-hidden="true">
+      س
+      <span class="flag" title="فلسطين">🇵🇸</span>
+    </div>
+    <div class="os-text">
+      <div class="os-title">كفالة</div>
+      <div class="os-name">سلمى ع. · فلسطين</div>
+      <div class="os-plan">خطّة سنويّة · لمدّة <span class="latin">12</span> شهراً</div>
+    </div>
+    <div class="os-amount">
+      <span class="latin">380</span>
+      <span class="unit">دك</span>
+    </div>
+  </div>
+
+  <!-- Payment card -->
+  <section class="pay-card" aria-labelledby="pay-title">
+    <div class="pay-card-head">
+      <h2 id="pay-title">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        اختر طريقة الدفع
+      </h2>
+      <p>كل المعاملات مشفّرة ومعتمدة من <span class="latin" style="color: var(--gray-800); font-weight: 600;">PCI DSS</span></p>
+    </div>
+
+    <!-- Method tabs -->
+    <div class="method-tabs" role="tablist">
+      <button class="method-tab active" data-method="knet" role="tab" aria-selected="true">
+        <div class="method-logo knet" aria-hidden="true">K-NET</div>
+        كي–نت
+      </button>
+      <button class="method-tab" data-method="visa" role="tab" aria-selected="false">
+        <div class="method-logo visa" aria-hidden="true">VISA</div>
+        بطاقة ائتمان
+      </button>
+      <button class="method-tab" data-method="apay" role="tab" aria-selected="false">
+        <div class="method-logo apay" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="white" width="14" height="14"><path d="M17.6 12.7c0-2.1 1.7-3.1 1.7-3.1-.9-1.4-2.4-1.5-2.9-1.5-1.2-.1-2.4.7-3 .7s-1.5-.7-2.5-.7c-1.3 0-2.5.7-3.1 1.9-1.4 2.3-.4 5.8 1 7.7.7.9 1.4 2 2.4 2 1 0 1.3-.6 2.5-.6s1.5.6 2.5.6 1.7-.9 2.3-1.8c.7-1 1-2 1-2 0-.1-2-.7-2-3.2zM15.7 6.8c.5-.6.9-1.5.8-2.3-.8 0-1.7.5-2.2 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.7-.4 2.2-1z"/></svg>
+        </div>
+        Apple Pay
+      </button>
+      <button class="method-tab" data-method="stc" role="tab" aria-selected="false">
+        <div class="method-logo stc" aria-hidden="true">STC</div>
+        STC Pay
+      </button>
+    </div>
+
+    <!-- K-Net body -->
+    <div class="method-body active" data-body="knet">
+      <p style="font-size: 13.5px; color: var(--gray-700); margin-bottom: 14px; line-height: 1.6;">
+        سيتمّ تحويلك لصفحة كي–نت الرسميّة لاختيار بنكك وإتمام الدفع.
+      </p>
+
+      <div class="knet-banks" aria-label="البنوك المدعومة">
+        <button class="knet-bank">NBK</button>
+        <button class="knet-bank">KFH</button>
+        <button class="knet-bank">Boubyan</button>
+        <button class="knet-bank">CBK</button>
+        <button class="knet-bank">Gulf Bank</button>
+        <button class="knet-bank">+ 8 بنوك</button>
+      </div>
+
+      <div class="knet-redirect">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"/><path d="M14 14L21 7"/><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
+        <span>عند الضغط على «ادفع»، تُحوّل لصفحة كي–نت الآمنة في نافذة جديدة.</span>
+      </div>
+    </div>
+
+    <!-- Visa body -->
+    <div class="method-body" data-body="visa">
+      <div class="field">
+        <label for="card-num">رقم البطاقة</label>
+        <div class="field-input-wrap">
+          <input type="text" id="card-num" class="latin" placeholder="•••• •••• •••• ••••" inputmode="numeric" autocomplete="cc-number" style="padding-left: 56px;">
+          <div class="field-card-brand" aria-hidden="true">VISA</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="card-name">الاسم على البطاقة</label>
+        <input type="text" id="card-name" placeholder="كما يظهر على البطاقة" autocomplete="cc-name">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="card-exp">تاريخ الانتهاء</label>
+          <input type="text" id="card-exp" class="latin" placeholder="MM / YY" inputmode="numeric" autocomplete="cc-exp">
+        </div>
+        <div class="field">
+          <label for="card-cvc">CVC</label>
+          <input type="text" id="card-cvc" class="latin" placeholder="•••" inputmode="numeric" maxlength="4" autocomplete="cc-csc">
+        </div>
+      </div>
+
+      <button type="button" class="save-card checked" id="save-card-btn">
+        <span class="save-check" aria-hidden="true"></span>
+        <span>احفظ هذه البطاقة بشكل آمن للدفعات القادمة</span>
+      </button>
+    </div>
+
+    <!-- Apple Pay body -->
+    <div class="method-body" data-body="apay">
+      <button type="button" class="apay-cta">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 12.7c0-2.1 1.7-3.1 1.7-3.1-.9-1.4-2.4-1.5-2.9-1.5-1.2-.1-2.4.7-3 .7s-1.5-.7-2.5-.7c-1.3 0-2.5.7-3.1 1.9-1.4 2.3-.4 5.8 1 7.7.7.9 1.4 2 2.4 2 1 0 1.3-.6 2.5-.6s1.5.6 2.5.6 1.7-.9 2.3-1.8c.7-1 1-2 1-2 0-.1-2-.7-2-3.2zM15.7 6.8c.5-.6.9-1.5.8-2.3-.8 0-1.7.5-2.2 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.7-.4 2.2-1z"/></svg>
+        <span>الدفع عبر Apple Pay</span>
+      </button>
+      <p class="apay-note">سيُطلب منك تأكيد الدفع عبر <span class="latin">Touch ID</span> أو <span class="latin">Face ID</span></p>
+    </div>
+
+    <!-- STC body -->
+    <div class="method-body" data-body="stc">
+      <div class="stc-form-note">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>أدخل رقم جوّالك المسجّل في تطبيق <span class="latin">STC Pay</span>.</span>
+      </div>
+
+      <div class="field">
+        <label for="stc-phone">رقم الجوّال</label>
+        <input type="tel" id="stc-phone" class="latin" placeholder="+965 9XXX XXXX" inputmode="numeric">
+      </div>
+    </div>
+
+    <!-- Foot -->
+    <div class="pay-foot">
+      <button class="btn-pay" id="btn-pay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        ادفع <span class="latin" style="margin: 0 4px;">380</span> دك
+      </button>
+      <button class="btn-cancel" onclick="location.href='D-04 Sponsorship Wizard.html'">
+        إلغاء والعودة للمراجعة
+      </button>
+    </div>
+  </section>
+
+  <!-- Security row -->
+  <div class="security-row" aria-label="شارات الأمان">
+    <span class="sec-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="latin">PCI DSS</span>
+    </span>
+    <span class="sec-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span class="latin">SSL 256-bit</span>
+    </span>
+    <span class="sec-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      <span class="latin">3D-Secure</span>
+    </span>
+    <span class="sec-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ٢٤/٧ دعم
+    </span>
+  </div>
+
+</main>
+
+<!-- ═══ OVERLAYS ═══ -->
+
+<!-- Processing -->
+<div class="overlay" id="ov-processing" role="dialog" aria-modal="true" aria-labelledby="proc-title">
+  <div class="overlay-card">
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="processing-title" id="proc-title">جارٍ معالجة الدفعة</div>
+    <div class="processing-sub">لا تُغلق هذه النافذة — قد تستغرق العملية حتى ٣٠ ثانية.</div>
+    <ul class="processing-steps">
+      <li class="processing-step done" id="p1">
+        <span class="processing-dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
+        التحقّق من تفاصيل البطاقة
+      </li>
+      <li class="processing-step live" id="p2">
+        <span class="processing-dot" aria-hidden="true"></span>
+        التواصل مع البنك
+      </li>
+      <li class="processing-step" id="p3">
+        <span class="processing-dot" aria-hidden="true"></span>
+        تأكيد الخصم
+      </li>
+      <li class="processing-step" id="p4">
+        <span class="processing-dot" aria-hidden="true"></span>
+        إنشاء الإيصال وبدء الكفالة
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Success -->
+<div class="overlay" id="ov-success" role="dialog" aria-modal="true" aria-labelledby="ok-title">
+  <div class="overlay-card">
+    <div class="success-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 id="ok-title">تمّ الدفع بنجاح</h2>
+    <p class="lede">
+      جزاكم الله خيراً. بدأت كفالة سلمى الآن، وستصلكم أوّل تقاريرها وصورها خلال شهر إن شاء الله.
+    </p>
+
+    <div class="receipt-card">
+      <div class="receipt-row">
+        <span class="receipt-row-label">رقم الإيصال</span>
+        <span class="receipt-row-value">PAY-<span class="latin">29874</span></span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">المبلغ المخصوم</span>
+        <span class="receipt-row-value"><span class="latin">380</span> دك</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">طريقة الدفع</span>
+        <span class="receipt-row-value">كي–نت · <span class="latin">****4827</span></span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">التاريخ</span>
+        <span class="receipt-row-value latin">٢٤/٠٧/١٤٤٧</span>
+      </div>
+    </div>
+
+    <div class="overlay-actions">
+      <button class="btn-overlay">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-inline-end: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        تحميل الإيصال
+      </button>
+      <button class="btn-overlay primary" onclick="location.href='D-01 Donor Dashboard.html'">
+        العودة للوحتي
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Failure -->
+<div class="overlay" id="ov-fail" role="dialog" aria-modal="true" aria-labelledby="err-title">
+  <div class="overlay-card">
+    <div class="fail-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <h2 id="err-title">لم تكتمل الدفعة</h2>
+    <p class="lede">
+      لم تتمّ المعاملة هذه المرّة، ولا تقلق — لم يُخصم أي مبلغ من حسابك. جرّب مجدّداً أو اختر طريقة دفع أخرى.
+    </p>
+
+    <div class="fail-reason">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span><strong>السبب من البنك:</strong> رصيد البطاقة لا يكفي لإتمام المعاملة. (رمز: <span class="latin">INSUFFICIENT_FUNDS</span>)</span>
+    </div>
+
+    <div class="overlay-actions">
+      <button class="btn-overlay" onclick="hideAll()">
+        اختر طريقة أخرى
+      </button>
+      <button class="btn-overlay primary" onclick="hideAll(); startPay()">
+        حاول مرّة أخرى
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- State switcher for demo -->
+<div class="state-switcher" role="region" aria-label="مفاتيح الحالات (للعرض)">
+  <div class="state-switcher-label">حالات الشاشة</div>
+  <div class="state-switcher-btns">
+    <button class="state-btn active" data-state="idle">إدخال</button>
+    <button class="state-btn" data-state="processing">معالجة</button>
+    <button class="state-btn" data-state="success">نجاح</button>
+    <button class="state-btn" data-state="fail">فشل</button>
+  </div>
+</div>
+
+<script>
+/* Method tabs */
+const tabs = document.querySelectorAll('.method-tab');
+const bodies = document.querySelectorAll('.method-body');
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected', 'true');
+    bodies.forEach(b => b.classList.toggle('active', b.dataset.body === tab.dataset.method));
+  });
+});
+
+/* Save card */
+const saveBtn = document.getElementById('save-card-btn');
+saveBtn.addEventListener('click', () => saveBtn.classList.toggle('checked'));
+
+/* Pay flow simulation */
+const ovProc = document.getElementById('ov-processing');
+const ovOk = document.getElementById('ov-success');
+const ovFail = document.getElementById('ov-fail');
+
+function hideAll() {
+  [ovProc, ovOk, ovFail].forEach(o => o.classList.remove('show'));
+}
+
+function startPay() {
+  hideAll();
+  ovProc.classList.add('show');
+  // Animate steps
+  const steps = [...document.querySelectorAll('.processing-step')];
+  steps.forEach((s, i) => {
+    s.classList.remove('done', 'live');
+    if (i === 0) s.classList.add('done');
+    else if (i === 1) s.classList.add('live');
+  });
+
+  setTimeout(() => {
+    steps[1].classList.remove('live'); steps[1].classList.add('done');
+    steps[2].classList.add('live');
+  }, 1200);
+
+  setTimeout(() => {
+    steps[2].classList.remove('live'); steps[2].classList.add('done');
+    steps[3].classList.add('live');
+  }, 2200);
+
+  setTimeout(() => {
+    hideAll();
+    ovOk.classList.add('show');
+  }, 3000);
+}
+
+document.getElementById('btn-pay').addEventListener('click', startPay);
+
+/* State switcher */
+document.querySelectorAll('.state-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    hideAll();
+    const s = btn.dataset.state;
+    if (s === 'processing') ovProc.classList.add('show');
+    else if (s === 'success') ovOk.classList.add('show');
+    else if (s === 'fail') ovFail.classList.add('show');
+  });
+});
+</script>
+
+</body>
+</html>

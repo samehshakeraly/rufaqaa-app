@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — سلمى عبد الكريم · موظف الجهة</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+  --sidebar-w: 220px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 15px; line-height: 1.55;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* APP SHELL */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; transition: var(--transition-fast); width: 100%; }
+.tenant-switcher:hover { background: white; border-color: var(--sky-300); }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-500), var(--trust-700)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tenant-switcher .chev { color: var(--gray-400); }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); transition: var(--transition-fast); width: 100%; border: none; background: transparent; text-align: right; }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--gray-500); }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; flex-wrap: wrap; }
+.crumb { font-size: 12.5px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+.crumb a:hover { color: var(--trust-500); }
+.crumb-sep svg { color: var(--gray-300); }
+.crumb-current { color: var(--gray-900); font-weight: 600; }
+.topbar-actions { display: flex; gap: 8px; }
+
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.btn-primary:hover { background: var(--trust-500); border-color: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.btn-danger { padding: 8px 14px; background: white; color: var(--danger-600); border: 1px solid var(--danger-100); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.btn-danger:hover { background: var(--danger-50); border-color: var(--danger-600); }
+
+/* PAGE */
+.page { padding: 22px 28px 48px; max-width: 1380px; width: 100%; margin: 0 auto; }
+
+/* Hero */
+.hero {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .hero { grid-template-columns: 64px 1fr; }
+  .hero-actions { grid-column: 1 / -1; }
+}
+
+.hero-photo {
+  width: 88px; height: 88px;
+  border-radius: 22px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 8px, var(--tranquil-100) 8px, var(--tranquil-100) 16px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 600; color: var(--trust-700);
+  border: 3px solid white;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.hero-text { min-width: 0; }
+.hero-code {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 2px 8px;
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+}
+.hero-name {
+  font-size: 24px; font-weight: 600;
+  color: var(--gray-900); letter-spacing: -.02em; line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.hero-meta {
+  font-size: 13px; color: var(--gray-600);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.hero-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+
+.hero-badges { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px; border-radius: var(--radius-full);
+  font-size: 11.5px; font-weight: 500;
+}
+.badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge.review { background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); }
+.badge.fam { background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); }
+.badge.partner { background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); }
+
+.hero-actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; flex-shrink: 0; }
+
+/* Tabs */
+.tabs-wrap {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 8px;
+  background: var(--gray-50);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-500);
+  margin-bottom: -1px;
+  transition: var(--transition-fast);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--gray-800); }
+.tab.active { color: var(--trust-600); border-bottom-color: var(--trust-300); background: white; font-weight: 600; }
+.tab-count { background: var(--gray-200); color: var(--gray-600); font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: var(--radius-full); font-family: 'IBM Plex Sans', sans-serif; }
+.tab.active .tab-count { background: var(--tranquil-200); color: var(--trust-700); }
+
+.tab-content { padding: 22px; display: none; }
+.tab-content.active { display: block; }
+
+/* Two-col layout inside tabs */
+.col-2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1024px) { .col-2 { grid-template-columns: 1fr; } }
+
+/* Info blocks */
+.info-block {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.info-block-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.info-block-title {
+  font-size: 12.5px; font-weight: 600; color: var(--gray-700);
+  display: flex; align-items: center; gap: 8px;
+  letter-spacing: .02em; text-transform: uppercase;
+}
+.info-block-title svg { color: var(--trust-400); }
+
+.info-block-edit {
+  font-size: 12px; color: var(--trust-500); font-weight: 500;
+  background: transparent; border: none; padding: 4px 8px;
+  border-radius: var(--radius-md);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.info-block-edit:hover { background: var(--tranquil-100); color: var(--trust-700); }
+
+.info-rows { display: flex; flex-direction: column; gap: 8px; }
+.info-row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; align-items: baseline; font-size: 13px; }
+.info-row-label { color: var(--gray-600); }
+.info-row-value { color: var(--gray-900); font-weight: 500; }
+
+.info-row-value.success { color: var(--success-700); }
+.info-row-value.warn { color: var(--warning-700); }
+.info-row-value.danger { color: var(--danger-600); }
+
+/* Side blocks */
+.side-block {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.side-block-head {
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.side-block-body { padding: 14px 16px; font-size: 12.5px; color: var(--gray-700); line-height: 1.6; }
+
+/* Audit log */
+.audit-row {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--gray-100);
+  font-size: 12px;
+}
+.audit-row:last-child { border-bottom: none; }
+
+.audit-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  margin: 6px 8px 0 0;
+}
+.audit-dot.green { background: var(--success-500); }
+.audit-dot.warn { background: var(--warning-700); }
+.audit-dot.gray { background: var(--gray-400); }
+
+.audit-body { min-width: 0; }
+.audit-action { color: var(--gray-900); font-weight: 500; }
+.audit-meta { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+/* Documents grid */
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.doc-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  transition: var(--transition-fast);
+}
+.doc-card:hover { border-color: var(--sky-300); }
+
+.doc-card-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.doc-card.ok .doc-card-icon { background: var(--success-50); color: var(--success-700); }
+.doc-card.missing .doc-card-icon { background: var(--gray-100); color: var(--gray-400); }
+
+.doc-card-name { font-size: 12px; font-weight: 600; color: var(--gray-900); }
+.doc-card-meta { font-size: 10.5px; color: var(--gray-500); }
+.doc-card-meta.miss { color: var(--warning-700); }
+
+/* Documents bar (under tabs) */
+.docs-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+}
+
+.docs-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.docs-progress-track {
+  width: 120px;
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.docs-progress-fill {
+  height: 100%;
+  background: var(--trust-400);
+}
+
+/* Pending review banner */
+.pending-banner {
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.pending-banner-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid var(--info-100);
+  color: var(--info-700);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.pending-banner-text { flex: 1; min-width: 0; }
+.pending-banner-text h3 { font-size: 14px; font-weight: 600; color: var(--info-700); margin-bottom: 2px; }
+.pending-banner-text p { font-size: 12.5px; color: var(--gray-700); line-height: 1.5; }
+
+.pending-banner-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" aria-label="التنقّل">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>بوابة الجهة الشريكة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">فجر</span>
+      <span class="name">جمعية الفجر — غزّة</span>
+      <svg class="icon icon-sm chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <div class="nav-section">العمل اليوم</div>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسية
+    </button>
+
+    <div class="nav-section">الأيتام</div>
+    <button class="nav-item active">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      كل الأيتام
+      <span class="nav-item-badge muted"><span class="latin">1,240</span></span>
+    </button>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      تسجيل يتيم جديد
+    </button>
+
+    <div class="nav-section">المراجعة</div>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      تقارير ولي الأمر
+      <span class="nav-item-badge">١٢</span>
+    </button>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      الصور والوسائط
+      <span class="nav-item-badge">٢٤</span>
+    </button>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">س.ع</div>
+      <div class="user-info">
+        <div class="user-name">سارة العلي</div>
+        <div class="user-role">موظّفة شؤون أيتام</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <div class="crumb">
+        <a href="PS-01 Partner Staff Dashboard.html">اللوحة</a>
+        <span class="crumb-sep"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
+        <a href="PS-02 Orphans Table.html">كل الأيتام</a>
+        <span class="crumb-sep"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></span>
+        <span class="crumb-current">سلمى عبد الكريم</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="m19 6-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+          أرشفة
+        </button>
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          تخصيص لقناة
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          تحرير الملف
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-photo">س</div>
+        <div class="hero-text">
+          <span class="hero-code">ORP-<span class="latin">02841</span></span>
+          <h1 class="hero-name">سلمى عبد الكريم محمود العبيدي</h1>
+          <div class="hero-meta">
+            <span>٨ سنوات</span>
+            <span class="dot"></span>
+            <span>أنثى</span>
+            <span class="dot"></span>
+            <span>فلسطينيّة</span>
+            <span class="dot"></span>
+            <span>غزّة — حيّ الشيخ رضوان</span>
+          </div>
+          <div class="hero-badges">
+            <span class="badge review"><span class="dot"></span>قيد الاعتماد المزدوج</span>
+            <span class="badge fam">عائلة العبيدي · FAM-<span class="latin">1024</span></span>
+            <span class="badge partner">جمعية الفجر — فرع غزّة</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-secondary">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            خيارات أخرى
+          </button>
+        </div>
+      </section>
+
+      <!-- Pending review banner -->
+      <div class="pending-banner">
+        <div class="pending-banner-icon">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div class="pending-banner-text">
+          <h3>هذه الحالة قيد الاعتماد من مدير الفرع</h3>
+          <p>سُجّلت قبل ساعتين بواسطة سارة العلي. بعد الاعتماد المزدوج تصبح متاحة في كتالوج الكفالة.</p>
+        </div>
+        <div class="pending-banner-actions">
+          <button class="btn-danger">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            رفض
+          </button>
+          <button class="btn-primary">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            اعتمد الآن
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <section class="tabs-wrap">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="overview">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            نظرة عامة
+          </button>
+          <button class="tab" data-tab="family">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            العائلة وولي الأمر
+          </button>
+          <button class="tab" data-tab="docs">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            المستندات
+            <span class="tab-count">٣ / ٥</span>
+          </button>
+          <button class="tab" data-tab="reports">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            التقارير
+            <span class="tab-count">٠</span>
+          </button>
+          <button class="tab" data-tab="media">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            الصور
+            <span class="tab-count">٠</span>
+          </button>
+          <button class="tab" data-tab="audit">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            سجلّ التغييرات
+          </button>
+        </div>
+
+        <!-- Overview -->
+        <div class="tab-content active" data-tab="overview">
+          <div class="col-2">
+            <div>
+
+              <div class="info-block">
+                <div class="info-block-head">
+                  <div class="info-block-title">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    البيانات الأساسيّة
+                  </div>
+                  <button class="info-block-edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تحرير</button>
+                </div>
+                <div class="info-rows">
+                  <div class="info-row"><span class="info-row-label">الاسم الكامل</span><span class="info-row-value">سلمى عبد الكريم محمود العبيدي</span></div>
+                  <div class="info-row"><span class="info-row-label">تاريخ الميلاد</span><span class="info-row-value latin">2017/03/14</span></div>
+                  <div class="info-row"><span class="info-row-label">العمر</span><span class="info-row-value">٨ سنوات</span></div>
+                  <div class="info-row"><span class="info-row-label">الجنس</span><span class="info-row-value">أنثى</span></div>
+                  <div class="info-row"><span class="info-row-label">الجنسيّة</span><span class="info-row-value">فلسطينيّة</span></div>
+                </div>
+              </div>
+
+              <div class="info-block">
+                <div class="info-block-head">
+                  <div class="info-block-title">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    الأب المتوفّى
+                  </div>
+                  <button class="info-block-edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تحرير</button>
+                </div>
+                <div class="info-rows">
+                  <div class="info-row"><span class="info-row-label">الاسم</span><span class="info-row-value">عبد الكريم محمود العبيدي</span></div>
+                  <div class="info-row"><span class="info-row-label">تاريخ الوفاة</span><span class="info-row-value latin">2023/11/08</span></div>
+                  <div class="info-row"><span class="info-row-label">السبب</span><span class="info-row-value">مرض</span></div>
+                  <div class="info-row"><span class="info-row-label">شهادة الوفاة</span><span class="info-row-value success">مرفوعة ومُعتمدة ✓</span></div>
+                </div>
+              </div>
+
+              <div class="info-block">
+                <div class="info-block-head">
+                  <div class="info-block-title">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    التعليم
+                  </div>
+                  <button class="info-block-edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تحرير</button>
+                </div>
+                <div class="info-rows">
+                  <div class="info-row"><span class="info-row-label">المرحلة</span><span class="info-row-value">الصف الثاني الابتدائي</span></div>
+                  <div class="info-row"><span class="info-row-label">المدرسة</span><span class="info-row-value">مدرسة الفجر الابتدائيّة</span></div>
+                  <div class="info-row"><span class="info-row-label">المستوى</span><span class="info-row-value success">جيّد جدّاً</span></div>
+                  <div class="info-row"><span class="info-row-label">المواهب</span><span class="info-row-value">رسم · حفظ ربع جزء عمّ</span></div>
+                </div>
+              </div>
+
+              <div class="info-block">
+                <div class="info-block-head">
+                  <div class="info-block-title">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    الصحّة
+                  </div>
+                  <button class="info-block-edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تحرير</button>
+                </div>
+                <div class="info-rows">
+                  <div class="info-row"><span class="info-row-label">الحالة العامّة</span><span class="info-row-value success">جيّدة</span></div>
+                  <div class="info-row"><span class="info-row-label">آخر فحص</span><span class="info-row-value">قبل شهر</span></div>
+                  <div class="info-row"><span class="info-row-label">حساسيّات / أمراض مزمنة</span><span class="info-row-value">لا توجد</span></div>
+                  <div class="info-row"><span class="info-row-label">التغطية الصحّيّة</span><span class="info-row-value">أونروا</span></div>
+                </div>
+              </div>
+
+              <div class="info-block">
+                <div class="info-block-head">
+                  <div class="info-block-title">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    الوضع الاقتصادي
+                  </div>
+                  <button class="info-block-edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تحرير</button>
+                </div>
+                <div class="info-rows">
+                  <div class="info-row"><span class="info-row-label">دخل الأسرة الشهري</span><span class="info-row-value latin">800 ₪</span></div>
+                  <div class="info-row"><span class="info-row-label">عدد أفراد الأسرة</span><span class="info-row-value">٥</span></div>
+                  <div class="info-row"><span class="info-row-label">السكن</span><span class="info-row-value">عند الأقارب</span></div>
+                  <div class="info-row"><span class="info-row-label">تقدير الأولويّة</span><span class="info-row-value warn">مرتفعة</span></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Side col -->
+            <aside>
+              <div class="side-block">
+                <div class="side-block-head">
+                  معلومات سريعة
+                </div>
+                <div class="side-block-body">
+                  <div class="info-rows">
+                    <div class="info-row"><span class="info-row-label">الكود</span><span class="info-row-value mono latin" style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;">ORP-02841</span></div>
+                    <div class="info-row"><span class="info-row-label">سُجّلت</span><span class="info-row-value">قبل ساعتين</span></div>
+                    <div class="info-row"><span class="info-row-label">المسؤول</span><span class="info-row-value">سارة العلي</span></div>
+                    <div class="info-row"><span class="info-row-label">الحالة</span><span class="info-row-value warn">قيد الاعتماد</span></div>
+                    <div class="info-row"><span class="info-row-label">الكفالة</span><span class="info-row-value" style="color: var(--gray-500);">غير مكفولة</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="side-block">
+                <div class="side-block-head">
+                  المستندات
+                  <span style="font-weight: 500; color: var(--gray-500);">٣ / ٥</span>
+                </div>
+                <div class="side-block-body">
+                  <div class="docs-summary">
+                    <span>اكتمال المستندات</span>
+                    <div class="docs-progress">
+                      <div class="docs-progress-track">
+                        <div class="docs-progress-fill" style="width: 60%;"></div>
+                      </div>
+                      <span style="font-family: 'IBM Plex Sans', sans-serif; color: var(--trust-600); font-weight: 600;">60%</span>
+                    </div>
+                  </div>
+
+                  <div class="docs-grid">
+                    <div class="doc-card ok">
+                      <div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="doc-card-name">شهادة الوفاة</div>
+                      <div class="doc-card-meta">مُعتمدة</div>
+                    </div>
+                    <div class="doc-card ok">
+                      <div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="doc-card-name">هويّة ولي الأمر</div>
+                      <div class="doc-card-meta">مرفوعة</div>
+                    </div>
+                    <div class="doc-card ok">
+                      <div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                      <div class="doc-card-name">صورة شخصيّة</div>
+                      <div class="doc-card-meta">مرفوعة</div>
+                    </div>
+                    <div class="doc-card missing">
+                      <div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                      <div class="doc-card-name">شهادة الميلاد</div>
+                      <div class="doc-card-meta miss">ناقصة</div>
+                    </div>
+                    <div class="doc-card missing">
+                      <div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                      <div class="doc-card-name">إفادة المدرسة</div>
+                      <div class="doc-card-meta miss">ناقصة</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="side-block">
+                <div class="side-block-head">
+                  أشقّاء في النظام
+                </div>
+                <div class="side-block-body">
+                  <p style="color: var(--gray-500);">لا يوجد أشقّاء مسجّلون لهذه العائلة. عند تسجيل يتيم آخر من نفس العائلة سيظهر هنا.</p>
+                </div>
+              </div>
+
+            </aside>
+          </div>
+        </div>
+
+        <!-- Audit tab -->
+        <div class="tab-content" data-tab="audit">
+          <div class="info-block">
+            <div class="info-block-head">
+              <div class="info-block-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                سجلّ كامل
+              </div>
+            </div>
+
+            <div class="audit-row"><span class="audit-dot warn"></span>
+              <div class="audit-body">
+                <div class="audit-action">أُرسلت الحالة للاعتماد من قِبل سارة العلي</div>
+                <div class="audit-meta">قبل ساعتين · من حاسوب المكتب</div>
+              </div>
+            </div>
+
+            <div class="audit-row"><span class="audit-dot"></span>
+              <div class="audit-body">
+                <div class="audit-action">أُكمل تسجيل البيانات الأساسيّة وبيانات الأب</div>
+                <div class="audit-meta">قبل ساعتين</div>
+              </div>
+            </div>
+
+            <div class="audit-row"><span class="audit-dot gray"></span>
+              <div class="audit-body">
+                <div class="audit-action">رُفعت شهادة الوفاة <span class="latin">(death-cert.pdf)</span></div>
+                <div class="audit-meta">قبل ساعتين</div>
+              </div>
+            </div>
+
+            <div class="audit-row"><span class="audit-dot green"></span>
+              <div class="audit-body">
+                <div class="audit-action">نتيجة كشف التكرار: لا تكرارات قويّة</div>
+                <div class="audit-meta">قبل ساعتين · آلي</div>
+              </div>
+            </div>
+
+            <div class="audit-row"><span class="audit-dot gray"></span>
+              <div class="audit-body">
+                <div class="audit-action">أنشأت سارة العلي مسوّدة جديدة</div>
+                <div class="audit-meta">قبل ٣ ساعات</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Other tabs as placeholders -->
+        <div class="tab-content" data-tab="family">
+          <div class="info-block">
+            <div class="info-block-head">
+              <div class="info-block-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>ولي الأمر</div>
+              <button class="info-block-edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تحرير</button>
+            </div>
+            <div class="info-rows">
+              <div class="info-row"><span class="info-row-label">الاسم</span><span class="info-row-value">فاطمة عبد الله</span></div>
+              <div class="info-row"><span class="info-row-label">صلة القرابة</span><span class="info-row-value">الأم</span></div>
+              <div class="info-row"><span class="info-row-label">الجوّال</span><span class="info-row-value latin">+970 59 ••• ••32</span></div>
+              <div class="info-row"><span class="info-row-label">الحالة الاجتماعيّة</span><span class="info-row-value">أرملة</span></div>
+              <div class="info-row"><span class="info-row-label">المستوى التعليمي</span><span class="info-row-value">ثانوي</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" data-tab="docs">
+          <div class="info-block">
+            <div class="info-block-head">
+              <div class="info-block-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>كل المستندات (٥)</div>
+            </div>
+            <div class="docs-grid">
+              <div class="doc-card ok"><div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="doc-card-name">شهادة الوفاة</div><div class="doc-card-meta">مُعتمدة · 2.4 MB</div></div>
+              <div class="doc-card ok"><div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="doc-card-name">هويّة ولي الأمر</div><div class="doc-card-meta">مرفوعة · 1.1 MB</div></div>
+              <div class="doc-card ok"><div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="doc-card-name">صورة شخصيّة</div><div class="doc-card-meta">مرفوعة · 0.9 MB</div></div>
+              <div class="doc-card missing"><div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="doc-card-name">شهادة الميلاد</div><div class="doc-card-meta miss">ناقصة</div></div>
+              <div class="doc-card missing"><div class="doc-card-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="doc-card-name">إفادة المدرسة</div><div class="doc-card-meta miss">ناقصة</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" data-tab="reports">
+          <div style="text-align: center; padding: 40px 20px; color: var(--gray-500); font-size: 13px;">
+            لا تقارير شهريّة بعد. تبدأ بعد اعتماد الكفالة الأولى.
+          </div>
+        </div>
+
+        <div class="tab-content" data-tab="media">
+          <div style="text-align: center; padding: 40px 20px; color: var(--gray-500); font-size: 13px;">
+            لا صور مرفوعة بعد بخلاف الصورة الشخصيّة في ملفّها.
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const k = tab.dataset.tab;
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.dataset.tab === k));
+  });
+});
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

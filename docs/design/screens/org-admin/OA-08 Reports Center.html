@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — مركز التقارير</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D; --trust-900: #0B1E33;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* App shell */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-600), var(--trust-800)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--purple-700); font-weight: 500; }
+
+/* Main */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.page { padding: 22px 28px 56px; max-width: 1480px; margin: 0 auto; width: 100%; }
+
+/* Section heading */
+.section-h { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin: 26px 0 12px; flex-wrap: wrap; }
+.section-h:first-child { margin-top: 0; }
+.section-h .ttl { font-size: 15px; font-weight: 600; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
+.section-h .ttl svg { width: 16px; height: 16px; color: var(--gray-500); }
+.section-h .ttl .count-pill { font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; color: var(--gray-500); font-size: 12px; padding: 1px 7px; background: var(--gray-100); border-radius: var(--radius-full); }
+.section-h .desc { font-size: 12.5px; color: var(--gray-500); font-weight: 400; }
+
+/* Hero — Build report card */
+.builder { background: linear-gradient(135deg, var(--trust-700), var(--trust-900)); color: white; border-radius: var(--radius-2xl); padding: 22px 26px; margin-bottom: 22px; position: relative; overflow: hidden; }
+.builder::after { content: ""; position: absolute; right: -30px; top: -50px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,.06); }
+.builder::before { content: ""; position: absolute; left: -60px; bottom: -80px; width: 240px; height: 240px; border-radius: 50%; background: rgba(255,255,255,.05); }
+.builder .row { display: flex; align-items: center; gap: 22px; position: relative; z-index: 1; }
+.builder .icon-box { width: 56px; height: 56px; border-radius: var(--radius-lg); background: rgba(255,255,255,.14); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.builder .icon-box svg { width: 28px; height: 28px; }
+.builder .text { flex: 1; min-width: 0; }
+.builder h3 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+.builder p { font-size: 13.5px; opacity: .85; margin-top: 6px; max-width: 560px; line-height: 1.55; }
+.builder .actions { display: flex; gap: 10px; flex-shrink: 0; }
+.builder .btn-on-dark { padding: 10px 16px; background: white; color: var(--trust-700); border: none; border-radius: var(--radius-md); font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.builder .btn-on-dark:hover { background: var(--snow-200); }
+.builder .btn-on-dark-ghost { padding: 10px 16px; background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-md); font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.builder .btn-on-dark-ghost:hover { background: rgba(255,255,255,.18); }
+
+/* Template grid */
+.tmpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+.tmpl-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 18px; display: flex; flex-direction: column; gap: 12px; transition: all var(--transition-fast); cursor: pointer; position: relative; overflow: hidden; }
+.tmpl-card:hover { border-color: var(--sky-300); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.tmpl-card .accent { position: absolute; top: 0; right: 0; left: 0; height: 3px; }
+.tmpl-card.donor .accent { background: var(--trust-500); }
+.tmpl-card.orphan .accent { background: var(--teal-700); }
+.tmpl-card.finance .accent { background: var(--gold-700); }
+.tmpl-card.partner .accent { background: var(--purple-700); }
+.tmpl-card.zakat .accent { background: var(--success-700); }
+.tmpl-card.marketing .accent { background: var(--rose-700); }
+.tmpl-card.ramadan .accent { background: linear-gradient(90deg, #F59E0B, #D97706); }
+
+.tmpl-head { display: flex; align-items: flex-start; gap: 12px; }
+.tmpl-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tmpl-icon.donor { background: var(--tranquil-100); color: var(--trust-600); }
+.tmpl-icon.orphan { background: var(--teal-50); color: var(--teal-700); }
+.tmpl-icon.finance { background: var(--gold-50); color: var(--gold-700); }
+.tmpl-icon.partner { background: var(--purple-50); color: var(--purple-700); }
+.tmpl-icon.zakat { background: var(--success-50); color: var(--success-700); }
+.tmpl-icon.marketing { background: var(--rose-50); color: var(--rose-700); }
+.tmpl-icon.ramadan { background: var(--warning-50); color: var(--warning-700); }
+.tmpl-icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
+.tmpl-info { flex: 1; min-width: 0; }
+.tmpl-info .nm { font-size: 14.5px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.tmpl-info .ds { font-size: 12px; color: var(--gray-500); margin-top: 4px; line-height: 1.5; }
+
+.tmpl-fields { display: flex; gap: 5px; flex-wrap: wrap; }
+.tmpl-field { font-size: 10.5px; color: var(--gray-600); background: var(--gray-50); border: 1px solid var(--gray-100); padding: 2px 7px; border-radius: var(--radius-full); font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.tmpl-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--gray-100); font-size: 11.5px; color: var(--gray-500); }
+.tmpl-foot .meta { display: flex; align-items: center; gap: 12px; }
+.tmpl-foot .meta span { display: inline-flex; align-items: center; gap: 4px; }
+.tmpl-foot .meta svg { width: 11px; height: 11px; color: var(--gray-400); }
+.tmpl-foot .btns { display: flex; gap: 6px; }
+.tmpl-foot .pdf-btn, .tmpl-foot .xls-btn { padding: 3px 9px; font-size: 11px; font-weight: 600; border-radius: var(--radius-md); border: 1px solid transparent; }
+.tmpl-foot .pdf-btn { background: var(--rose-50); color: var(--rose-700); border-color: var(--rose-100); }
+.tmpl-foot .xls-btn { background: var(--success-50); color: var(--success-700); border-color: var(--success-100); }
+.tmpl-foot .pdf-btn:hover { background: var(--rose-100); }
+.tmpl-foot .xls-btn:hover { background: var(--success-100); }
+
+.tmpl-card.featured { border-color: var(--gold-700); background: linear-gradient(180deg, var(--gold-50) 0%, white 60%); }
+.featured-flag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-size: 10.5px; font-weight: 700; border-radius: var(--radius-full); background: var(--gold-700); color: white; }
+.featured-flag svg { width: 11px; height: 11px; }
+
+/* Scheduled reports table */
+.tbl-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.tbl-wrap { overflow-x: auto; }
+table.sched { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 880px; }
+table.sched thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 10px 14px; text-align: right; }
+table.sched tbody td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+table.sched tbody tr:hover { background: var(--snow-200); }
+table.sched tbody tr:last-child td { border-bottom: none; }
+.sch-name { display: flex; align-items: center; gap: 10px; }
+.sch-name .ic { width: 30px; height: 30px; border-radius: var(--radius-md); background: var(--tranquil-100); color: var(--trust-600); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sch-name .ic svg { width: 14px; height: 14px; }
+.sch-name .info .nm { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.sch-name .info .sub { font-size: 11.5px; color: var(--gray-500); margin-top: 1px; }
+.cadence-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; font-size: 11.5px; font-weight: 600; border-radius: var(--radius-full); background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); }
+.cadence-pill svg { width: 11px; height: 11px; }
+.recipients { font-size: 11.5px; color: var(--gray-700); display: flex; align-items: center; gap: 4px; }
+.recipients .pile { display: flex; }
+.recipients .pile .avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; margin-inline-start: -6px; border: 2px solid white; }
+.recipients .pile .avatar:first-child { margin-inline-start: 0; }
+.recipients .pile .avatar.more { background: var(--gray-100); color: var(--gray-700); }
+.next-run { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: var(--gray-700); }
+.next-run .sub { font-size: 10.5px; color: var(--gray-500); margin-top: 1px; }
+.last-run { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: var(--gray-600); }
+.last-run .ok { color: var(--success-600); display: inline-flex; align-items: center; gap: 4px; }
+.last-run .ok svg { width: 11px; height: 11px; }
+.tbl-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn-sm { width: 28px; height: 28px; border-radius: var(--radius-md); background: transparent; border: none; color: var(--gray-500); display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn-sm:hover { background: var(--gray-100); color: var(--gray-900); }
+.icon-btn-sm.danger:hover { background: var(--danger-50); color: var(--danger-600); }
+
+/* Recent exports */
+.recent-list { display: flex; flex-direction: column; gap: 8px; }
+.recent-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: border-color var(--transition-fast); }
+.recent-row:hover { border-color: var(--sky-300); }
+.recent-icon { width: 38px; height: 38px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 10.5px; letter-spacing: .04em; }
+.recent-icon.pdf { background: var(--rose-50); color: var(--rose-700); }
+.recent-icon.xls { background: var(--success-50); color: var(--success-700); }
+.recent-icon.csv { background: var(--info-50); color: var(--info-700); }
+.recent-info { flex: 1; min-width: 0; }
+.recent-info .nm { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.recent-info .meta { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; display: flex; gap: 10px; flex-wrap: wrap; }
+.recent-info .meta .by { display: inline-flex; align-items: center; gap: 4px; }
+.recent-info .meta .by .avatar { width: 14px; height: 14px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: inline-flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; }
+.recent-size { font-family: 'IBM Plex Sans', sans-serif; font-size: 11.5px; color: var(--gray-600); }
+.recent-actions { display: flex; gap: 6px; }
+.recent-actions a { padding: 6px 10px; font-size: 12px; font-weight: 600; color: var(--trust-500); background: transparent; border: 1px solid transparent; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 5px; }
+.recent-actions a:hover { background: var(--tranquil-100); }
+.recent-actions a svg { width: 12px; height: 12px; }
+
+/* Builder modal */
+.scrim { position: fixed; inset: 0; background: rgba(11,30,51,.45); backdrop-filter: blur(2px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+.scrim.show { display: flex; }
+.modal { background: white; border-radius: var(--radius-xl); width: 980px; max-width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+.modal-head { padding: 16px 22px; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: flex-start; }
+.modal-head h3 { font-size: 16px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.modal-head h3 svg { color: var(--trust-400); }
+.modal-head p { font-size: 12.5px; color: var(--gray-500); margin-top: 3px; }
+.modal-close { width: 30px; height: 30px; background: transparent; border: none; color: var(--gray-500); border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--gray-100); }
+.modal-body { padding: 0; overflow: hidden; flex: 1; display: grid; grid-template-columns: 240px 1fr 320px; min-height: 0; }
+@media (max-width: 900px) { .modal-body { grid-template-columns: 1fr; } }
+.modal-foot { padding: 14px 22px; background: var(--gray-50); border-top: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.modal-foot .left-info { font-size: 11.5px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+.modal-foot .left-info svg { width: 12px; height: 12px; color: var(--gray-400); }
+
+/* Builder columns */
+.bld-col { display: flex; flex-direction: column; min-height: 0; }
+.bld-col.left { background: var(--gray-50); border-inline-end: 1px solid var(--gray-100); padding: 16px 14px; overflow-y: auto; }
+.bld-col.center { padding: 16px 18px; overflow-y: auto; }
+.bld-col.right { background: var(--gray-50); border-inline-start: 1px solid var(--gray-100); padding: 16px 14px; overflow-y: auto; }
+.bld-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .05em; text-transform: uppercase; margin: 12px 0 6px; }
+.bld-section:first-child { margin-top: 0; }
+.bld-field { padding: 8px 10px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; color: var(--gray-700); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; cursor: grab; transition: all var(--transition-fast); }
+.bld-field:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.bld-field .drag { color: var(--gray-300); }
+.bld-field .drag svg { width: 14px; height: 14px; }
+.bld-field.in-use { background: var(--tranquil-100); border-color: var(--tranquil-200); color: var(--trust-700); }
+.bld-field.in-use .drag svg { color: var(--trust-400); }
+
+/* Center: rows of buckets */
+.bucket-row { padding: 10px 12px; border: 1px dashed var(--gray-300); border-radius: var(--radius-md); margin-bottom: 10px; background: var(--gray-50); }
+.bucket-row .blab { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .05em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.bucket-row .blab svg { width: 11px; height: 11px; color: var(--gray-400); }
+.bucket-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-height: 26px; }
+.bucket-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; font-size: 12px; font-weight: 500; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); }
+.bucket-chip.row { background: var(--tranquil-100); border-color: var(--tranquil-200); color: var(--trust-700); }
+.bucket-chip.col { background: var(--info-50); border-color: var(--info-100); color: var(--info-700); }
+.bucket-chip.val { background: var(--success-50); border-color: var(--success-100); color: var(--success-700); }
+.bucket-chip.fil { background: var(--gold-50); border-color: var(--gold-100); color: var(--gold-700); }
+.bucket-chip .x { color: var(--gray-400); cursor: pointer; font-size: 14px; line-height: 1; }
+.bucket-chip .x:hover { color: var(--danger-600); }
+.bucket-chip .agg { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; padding: 1px 4px; background: rgba(255,255,255,.6); border-radius: 3px; }
+
+.bld-section-h { font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+
+/* Center: preview */
+.preview-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); overflow: hidden; }
+.preview-head { padding: 10px 14px; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+.preview-head .lab { color: var(--gray-500); display: inline-flex; align-items: center; gap: 6px; }
+.preview-head .lab svg { width: 12px; height: 12px; color: var(--gray-400); }
+.preview-head .live { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--success-700); font-weight: 600; }
+.preview-head .live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--success-500); animation: pulse-dot 1.6s ease-in-out infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+
+table.preview-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.preview-tbl thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: white; border-bottom: 1px solid var(--gray-200); padding: 8px 14px; text-align: right; }
+table.preview-tbl tbody td { padding: 9px 14px; border-bottom: 1px solid var(--gray-100); }
+table.preview-tbl tbody tr:last-child td { border-bottom: none; font-weight: 700; background: var(--gray-50); }
+table.preview-tbl .numr { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; text-align: left; direction: ltr; }
+.delta-pill { font-family: 'IBM Plex Sans', sans-serif; font-size: 10.5px; font-weight: 600; padding: 1px 5px; border-radius: var(--radius-full); margin-inline-start: 4px; }
+.delta-pill.up { background: var(--success-50); color: var(--success-700); }
+.delta-pill.down { background: var(--danger-50); color: var(--danger-600); }
+
+/* Right: visualisation + schedule */
+.viz-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+.viz-btn { padding: 12px 8px; background: white; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all var(--transition-fast); }
+.viz-btn:hover { border-color: var(--sky-300); }
+.viz-btn.selected { border-color: var(--trust-400); background: var(--tranquil-100); }
+.viz-btn svg { width: 22px; height: 22px; color: var(--gray-500); }
+.viz-btn.selected svg { color: var(--trust-600); }
+.viz-btn .nm { font-size: 11.5px; font-weight: 500; color: var(--gray-700); }
+.viz-btn.selected .nm { color: var(--trust-700); font-weight: 600; }
+
+.cad-options { display: flex; flex-direction: column; gap: 6px; }
+.cad-option { display: flex; align-items: center; gap: 10px; padding: 9px 11px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; transition: border-color var(--transition-fast); }
+.cad-option:hover { border-color: var(--sky-300); }
+.cad-option.selected { border-color: var(--trust-400); background: var(--tranquil-100); }
+.cad-option .radio { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--gray-300); flex-shrink: 0; position: relative; }
+.cad-option.selected .radio { border-color: var(--trust-500); }
+.cad-option.selected .radio::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--trust-500); }
+.cad-option .cad-text .nm { font-size: 12.5px; font-weight: 500; color: var(--gray-900); }
+.cad-option .cad-text .ds { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>إدارة المؤسسة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير المؤسسة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="OA-01 Executive Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة التنفيذيّة
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير الشاملة
+    </a>
+
+    <div class="nav-section">الإدارة</div>
+    <a class="nav-item" href="OA-02 Users Management.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      المستخدمون
+    </a>
+    <a class="nav-item" href="OA-03 Partner Organizations.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+      الجهات الشريكة
+      <span class="nav-item-badge muted"><span class="latin">12</span></span>
+    </a>
+    <a class="nav-item" href="OA-04 Marketing Channels.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/><circle cx="12" cy="14" r="2"/></svg>
+      قنوات التسويق
+    </a>
+    <a class="nav-item" href="OA-05 Business Rules.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/></svg>
+      قواعد العمل
+    </a>
+    <a class="nav-item" href="OA-06 Organization Settings.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      إعدادات المؤسسة
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      مركز الاعتمادات
+      <span class="nav-item-badge"><span class="latin">8</span></span>
+    </a>
+    <a class="nav-item" href="OA-07 Audit Log.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      الإشعارات
+      <span class="nav-item-badge warn"><span class="latin">3</span></span>
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">س.ع</div>
+      <div class="user-info">
+        <div class="user-name">سامح عبدالعزيز</div>
+        <div class="user-role">مدير عام</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>مركز التقارير</h2>
+        <p>تقارير جاهزة + مولّد مخصّص + جدولة دوريّة لإرسال التقارير تلقائياً</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          مكتبة التقارير المحفوظة
+        </button>
+        <button class="btn-primary" id="openBuilder">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إنشاء تقرير جديد
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Hero builder -->
+      <section class="builder" aria-label="مولّد التقارير">
+        <div class="row">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M2 12h6m8 0h6M5 5l4 4m6 6l4 4M5 19l4-4m6-6l4-4"/></svg>
+          </div>
+          <div class="text">
+            <h3>مولّد التقارير بالسحب والإفلات</h3>
+            <p>ابنِ تقريراً مخصّصاً بسحب الحقول وتحديد الفترة والقنوات والجهات. شاهد المعاينة فورياً، ثم صدّر أو احفظ أو جدوِل لإرساله دورياً.</p>
+          </div>
+          <div class="actions">
+            <button class="btn-on-dark-ghost">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+              قوالبي
+            </button>
+            <button class="btn-on-dark" id="openBuilder2">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              ابدأ تقريراً
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Featured templates -->
+      <div class="section-h">
+        <div class="ttl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          تقارير الموسم
+          <span class="count-pill"><span class="latin">2</span></span>
+        </div>
+        <span class="desc">تُجدَّد تلقائياً وفقاً للتقويم الهجري</span>
+      </div>
+
+      <div class="tmpl-grid" style="margin-bottom: 18px;">
+
+        <article class="tmpl-card featured ramadan">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon ramadan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm" style="display: flex; align-items: center; gap: 8px;">
+                تقرير رمضان السنوي
+                <span class="featured-flag">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  هذا الشهر
+                </span>
+              </div>
+              <div class="ds">إجمالي الكفلاء الجدد، الزكوات، التبرّعات الأكبر، أكثر القنوات تأثيراً خلال رمضان <span class="latin">1446</span>.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">كفلاء جدد</span>
+            <span class="tmpl-field">زكاة</span>
+            <span class="tmpl-field">قنوات</span>
+            <span class="tmpl-field">يوميّاً</span>
+            <span class="tmpl-field">+<span class="latin">4</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+                <span class="latin">1 - 30</span> رمضان
+              </span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmpl-card zakat">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon zakat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">تقرير الزكاة السنوي</div>
+              <div class="ds">تجميع تفصيلي للزكوات المُستلَمة وكيفيّة صرفها على الأيتام مع شهادات شرعيّة جاهزة للطباعة.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">زكاة مستلَمة</span>
+            <span class="tmpl-field">مصارف</span>
+            <span class="tmpl-field">شهادات شرعيّة</span>
+            <span class="tmpl-field">+<span class="latin">3</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                سنوي
+              </span>
+              <span>صدر آخر مرة <span class="latin">12 ذو الحجة 1445</span></span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Ready templates -->
+      <div class="section-h">
+        <div class="ttl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          تقارير جاهزة
+          <span class="count-pill"><span class="latin">6</span></span>
+        </div>
+        <span class="desc">جاهزة للتصدير الفوري — يمكن تخصيصها قبل التصدير</span>
+      </div>
+
+      <div class="tmpl-grid">
+
+        <article class="tmpl-card donor">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon donor">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">تقرير الكفلاء السنوي</div>
+              <div class="ds">عدد الكفلاء، التوزيع الجغرافي، الاحتفاظ، أنماط التبرّع، وأكثر <span class="latin">٥٠</span> كفيلاً تأثيراً.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">عدد + احتفاظ</span>
+            <span class="tmpl-field">جغرافيّاً</span>
+            <span class="tmpl-field">قنوات الإحالة</span>
+            <span class="tmpl-field">+<span class="latin">5</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> آخر تشغيل قبل <span class="latin">7</span> أيّام</span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmpl-card orphan">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon orphan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">تقرير الأيتام السنوي</div>
+              <div class="ds">إحصاء كامل للأيتام، نسب الكفالة، الأعمار، الحالات الجديدة والمتخرّجين، ومتوسّط مدّة الكفالة.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">إجمالي</span>
+            <span class="tmpl-field">مكفولون</span>
+            <span class="tmpl-field">انتقالات</span>
+            <span class="tmpl-field">+<span class="latin">4</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> سنوي</span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmpl-card finance">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon finance">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">تقرير الأداء المالي</div>
+              <div class="ds">الإيرادات، المصاريف، التحويلات للجهات، أرصدة الأيتام، التدفّق النقدي — مفصّلاً بالعملة الموحّدة.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">إيرادات</span>
+            <span class="tmpl-field">تحويلات</span>
+            <span class="tmpl-field">أرصدة</span>
+            <span class="tmpl-field">+<span class="latin">6</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/></svg> ربع سنوي</span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmpl-card partner">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon partner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">تقرير أداء الجهات الشريكة</div>
+              <div class="ds">مقارنة بين الـ<span class="latin">12</span> جهة شريكة في عدد الأيتام، الالتزام، زمن المعالجة، ومعدّل القبول/الرفض.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">مقارنة شاملة</span>
+            <span class="tmpl-field">زمن المعالجة</span>
+            <span class="tmpl-field">الالتزام</span>
+            <span class="tmpl-field">+<span class="latin">3</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> شهري</span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmpl-card marketing">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon marketing">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">أداء قنوات التسويق</div>
+              <div class="ds">معدّل التحويل لكلّ قناة، تكلفة الكفيل، قيمة الكفيل مدى الحياة، والقنوات الأعلى أداءً.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">CPA</span>
+            <span class="tmpl-field">LTV</span>
+            <span class="tmpl-field">تحويل</span>
+            <span class="tmpl-field">+<span class="latin">5</span></span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/></svg> أسبوعي</span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="tmpl-card donor">
+          <span class="accent"></span>
+          <div class="tmpl-head">
+            <div class="tmpl-icon donor">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            </div>
+            <div class="tmpl-info">
+              <div class="nm">تقرير المتأخّرين</div>
+              <div class="ds">المتأخّرون في الدفع مصنّفون: شهر، شهران، ثلاثة أشهر — مع توصيات بالاتصال أو التعليق.</div>
+            </div>
+          </div>
+          <div class="tmpl-fields">
+            <span class="tmpl-field">تصنيف زمني</span>
+            <span class="tmpl-field">قيمة المُتعطّل</span>
+            <span class="tmpl-field">توصيات</span>
+          </div>
+          <div class="tmpl-foot">
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/></svg> شهري</span>
+            </div>
+            <div class="btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Scheduled reports -->
+      <div class="section-h">
+        <div class="ttl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          تقارير مجدوَلة
+          <span class="count-pill"><span class="latin">5</span></span>
+        </div>
+        <button class="btn-ghost">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إضافة جدولة
+        </button>
+      </div>
+
+      <section class="tbl-card">
+        <div class="tbl-wrap">
+          <table class="sched">
+            <thead>
+              <tr>
+                <th>التقرير</th>
+                <th>الدوريّة</th>
+                <th>المستلمون</th>
+                <th>التشغيل القادم</th>
+                <th>آخر تشغيل</th>
+                <th style="text-align:left;padding-inline-end:22px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="sch-name">
+                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+                    <div class="info">
+                      <div class="nm">التقرير المالي الشهري</div>
+                      <div class="sub">للمدير العام + المالية + المراجعين</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="cadence-pill">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+                    شهري · أوّل الشهر
+                  </span>
+                </td>
+                <td>
+                  <div class="recipients">
+                    <div class="pile">
+                      <div class="avatar">س.ع</div>
+                      <div class="avatar" style="background: var(--gold-100); color: var(--gold-700);">خ.م</div>
+                      <div class="avatar" style="background: var(--purple-100); color: var(--purple-700);">ل.م</div>
+                      <div class="avatar more">+<span class="latin">2</span></div>
+                    </div>
+                    <span><span class="latin">5</span> مستلمين</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="next-run"><span class="latin">١ ذو الحجة 1446</span></div>
+                  <div class="next-run sub">خلال <span class="latin">8</span> أيّام</div>
+                </td>
+                <td>
+                  <div class="last-run"><span class="latin">١ ذو القعدة 1446</span></div>
+                  <div class="last-run ok">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    أُرسل
+                  </div>
+                </td>
+                <td>
+                  <div class="tbl-actions">
+                    <button class="icon-btn-sm" aria-label="عرض الإعدادات"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82"/></svg></button>
+                    <button class="icon-btn-sm" aria-label="تشغيل الآن"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+                    <button class="icon-btn-sm danger" aria-label="إيقاف"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="sch-name">
+                    <span class="ic" style="background: var(--purple-50); color: var(--purple-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18"/></svg></span>
+                    <div class="info">
+                      <div class="nm">أداء الجهات الشريكة</div>
+                      <div class="sub">لمديري الجهات + مدير المؤسسة</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="cadence-pill" style="background: var(--purple-50); color: var(--purple-700); border-color: var(--purple-100);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                    شهري · آخر الشهر
+                  </span>
+                </td>
+                <td>
+                  <div class="recipients">
+                    <div class="pile">
+                      <div class="avatar">س.ع</div>
+                      <div class="avatar more">+<span class="latin">14</span></div>
+                    </div>
+                    <span><span class="latin">15</span> مستلماً</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="next-run"><span class="latin">30 ذو القعدة 1446</span></div>
+                  <div class="next-run sub">خلال <span class="latin">7</span> أيّام</div>
+                </td>
+                <td>
+                  <div class="last-run"><span class="latin">30 شوال 1446</span></div>
+                  <div class="last-run ok">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    أُرسل
+                  </div>
+                </td>
+                <td>
+                  <div class="tbl-actions">
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+                    <button class="icon-btn-sm danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="sch-name">
+                    <span class="ic" style="background: var(--rose-50); color: var(--rose-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+                    <div class="info">
+                      <div class="nm">أداء قنوات التسويق</div>
+                      <div class="sub">للمسوّقين فقط</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="cadence-pill" style="background: var(--rose-50); color: var(--rose-700); border-color: var(--rose-100);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                    أسبوعي · الأحد
+                  </span>
+                </td>
+                <td>
+                  <div class="recipients">
+                    <div class="pile">
+                      <div class="avatar" style="background: var(--rose-100); color: var(--rose-700);">ل.م</div>
+                      <div class="avatar" style="background: var(--gold-100); color: var(--gold-700);">د.أ</div>
+                      <div class="avatar" style="background: var(--purple-100); color: var(--purple-700);">س.م</div>
+                      <div class="avatar more">+<span class="latin">3</span></div>
+                    </div>
+                    <span><span class="latin">6</span> مستلمين</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="next-run">الأحد <span class="latin">28 ذو القعدة</span></div>
+                  <div class="next-run sub">خلال <span class="latin">5</span> أيّام</div>
+                </td>
+                <td>
+                  <div class="last-run">الأحد <span class="latin">21 ذو القعدة</span></div>
+                  <div class="last-run ok">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    أُرسل
+                  </div>
+                </td>
+                <td>
+                  <div class="tbl-actions">
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+                    <button class="icon-btn-sm danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="sch-name">
+                    <span class="ic" style="background: var(--success-50); color: var(--success-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                    <div class="info">
+                      <div class="nm">إيصالات الزكاة</div>
+                      <div class="sub">للمتبرّعين بالزكاة (تلقائي)</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="cadence-pill" style="background: var(--success-50); color: var(--success-700); border-color: var(--success-100);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                    سنوي · <span class="latin">1</span> محرّم
+                  </span>
+                </td>
+                <td>
+                  <div class="recipients">
+                    <span style="color: var(--gray-500);">كلّ المتبرّعين بالزكاة (<span class="latin">328</span>)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="next-run"><span class="latin">1 محرّم 1447</span></div>
+                  <div class="next-run sub">بعد <span class="latin">40</span> يوماً</div>
+                </td>
+                <td>
+                  <div class="last-run"><span class="latin">1 محرّم 1446</span></div>
+                  <div class="last-run ok">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span class="latin">312</span> إيصالاً
+                  </div>
+                </td>
+                <td>
+                  <div class="tbl-actions">
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+                    <button class="icon-btn-sm danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="sch-name">
+                    <span class="ic" style="background: var(--gold-50); color: var(--gold-700);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></span>
+                    <div class="info">
+                      <div class="nm">المتأخّرون</div>
+                      <div class="sub">لفريق المالية + ولي المؤسسة</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="cadence-pill" style="background: var(--gold-50); color: var(--gold-700); border-color: var(--gold-100);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+                    شهري · <span class="latin">15</span> الشهر
+                  </span>
+                </td>
+                <td>
+                  <div class="recipients">
+                    <div class="pile">
+                      <div class="avatar" style="background: var(--gold-100); color: var(--gold-700);">خ.م</div>
+                      <div class="avatar">س.ع</div>
+                      <div class="avatar more">+<span class="latin">2</span></div>
+                    </div>
+                    <span><span class="latin">4</span> مستلمين</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="next-run"><span class="latin">15 ذو الحجة 1446</span></div>
+                  <div class="next-run sub" style="color: var(--warning-700); font-weight: 600;">معطّل مؤقّتاً</div>
+                </td>
+                <td>
+                  <div class="last-run"><span class="latin">15 شوال 1446</span></div>
+                  <div class="last-run ok">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    أُرسل
+                  </div>
+                </td>
+                <td>
+                  <div class="tbl-actions">
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-btn-sm" style="color: var(--success-600);"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+                    <button class="icon-btn-sm danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Recent exports -->
+      <div class="section-h">
+        <div class="ttl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          آخر التصديرات
+        </div>
+        <a href="#" style="font-size: 12.5px; color: var(--trust-500); font-weight: 500;">عرض الكلّ ←</a>
+      </div>
+
+      <div class="recent-list">
+        <div class="recent-row">
+          <div class="recent-icon pdf">PDF</div>
+          <div class="recent-info">
+            <div class="nm">تقرير ماليّ ربعي · Q3 — <span class="latin">1446</span></div>
+            <div class="meta">
+              <span class="by"><span class="avatar">س.ع</span> سامح عبدالعزيز</span>
+              <span>قبل <span class="latin">3</span> ساعات</span>
+              <span><span class="latin">22</span> صفحة</span>
+            </div>
+          </div>
+          <div class="recent-size mono"><span class="latin">2.4</span> MB</div>
+          <div class="recent-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>مشاركة</a>
+          </div>
+        </div>
+
+        <div class="recent-row">
+          <div class="recent-icon xls">XLSX</div>
+          <div class="recent-info">
+            <div class="nm">أداء الجهات الشريكة — <span class="latin">١ - ٢٠</span> ذو القعدة</div>
+            <div class="meta">
+              <span class="by"><span class="avatar" style="background: var(--gold-100); color: var(--gold-700);">خ.م</span> د. خالد المطيري</span>
+              <span>قبل يومين</span>
+              <span><span class="latin">12</span> ورقة</span>
+            </div>
+          </div>
+          <div class="recent-size mono"><span class="latin">412</span> KB</div>
+          <div class="recent-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/></svg>مشاركة</a>
+          </div>
+        </div>
+
+        <div class="recent-row">
+          <div class="recent-icon csv">CSV</div>
+          <div class="recent-info">
+            <div class="nm">كفلاء قناة واتساب الخليج · شهر شوال</div>
+            <div class="meta">
+              <span class="by"><span class="avatar" style="background: var(--purple-100); color: var(--purple-700);">ل.م</span> ليلى المنصور</span>
+              <span>قبل <span class="latin">٣</span> أيّام</span>
+              <span><span class="latin">896</span> صفّ</span>
+            </div>
+          </div>
+          <div class="recent-size mono"><span class="latin">128</span> KB</div>
+          <div class="recent-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/></svg>مشاركة</a>
+          </div>
+        </div>
+
+        <div class="recent-row">
+          <div class="recent-icon pdf">PDF</div>
+          <div class="recent-info">
+            <div class="nm">إيصال زكاة — كفيل DON-2718</div>
+            <div class="meta">
+              <span class="by"><span style="color: var(--gray-500);">النظام (تلقائي)</span></span>
+              <span>قبل أسبوع</span>
+              <span><span class="latin">2</span> صفحة</span>
+            </div>
+          </div>
+          <div class="recent-size mono"><span class="latin">84</span> KB</div>
+          <div class="recent-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/></svg>مشاركة</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Builder modal -->
+<div class="scrim" id="bldScrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bldTitle">
+    <header class="modal-head">
+      <div>
+        <h3 id="bldTitle">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          مولّد التقرير — تقرير مخصّص بلا اسم
+        </h3>
+        <p>اسحب الحقول من اليمين إلى الخانات في الوسط. تتحدّث المعاينة فورياً.</p>
+      </div>
+      <button class="modal-close" id="bldClose" aria-label="إغلاق">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="modal-body">
+
+      <!-- Left: data sources / fields -->
+      <div class="bld-col left">
+        <div class="bld-section">مصدر البيانات</div>
+        <select class="form-input" style="width:100%;padding:8px 10px;border:1px solid var(--gray-200);border-radius:var(--radius-md);font-size:13px;background:white;">
+          <option>الكفلاء</option>
+          <option>الأيتام</option>
+          <option>المدفوعات</option>
+          <option>الجهات الشريكة</option>
+          <option>قنوات التسويق</option>
+        </select>
+
+        <div class="bld-section">حقول الكفيل</div>
+        <div class="bld-field in-use"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span> الدولة</div>
+        <div class="bld-field"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/></svg></span> الجنسيّة</div>
+        <div class="bld-field"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/></svg></span> العمر</div>
+        <div class="bld-field in-use"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/></svg></span> قناة الإحالة</div>
+        <div class="bld-field"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/></svg></span> تاريخ الانضمام</div>
+        <div class="bld-field"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/></svg></span> طريقة الدفع</div>
+
+        <div class="bld-section">حقول حسابيّة</div>
+        <div class="bld-field in-use"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span> عدد الكفلاء</div>
+        <div class="bld-field in-use"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/></svg></span> مجموع التبرّعات</div>
+        <div class="bld-field"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span> متوسّط مدّة الكفالة</div>
+        <div class="bld-field"><span class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span> نسبة الاحتفاظ</div>
+      </div>
+
+      <!-- Center: buckets + preview -->
+      <div class="bld-col center">
+        <div class="bld-section-h">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          هيكل التقرير
+        </div>
+
+        <div class="bucket-row">
+          <div class="blab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/></svg>
+            الصفوف (تجميع)
+          </div>
+          <div class="bucket-chips">
+            <span class="bucket-chip row">الدولة <span class="x">×</span></span>
+            <span class="bucket-chip row">قناة الإحالة <span class="x">×</span></span>
+            <span class="btn-ghost" style="font-size: 11px; opacity: .6;">+ سحب حقل…</span>
+          </div>
+        </div>
+
+        <div class="bucket-row">
+          <div class="blab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/></svg>
+            الأعمدة (مقارنة)
+          </div>
+          <div class="bucket-chips">
+            <span class="bucket-chip col">الشهر الهجري <span class="x">×</span></span>
+          </div>
+        </div>
+
+        <div class="bucket-row">
+          <div class="blab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            القيم (المؤشّرات)
+          </div>
+          <div class="bucket-chips">
+            <span class="bucket-chip val">عدد الكفلاء <span class="agg">COUNT</span> <span class="x">×</span></span>
+            <span class="bucket-chip val">مجموع التبرّعات <span class="agg">SUM</span> <span class="x">×</span></span>
+          </div>
+        </div>
+
+        <div class="bucket-row">
+          <div class="blab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            الفلاتر
+          </div>
+          <div class="bucket-chips">
+            <span class="bucket-chip fil">السنة = <span class="agg">1446</span> <span class="x">×</span></span>
+            <span class="bucket-chip fil">الحالة = نشطة <span class="x">×</span></span>
+          </div>
+        </div>
+
+        <div class="bld-section-h" style="margin-top: 18px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          المعاينة الحيّة
+        </div>
+
+        <div class="preview-card">
+          <div class="preview-head">
+            <span class="lab">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+              عيّنة من <span class="latin">2,847</span> صفّ
+            </span>
+            <span class="live">معاينة حيّة</span>
+          </div>
+          <table class="preview-tbl">
+            <thead>
+              <tr>
+                <th>الدولة</th>
+                <th>القناة</th>
+                <th>عدد الكفلاء</th>
+                <th>مجموع التبرّعات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>🇰🇼 الكويت</td>
+                <td>واتساب — الخليج</td>
+                <td class="numr"><span class="latin">412</span></td>
+                <td class="numr"><span class="latin">38,540</span> دك<span class="delta-pill up">+<span class="latin">14</span>%</span></td>
+              </tr>
+              <tr>
+                <td>🇰🇼 الكويت</td>
+                <td>إنستغرام</td>
+                <td class="numr"><span class="latin">208</span></td>
+                <td class="numr"><span class="latin">18,210</span> دك<span class="delta-pill up">+<span class="latin">8</span>%</span></td>
+              </tr>
+              <tr>
+                <td>🇸🇦 السعوديّة</td>
+                <td>واتساب — الخليج</td>
+                <td class="numr"><span class="latin">318</span></td>
+                <td class="numr"><span class="latin">29,100</span> دك<span class="delta-pill up">+<span class="latin">22</span>%</span></td>
+              </tr>
+              <tr>
+                <td>🇦🇪 الإمارات</td>
+                <td>إحالات الجمعيات</td>
+                <td class="numr"><span class="latin">142</span></td>
+                <td class="numr"><span class="latin">19,820</span> دك<span class="delta-pill up">+<span class="latin">3</span>%</span></td>
+              </tr>
+              <tr>
+                <td>🇪🇬 مصر</td>
+                <td>بريد إلكتروني</td>
+                <td class="numr"><span class="latin">88</span></td>
+                <td class="numr"><span class="latin">6,420</span> دك<span class="delta-pill down">−<span class="latin">4</span>%</span></td>
+              </tr>
+              <tr>
+                <td colspan="2">الإجمالي</td>
+                <td class="numr"><span class="latin">2,847</span></td>
+                <td class="numr"><span class="latin">242,180</span> دك</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right: visualisation + schedule -->
+      <div class="bld-col right">
+        <div class="bld-section">العرض البصري</div>
+        <div class="viz-row">
+          <button class="viz-btn selected">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/></svg>
+            <span class="nm">جدول</span>
+          </button>
+          <button class="viz-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span class="nm">أعمدة</span>
+          </button>
+          <button class="viz-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/></svg>
+            <span class="nm">خط</span>
+          </button>
+          <button class="viz-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+            <span class="nm">دائري</span>
+          </button>
+          <button class="viz-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <span class="nm">خريطة حرارة</span>
+          </button>
+          <button class="viz-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12s4-9 10-9 10 9 10 9"/></svg>
+            <span class="nm">خريطة</span>
+          </button>
+        </div>
+
+        <div class="bld-section">جدولة الإرسال</div>
+        <div class="cad-options">
+          <label class="cad-option">
+            <span class="radio"></span>
+            <div class="cad-text">
+              <div class="nm">بدون جدولة</div>
+              <div class="ds">تصدير يدوي فقط</div>
+            </div>
+          </label>
+          <label class="cad-option selected">
+            <span class="radio"></span>
+            <div class="cad-text">
+              <div class="nm">شهري · أوّل الشهر</div>
+              <div class="ds">يُرسل تلقائياً <span class="latin">1</span> من كلّ شهر هجري</div>
+            </div>
+          </label>
+          <label class="cad-option">
+            <span class="radio"></span>
+            <div class="cad-text">
+              <div class="nm">أسبوعي · الأحد</div>
+              <div class="ds">صباح الأحد <span class="latin">8:00</span></div>
+            </div>
+          </label>
+          <label class="cad-option">
+            <span class="radio"></span>
+            <div class="cad-text">
+              <div class="nm">يومي · صباحاً</div>
+              <div class="ds">٧:٠٠ صباحاً كلّ يوم</div>
+            </div>
+          </label>
+        </div>
+
+        <div class="bld-section">المستلمون</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+          <span class="bucket-chip" style="background: white;">س.ع — سامح <span class="x">×</span></span>
+          <span class="bucket-chip" style="background: white;">ل.م — ليلى <span class="x">×</span></span>
+          <button class="btn-ghost" style="padding: 4px 8px; border: 1px dashed var(--gray-300); font-size: 11px;">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <footer class="modal-foot">
+      <div class="left-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        المعاينة محدّثة قبل ثانية
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-ghost" id="bldCancel">إلغاء</button>
+        <button class="btn-secondary">حفظ كقالب</button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          تصدير الآن
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  const scrim = document.getElementById('bldScrim');
+  function open() { scrim.classList.add('show'); }
+  function close() { scrim.classList.remove('show'); }
+  document.getElementById('openBuilder').addEventListener('click', open);
+  document.getElementById('openBuilder2').addEventListener('click', open);
+  document.getElementById('bldClose').addEventListener('click', close);
+  document.getElementById('bldCancel').addEventListener('click', close);
+  scrim.addEventListener('click', e => { if (e.target === scrim) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+  document.querySelectorAll('.viz-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.viz-btn').forEach(o => o.classList.remove('selected'));
+      b.classList.add('selected');
+    });
+  });
+  document.querySelectorAll('.cad-option').forEach(o => {
+    o.addEventListener('click', () => {
+      document.querySelectorAll('.cad-option').forEach(x => x.classList.remove('selected'));
+      o.classList.add('selected');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

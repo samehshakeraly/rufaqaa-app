@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — كفالة سلمى · إنشاء جديد</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-700: #B45309;
+  --danger-600: #DC2626;
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, textarea { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ═══ WIZARD HEADER ═══ */
+.wiz-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.wiz-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.wiz-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  font-size: 13.5px; font-weight: 500;
+  transition: var(--transition);
+}
+.wiz-back:hover { background: white; border-color: var(--sky-300); color: var(--trust-600); }
+
+.wiz-title-area { text-align: center; flex: 1; min-width: 0; }
+.wiz-title-area h1 { font-size: 15px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.wiz-title-area p { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+.wiz-secure {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-full);
+  color: var(--success-700);
+  font-size: 12px; font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (max-width: 540px) {
+  .wiz-secure { display: none; }
+}
+
+/* ═══ PROGRESS ═══ */
+.progress-wrap {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 28px 18px;
+}
+.progress-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.progress-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 10px; font-size: 12.5px;
+}
+.progress-head-label { color: var(--gray-600); font-weight: 500; }
+.progress-head-count {
+  color: var(--trust-600); font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.progress-track {
+  height: 5px; background: var(--gray-100);
+  border-radius: var(--radius-full); overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--trust-300), var(--trust-400));
+  border-radius: var(--radius-full);
+  transition: width 320ms cubic-bezier(.4,0,.2,1);
+}
+
+.progress-steps {
+  display: flex; justify-content: space-between;
+  margin-top: 14px; gap: 6px;
+}
+.p-step {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.p-step-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px; font-weight: 600;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: var(--transition);
+}
+.p-step.done .p-step-dot {
+  background: var(--success-500); border-color: var(--success-500); color: white;
+}
+.p-step.active .p-step-dot {
+  background: var(--trust-300); border-color: var(--trust-300); color: white;
+  box-shadow: 0 0 0 4px rgba(118,159,205,.18);
+}
+.p-step-label {
+  font-size: 11px; color: var(--gray-500); text-align: center; line-height: 1.3;
+  font-weight: 500;
+}
+.p-step.done .p-step-label, .p-step.active .p-step-label { color: var(--gray-800); }
+.p-step.active .p-step-label { color: var(--trust-600); font-weight: 600; }
+
+@media (max-width: 720px) { .p-step-label { display: none; } }
+
+/* ═══ STAGE — TWO COL ═══ */
+.stage {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 28px 140px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .stage { grid-template-columns: 1fr; }
+  .summary-card { position: static; order: -1; }
+}
+
+.main-col { min-width: 0; }
+
+.step {
+  display: none;
+  animation: stepIn 240ms cubic-bezier(.4,0,.2,1);
+}
+.step.active { display: block; }
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-head {
+  margin-bottom: 20px;
+}
+.step-head h2 {
+  font-size: 26px; font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em; line-height: 1.25;
+  margin-bottom: 8px;
+}
+.step-head p {
+  font-size: 14.5px; color: var(--gray-600); line-height: 1.6;
+  max-width: 580px;
+}
+
+/* ═══ Confirm card (step 1) ═══ */
+.confirm-card {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.confirm-card-photo {
+  width: 96px; height: 96px;
+  border-radius: 16px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 10px, var(--tranquil-100) 10px, var(--tranquil-100) 20px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; font-weight: 600; color: var(--trust-700);
+  position: relative;
+  border: 2px solid white;
+  box-shadow: var(--shadow-sm);
+}
+
+.confirm-card-photo .flag {
+  position: absolute;
+  bottom: -4px; left: -4px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  box-shadow: var(--shadow-xs);
+}
+
+.confirm-card-info h3 {
+  font-size: 22px; font-weight: 600; color: var(--gray-900);
+  letter-spacing: -.01em; margin-bottom: 6px;
+}
+
+.confirm-card-meta {
+  display: flex; flex-wrap: wrap;
+  align-items: center; gap: 8px;
+  font-size: 13.5px; color: var(--gray-600);
+  margin-bottom: 10px;
+}
+.confirm-card-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+
+.confirm-card-quick {
+  font-size: 13px; color: var(--gray-700);
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.confirm-action {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (max-width: 480px) {
+  .confirm-action { grid-template-columns: 1fr; }
+}
+
+/* ═══ Plan tiles (step 2) ═══ */
+.plan-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+@media (max-width: 720px) {
+  .plan-tiles { grid-template-columns: 1fr; }
+}
+
+.plan-tile {
+  position: relative;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 18px 18px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: right;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+  transition: var(--transition);
+}
+
+.plan-tile:hover { border-color: var(--sky-300); }
+.plan-tile.selected {
+  border-color: var(--trust-400);
+  background: var(--tranquil-100);
+}
+
+.plan-check {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-300);
+  display: flex; align-items: center; justify-content: center;
+}
+.plan-tile.selected .plan-check {
+  background: var(--trust-400); border-color: var(--trust-400);
+}
+.plan-tile.selected .plan-check::after {
+  content: ''; width: 7px; height: 7px;
+  border-radius: 50%; background: white;
+}
+
+.plan-tile-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.plan-tile-name .badge-rec {
+  background: var(--trust-300);
+  color: white;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  margin-inline-end: 6px;
+}
+
+.plan-tile-amount {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.01em;
+  line-height: 1.1;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.plan-tile-amount .unit {
+  font-size: 13px; font-weight: 500; color: var(--gray-500);
+  font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 4px;
+}
+
+.plan-tile-cadence {
+  font-size: 12.5px; color: var(--gray-500);
+}
+
+.plan-tile-discount {
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+/* Amount input */
+.amount-block {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+  margin-bottom: 14px;
+}
+
+.amount-block-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13.5px; color: var(--gray-700); font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.amount-block-label .meta { color: var(--gray-500); font-size: 12px; }
+
+.amount-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.amount-input {
+  flex: 1;
+  font-size: 32px;
+  font-weight: 600;
+  padding: 14px 18px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--gray-50);
+  color: var(--trust-700);
+  text-align: center;
+  letter-spacing: -.01em;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  transition: var(--transition);
+  -moz-appearance: textfield;
+}
+
+.amount-input::-webkit-outer-spin-button,
+.amount-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.amount-input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: 0 0 0 4px rgba(118,159,205,.15);
+}
+
+.amount-currency {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-600);
+  padding: 0 8px;
+}
+
+.amount-suggest-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.amount-suggest-pill {
+  padding: 6px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.amount-suggest-pill:hover { background: white; border-color: var(--sky-300); color: var(--trust-600); }
+.amount-suggest-pill.selected {
+  background: var(--trust-300); border-color: var(--trust-300); color: white;
+}
+
+.avg-note {
+  font-size: 12px; color: var(--gray-500);
+  margin-top: 8px;
+}
+.avg-note .latin { color: var(--trust-600); font-weight: 600; }
+
+/* ═══ Currency (step 3) ═══ */
+.currency-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+@media (max-width: 540px) { .currency-list { grid-template-columns: 1fr; } }
+
+.currency-card {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+}
+.currency-card:hover { border-color: var(--sky-300); }
+.currency-card.selected { border-color: var(--trust-400); background: var(--tranquil-100); }
+
+.currency-flag {
+  width: 36px; height: 36px;
+  border-radius: 50%; background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+.currency-text { min-width: 0; text-align: right; }
+.currency-name { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.currency-code { font-size: 11.5px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; }
+
+.currency-amount {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--trust-700);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.currency-card.selected .currency-amount { color: var(--trust-700); }
+
+.conversion-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  color: var(--info-700);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.conversion-note svg { flex-shrink: 0; margin-top: 2px; }
+
+/* ═══ Options (step 4) ═══ */
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-card {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 20px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.option-card:hover { border-color: var(--sky-300); }
+.option-card.selected { border-color: var(--trust-400); background: var(--tranquil-100); }
+
+.option-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.option-card.selected .option-icon {
+  background: var(--trust-300); color: white;
+}
+
+.option-text { min-width: 0; }
+.option-title { font-size: 14.5px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.option-sub { font-size: 12.5px; color: var(--gray-600); margin-top: 3px; line-height: 1.55; }
+
+.option-switch {
+  width: 44px; height: 24px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  position: relative;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.option-switch::after {
+  content: ''; position: absolute;
+  top: 3px; right: 3px;
+  width: 18px; height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+.option-card.selected .option-switch { background: var(--trust-400); }
+.option-card.selected .option-switch::after { right: 23px; }
+
+/* ═══ Payment (step 5) ═══ */
+.pay-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+@media (max-width: 540px) { .pay-methods { grid-template-columns: 1fr; } }
+
+.pay-method {
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+  transition: var(--transition-fast);
+}
+.pay-method:hover { border-color: var(--sky-300); }
+.pay-method.selected { border-color: var(--trust-400); background: var(--tranquil-100); }
+
+.pay-icon {
+  width: 42px; height: 28px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: white;
+  flex-shrink: 0;
+}
+.pay-icon.knet { background: linear-gradient(135deg, #1a8754, #146943); }
+.pay-icon.visa { background: var(--gray-900); }
+.pay-icon.mc { background: linear-gradient(135deg, #eb001b, #f79e1b); }
+.pay-icon.apay { background: black; font-family: -apple-system, sans-serif; }
+.pay-icon.stc { background: linear-gradient(135deg, #6610f2, #4a0ec5); }
+
+.pay-method-label { font-size: 13.5px; font-weight: 500; color: var(--gray-800); }
+
+.pay-card-fields {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--gray-700); letter-spacing: .02em;
+}
+
+.field input {
+  padding: 11px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+.field input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.security-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-100);
+  flex-wrap: wrap;
+}
+
+.sec-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.sec-badge svg { color: var(--success-600); }
+
+.terms-agree {
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.terms-check {
+  width: 20px; height: 20px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  transition: var(--transition-fast);
+}
+
+.terms-agree.checked .terms-check {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+}
+.terms-agree.checked .terms-check::after {
+  content: '';
+  width: 12px; height: 6px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(2px, -2px);
+}
+
+.terms-agree a { color: var(--trust-500); font-weight: 500; text-decoration: underline; text-decoration-color: var(--sky-300); text-underline-offset: 3px; }
+
+/* ═══ SUMMARY CARD (sticky on left) ═══ */
+.summary-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: sticky;
+  top: 200px;
+}
+
+.summary-head {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(118,159,205,.15) 0%, transparent 50%),
+    linear-gradient(160deg, var(--tranquil-100) 0%, white 100%);
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--sky-200);
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.summary-photo {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 6px, var(--tranquil-100) 6px, var(--tranquil-100) 12px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 600; color: var(--trust-700);
+  position: relative;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
+}
+.summary-photo .flag {
+  position: absolute;
+  bottom: -2px; left: -2px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+
+.summary-name { font-size: 15px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.summary-meta { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+
+.summary-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summary-row {
+  display: flex; justify-content: space-between;
+  font-size: 13px;
+}
+.summary-row-label { color: var(--gray-600); }
+.summary-row-value { color: var(--gray-900); font-weight: 500; text-align: left; }
+.summary-row-value.empty { color: var(--gray-400); font-style: italic; font-weight: 400; }
+
+.summary-total {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--gray-200);
+  display: flex; justify-content: space-between;
+  align-items: baseline;
+}
+
+.summary-total-label { font-size: 13px; color: var(--gray-700); font-weight: 600; }
+.summary-total-value {
+  font-size: 22px; font-weight: 600; color: var(--trust-700);
+  letter-spacing: -.01em;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.summary-total-value .unit { font-size: 12px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 4px; }
+
+.summary-discount {
+  margin-top: -4px;
+  font-size: 11.5px;
+  color: var(--success-700);
+  text-align: left;
+}
+
+.summary-secure {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  color: var(--success-700);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+/* ═══ FOOT BAR ═══ */
+.foot-bar {
+  position: fixed;
+  bottom: 0;
+  inset-inline: 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  padding: 14px 28px;
+  z-index: 40;
+  box-shadow: 0 -2px 12px rgba(11,30,51,.05);
+}
+.foot-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.foot-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: var(--radius-md);
+  font-size: 15px; font-weight: 600;
+  transition: var(--transition);
+  border: 1px solid transparent;
+  min-height: 48px;
+}
+.foot-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.foot-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+}
+.foot-btn-secondary:hover:not([aria-disabled="true"]) {
+  border-color: var(--sky-300); color: var(--trust-600); background: var(--snow-100);
+}
+.foot-btn-primary {
+  background: var(--trust-400);
+  color: white;
+  border-color: var(--trust-400);
+  flex: 1;
+  max-width: 320px;
+}
+.foot-btn-primary:hover:not([aria-disabled="true"]) {
+  background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-md);
+}
+.foot-btn-confirm {
+  background: var(--success-600);
+  border-color: var(--success-600);
+  color: white;
+}
+.foot-btn-confirm:hover:not([aria-disabled="true"]) {
+  background: var(--success-700); border-color: var(--success-700);
+}
+
+/* ═══ SUCCESS ═══ */
+.success-overlay {
+  position: fixed; inset: 0;
+  background: rgba(247,251,252,.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.success-overlay.show { display: flex; animation: stepIn 320ms ease; }
+
+.success-card {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 40px 36px 30px;
+  max-width: 540px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.success-icon {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  background: var(--success-50);
+  color: var(--success-600);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  position: relative;
+}
+.success-icon::before {
+  content: ''; position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--success-100);
+}
+.success-icon svg { width: 44px; height: 44px; stroke-width: 2.2; }
+
+.success-card h2 {
+  font-size: 26px; font-weight: 600;
+  color: var(--gray-900); letter-spacing: -.02em;
+  margin-bottom: 10px;
+}
+
+.success-card > p {
+  font-size: 15px; color: var(--gray-600);
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+
+.success-card .verse {
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, var(--snow-100) 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin: 16px 0 22px;
+  font-size: 15.5px;
+  color: var(--trust-700);
+  font-weight: 500;
+  line-height: 1.85;
+}
+.success-card .verse-attr {
+  display: block;
+  font-size: 12.5px; color: var(--trust-500);
+  margin-top: 8px; font-weight: 400;
+}
+
+.receipt-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.receipt-cell {
+  text-align: center;
+  padding: 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+.receipt-cell-label {
+  font-size: 11px;
+  color: var(--gray-500);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.receipt-cell-value {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.success-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) { .success-actions { grid-template-columns: 1fr; } }
+.success-actions button {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-700);
+  transition: var(--transition);
+}
+.success-actions button.primary {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+  color: white;
+}
+.success-actions button:hover { border-color: var(--sky-300); }
+.success-actions button.primary:hover { background: var(--trust-400); border-color: var(--trust-400); }
+
+/* Icon */
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+@media (max-width: 540px) {
+  .step-head h2 { font-size: 22px; }
+  .step-head p { font-size: 13.5px; }
+  .wiz-header { padding: 12px 16px; }
+  .progress-wrap { padding: 12px 16px 16px; }
+  .stage { padding: 20px 16px 130px; gap: 16px; }
+  .foot-bar { padding: 12px 16px; }
+  .foot-btn { padding: 12px 16px; font-size: 14px; }
+  .confirm-card { grid-template-columns: 72px 1fr; gap: 14px; padding: 18px; }
+  .confirm-card-photo { width: 72px; height: 72px; font-size: 30px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="wiz-header" role="banner">
+  <div class="wiz-header-inner">
+    <a href="D-03 Orphan Detail (Pre-Sponsor).html" class="wiz-back" aria-label="العودة لصفحة سلمى">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>صفحة سلمى</span>
+    </a>
+    <div class="wiz-title-area">
+      <h1>إنشاء كفالة جديدة</h1>
+      <p>سلمى ع. · فلسطين</p>
+    </div>
+    <span class="wiz-secure">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      اتّصال آمن
+    </span>
+  </div>
+</header>
+
+<!-- ═══ PROGRESS ═══ -->
+<div class="progress-wrap" aria-label="تقدّمك في الإنشاء">
+  <div class="progress-inner">
+    <div class="progress-head">
+      <span class="progress-head-label">تقدّمك</span>
+      <span class="progress-head-count"><span id="step-current" class="latin">1</span> من <span class="latin">6</span></span>
+    </div>
+    <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="1">
+      <div class="progress-fill" id="progress-fill" style="width: 16.66%;"></div>
+    </div>
+    <div class="progress-steps">
+      <div class="p-step active" data-step-marker="1"><div class="p-step-dot">١</div><div class="p-step-label">تأكيد</div></div>
+      <div class="p-step" data-step-marker="2"><div class="p-step-dot">٢</div><div class="p-step-label">الخطّة</div></div>
+      <div class="p-step" data-step-marker="3"><div class="p-step-dot">٣</div><div class="p-step-label">العملة</div></div>
+      <div class="p-step" data-step-marker="4"><div class="p-step-dot">٤</div><div class="p-step-label">تفضيلات</div></div>
+      <div class="p-step" data-step-marker="5"><div class="p-step-dot">٥</div><div class="p-step-label">الدفع</div></div>
+      <div class="p-step" data-step-marker="6"><div class="p-step-dot">٦</div><div class="p-step-label">تأكيد</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STAGE ═══ -->
+<main class="stage" role="main">
+
+  <div class="main-col">
+
+    <!-- ─── STEP 1 — confirm ─── -->
+    <section class="step active" data-step="1" aria-labelledby="s1-title">
+      <div class="step-head">
+        <h2 id="s1-title">هل أنت متأكد من اختيار سلمى؟</h2>
+        <p>قبل أن نبدأ بإجراءات الكفالة، تحقّق من أنّ هذه هي الطفلة التي اخترتها. يمكنك دائماً العودة وتغيير الاختيار.</p>
+      </div>
+
+      <div class="confirm-card">
+        <div class="confirm-card-photo" aria-hidden="true">
+          س
+          <span class="flag" title="فلسطين">🇵🇸</span>
+        </div>
+        <div class="confirm-card-info">
+          <h3>سلمى ع.</h3>
+          <div class="confirm-card-meta">
+            <span>٨ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>فلسطين — غزّة</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>الصف الثاني الابتدائي</span>
+          </div>
+          <div class="confirm-card-quick">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            موثّقة من جمعية الفجر الخيرية — فرع غزّة
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-action">
+        <button class="foot-btn foot-btn-secondary" onclick="location.href='D-02 Browse Available Orphans.html'">
+          استكشف أيتاماً آخرين
+        </button>
+        <button class="foot-btn foot-btn-primary" onclick="goToStep(2)">
+          نعم، أريد كفالتها
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ─── STEP 2 — plan + amount ─── -->
+    <section class="step" data-step="2" aria-labelledby="s2-title">
+      <div class="step-head">
+        <h2 id="s2-title">اختر خطّة الكفالة</h2>
+        <p>كل المبالغ تذهب لسلمى عبر الجمعية. يمكنك تعديل المبلغ أو الخطّة لاحقاً في أيّ وقت من حسابك.</p>
+      </div>
+
+      <div class="plan-tiles" role="radiogroup" aria-label="الخطّة">
+        <button class="plan-tile" data-plan="monthly">
+          <div class="plan-check" aria-hidden="true"></div>
+          <div class="plan-tile-name">شهريّة</div>
+          <div class="plan-tile-amount"><span class="latin">35</span><span class="unit">دك</span></div>
+          <div class="plan-tile-cadence">في الشهر · تجديد تلقائي</div>
+        </button>
+        <button class="plan-tile selected" data-plan="yearly">
+          <div class="plan-check" aria-hidden="true"></div>
+          <div class="plan-tile-name"><span class="badge-rec">موصى بها</span>سنويّة</div>
+          <div class="plan-tile-amount"><span class="latin">380</span><span class="unit">دك</span></div>
+          <div class="plan-tile-cadence">دفعة واحدة لسنة كاملة</div>
+          <span class="plan-tile-discount">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            وفّر <span class="latin" style="margin: 0 2px;">10%</span>
+          </span>
+        </button>
+        <button class="plan-tile" data-plan="once">
+          <div class="plan-check" aria-hidden="true"></div>
+          <div class="plan-tile-name">دفعة واحدة</div>
+          <div class="plan-tile-amount"><span class="latin">120</span><span class="unit">دك</span></div>
+          <div class="plan-tile-cadence">لمدّة ٣ شهور</div>
+        </button>
+      </div>
+
+      <div class="amount-block">
+        <div class="amount-block-label">
+          <span>عدّل المبلغ إن أحببت</span>
+          <span class="meta">الحد الأدنى للجمعية: <span class="latin" style="color: var(--gray-700); font-weight: 600;">35 دك</span></span>
+        </div>
+        <div class="amount-input-wrap">
+          <input type="number" class="amount-input" id="amount-input" value="380" min="35" step="5" aria-label="المبلغ">
+          <span class="amount-currency">دك</span>
+        </div>
+        <div class="amount-suggest-row">
+          <button class="amount-suggest-pill" data-amount="35"><span class="latin">35</span></button>
+          <button class="amount-suggest-pill" data-amount="50"><span class="latin">50</span></button>
+          <button class="amount-suggest-pill" data-amount="100"><span class="latin">100</span></button>
+          <button class="amount-suggest-pill selected" data-amount="380"><span class="latin">380</span></button>
+          <button class="amount-suggest-pill" data-amount="500"><span class="latin">500</span></button>
+          <button class="amount-suggest-pill" data-amount="1000"><span class="latin">1,000</span></button>
+        </div>
+        <div class="avg-note">
+          متوسّط ما يكفل به الكفلاء سلمى: <span class="latin">42 دك</span> شهرياً (≈ <span class="latin">504 دك</span> سنوياً)
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── STEP 3 — currency ─── -->
+    <section class="step" data-step="3" aria-labelledby="s3-title">
+      <div class="step-head">
+        <h2 id="s3-title">اختر عملة الدفع</h2>
+        <p>سندفع الجمعية بعملتها المحليّة بسعر صرف يومي عادل، وستظهر لك الأرقام بعملتك التي تختارها.</p>
+      </div>
+
+      <div class="currency-list" role="radiogroup" aria-label="العملة">
+        <button class="currency-card selected" data-currency="KWD" data-rate="1">
+          <div class="currency-flag" aria-hidden="true">🇰🇼</div>
+          <div class="currency-text">
+            <div class="currency-name">دينار كويتي</div>
+            <div class="currency-code">KWD</div>
+          </div>
+          <div class="currency-amount latin">380</div>
+        </button>
+        <button class="currency-card" data-currency="SAR" data-rate="12.25">
+          <div class="currency-flag" aria-hidden="true">🇸🇦</div>
+          <div class="currency-text">
+            <div class="currency-name">ريال سعودي</div>
+            <div class="currency-code">SAR</div>
+          </div>
+          <div class="currency-amount latin">4,655</div>
+        </button>
+        <button class="currency-card" data-currency="AED" data-rate="11.97">
+          <div class="currency-flag" aria-hidden="true">🇦🇪</div>
+          <div class="currency-text">
+            <div class="currency-name">درهم إماراتي</div>
+            <div class="currency-code">AED</div>
+          </div>
+          <div class="currency-amount latin">4,549</div>
+        </button>
+        <button class="currency-card" data-currency="USD" data-rate="3.26">
+          <div class="currency-flag" aria-hidden="true">🇺🇸</div>
+          <div class="currency-text">
+            <div class="currency-name">دولار أمريكي</div>
+            <div class="currency-code">USD</div>
+          </div>
+          <div class="currency-amount latin">1,239</div>
+        </button>
+        <button class="currency-card" data-currency="GBP" data-rate="4.15">
+          <div class="currency-flag" aria-hidden="true">🇬🇧</div>
+          <div class="currency-text">
+            <div class="currency-name">جنيه استرليني</div>
+            <div class="currency-code">GBP</div>
+          </div>
+          <div class="currency-amount latin">1,577</div>
+        </button>
+        <button class="currency-card" data-currency="EUR" data-rate="3.55">
+          <div class="currency-flag" aria-hidden="true">🇪🇺</div>
+          <div class="currency-text">
+            <div class="currency-name">يورو</div>
+            <div class="currency-code">EUR</div>
+          </div>
+          <div class="currency-amount latin">1,349</div>
+        </button>
+      </div>
+
+      <div class="conversion-note" role="status">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>التحويل لعملة سلمى المحليّة (الشيكل) يتمّ بسعر الصرف اليومي، وتظهر التفاصيل في الإيصال.</span>
+      </div>
+    </section>
+
+    <!-- ─── STEP 4 — options ─── -->
+    <section class="step" data-step="4" aria-labelledby="s4-title">
+      <div class="step-head">
+        <h2 id="s4-title">تفضيلات الكفالة</h2>
+        <p>هذه التفضيلات تُحدّد كيف نتعامل مع كفالتك. كلّها قابلة للتعديل لاحقاً.</p>
+      </div>
+
+      <div class="option-list">
+
+        <button class="option-card selected" data-option="reports">
+          <div class="option-icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="option-text">
+            <div class="option-title">تقارير ربعية موسّعة</div>
+            <div class="option-sub">إضافة إلى التقارير الشهرية، تأتيك كل ٣ أشهر دفعة تفصيلية: ملخّص دراسي، صحّي، وصور أكثر.</div>
+          </div>
+          <div class="option-switch" aria-hidden="true"></div>
+        </button>
+
+        <button class="option-card" data-option="anonymous">
+          <div class="option-icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="option-text">
+            <div class="option-title">تبرّع باسم مستعار (أبو سلمى)</div>
+            <div class="option-sub">يظهر اسمك للجهة المسؤولة فقط، ولا يظهر للأهل أو في أي تقرير.</div>
+          </div>
+          <div class="option-switch" aria-hidden="true"></div>
+        </button>
+
+        <button class="option-card" data-option="reveal">
+          <div class="option-icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="option-text">
+            <div class="option-title">السماح لأم سلمى برؤية اسمي</div>
+            <div class="option-sub">تظهر تحيّتك ورسائلك لأم سلمى باسمك. متوقّفة افتراضيّاً.</div>
+          </div>
+          <div class="option-switch" aria-hidden="true"></div>
+        </button>
+
+        <button class="option-card" data-option="zakat">
+          <div class="option-icon" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+          </div>
+          <div class="option-text">
+            <div class="option-title">هذه الكفالة من الزكاة</div>
+            <div class="option-sub">جمعية الفجر معتمدة لاستلام الزكاة. ستضاف هذه المعاملة لإيصال الزكاة السنوي.</div>
+          </div>
+          <div class="option-switch" aria-hidden="true"></div>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ─── STEP 5 — payment ─── -->
+    <section class="step" data-step="5" aria-labelledby="s5-title">
+      <div class="step-head">
+        <h2 id="s5-title">طريقة الدفع</h2>
+        <p>اختر الطريقة الأنسب لك. كل المعاملات مشفّرة وتمرّ عبر بوّابة دفع معتمدة.</p>
+      </div>
+
+      <div class="pay-methods" role="radiogroup" aria-label="طريقة الدفع">
+        <button class="pay-method selected" data-pay="knet">
+          <div class="pay-icon knet" aria-hidden="true">K-NET</div>
+          <span class="pay-method-label">كي–نت</span>
+        </button>
+        <button class="pay-method" data-pay="visa">
+          <div class="pay-icon visa" aria-hidden="true">VISA</div>
+          <span class="pay-method-label">فيزا / ماستركارد</span>
+        </button>
+        <button class="pay-method" data-pay="apay">
+          <div class="pay-icon apay" aria-hidden="true"></div>
+          <span class="pay-method-label">Apple Pay</span>
+        </button>
+        <button class="pay-method" data-pay="stc">
+          <div class="pay-icon stc" aria-hidden="true">STC</div>
+          <span class="pay-method-label">STC Pay</span>
+        </button>
+      </div>
+
+      <div class="pay-card-fields">
+        <div class="field">
+          <label for="card-name">اسم حامل البطاقة</label>
+          <input type="text" id="card-name" placeholder="كما يظهر على البطاقة" autocomplete="cc-name">
+        </div>
+        <div class="field">
+          <label for="card-number">رقم البطاقة</label>
+          <input type="text" id="card-number" placeholder="•••• •••• •••• ••••" autocomplete="cc-number" inputmode="numeric">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="card-expiry">تاريخ الانتهاء</label>
+            <input type="text" id="card-expiry" placeholder="MM / YY" autocomplete="cc-exp" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="card-cvc">رمز CVC</label>
+            <input type="text" id="card-cvc" placeholder="•••" autocomplete="cc-csc" inputmode="numeric" maxlength="4">
+          </div>
+        </div>
+
+        <div class="security-badges">
+          <span class="sec-badge">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            تشفير <span class="latin">SSL</span>
+          </span>
+          <span class="sec-badge">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="latin">PCI DSS</span> معتمدة
+          </span>
+          <span class="sec-badge">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            عبر MyFatoorah
+          </span>
+        </div>
+      </div>
+
+      <button class="terms-agree" id="terms-agree">
+        <span class="terms-check" aria-hidden="true"></span>
+        <span>
+          أوافق على <a href="#">شروط الكفالة</a> و<a href="#">سياسة الخصوصية</a>، وأقرّ أنّ المبلغ سيُخصم تلقائياً بحسب الخطّة المختارة.
+        </span>
+      </button>
+    </section>
+
+    <!-- ─── STEP 6 — review before confirm ─── -->
+    <section class="step" data-step="6" aria-labelledby="s6-title">
+      <div class="step-head">
+        <h2 id="s6-title">المراجعة الأخيرة</h2>
+        <p>راجع كل التفاصيل قبل تأكيد الكفالة. عند الضغط على «أكّد الكفالة» سيُخصم المبلغ ويبدأ سريانها فوراً.</p>
+      </div>
+
+      <div class="confirm-card" style="margin-bottom: 14px;">
+        <div class="confirm-card-photo" aria-hidden="true">
+          س
+          <span class="flag" title="فلسطين">🇵🇸</span>
+        </div>
+        <div class="confirm-card-info">
+          <h3>سلمى ع.</h3>
+          <div class="confirm-card-meta">
+            <span>٨ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>فلسطين — غزّة</span>
+          </div>
+          <div class="confirm-card-quick">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            ستبدأ الكفالة فوراً وستصلك أوّل تقاريرها خلال شهر
+          </div>
+        </div>
+      </div>
+
+      <div class="amount-block">
+        <div class="amount-block-label"><span>تفاصيل الكفالة</span></div>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; font-size: 13.5px;">
+          <span style="color: var(--gray-600);">الخطّة</span>
+          <span style="color: var(--gray-900); font-weight: 500;">سنويّة · مرّة واحدة</span>
+          <span style="color: var(--gray-600);">المبلغ</span>
+          <span style="color: var(--gray-900); font-weight: 500;"><span class="latin">380</span> دك</span>
+          <span style="color: var(--gray-600);">نوع المبلغ</span>
+          <span style="color: var(--gray-900); font-weight: 500;">تبرّع عادي (ليس من الزكاة)</span>
+          <span style="color: var(--gray-600);">التقارير الربعية</span>
+          <span style="color: var(--success-700); font-weight: 500;">مفعّلة</span>
+          <span style="color: var(--gray-600);">رؤية أم سلمى لاسمك</span>
+          <span style="color: var(--gray-600); font-weight: 500;">متوقّفة (افتراضي)</span>
+          <span style="color: var(--gray-600);">طريقة الدفع</span>
+          <span style="color: var(--gray-900); font-weight: 500;">كي–نت</span>
+        </div>
+      </div>
+
+      <div class="conversion-note" role="status">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>التزام كفالة:</strong> ستجدّد سنوياً تلقائياً ما لم توقفها. يمكنك إيقافها من حسابك في أيّ وقت دون رسوم.</span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ─── SUMMARY (sticky left col) ─── -->
+  <aside class="summary-card">
+    <div class="summary-head">
+      <div class="summary-photo" aria-hidden="true">
+        س
+        <span class="flag" title="فلسطين">🇵🇸</span>
+      </div>
+      <div>
+        <div class="summary-name">سلمى ع.</div>
+        <div class="summary-meta">٨ سنوات · فلسطين</div>
+      </div>
+    </div>
+    <div class="summary-body">
+      <div class="summary-row">
+        <span class="summary-row-label">الخطّة</span>
+        <span class="summary-row-value" id="sum-plan">سنويّة</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">العملة</span>
+        <span class="summary-row-value" id="sum-currency">دينار كويتي</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">المبلغ الأساسي</span>
+        <span class="summary-row-value latin" id="sum-amount">380 دك</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">طريقة الدفع</span>
+        <span class="summary-row-value empty" id="sum-pay">سنختارها لاحقاً</span>
+      </div>
+
+      <div class="summary-total">
+        <span class="summary-total-label">الإجمالي اليوم</span>
+        <span class="summary-total-value"><span class="latin" id="sum-total">380</span><span class="unit">دك</span></span>
+      </div>
+      <div class="summary-discount" id="sum-discount">وفّرت <span class="latin">40</span> دك بالخطّة السنويّة</div>
+
+      <div class="summary-secure">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        المعاملة مشفّرة بـ <span class="latin">SSL 256-bit</span>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<!-- ═══ FOOT BAR ═══ -->
+<nav class="foot-bar" aria-label="التنقّل">
+  <div class="foot-bar-inner">
+    <button class="foot-btn foot-btn-secondary" id="btn-prev" aria-disabled="true" onclick="goToStep(state.step - 1)">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      السابق
+    </button>
+    <button class="foot-btn foot-btn-primary" id="btn-next" onclick="goToStep(state.step + 1)">
+      التالي
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="foot-btn foot-btn-confirm" id="btn-confirm" style="display: none;" onclick="confirmPay()">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      أكّد الكفالة وادفع
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ SUCCESS ═══ -->
+<div class="success-overlay" id="success" role="dialog" aria-modal="true" aria-labelledby="success-title">
+  <div class="success-card">
+    <div class="success-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 id="success-title">جزاكم الله خيراً</h2>
+    <p>تمّت كفالة سلمى بنجاح. ستصلك أوّل تقاريرها وصورها خلال شهر إن شاء الله. يمكنك متابعتها الآن من قائمة «أيتامي».</p>
+
+    <blockquote class="verse">
+      مَن كَفَلَ يَتيمًا لَهُ أَو لِغَيرِهِ كُنتُ أَنا وَهُوَ كَهاتَينِ فِي الجَنَّةِ
+      <span class="verse-attr">— صحيح مسلم</span>
+    </blockquote>
+
+    <div class="receipt-row">
+      <div class="receipt-cell">
+        <div class="receipt-cell-label">رقم المعاملة</div>
+        <div class="receipt-cell-value">PAY-<span class="latin">29874</span></div>
+      </div>
+      <div class="receipt-cell">
+        <div class="receipt-cell-label">المبلغ المخصوم</div>
+        <div class="receipt-cell-value"><span class="latin">380</span> دك</div>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <button onclick="alert('سيُحمَّل الإيصال بصيغة PDF')">
+        تحميل الإيصال
+      </button>
+      <button class="primary" onclick="location.href='D-01 Donor Dashboard.html'">
+        عودة للوحتي
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── STATE ─── */
+const STORAGE_KEY = 'rufaqaa-d04-sponsorship-draft';
+let state = {
+  step: 1,
+  plan: 'yearly',      // monthly | yearly | once
+  amount: 380,
+  currency: 'KWD',
+  options: { reports: true, anonymous: false, reveal: false, zakat: false },
+  pay: 'knet',
+  termsOk: false,
+};
+
+const planNames = { monthly: 'شهريّة', yearly: 'سنويّة', once: 'دفعة واحدة' };
+const planBase  = { monthly: 35, yearly: 380, once: 120 };
+const currencyNames = { KWD: 'دينار كويتي', SAR: 'ريال سعودي', AED: 'درهم إماراتي', USD: 'دولار أمريكي', GBP: 'جنيه استرليني', EUR: 'يورو' };
+const currencyShort = { KWD: 'دك', SAR: 'ر.س', AED: 'د.إ', USD: 'دولار', GBP: 'جنيه', EUR: 'يورو' };
+const rates = { KWD: 1, SAR: 12.25, AED: 11.97, USD: 3.26, GBP: 4.15, EUR: 3.55 };
+const payNames = { knet: 'كي–نت', visa: 'فيزا / ماستركارد', apay: 'Apple Pay', stc: 'STC Pay' };
+
+/* ─── PERSIST ─── */
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) Object.assign(state, JSON.parse(raw));
+  } catch (e) {}
+}
+
+/* ─── NAV ─── */
+function goToStep(n) {
+  state.step = Math.max(1, Math.min(6, n));
+  document.querySelectorAll('.step').forEach(el => {
+    el.classList.toggle('active', +el.dataset.step === state.step);
+  });
+  document.getElementById('progress-fill').style.width = (state.step / 6 * 100) + '%';
+  document.querySelector('.progress-track').setAttribute('aria-valuenow', state.step);
+  document.getElementById('step-current').textContent = state.step;
+  document.querySelectorAll('.p-step').forEach(el => {
+    const s = +el.dataset.stepMarker;
+    el.classList.toggle('active', s === state.step);
+    el.classList.toggle('done', s < state.step);
+  });
+
+  const prev = document.getElementById('btn-prev');
+  const next = document.getElementById('btn-next');
+  const conf = document.getElementById('btn-confirm');
+
+  prev.setAttribute('aria-disabled', state.step === 1 ? 'true' : 'false');
+
+  // Step 1 has its own inline buttons — hide nav for that step
+  if (state.step === 1) {
+    next.style.display = 'none';
+    conf.style.display = 'none';
+  } else if (state.step === 6) {
+    next.style.display = 'none';
+    conf.style.display = 'inline-flex';
+  } else {
+    next.style.display = 'inline-flex';
+    conf.style.display = 'none';
+  }
+
+  updateNextEnabled();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  save();
+}
+
+function updateNextEnabled() {
+  const next = document.getElementById('btn-next');
+  const conf = document.getElementById('btn-confirm');
+  let ok = true;
+  if (state.step === 2) ok = state.amount >= 35;
+  else if (state.step === 5) ok = state.termsOk && state.pay;
+  next.setAttribute('aria-disabled', ok ? 'false' : 'true');
+  conf.setAttribute('aria-disabled', state.termsOk ? 'false' : 'true');
+}
+
+/* ─── PLAN ─── */
+document.querySelectorAll('.plan-tile').forEach(tile => {
+  tile.addEventListener('click', () => {
+    document.querySelectorAll('.plan-tile').forEach(t => t.classList.remove('selected'));
+    tile.classList.add('selected');
+    state.plan = tile.dataset.plan;
+    state.amount = planBase[state.plan];
+    document.getElementById('amount-input').value = state.amount;
+    paintAmountPills();
+    refreshSummary();
+    save();
+  });
+});
+
+/* ─── AMOUNT ─── */
+document.querySelectorAll('.amount-suggest-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    state.amount = +pill.dataset.amount;
+    document.getElementById('amount-input').value = state.amount;
+    paintAmountPills();
+    refreshSummary();
+    save();
+    updateNextEnabled();
+  });
+});
+
+document.getElementById('amount-input').addEventListener('input', e => {
+  state.amount = +e.target.value || 0;
+  paintAmountPills();
+  refreshSummary();
+  save();
+  updateNextEnabled();
+});
+
+function paintAmountPills() {
+  document.querySelectorAll('.amount-suggest-pill').forEach(p => {
+    p.classList.toggle('selected', +p.dataset.amount === state.amount);
+  });
+}
+
+/* ─── CURRENCY ─── */
+document.querySelectorAll('.currency-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.currency-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.currency = card.dataset.currency;
+    refreshSummary();
+    save();
+  });
+});
+
+/* ─── OPTIONS ─── */
+document.querySelectorAll('.option-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const opt = card.dataset.option;
+    state.options[opt] = !state.options[opt];
+    card.classList.toggle('selected', state.options[opt]);
+    save();
+  });
+});
+
+/* ─── PAY ─── */
+document.querySelectorAll('.pay-method').forEach(pm => {
+  pm.addEventListener('click', () => {
+    document.querySelectorAll('.pay-method').forEach(p => p.classList.remove('selected'));
+    pm.classList.add('selected');
+    state.pay = pm.dataset.pay;
+    refreshSummary();
+    save();
+  });
+});
+
+/* ─── TERMS ─── */
+document.getElementById('terms-agree').addEventListener('click', () => {
+  state.termsOk = !state.termsOk;
+  document.getElementById('terms-agree').classList.toggle('checked', state.termsOk);
+  save();
+  updateNextEnabled();
+});
+
+/* ─── SUMMARY refresh ─── */
+function refreshSummary() {
+  document.getElementById('sum-plan').textContent = planNames[state.plan];
+  document.getElementById('sum-currency').textContent = currencyNames[state.currency];
+  const converted = (state.amount * rates[state.currency]).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  document.getElementById('sum-amount').innerHTML = `<span class="latin">${converted}</span> ${currencyShort[state.currency]}`;
+  document.getElementById('sum-total').textContent = converted;
+
+  document.querySelector('.summary-total-value .unit').textContent = currencyShort[state.currency];
+
+  document.getElementById('sum-pay').textContent = payNames[state.pay] || 'سنختارها لاحقاً';
+  document.getElementById('sum-pay').classList.toggle('empty', !state.pay);
+
+  // Discount note (only for yearly)
+  const disc = document.getElementById('sum-discount');
+  if (state.plan === 'yearly') {
+    const saved = (state.amount * rates[state.currency] * 0.1).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    disc.innerHTML = `وفّرت <span class="latin">${saved}</span> ${currencyShort[state.currency]} بالخطّة السنويّة`;
+    disc.style.display = 'block';
+  } else {
+    disc.style.display = 'none';
+  }
+}
+
+/* ─── CONFIRM ─── */
+function confirmPay() {
+  if (!state.termsOk) {
+    document.getElementById('terms-agree').animate(
+      [{ transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }],
+      { duration: 240, iterations: 2 }
+    );
+    return;
+  }
+  document.getElementById('success').classList.add('show');
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+}
+
+/* ─── INIT ─── */
+function hydrate() {
+  load();
+  // Plan
+  document.querySelectorAll('.plan-tile').forEach(t => t.classList.toggle('selected', t.dataset.plan === state.plan));
+  document.getElementById('amount-input').value = state.amount;
+  paintAmountPills();
+  // Currency
+  document.querySelectorAll('.currency-card').forEach(c => c.classList.toggle('selected', c.dataset.currency === state.currency));
+  // Options
+  Object.keys(state.options).forEach(k => {
+    const card = document.querySelector(`.option-card[data-option="${k}"]`);
+    if (card) card.classList.toggle('selected', state.options[k]);
+  });
+  // Pay
+  document.querySelectorAll('.pay-method').forEach(p => p.classList.toggle('selected', p.dataset.pay === state.pay));
+  // Terms
+  document.getElementById('terms-agree').classList.toggle('checked', state.termsOk);
+
+  refreshSummary();
+  goToStep(state.step);
+}
+
+hydrate();
+</script>
+
+</body>
+</html>

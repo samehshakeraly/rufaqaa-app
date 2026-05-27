@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — مراجعة التقارير</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626; --danger-700: #B91C1C;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+  --sidebar-w: 220px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 15px; line-height: 1.55;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+/* Sidebar (same shell) */
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-500), var(--trust-700)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tenant-switcher .chev { color: var(--gray-400); }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--gray-500); }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 17px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; }
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+/* PAGE */
+.page { display: grid; grid-template-columns: 360px 1fr; gap: 0; flex: 1; min-height: 0; }
+
+@media (max-width: 1100px) { .page { grid-template-columns: 1fr; } .review-list { max-height: 360px; overflow-y: auto; border-bottom: 1px solid var(--gray-200); } }
+
+/* Review list (right col in RTL) */
+.review-list {
+  background: white;
+  border-inline-start: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.list-tabs {
+  display: flex;
+  gap: 0;
+  padding: 6px 12px 0;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.list-tab {
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: var(--transition-fast);
+}
+.list-tab:hover { color: var(--gray-900); }
+.list-tab.active { color: var(--trust-600); border-bottom-color: var(--trust-300); background: white; font-weight: 600; }
+.list-tab .count {
+  background: var(--gray-200); color: var(--gray-700);
+  padding: 1px 7px; border-radius: var(--radius-full);
+  font-size: 10.5px; font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.list-tab.active .count { background: var(--tranquil-200); color: var(--trust-700); }
+
+.list-filter {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; gap: 8px;
+}
+
+.list-search {
+  flex: 1; position: relative;
+}
+.list-search input {
+  width: 100%; padding: 8px 36px 8px 12px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); font-size: 13px;
+}
+.list-search input:focus { outline: none; background: white; border-color: var(--sky-300); box-shadow: var(--shadow-focus); }
+.list-search svg { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); color: var(--gray-400); width: 14px; height: 14px; }
+
+.list-scroll {
+  flex: 1; overflow-y: auto;
+}
+
+.review-item {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  width: 100%;
+  border-inline-end: 3px solid transparent;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  text-align: right;
+  font-family: inherit;
+  position: relative;
+}
+
+.review-item:hover { background: var(--snow-200); }
+.review-item.active { background: white; border-inline-end-color: var(--trust-400); }
+.review-item.active::before {
+  content: ''; position: absolute;
+  inset-block: 6px; inset-inline-start: 0;
+  width: 3px; background: var(--trust-400);
+  border-radius: var(--radius-full);
+}
+
+.review-avatar {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 5px, var(--tranquil-100) 5px, var(--tranquil-100) 10px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 600; color: var(--trust-700);
+  flex-shrink: 0;
+}
+
+.review-item-top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 8px; margin-bottom: 2px;
+}
+
+.review-item-name { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.review-item-time { font-size: 11px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; }
+
+.review-item-sub { font-size: 12px; color: var(--gray-500); margin-bottom: 6px; }
+
+.review-item-preview {
+  font-size: 12px;
+  color: var(--gray-600);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.review-item-pills {
+  display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap;
+}
+.review-item-pill {
+  font-size: 10px; font-weight: 500;
+  padding: 1px 7px; border-radius: var(--radius-full);
+  background: var(--gray-100); color: var(--gray-700);
+}
+.review-item-pill.health { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.review-item-pill.edu { background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); }
+.review-item-pill.audio { background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); }
+.review-item-pill.image { background: var(--tranquil-100); color: var(--trust-700); border: 1px solid var(--sky-200); }
+
+/* Reviewer panel (left in RTL) */
+.reviewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--gray-50);
+  min-width: 0;
+}
+
+.reviewer-head {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 24px;
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.reviewer-head-photo {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 6px, var(--tranquil-100) 6px, var(--tranquil-100) 12px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 600; color: var(--trust-700);
+}
+.reviewer-head-text { min-width: 0; }
+.reviewer-head-name { font-size: 15px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.reviewer-head-meta { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.reviewer-head-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); display: inline-block; margin: 0 4px; }
+
+.reviewer-nav { display: flex; gap: 6px; }
+.nav-btn {
+  width: 32px; height: 32px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition-fast);
+}
+.nav-btn:hover { background: white; border-color: var(--sky-300); color: var(--trust-600); }
+
+/* Reviewer body */
+.reviewer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 26px 100px;
+  max-width: 760px;
+}
+
+.report-title { font-size: 22px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; margin-bottom: 8px; }
+.report-meta {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; color: var(--gray-500);
+  margin-bottom: 22px; flex-wrap: wrap;
+}
+.report-meta .badge {
+  background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100);
+  padding: 2px 9px; border-radius: var(--radius-full);
+  font-size: 11px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.report-meta .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* Section */
+.r-section { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
+
+.r-section-title {
+  font-size: 12px; font-weight: 600; color: var(--gray-500);
+  letter-spacing: .04em; text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.r-section-title svg { color: var(--trust-400); }
+
+.mood-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-full);
+  font-size: 13.5px; font-weight: 600;
+}
+
+.stars-row { display: inline-flex; gap: 3px; align-items: center; color: var(--warning-700); }
+.stars-row svg { width: 18px; height: 18px; fill: currentColor; }
+.stars-row .dim { color: var(--gray-300); }
+.stars-label { font-size: 13px; color: var(--gray-600); margin-inline-start: 10px; font-weight: 500; }
+
+.r-text {
+  margin-top: 10px;
+  font-size: 14px; line-height: 1.75;
+  color: var(--gray-800);
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+
+/* Voice player */
+.voice-card {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+}
+
+.voice-play {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  color: white;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.voice-wave { flex: 1; height: 24px; display: flex; align-items: center; gap: 2px; }
+.voice-wave i { display: block; flex: 1; background: var(--trust-300); border-radius: var(--radius-full); opacity: .55; }
+.voice-wave i:nth-child(1) { height: 30%; }
+.voice-wave i:nth-child(2) { height: 60%; }
+.voice-wave i:nth-child(3) { height: 90%; }
+.voice-wave i:nth-child(4) { height: 70%; }
+.voice-wave i:nth-child(5) { height: 50%; }
+.voice-wave i:nth-child(6) { height: 85%; }
+.voice-wave i:nth-child(7) { height: 40%; }
+.voice-wave i:nth-child(8) { height: 65%; }
+.voice-wave i:nth-child(9) { height: 80%; }
+.voice-wave i:nth-child(10) { height: 35%; }
+.voice-wave i:nth-child(11) { height: 55%; }
+.voice-wave i:nth-child(12) { height: 75%; }
+
+.voice-time { font-family: 'IBM Plex Sans', sans-serif; font-size: 12.5px; color: var(--gray-700); font-weight: 500; }
+
+/* Photo preview */
+.photo-attached {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 10px;
+}
+@media (max-width: 600px) { .photo-attached { grid-template-columns: 1fr; } }
+
+.photo-attached-img {
+  aspect-ratio: 4/3;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 8px, var(--tranquil-100) 8px, var(--tranquil-100) 16px);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--trust-400);
+}
+
+.photo-attached-meta {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+.photo-attached-meta strong { color: var(--gray-900); display: block; margin-bottom: 4px; }
+
+.ai-flag {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  display: flex; gap: 5px; align-items: center;
+}
+.ai-flag.warn { background: var(--warning-50); color: var(--warning-700); border-color: var(--warning-100); }
+
+/* Reviewer foot bar */
+.reviewer-foot {
+  position: sticky; bottom: 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  padding: 14px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 -2px 12px rgba(11,30,51,.04);
+}
+
+.reviewer-note {
+  flex: 1; position: relative;
+}
+
+.reviewer-note input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); font-size: 13px;
+}
+.reviewer-note input:focus { outline: none; background: white; border-color: var(--sky-300); box-shadow: var(--shadow-focus); }
+
+.foot-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.foot-btn {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.foot-btn-ghost { background: white; color: var(--gray-700); border-color: var(--gray-200); }
+.foot-btn-ghost:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+.foot-btn-reject {
+  background: white; color: var(--danger-700); border-color: var(--danger-100);
+}
+.foot-btn-reject:hover { background: var(--danger-50); border-color: var(--danger-600); }
+
+.foot-btn-approve {
+  background: var(--success-600); color: white; border-color: var(--success-600);
+}
+.foot-btn-approve:hover { background: var(--success-700); }
+
+/* Workflow strip */
+.workflow {
+  display: flex; gap: 8px;
+  padding: 12px 24px;
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 11.5px;
+  color: var(--gray-500);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.workflow-step {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  background: var(--gray-100); color: var(--gray-700);
+}
+.workflow-step.done { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.workflow-step.active { background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); font-weight: 600; }
+.workflow-arrow { color: var(--gray-300); }
+.workflow-arrow svg { width: 12px; height: 12px; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR (compact) -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>بوابة الجهة الشريكة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">فجر</span>
+      <span class="name">جمعية الفجر — غزّة</span>
+      <svg class="icon icon-sm chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <div class="nav-section">العمل اليوم</div>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>اللوحة الرئيسية</button>
+
+    <div class="nav-section">الأيتام</div>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>كل الأيتام <span class="nav-item-badge muted"><span class="latin">1,240</span></span></button>
+
+    <div class="nav-section">المراجعة</div>
+    <button class="nav-item active"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>تقارير ولي الأمر <span class="nav-item-badge">١٢</span></button>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>الصور والوسائط <span class="nav-item-badge">٢٤</span></button>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">س.ع</div>
+      <div class="user-info">
+        <div class="user-name">سارة العلي</div>
+        <div class="user-role">موظّفة شؤون</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>صندوق التقارير</h2>
+        <p><span class="latin">12</span> تقريراً ينتظر مراجعتك · متوسّط زمن المراجعة <span class="latin">4</span> دقائق</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+          تصدير
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          اعتمد المتبقّي (٤)
+        </button>
+      </div>
+    </header>
+
+    <!-- Workflow strip -->
+    <div class="workflow">
+      <span>سير العمل:</span>
+      <span class="workflow-step done"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>أرسل ولي الأمر</span>
+      <span class="workflow-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+      <span class="workflow-step active"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>مراجعة الجهة (أنت)</span>
+      <span class="workflow-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+      <span class="workflow-step">اعتماد الإدارة</span>
+      <span class="workflow-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+      <span class="workflow-step">نشر للكفيل</span>
+    </div>
+
+    <div class="page">
+
+      <!-- Review list -->
+      <aside class="review-list">
+        <div class="list-tabs" role="tablist">
+          <button class="list-tab active">قيد المراجعة <span class="count">١٢</span></button>
+          <button class="list-tab">رُفضت <span class="count">٢</span></button>
+          <button class="list-tab">معتمدة <span class="count">٣٢</span></button>
+        </div>
+
+        <div class="list-filter">
+          <div class="list-search">
+            <input type="search" placeholder="ابحث بالاسم أو الكود…">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <button style="padding: 8px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); color: var(--gray-600);" aria-label="فلتر">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+        </div>
+
+        <div class="list-scroll">
+
+          <button class="review-item active">
+            <div class="review-avatar">س</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">سلمى عبد الكريم</span>
+                <span class="review-item-time">قبل ١٢د</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من والدتها</div>
+              <div class="review-item-preview">سلمى بخير والحمد لله. أنهت اختبارات الفصل بدرجات جيّدة جدّاً وانضمّت لحلقة التحفيظ…</div>
+              <div class="review-item-pills">
+                <span class="review-item-pill health">صحّة: ممتازة</span>
+                <span class="review-item-pill edu">دراسة: ٥/٥</span>
+                <span class="review-item-pill image">صورة</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">أ</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">أحمد محمد</span>
+                <span class="review-item-time">قبل ساعة</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من أمّ أحمد</div>
+              <div class="review-item-preview">الحمد لله أحمد بخير. انتهى من اختبارات الفصل بدرجات جيّدة جدّاً، وبدأ نشاطاً جديداً…</div>
+              <div class="review-item-pills">
+                <span class="review-item-pill health">صحّة: ممتازة</span>
+                <span class="review-item-pill edu">دراسة: ٥/٥</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">ي</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">يوسف خليل</span>
+                <span class="review-item-time">قبل ٣س</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من والدته</div>
+              <div class="review-item-preview">يوسف انضمّ لفريق المدرسة في كرة القدم، وتفاعل بشكل ممتاز مع زملائه…</div>
+              <div class="review-item-pills">
+                <span class="review-item-pill audio">رسالة صوتية</span>
+                <span class="review-item-pill image">٢ صور</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">ل</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">ليلى عبدالرحمن</span>
+                <span class="review-item-time">أمس</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من والدتها</div>
+              <div class="review-item-preview">ليلى تتفوّق في العلوم. الحمد لله صحّتها ممتازة وقد بدأت تشارك في حلقة الإنشاد بالمدرسة.</div>
+              <div class="review-item-pills">
+                <span class="review-item-pill health">صحّة: جيّدة</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">إ</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">إبراهيم خليل</span>
+                <span class="review-item-time">أمس</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من العمّ</div>
+              <div class="review-item-preview">إبراهيم يحتاج اهتماماً في الدراسة هذا الشهر، تأخّر في مادّتي العلوم والرياضيات…</div>
+              <div class="review-item-pills">
+                <span class="review-item-pill" style="background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100);">يحتاج اهتمام</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">ر</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">ريمان أحمد</span>
+                <span class="review-item-time">أمس</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من والدتها</div>
+              <div class="review-item-preview">ريمان قرأت ١٢ قصّة هذا الشهر، وتشارك بحماس في حصص الفنّ.</div>
+              <div class="review-item-pills">
+                <span class="review-item-pill image">صورة</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">م</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">معاذ حسن</span>
+                <span class="review-item-time">قبل يومين</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من والدته</div>
+              <div class="review-item-preview">معاذ حافظ خمسة أجزاء من القرآن، ويواصل تفوّقه في الرياضيات…</div>
+            </div>
+          </button>
+
+          <button class="review-item">
+            <div class="review-avatar">ز</div>
+            <div>
+              <div class="review-item-top">
+                <span class="review-item-name">زينب مصطفى</span>
+                <span class="review-item-time">قبل يومين</span>
+              </div>
+              <div class="review-item-sub">تقرير شوّال · من والدتها</div>
+              <div class="review-item-preview">زينب تحلم بأن تكون طبيبة. تتفوّق في العلوم وتشارك في النوادي العلمية…</div>
+            </div>
+          </button>
+
+        </div>
+      </aside>
+
+      <!-- Reviewer panel -->
+      <section class="reviewer" aria-label="مراجعة التقرير">
+
+        <header class="reviewer-head">
+          <div class="reviewer-head-photo">س</div>
+          <div class="reviewer-head-text">
+            <div class="reviewer-head-name">
+              تقرير سلمى عبد الكريم — شوّال
+              <span class="review-item-pill image" style="font-size: 10.5px;">ORP-<span class="latin">02841</span></span>
+            </div>
+            <div class="reviewer-head-meta">
+              من والدة سلمى<span class="dot"></span>وصل قبل <span class="latin">12</span> دقيقة<span class="dot"></span>الكفيلة: أبو عمر السالم
+            </div>
+          </div>
+          <div class="reviewer-nav">
+            <button class="nav-btn" aria-label="التالي" title="تقرير سابق">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="nav-btn" aria-label="السابق" title="تقرير لاحق">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="reviewer-body">
+
+          <h1 class="report-title">«سلمى تتفوّق في اختبارات الفصل»</h1>
+          <div class="report-meta">
+            <span class="badge"><span class="dot"></span>قيد المراجعة</span>
+            <span>تقرير شهري</span>
+            <span class="dot" style="width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); display: inline-block;"></span>
+            <span>وُلّد بواسطة Wizard التقارير في <span class="latin">G-04</span></span>
+          </div>
+
+          <!-- Mood section -->
+          <div class="r-section">
+            <div class="r-section-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>
+              حال اليتيمة هذا الشهر
+            </div>
+            <span class="mood-pill">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              بخير والحمد لله
+            </span>
+          </div>
+
+          <!-- Education section -->
+          <div class="r-section">
+            <div class="r-section-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              التعليم
+            </div>
+            <div style="display: flex; align-items: center;">
+              <span class="stars-row">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+              </span>
+              <span class="stars-label">ممتاز ومتفوّق · <span class="latin">5</span> من <span class="latin">5</span></span>
+            </div>
+            <div class="r-text">
+              «سلمى انتهت من اختبارات منتصف الفصل بدرجات جيّدة جدّاً، ومعلّمتها متفائلة جدّاً بمستواها. بدأت حلقة تحفيظ مسائيّة في الحيّ، وحفظت ربع جزء عمّ هذا الشهر. تشارك بنشاط في حصص الفنّ، ومعلّمتها رشّحتها لتمثّل المدرسة في معرض الرسم القادم.»
+            </div>
+          </div>
+
+          <!-- Voice message -->
+          <div class="r-section">
+            <div class="r-section-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+              رسالة صوتية من الأم
+            </div>
+            <div class="voice-card">
+              <button class="voice-play"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+              <div class="voice-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <span class="voice-time">٠:٣٢</span>
+            </div>
+          </div>
+
+          <!-- Photo -->
+          <div class="r-section">
+            <div class="r-section-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              صورة مرفقة
+            </div>
+            <div class="photo-attached">
+              <div class="photo-attached-img">
+                <svg class="icon" style="width: 32px; height: 32px; opacity: .4;" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <div class="photo-attached-meta">
+                <strong>صورة سلمى في المدرسة</strong>
+                <span class="latin" style="font-size: 11px; color: var(--gray-500);">IMG_2410.jpg · 2.1 MB</span>
+                <div class="ai-flag">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span class="latin">AI Moderation: PASS</span>
+                </div>
+                <div class="ai-flag warn">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+                  وجوه أخرى مكشوفة <span class="latin">(2)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health -->
+          <div class="r-section">
+            <div class="r-section-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              الصحّة
+            </div>
+            <div class="r-text" style="color: var(--success-700); background: var(--success-50); border-color: var(--success-100);">
+              ممتازة — لا شكاوى. آخر زيارة طبيب قبل ثلاثة أشهر، وكلّ الفحوصات طبيعيّة.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Foot actions -->
+        <div class="reviewer-foot">
+          <div class="reviewer-note">
+            <input type="text" placeholder="ملاحظة داخليّة (لن تظهر للكفيل ولا الأهل)…">
+          </div>
+          <div class="foot-actions">
+            <button class="foot-btn foot-btn-ghost">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+              طلب تعديل
+            </button>
+            <button class="foot-btn foot-btn-reject">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              رفض
+            </button>
+            <button class="foot-btn foot-btn-approve">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              اعتمد التقرير
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+document.querySelectorAll('.review-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.review-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.list-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.list-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — المدفوعات الواردة · المالية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --fin-50: #ECFDF5; --fin-100: #D1FAE5; --fin-200: #A7F3D0; --fin-300: #6EE7B7;
+  --fin-500: #10B981; --fin-600: #059669; --fin-700: #047857; --fin-800: #065F46; --fin-900: #064E3B;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-focus: 0 0 0 3px rgba(16,185,129,.22);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: linear-gradient(135deg, var(--fin-50), white); border: 1px solid var(--fin-100); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--fin-700), var(--fin-900)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--fin-50); color: var(--fin-700); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--fin-700); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+.nav-item-badge.fin { background: var(--fin-700); color: white; }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--fin-50); color: var(--fin-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--fin-700); font-weight: 500; }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--fin-700); color: white; border: 1px solid var(--fin-700); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--fin-800); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--fin-200); color: var(--fin-700); }
+
+.page { padding: 22px 28px 56px; max-width: 1640px; margin: 0 auto; width: 100%; }
+
+/* Stats */
+.stat-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 1100px) { .stat-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
+.stat { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+.stat-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--fin-50); color: var(--fin-700); }
+.stat-icon.purple { background: var(--purple-50); color: var(--purple-700); }
+.stat-icon.warn { background: var(--warning-50); color: var(--warning-700); }
+.stat-icon.danger { background: var(--danger-50); color: var(--danger-600); }
+.stat-icon.gold { background: var(--gold-50); color: var(--gold-700); }
+.stat-text .lbl { font-size: 11px; color: var(--gray-500); font-weight: 500; }
+.stat-text .val { font-size: 18px; font-weight: 600; color: var(--gray-900); font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; line-height: 1.2; }
+.stat-text .val .unit { font-size: 11.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--gray-200); overflow-x: auto; }
+.tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.tab:hover { color: var(--gray-900); }
+.tab.active { color: var(--fin-700); border-bottom-color: var(--fin-500); font-weight: 600; }
+.tab .pp { font-family: 'IBM Plex Sans', sans-serif; font-size: 10.5px; padding: 1px 6px; border-radius: var(--radius-full); background: var(--gray-200); color: var(--gray-600); font-weight: 600; }
+.tab.active .pp { background: var(--fin-100); color: var(--fin-700); }
+
+/* Filter bar */
+.filter-bar { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.search-input { flex: 1; min-width: 280px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); height: 36px; }
+.search-input:focus-within { border-color: var(--fin-200); background: white; box-shadow: var(--shadow-focus); }
+.search-input svg { color: var(--gray-400); }
+.search-input input { flex: 1; border: none; background: transparent; outline: none; font-size: 13px; color: var(--gray-900); }
+.search-input kbd { font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: white; border: 1px solid var(--gray-200); border-bottom-width: 2px; padding: 1px 5px; border-radius: 3px; color: var(--gray-500); }
+.filter-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700); }
+.filter-pill:hover { border-color: var(--fin-200); }
+.filter-pill svg { color: var(--gray-400); }
+.filter-pill .count { font-family: 'IBM Plex Sans', sans-serif; font-size: 10.5px; padding: 1px 6px; border-radius: var(--radius-full); background: var(--fin-100); color: var(--fin-700); font-weight: 600; }
+.range-strip { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: var(--radius-md); }
+.range-btn { padding: 5px 10px; font-size: 12px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-radius: var(--radius-sm); }
+.range-btn:hover { color: var(--gray-900); }
+.range-btn.active { background: white; color: var(--fin-700); font-weight: 600; box-shadow: var(--shadow-xs); }
+
+/* Bulk bar */
+.bulk-bar { display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--fin-700); color: white; border-radius: var(--radius-lg); margin-bottom: 12px; font-size: 13px; }
+.bulk-bar.show { display: flex; }
+.bulk-bar .count-pill { background: rgba(255,255,255,.15); padding: 2px 10px; border-radius: var(--radius-full); font-weight: 600; }
+.bulk-bar .bulk-actions { display: flex; gap: 6px; }
+.bulk-bar .bulk-btn { background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.2); padding: 5px 12px; font-size: 12.5px; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 5px; }
+.bulk-bar .bulk-btn:hover { background: rgba(255,255,255,.18); }
+
+/* Table */
+.tbl-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.tbl-scroll { overflow-x: auto; }
+table.pay { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1200px; }
+table.pay thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 10px 14px; text-align: right; position: sticky; top: 0; z-index: 1; }
+table.pay thead th.num-h { text-align: left; padding-inline-end: 14px; }
+table.pay tbody td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+table.pay tbody tr { transition: background var(--transition-fast); cursor: pointer; }
+table.pay tbody tr:hover { background: var(--snow-200); }
+table.pay tbody tr.selected { background: var(--fin-50); }
+table.pay tbody tr.refunded { opacity: .65; }
+table.pay tbody tr.pending { background: var(--warning-50); }
+table.pay tbody tr:last-child td { border-bottom: none; }
+
+th.col-chk, td.col-chk { width: 44px; text-align: center; padding: 11px 0; }
+.check { width: 16px; height: 16px; border: 1.5px solid var(--gray-300); border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
+.check.on { background: var(--fin-700); border-color: var(--fin-700); }
+.check.on::after { content: ""; width: 8px; height: 5px; border: 2px solid white; border-top: none; border-right: none; transform: rotate(-45deg) translateY(-1px); }
+
+.tx-id { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--gray-700); }
+.tx-id .date { display: block; font-size: 10.5px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; margin-top: 1px; }
+
+.donor { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.d-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: 600; }
+.d-avatar.c1 { background: var(--tranquil-200); color: var(--trust-700); }
+.d-avatar.c2 { background: var(--purple-100); color: var(--purple-700); }
+.d-avatar.c3 { background: var(--gold-100); color: var(--gold-700); }
+.d-avatar.c4 { background: var(--fin-50); color: var(--fin-700); }
+.d-avatar.c5 { background: var(--rose-100); color: var(--rose-700); }
+.d-avatar.c6 { background: var(--teal-100); color: var(--teal-700); }
+.donor .info { min-width: 0; }
+.donor .info .nm { font-size: 12.5px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.donor .info .nm .anon { font-size: 9.5px; padding: 0 4px; background: var(--gray-100); color: var(--gray-600); border-radius: 3px; font-weight: 500; }
+.donor .info .meta { font-size: 10.5px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; }
+
+.method { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+.method .ic { width: 26px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: white; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.method .ic.knet { background: #1A40A8; }
+.method .ic.visa { background: #1A1F71; }
+.method .ic.mc { background: #EB001B; }
+.method .ic.apple { background: #000; }
+.method .ic.stc { background: var(--rose-700); }
+.method .ic.mada { background: var(--fin-700); }
+.method .ic.bank { background: var(--gray-700); }
+
+.amt-cell { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; text-align: left; direction: ltr; padding-inline-end: 14px; }
+.amt-cell .a { font-size: 13.5px; font-weight: 700; color: var(--gray-900); }
+.amt-cell .a .u { font-size: 10.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 3px; }
+.amt-cell .conv { font-size: 10.5px; color: var(--gray-500); margin-top: 1px; }
+
+.orph-cell { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-700); }
+.orph-cell .pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; background: var(--gray-100); border-radius: var(--radius-full); font-size: 11px; font-weight: 500; color: var(--gray-700); }
+.orph-cell .pill .flag { font-size: 11px; }
+
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-size: 10.5px; font-weight: 600; border-radius: var(--radius-full); white-space: nowrap; }
+.tag.zakat { background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100); }
+.tag.sadaqa { background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); }
+.tag.kafala { background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); }
+.tag.one-off { background: var(--gold-50); color: var(--gold-700); border: 1px solid var(--gold-100); }
+
+.status-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); white-space: nowrap; }
+.status-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; }
+.status-chip.success { background: var(--fin-50); color: var(--fin-700); }
+.status-chip.success::before { background: var(--fin-500); }
+.status-chip.pending { background: var(--warning-50); color: var(--warning-700); }
+.status-chip.pending::before { background: var(--warning-500); animation: pulse-d 1.8s ease-in-out infinite; }
+.status-chip.refunded { background: var(--gray-100); color: var(--gray-600); }
+.status-chip.refunded::before { background: var(--gray-400); }
+.status-chip.failed { background: var(--danger-50); color: var(--danger-600); }
+.status-chip.failed::before { background: var(--danger-500); }
+@keyframes pulse-d { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+.row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn-sm { width: 28px; height: 28px; border-radius: var(--radius-md); background: transparent; border: none; color: var(--gray-500); display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn-sm:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.tbl-foot { padding: 12px 18px; border-top: 1px solid var(--gray-100); background: var(--gray-50); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pg-info { font-size: 12px; color: var(--gray-600); }
+.pg-info .latin { color: var(--gray-800); font-weight: 600; }
+.pg-controls { display: flex; gap: 4px; align-items: center; }
+.pg-btn { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--gray-200); background: white; border-radius: var(--radius-md); color: var(--gray-700); font-family: 'IBM Plex Sans', sans-serif; font-size: 12.5px; font-weight: 500; }
+.pg-btn:hover { border-color: var(--fin-200); color: var(--fin-700); }
+.pg-btn.active { background: var(--fin-700); border-color: var(--fin-700); color: white; }
+.pg-btn:disabled { color: var(--gray-300); cursor: not-allowed; }
+.pg-size { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-600); }
+.pg-size select { padding: 5px 8px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-size: 12px; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>المالية</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير ماليّة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="F-01 Finance Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير المالية
+    </a>
+
+    <div class="nav-section">المدفوعات</div>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      المدفوعات الواردة
+      <span class="nav-item-badge fin"><span class="latin">82</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      المتأخّرون
+      <span class="nav-item-badge warn"><span class="latin">42</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      استيراد كشف بنك
+    </a>
+
+    <div class="nav-section">التحويلات</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+      إنشاء تحويل
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      التحويلات المعلّقة
+      <span class="nav-item-badge"><span class="latin">5</span></span>
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      المراجعات
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">خ.م</div>
+      <div class="user-info">
+        <div class="user-name">د. خالد المطيري</div>
+        <div class="user-role">مدير المالية</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>المدفوعات الواردة</h2>
+        <p>سجلّ كامل لكلّ معاملة وصلت — مع ربط آلي بالكفالة والإيصال</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+          تصدير CSV
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إضافة دفعة يدويّة
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Stats -->
+      <section class="stat-strip">
+        <div class="stat">
+          <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></div>
+          <div class="stat-text"><div class="lbl">إيرادات الشهر</div><div class="val"><span class="latin">1.42</span><span class="unit">م دك</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 11l3 3l8 -8"/><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/></svg></div>
+          <div class="stat-text"><div class="lbl">معاملات هذا الشهر</div><div class="val"><span class="latin">2,847</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon warn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-text"><div class="lbl">قيد المطابقة</div><div class="val"><span class="latin">12</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon gold"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-text"><div class="lbl">زكاة الشهر</div><div class="val"><span class="latin">328</span><span class="unit">ك دك</span></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon purple"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/></svg></div>
+          <div class="stat-text"><div class="lbl">مُستردّة</div><div class="val"><span class="latin">8</span></div></div>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <nav class="tabs">
+        <button class="tab active">الكلّ <span class="pp"><span class="latin">2,847</span></span></button>
+        <button class="tab">مكتملة <span class="pp"><span class="latin">2,827</span></span></button>
+        <button class="tab">قيد المطابقة <span class="pp"><span class="latin">12</span></span></button>
+        <button class="tab">فاشلة <span class="pp"><span class="latin">0</span></span></button>
+        <button class="tab">مُستردّة <span class="pp"><span class="latin">8</span></span></button>
+        <button class="tab">زكاة <span class="pp"><span class="latin">328</span></span></button>
+      </nav>
+
+      <!-- Filter -->
+      <section class="filter-bar">
+        <div class="search-input">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="ابحث: رقم معاملة، كفيل، يتيم، مرجع بنك…">
+          <kbd>⌘K</kbd>
+        </div>
+        <div class="range-strip">
+          <button class="range-btn">اليوم</button>
+          <button class="range-btn active">الشهر</button>
+          <button class="range-btn">٩٠ يوماً</button>
+          <button class="range-btn">السنة</button>
+          <button class="range-btn">مخصّص…</button>
+        </div>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
+          طريقة الدفع <span class="count"><span class="latin">2</span></span>
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M3.6 9h16.8"/></svg>
+          العملة
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </section>
+
+      <!-- Bulk -->
+      <div class="bulk-bar" id="bulkBar">
+        <span><span class="count-pill"><span class="latin">3</span></span> معاملات محدّدة · مجموع <strong style="font-family: 'IBM Plex Sans'; font-feature-settings: 'tnum' 1;"><span class="latin">426</span> دك</strong></span>
+        <div class="bulk-actions">
+          <button class="bulk-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            مطابقة جماعيّة
+          </button>
+          <button class="bulk-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+            تصدير
+          </button>
+          <button class="bulk-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+            إرسال إيصالات
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <section class="tbl-card">
+        <div class="tbl-scroll">
+          <table class="pay">
+            <thead>
+              <tr>
+                <th class="col-chk"><span class="check" id="checkAll"></span></th>
+                <th style="width: 120px;">رقم المعاملة</th>
+                <th style="width: 180px;">الكفيل</th>
+                <th style="width: 130px;">الطريقة</th>
+                <th class="num-h" style="width: 130px;">المبلغ</th>
+                <th>اليتيم</th>
+                <th style="width: 80px;">النوع</th>
+                <th style="width: 130px;">الحالة</th>
+                <th class="num-h" style="width: 60px;"></th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08240<span class="date">10:42 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c1">س.ع</div>
+                    <div class="info"><div class="nm">سامي العنزي</div><div class="meta">DON-0824</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic knet">KNT</span> K-Net</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">96</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">يوسف م.ع <span class="pill"><span class="flag">🇪🇬</span> الأورمان</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check on"></span></td>
+                <td><div class="tx-id">PAY-08239<span class="date">10:34 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c2">ن.أ</div>
+                    <div class="info"><div class="nm">نورة أحمد <span class="anon">مجهولة</span></div><div class="meta">DON-2841</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic visa">VIS</span> Visa</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">3,200</span><span class="u">ر.س</span></div><div class="conv">~<span class="latin">261</span> دك</div></td>
+                <td><span class="orph-cell">مريم أ.ك <span class="pill"><span class="flag">🇪🇬</span> الأورمان</span></span></td>
+                <td><span class="tag zakat">زكاة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check on"></span></td>
+                <td><div class="tx-id">PAY-08238<span class="date">10:28 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c3">ع.ص</div>
+                    <div class="info"><div class="nm">عبدالعزيز الصبيحي</div><div class="meta">DON-0044</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic apple"></span> Apple Pay</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">240</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">سارة ع.م <span class="pill"><span class="flag">🇸🇩</span> دار الوليد</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr class="pending">
+                <td class="col-chk"><span class="check on"></span></td>
+                <td><div class="tx-id">PAY-08237<span class="date">10:20 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c4">ف.ق</div>
+                    <div class="info"><div class="nm">فيصل القحطاني</div><div class="meta">DON-1192</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic bank">BNK</span> تحويل بنكي</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">2,880</span><span class="u">ر.س</span></div><div class="conv">~<span class="latin">235</span> دك</div></td>
+                <td><span class="orph-cell" style="color: var(--gray-500);">لم تُربط بعد</span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip pending">قيد المطابقة</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm" style="color: var(--fin-700);"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08236<span class="date">10:06 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c5">د.م</div>
+                    <div class="info"><div class="nm">دانة المسلّم</div><div class="meta">DON-2018</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic stc">STC</span> STC Pay</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">800</span><span class="u">ر.ق</span></div><div class="conv">~<span class="latin">67</span> دك</div></td>
+                <td><span class="orph-cell">عبدالله م.س <span class="pill"><span class="flag">🇯🇴</span> مستقبل الأطفال</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08235<span class="date">09:54 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c6">ر.ب</div>
+                    <div class="info"><div class="nm">رشا بوكمّال</div><div class="meta">DON-3204</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic mada">MAD</span> مدى</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">240</span><span class="u">د.إ</span></div><div class="conv">~<span class="latin">20</span> دك</div></td>
+                <td><span class="orph-cell">فاطمة ع.أ <span class="pill"><span class="flag">🇰🇼</span> النجاة</span></span></td>
+                <td><span class="tag sadaqa">صدقة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08234<span class="date">09:42 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c3">ج.م</div>
+                    <div class="info"><div class="nm">جمال المطيري</div><div class="meta">DON-0918</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic knet">KNT</span> K-Net</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">1,200</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">يوسف م.ع <span class="pill"><span class="flag">🇪🇬</span> الأورمان</span></span></td>
+                <td><span class="tag zakat">زكاة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr class="refunded">
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08233<span class="date">09:28 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c5">س.ك</div>
+                    <div class="info"><div class="nm">سعد الكليب</div><div class="meta">DON-4422</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic mc">MC</span> Mastercard</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">96</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell" style="color: var(--gray-500);">—</span></td>
+                <td><span class="tag one-off">دفعة</span></td>
+                <td><span class="status-chip refunded">مُستردّة</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08232<span class="date">09:18 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c1">م.ر</div>
+                    <div class="info"><div class="nm">منى الرشيد</div><div class="meta">DON-0728</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic knet">KNT</span> K-Net</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">480</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">عمر ر.ج <span class="pill"><span class="flag">🇸🇩</span> دار الوليد</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08231<span class="date">08:54 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c2">و.ح</div>
+                    <div class="info"><div class="nm">وليد الحربي</div><div class="meta">DON-1841</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic visa">VIS</span> Visa</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">1,560</span><span class="u">ر.س</span></div><div class="conv">~<span class="latin">128</span> دك</div></td>
+                <td><span class="orph-cell">زينب ح.ف <span class="pill"><span class="flag">🇸🇦</span> تكافل</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08230<span class="date">08:42 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c4">ر.ب</div>
+                    <div class="info"><div class="nm">رنا بوحمد</div><div class="meta">DON-0511</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic knet">KNT</span> K-Net</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">240</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">ليان م.ع <span class="pill"><span class="flag">🇰🇼</span> النجاة</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08229<span class="date">08:14 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c6">ع.ج</div>
+                    <div class="info"><div class="nm">عائشة الجاسم <span class="anon">مجهولة</span></div><div class="meta">DON-3318</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic stc">STC</span> STC Pay</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">5,000</span><span class="u">ر.س</span></div><div class="conv">~<span class="latin">408</span> دك</div></td>
+                <td><span class="orph-cell" style="color: var(--gray-500);">عامّة (٥ أيتام)</span></td>
+                <td><span class="tag zakat">زكاة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+              <tr>
+                <td class="col-chk"><span class="check"></span></td>
+                <td><div class="tx-id">PAY-08228<span class="date">07:58 · اليوم</span></div></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c1">ب.ع</div>
+                    <div class="info"><div class="nm">بدر العنزي</div><div class="meta">DON-0089</div></div>
+                  </div>
+                </td>
+                <td><span class="method"><span class="ic apple"></span> Apple Pay</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">96</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">أحمد خ.ر <span class="pill"><span class="flag">🇾🇪</span> الرحمة</span></span></td>
+                <td><span class="tag kafala">كفالة</span></td>
+                <td><span class="status-chip success">مكتمل</span></td>
+                <td><div class="row-actions"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-foot">
+          <span class="pg-info">عرض <span class="latin">1–12</span> من <span class="latin">2,847</span> معاملة · مجموع المعروض <strong><span class="latin">15,802</span> دك</strong></span>
+          <div class="pg-size"><span>عرض</span><select><option>25</option><option>50</option><option>100</option></select><span>صفحة</span></div>
+          <div class="pg-controls">
+            <button class="pg-btn" disabled><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            <button class="pg-btn active"><span class="latin">1</span></button>
+            <button class="pg-btn"><span class="latin">2</span></button>
+            <button class="pg-btn"><span class="latin">3</span></button>
+            <span style="color: var(--gray-400);">…</span>
+            <button class="pg-btn"><span class="latin">238</span></button>
+            <button class="pg-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  const checks = document.querySelectorAll('.check');
+  const bulkBar = document.getElementById('bulkBar');
+  function update() {
+    const n = Array.from(checks).filter(c => c !== document.getElementById('checkAll') && c.classList.contains('on')).length;
+    if (n > 0) { bulkBar.classList.add('show'); bulkBar.querySelector('.count-pill .latin').textContent = n; }
+    else bulkBar.classList.remove('show');
+  }
+  checks.forEach(c => c.addEventListener('click', e => {
+    e.stopPropagation();
+    c.classList.toggle('on');
+    const row = c.closest('tr');
+    if (row) row.classList.toggle('selected', c.classList.contains('on'));
+    if (c.id === 'checkAll') {
+      const on = c.classList.contains('on');
+      checks.forEach(o => { if (o === c) return; o.classList.toggle('on', on); const r = o.closest('tr'); if (r) r.classList.toggle('selected', on); });
+    }
+    update();
+  }));
+  update();
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { document.querySelectorAll('.tab').forEach(o => o.classList.remove('active')); t.classList.add('active'); }));
+  document.querySelectorAll('.range-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.range-btn').forEach(o => o.classList.remove('active')); b.classList.add('active'); }));
+})();
+</script>
+
+</body>
+</html>

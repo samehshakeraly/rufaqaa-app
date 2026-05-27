@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — نظام التصميم | Design System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   RUFAQAA DESIGN SYSTEM — Design Tokens
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Brand Colors ─── */
+  --snow-50:    #FDFEFE;
+  --snow-100:   #F7FBFC;  /* صفاء — Page bg */
+  --snow-200:   #EEF5F8;
+  --snow-300:   #E2EEF3;
+
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;  /* سكينة — Card bg */
+  --tranquil-300: #C2D8EC;
+  --tranquil-400: #ADCBE5;
+
+  --sky-100:    #C9DDED;
+  --sky-200:    #B9D7EA;  /* سماء — Borders */
+  --sky-300:    #9CC3DE;
+  --sky-400:    #7FAFD1;
+
+  --trust-100:  #B8CFE3;
+  --trust-200:  #97B7D6;
+  --trust-300:  #769FCD;  /* ثقة — Primary actions */
+  --trust-400:  #5B85B8;
+  --trust-500:  #426D9F;
+  --trust-600:  #2D5683;
+  --trust-700:  #1E4068;
+  --trust-800:  #142E4D;
+  --trust-900:  #0B1E33;
+
+  /* ─── Neutrals ─── */
+  --gray-50:    #FAFBFC;
+  --gray-100:   #F4F6F8;
+  --gray-200:   #E7EBEF;
+  --gray-300:   #D2D8DF;
+  --gray-400:   #A8B2BC;
+  --gray-500:   #7A8590;
+  --gray-600:   #5A636E;
+  --gray-700:   #3F4750;
+  --gray-800:   #2A3038;
+  --gray-900:   #161A1F;
+
+  /* ─── Semantic ─── */
+  --success-50:  #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+
+  --warning-50:  #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --warning-700: #B45309;
+
+  --danger-50:   #FEF2F2;
+  --danger-100:  #FEE2E2;
+  --danger-500:  #EF4444;
+  --danger-600:  #DC2626;
+  --danger-700:  #B91C1C;
+
+  --info-50:     #EFF6FF;
+  --info-100:    #DBEAFE;
+  --info-500:    #3B82F6;
+  --info-600:    #2563EB;
+  --info-700:    #1D4ED8;
+
+  /* ─── Typography ─── */
+  --font-arabic: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-latin:  'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:   'IBM Plex Mono', monospace;
+
+  /* ─── Spacing Scale ─── */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ─── Border Radius ─── */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-xs: 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08), 0 2px 4px -1px rgba(11, 30, 51, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11, 30, 51, 0.08), 0 4px 6px -2px rgba(11, 30, 51, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(11, 30, 51, 0.10), 0 10px 10px -5px rgba(11, 30, 51, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
+
+  /* ─── Transitions ─── */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Base Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-arabic);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[lang="en"], .ltr { direction: ltr; font-family: var(--font-latin); }
+
+code, .mono { font-family: var(--font-mono); font-size: 0.875em; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════════════════════════ */
+
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-8);
+}
+
+.section {
+  margin-bottom: var(--space-20);
+  padding-top: var(--space-8);
+}
+
+.section-header {
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--trust-300);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+}
+
+.section-subtitle {
+  font-size: 16px;
+  color: var(--gray-600);
+}
+
+.subsection-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Hero
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero {
+  text-align: center;
+  padding: var(--space-16) var(--space-8);
+  margin-bottom: var(--space-12);
+  background: linear-gradient(180deg, var(--snow-100) 0%, var(--snow-200) 100%);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--gray-200);
+}
+
+.hero-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: var(--trust-300);
+  color: white;
+  border-radius: var(--radius-2xl);
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+  letter-spacing: -0.04em;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-3);
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  color: var(--gray-600);
+  margin-bottom: var(--space-2);
+  font-weight: 400;
+}
+
+.hero-tagline {
+  font-size: 15px;
+  color: var(--trust-400);
+  font-style: italic;
+  margin-top: var(--space-6);
+}
+
+.hero-meta {
+  display: inline-flex;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding: var(--space-2) var(--space-4);
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray-600);
+}
+
+.hero-meta-item { display: flex; align-items: center; gap: var(--space-1); }
+.hero-meta-item::before { content: '•'; color: var(--gray-400); margin-left: var(--space-2); }
+.hero-meta-item:first-child::before { display: none; margin: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Color Swatches
+   ═══════════════════════════════════════════════════════════════ */
+
+.color-group { margin-bottom: var(--space-8); }
+
+.color-group-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.color-group-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.color-group-meaning {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-family: var(--font-mono);
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-3);
+}
+
+.swatch {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+  transition: var(--transition-base);
+  cursor: pointer;
+}
+
+.swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.swatch-color {
+  height: 80px;
+  width: 100%;
+}
+
+.swatch-meta {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.swatch-name {
+  font-weight: 500;
+  color: var(--gray-700);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.swatch-hex {
+  color: var(--gray-500);
+}
+
+.brand-color-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.brand-color-block {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-color-info h4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.brand-color-info p {
+  color: var(--gray-600);
+  font-size: 14px;
+  margin-bottom: var(--space-3);
+}
+
+.brand-color-meta {
+  display: flex;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.brand-color-meta span { padding: 2px 8px; background: var(--gray-100); border-radius: var(--radius-sm); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Typography Specimens
+   ═══════════════════════════════════════════════════════════════ */
+
+.type-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+  margin-bottom: var(--space-4);
+}
+
+.type-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--gray-200);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.type-meta strong { color: var(--gray-700); font-weight: 500; }
+
+.type-h1 { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; color: var(--gray-900); }
+.type-h2 { font-size: 36px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; color: var(--gray-900); }
+.type-h3 { font-size: 28px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; color: var(--gray-900); }
+.type-h4 { font-size: 22px; font-weight: 600; line-height: 1.4; color: var(--gray-900); }
+.type-h5 { font-size: 18px; font-weight: 600; line-height: 1.4; color: var(--gray-900); }
+.type-body { font-size: 16px; font-weight: 400; line-height: 1.7; color: var(--gray-700); }
+.type-small { font-size: 14px; font-weight: 400; line-height: 1.6; color: var(--gray-600); }
+.type-xs { font-size: 12px; font-weight: 500; line-height: 1.5; color: var(--gray-500); }
+
+.type-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px dashed var(--gray-200);
+}
+
+.type-row:last-child { border-bottom: none; }
+
+.type-row-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray-500);
+  text-align: left;
+  direction: ltr;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Components Showcase
+   ═══════════════════════════════════════════════════════════════ */
+
+.component-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--gray-200);
+  margin-bottom: var(--space-4);
+}
+
+.component-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-500);
+  font-family: var(--font-mono);
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.component-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4) 0;
+  border-bottom: 1px dashed var(--gray-200);
+}
+
+.component-row:last-child { border-bottom: none; padding-bottom: 0; }
+.component-row:first-child { padding-top: 0; }
+
+.component-row-label {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--gray-500);
+  min-width: 80px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Buttons
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.btn-primary {
+  background: var(--trust-300);
+  color: white;
+  border-color: var(--trust-300);
+}
+.btn-primary:hover { background: var(--trust-400); border-color: var(--trust-400); }
+.btn-primary:active { background: var(--trust-500); }
+
+.btn-secondary {
+  background: white;
+  color: var(--trust-500);
+  border-color: var(--sky-200);
+}
+.btn-secondary:hover { background: var(--snow-200); border-color: var(--sky-300); }
+
+.btn-tertiary {
+  background: transparent;
+  color: var(--trust-500);
+  border-color: transparent;
+}
+.btn-tertiary:hover { background: var(--snow-200); }
+
+.btn-danger {
+  background: var(--danger-600);
+  color: white;
+  border-color: var(--danger-600);
+}
+.btn-danger:hover { background: var(--danger-700); }
+
+.btn-success {
+  background: var(--success-600);
+  color: white;
+  border-color: var(--success-600);
+}
+.btn-success:hover { background: var(--success-700); }
+
+.btn:disabled, .btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-sm { padding: 6px 14px; font-size: 13px; border-radius: var(--radius-sm); }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn-xl { padding: 18px 32px; font-size: 18px; }
+
+.btn-icon { padding: 10px; }
+.btn-icon.btn-sm { padding: 6px; }
+.btn-icon.btn-lg { padding: 14px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Form Elements
+   ═══════════════════════════════════════════════════════════════ */
+
+.field-group { margin-bottom: var(--space-4); }
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+  margin-bottom: var(--space-2);
+}
+
+.field-label .required { color: var(--danger-600); margin-right: 2px; }
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gray-900);
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  line-height: 1.5;
+}
+
+.input::placeholder, .textarea::placeholder { color: var(--gray-400); }
+
+.input:hover, .select:hover, .textarea:hover { border-color: var(--gray-400); }
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.input.error, .select.error { border-color: var(--danger-500); }
+.input.error:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+
+.field-hint { font-size: 12px; color: var(--gray-500); margin-top: var(--space-1); }
+.field-error { font-size: 12px; color: var(--danger-600); margin-top: var(--space-1); display: flex; align-items: center; gap: 4px; }
+
+.textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon-wrap .input { padding-right: 40px; }
+.input-icon-wrap.icon-left .input { padding-right: 14px; padding-left: 40px; }
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+}
+
+.input-icon-wrap.icon-left .input-icon { right: auto; left: 14px; }
+
+/* Checkbox / Radio */
+
+.checkbox-wrap, .radio-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--gray-700);
+}
+
+.checkbox, .radio {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--gray-400);
+  border-radius: var(--radius-sm);
+  background: white;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  appearance: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.radio { border-radius: 50%; }
+
+.checkbox:hover, .radio:hover { border-color: var(--trust-300); }
+
+.checkbox:checked, .radio:checked {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+}
+
+.checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  width: 4px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.radio:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Switch */
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.switch-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--gray-300);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  right: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.switch input:checked + .switch-slider { background: var(--trust-300); }
+.switch input:checked + .switch-slider::before { transform: translateX(-18px); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Cards
+   ═══════════════════════════════════════════════════════════════ */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  transition: var(--transition-base);
+}
+
+.card:hover { border-color: var(--sky-300); box-shadow: var(--shadow-md); }
+
+.card-elevated {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-md);
+  border: 1px solid transparent;
+}
+
+.card-tinted {
+  background: var(--tranquil-200);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.card-title { font-size: 16px; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2); }
+.card-body { font-size: 14px; color: var(--gray-600); line-height: 1.6; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Stat Cards (KPI)
+   ═══════════════════════════════════════════════════════════════ */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-latin);
+  font-feature-settings: "tnum" 1;
+}
+
+.stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-latin);
+}
+
+.stat-delta.positive { background: var(--success-50); color: var(--success-700); }
+.stat-delta.negative { background: var(--danger-50); color: var(--danger-700); }
+.stat-delta.neutral { background: var(--gray-100); color: var(--gray-600); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Badges
+   ═══════════════════════════════════════════════════════════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  line-height: 1.5;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+
+.badge-neutral { background: var(--gray-100); color: var(--gray-700); }
+.badge-trust { background: var(--tranquil-200); color: var(--trust-700); }
+.badge-success { background: var(--success-50); color: var(--success-700); }
+.badge-warning { background: var(--warning-50); color: var(--warning-700); }
+.badge-danger { background: var(--danger-50); color: var(--danger-700); }
+.badge-info { background: var(--info-50); color: var(--info-700); }
+
+.badge-outline-neutral { border: 1px solid var(--gray-300); color: var(--gray-700); }
+.badge-outline-success { border: 1px solid var(--success-500); color: var(--success-700); }
+.badge-outline-warning { border: 1px solid var(--warning-500); color: var(--warning-700); }
+.badge-outline-danger  { border: 1px solid var(--danger-500); color: var(--danger-700); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Avatar
+   ═══════════════════════════════════════════════════════════════ */
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  font-weight: 500;
+  font-size: 14px;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.avatar-sm { width: 28px; height: 28px; font-size: 11px; }
+.avatar-lg { width: 56px; height: 56px; font-size: 18px; }
+.avatar-xl { width: 80px; height: 80px; font-size: 24px; }
+
+.avatar-group { display: inline-flex; }
+.avatar-group .avatar:not(:first-child) { margin-right: -8px; border: 2px solid white; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Table
+   ═══════════════════════════════════════════════════════════════ */
+
+.table-wrap {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  text-align: right;
+  padding: var(--space-3) var(--space-4);
+  background: var(--gray-50);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-700);
+}
+
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--snow-100); }
+
+.table .cell-mono { font-family: var(--font-mono); font-size: 12px; color: var(--gray-500); }
+
+.table .cell-numeric { font-family: var(--font-latin); font-feature-settings: "tnum" 1; text-align: left; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Alerts
+   ═══════════════════════════════════════════════════════════════ */
+
+.alert {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid;
+  margin-bottom: var(--space-3);
+  align-items: flex-start;
+}
+
+.alert-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alert-content { flex: 1; }
+.alert-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.alert-body { font-size: 13px; line-height: 1.5; }
+
+.alert-info { background: var(--info-50); border-color: var(--info-100); color: var(--info-700); }
+.alert-success { background: var(--success-50); border-color: var(--success-100); color: var(--success-700); }
+.alert-warning { background: var(--warning-50); border-color: var(--warning-100); color: var(--warning-700); }
+.alert-danger { background: var(--danger-50); border-color: var(--danger-100); color: var(--danger-700); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Navigation Patterns
+   ═══════════════════════════════════════════════════════════════ */
+
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--gray-200);
+  margin-bottom: var(--space-4);
+}
+
+.tab {
+  padding: var(--space-3) var(--space-4);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-500);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--transition-fast);
+}
+
+.tab:hover { color: var(--gray-700); }
+.tab.active { color: var(--trust-500); border-bottom-color: var(--trust-300); }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+.breadcrumb a { color: var(--gray-600); text-decoration: none; }
+.breadcrumb a:hover { color: var(--trust-500); }
+.breadcrumb-current { color: var(--gray-900); font-weight: 500; }
+.breadcrumb-separator { color: var(--gray-300); }
+
+/* Sidebar item */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--gray-700);
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+.sidebar-item:hover { background: var(--snow-200); }
+.sidebar-item.active { background: var(--tranquil-200); color: var(--trust-700); font-weight: 500; }
+.sidebar-item-icon { color: var(--gray-500); flex-shrink: 0; }
+.sidebar-item.active .sidebar-item-icon { color: var(--trust-500); }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOC / Sticky Sidebar
+   ═══════════════════════════════════════════════════════════════ */
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-8);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-8);
+}
+
+.toc {
+  position: sticky;
+  top: var(--space-6);
+  height: fit-content;
+  padding: var(--space-4);
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+}
+
+.toc-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+  margin-bottom: var(--space-3);
+  padding-right: var(--space-2);
+}
+
+.toc a {
+  display: block;
+  padding: 6px var(--space-2);
+  color: var(--gray-600);
+  text-decoration: none;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  margin-bottom: 2px;
+}
+
+.toc a:hover { background: var(--snow-200); color: var(--gray-900); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: var(--space-6) var(--space-4); }
+  .toc { position: static; margin-bottom: var(--space-6); }
+  .hero-title { font-size: 36px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════════════════════════ */
+
+.footer {
+  margin-top: var(--space-16);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--gray-200);
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.footer-quote {
+  font-style: italic;
+  color: var(--trust-400);
+  margin-top: var(--space-3);
+  font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+/* Icon (using emoji-style SVG inline) */
+.icon { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ═══ TOC ═══ -->
+<aside class="toc">
+  <div class="toc-title">المحتويات</div>
+  <a href="#brand">١. الهوية</a>
+  <a href="#colors">٢. الألوان</a>
+  <a href="#typography">٣. الخطوط</a>
+  <a href="#spacing">٤. التباعد والحواف</a>
+  <a href="#buttons">٥. الأزرار</a>
+  <a href="#forms">٦. الحقول</a>
+  <a href="#cards">٧. البطاقات</a>
+  <a href="#stats">٨. بطاقات الإحصاءات</a>
+  <a href="#badges">٩. الشارات</a>
+  <a href="#avatars">١٠. الأفاتارات</a>
+  <a href="#tables">١١. الجداول</a>
+  <a href="#alerts">١٢. التنبيهات</a>
+  <a href="#navigation">١٣. التنقّل</a>
+</aside>
+
+<main>
+
+<!-- ═══ Hero ═══ -->
+<section class="hero">
+  <div class="hero-logo">ر</div>
+  <h1 class="hero-title">رفقاء — نظام التصميم</h1>
+  <p class="hero-subtitle">Design System v0.1</p>
+  <p class="hero-tagline">«كافل اليتيم.. رفيق النبي ﷺ»</p>
+  <div class="hero-meta">
+    <span class="hero-meta-item">Modern</span>
+    <span class="hero-meta-item">Professional</span>
+    <span class="hero-meta-item">Neutral</span>
+    <span class="hero-meta-item">RTL-first</span>
+  </div>
+</section>
+
+<!-- ═══ Brand Identity ═══ -->
+<section class="section" id="brand">
+  <header class="section-header">
+    <div class="section-label">01 — Identity</div>
+    <h2 class="section-title">الهوية البصرية</h2>
+    <p class="section-subtitle">الأسس الأربعة التي تبني عليها كل واجهة في رفقاء</p>
+  </header>
+
+  <div class="cards-grid">
+    <div class="brand-color-card">
+      <div class="brand-color-block" style="background: #F7FBFC; border: 1px solid var(--gray-200);"></div>
+      <div class="brand-color-info">
+        <h4>صفاء</h4>
+        <p>خلفية الصفحات الرئيسية</p>
+        <div class="brand-color-meta">
+          <span>#F7FBFC</span>
+          <span>Snow</span>
+        </div>
+      </div>
+    </div>
+    <div class="brand-color-card">
+      <div class="brand-color-block" style="background: #D6E6F2;"></div>
+      <div class="brand-color-info">
+        <h4>سكينة</h4>
+        <p>خلفية البطاقات والأقسام</p>
+        <div class="brand-color-meta">
+          <span>#D6E6F2</span>
+          <span>Tranquil</span>
+        </div>
+      </div>
+    </div>
+    <div class="brand-color-card">
+      <div class="brand-color-block" style="background: #B9D7EA;"></div>
+      <div class="brand-color-info">
+        <h4>سماء</h4>
+        <p>الحدود والفواصل</p>
+        <div class="brand-color-meta">
+          <span>#B9D7EA</span>
+          <span>Sky</span>
+        </div>
+      </div>
+    </div>
+    <div class="brand-color-card">
+      <div class="brand-color-block" style="background: #769FCD;"></div>
+      <div class="brand-color-info">
+        <h4>ثقة</h4>
+        <p>الأزرار والروابط الرئيسية</p>
+        <div class="brand-color-meta">
+          <span>#769FCD</span>
+          <span>Trust</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Color Palettes ═══ -->
+<section class="section" id="colors">
+  <header class="section-header">
+    <div class="section-label">02 — Palette</div>
+    <h2 class="section-title">منظومة الألوان</h2>
+    <p class="section-subtitle">كل لون من الأربعة الأساسية موسّع إلى تدرّجات قابلة للاستخدام في كل السياقات</p>
+  </header>
+
+  <!-- Trust scale -->
+  <div class="color-group">
+    <div class="color-group-header">
+      <div class="color-group-name">Trust (ثقة) — الأساس</div>
+      <div class="color-group-meaning">الأزرار، الروابط، التأكيدات</div>
+    </div>
+    <div class="color-grid">
+      <div class="swatch"><div class="swatch-color" style="background: #B8CFE3;"></div><div class="swatch-meta"><span class="swatch-name">trust-100</span><span class="swatch-hex">#B8CFE3</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #97B7D6;"></div><div class="swatch-meta"><span class="swatch-name">trust-200</span><span class="swatch-hex">#97B7D6</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #769FCD;"></div><div class="swatch-meta"><span class="swatch-name">trust-300 ★</span><span class="swatch-hex">#769FCD</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #5B85B8;"></div><div class="swatch-meta"><span class="swatch-name">trust-400</span><span class="swatch-hex">#5B85B8</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #426D9F;"></div><div class="swatch-meta"><span class="swatch-name">trust-500</span><span class="swatch-hex">#426D9F</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #2D5683;"></div><div class="swatch-meta"><span class="swatch-name">trust-600</span><span class="swatch-hex">#2D5683</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #1E4068;"></div><div class="swatch-meta"><span class="swatch-name">trust-700</span><span class="swatch-hex">#1E4068</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #142E4D;"></div><div class="swatch-meta"><span class="swatch-name">trust-800</span><span class="swatch-hex">#142E4D</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #0B1E33;"></div><div class="swatch-meta"><span class="swatch-name">trust-900</span><span class="swatch-hex">#0B1E33</span></div></div>
+    </div>
+  </div>
+
+  <!-- Snow / Tranquil / Sky -->
+  <div class="color-group">
+    <div class="color-group-header">
+      <div class="color-group-name">Snow · Tranquil · Sky (صفاء · سكينة · سماء)</div>
+      <div class="color-group-meaning">خلفيات، أسطح، حدود</div>
+    </div>
+    <div class="color-grid">
+      <div class="swatch"><div class="swatch-color" style="background: #FDFEFE; border-bottom: 1px solid var(--gray-200);"></div><div class="swatch-meta"><span class="swatch-name">snow-50</span><span class="swatch-hex">#FDFEFE</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #F7FBFC; border-bottom: 1px solid var(--gray-200);"></div><div class="swatch-meta"><span class="swatch-name">snow-100 ★</span><span class="swatch-hex">#F7FBFC</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #EEF5F8;"></div><div class="swatch-meta"><span class="swatch-name">snow-200</span><span class="swatch-hex">#EEF5F8</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #EAF1F7;"></div><div class="swatch-meta"><span class="swatch-name">tranquil-100</span><span class="swatch-hex">#EAF1F7</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #D6E6F2;"></div><div class="swatch-meta"><span class="swatch-name">tranquil-200 ★</span><span class="swatch-hex">#D6E6F2</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #C2D8EC;"></div><div class="swatch-meta"><span class="swatch-name">tranquil-300</span><span class="swatch-hex">#C2D8EC</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #C9DDED;"></div><div class="swatch-meta"><span class="swatch-name">sky-100</span><span class="swatch-hex">#C9DDED</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #B9D7EA;"></div><div class="swatch-meta"><span class="swatch-name">sky-200 ★</span><span class="swatch-hex">#B9D7EA</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #9CC3DE;"></div><div class="swatch-meta"><span class="swatch-name">sky-300</span><span class="swatch-hex">#9CC3DE</span></div></div>
+    </div>
+  </div>
+
+  <!-- Neutrals -->
+  <div class="color-group">
+    <div class="color-group-header">
+      <div class="color-group-name">Neutrals (الرماديات)</div>
+      <div class="color-group-meaning">النصوص والحدود المحايدة</div>
+    </div>
+    <div class="color-grid">
+      <div class="swatch"><div class="swatch-color" style="background: #FAFBFC; border-bottom: 1px solid var(--gray-200);"></div><div class="swatch-meta"><span class="swatch-name">gray-50</span><span class="swatch-hex">#FAFBFC</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #F4F6F8;"></div><div class="swatch-meta"><span class="swatch-name">gray-100</span><span class="swatch-hex">#F4F6F8</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #E7EBEF;"></div><div class="swatch-meta"><span class="swatch-name">gray-200</span><span class="swatch-hex">#E7EBEF</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #D2D8DF;"></div><div class="swatch-meta"><span class="swatch-name">gray-300</span><span class="swatch-hex">#D2D8DF</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #A8B2BC;"></div><div class="swatch-meta"><span class="swatch-name">gray-400</span><span class="swatch-hex">#A8B2BC</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #7A8590;"></div><div class="swatch-meta"><span class="swatch-name">gray-500</span><span class="swatch-hex">#7A8590</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #5A636E;"></div><div class="swatch-meta"><span class="swatch-name">gray-600</span><span class="swatch-hex">#5A636E</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #3F4750;"></div><div class="swatch-meta"><span class="swatch-name">gray-700</span><span class="swatch-hex">#3F4750</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #161A1F;"></div><div class="swatch-meta"><span class="swatch-name">gray-900</span><span class="swatch-hex">#161A1F</span></div></div>
+    </div>
+  </div>
+
+  <!-- Semantic -->
+  <div class="color-group">
+    <div class="color-group-header">
+      <div class="color-group-name">Semantic (الألوان الدلالية)</div>
+      <div class="color-group-meaning">نجاح، تحذير، خطأ، معلومة</div>
+    </div>
+    <div class="color-grid">
+      <div class="swatch"><div class="swatch-color" style="background: #10B981;"></div><div class="swatch-meta"><span class="swatch-name">success</span><span class="swatch-hex">#10B981</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #F59E0B;"></div><div class="swatch-meta"><span class="swatch-name">warning</span><span class="swatch-hex">#F59E0B</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #EF4444;"></div><div class="swatch-meta"><span class="swatch-name">danger</span><span class="swatch-hex">#EF4444</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: #3B82F6;"></div><div class="swatch-meta"><span class="swatch-name">info</span><span class="swatch-hex">#3B82F6</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Typography ═══ -->
+<section class="section" id="typography">
+  <header class="section-header">
+    <div class="section-label">03 — Typography</div>
+    <h2 class="section-title">الخطوط والتدرّج النصّي</h2>
+    <p class="section-subtitle">IBM Plex Sans Arabic للعربي · IBM Plex Sans للإنجليزي · IBM Plex Mono للأكواد والأرقام التقنية</p>
+  </header>
+
+  <div class="type-card">
+    <div class="type-meta">
+      <span>عربي — <strong>IBM Plex Sans Arabic</strong></span>
+      <span>Weights: 300, 400, 500, 600, 700</span>
+    </div>
+
+    <div class="type-row">
+      <div class="type-h1">«كافل اليتيم.. رفيق النبي»</div>
+      <div class="type-row-meta">H1 · 48px / 700</div>
+    </div>
+    <div class="type-row">
+      <div class="type-h2">منصة عالمية مفتوحة المصدر</div>
+      <div class="type-row-meta">H2 · 36px / 600</div>
+    </div>
+    <div class="type-row">
+      <div class="type-h3">إدارة كفالة الأيتام بشفافية</div>
+      <div class="type-row-meta">H3 · 28px / 600</div>
+    </div>
+    <div class="type-row">
+      <div class="type-h4">لوحة المتبرّع</div>
+      <div class="type-row-meta">H4 · 22px / 600</div>
+    </div>
+    <div class="type-row">
+      <div class="type-h5">آخر التحديثات على الكفالة</div>
+      <div class="type-row-meta">H5 · 18px / 600</div>
+    </div>
+    <div class="type-row">
+      <div class="type-body">رفقاء وقف إلكتروني مفتوح المصدر يخدم الأيتام والكفلاء حول العالم، ويوفّر منصة موحّدة لإدارة الكفالات بشفافية وكرامة.</div>
+      <div class="type-row-meta">Body · 16px / 400</div>
+    </div>
+    <div class="type-row">
+      <div class="type-small">آخر تحديث للحالة: قبل ٣ أيام</div>
+      <div class="type-row-meta">Small · 14px / 400</div>
+    </div>
+    <div class="type-row">
+      <div class="type-xs">ORF-00045 · KAF-00123</div>
+      <div class="type-row-meta">XS · 12px / 500</div>
+    </div>
+  </div>
+
+  <div class="type-card">
+    <div class="type-meta">
+      <span lang="en">English — <strong>IBM Plex Sans</strong></span>
+      <span>Weights: 300, 400, 500, 600, 700</span>
+    </div>
+
+    <div class="type-row" lang="en" style="direction: ltr;">
+      <div class="type-h2">Empowering Orphan Sponsorship</div>
+      <div class="type-row-meta">H2</div>
+    </div>
+    <div class="type-row" lang="en" style="direction: ltr;">
+      <div class="type-h4">Global. Open-source. Transparent.</div>
+      <div class="type-row-meta">H4</div>
+    </div>
+    <div class="type-row" lang="en" style="direction: ltr;">
+      <div class="type-body">A unified platform connecting donors, guardians, and local partner organizations to manage sponsorships with dignity and transparency.</div>
+      <div class="type-row-meta">Body</div>
+    </div>
+  </div>
+
+  <div class="type-card">
+    <div class="type-meta">
+      <span>الأرقام التابوليّة — <strong>Tabular Numbers</strong></span>
+      <span class="mono">font-feature-settings: "tnum"</span>
+    </div>
+    <div class="type-row" style="direction: ltr;">
+      <div class="type-h3" style="font-family: var(--font-latin); font-feature-settings: 'tnum' 1;">12,450.500 KWD</div>
+      <div class="type-row-meta">Currency · Tabular</div>
+    </div>
+    <div class="type-row" style="direction: ltr;">
+      <div class="type-h4" style="font-family: var(--font-latin); font-feature-settings: 'tnum' 1;">ORF-00045 · DON-01230</div>
+      <div class="type-row-meta">IDs · Tabular</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Spacing & Radius ═══ -->
+<section class="section" id="spacing">
+  <header class="section-header">
+    <div class="section-label">04 — Foundations</div>
+    <h2 class="section-title">التباعد والحواف والظلال</h2>
+    <p class="section-subtitle">سلّم تباعد مبني على ٤ بكسل · حواف هادئة · ظلال خفيفة لمظهر احترافي</p>
+  </header>
+
+  <h3 class="subsection-title">سلّم التباعد (Spacing Scale)</h3>
+  <div class="component-card">
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">4px</span><div style="background: var(--trust-300); height: 16px; width: 4px;"></div><span class="mono" style="color: var(--gray-400);">space-1</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">8px</span><div style="background: var(--trust-300); height: 16px; width: 8px;"></div><span class="mono" style="color: var(--gray-400);">space-2</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">12px</span><div style="background: var(--trust-300); height: 16px; width: 12px;"></div><span class="mono" style="color: var(--gray-400);">space-3</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">16px</span><div style="background: var(--trust-300); height: 16px; width: 16px;"></div><span class="mono" style="color: var(--gray-400);">space-4</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">24px</span><div style="background: var(--trust-300); height: 16px; width: 24px;"></div><span class="mono" style="color: var(--gray-400);">space-6</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">32px</span><div style="background: var(--trust-300); height: 16px; width: 32px;"></div><span class="mono" style="color: var(--gray-400);">space-8</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">48px</span><div style="background: var(--trust-300); height: 16px; width: 48px;"></div><span class="mono" style="color: var(--gray-400);">space-12</span></div>
+      <div style="display: flex; align-items: center; gap: 16px;"><span class="mono" style="width: 60px; color: var(--gray-500);">64px</span><div style="background: var(--trust-300); height: 16px; width: 64px;"></div><span class="mono" style="color: var(--gray-400);">space-16</span></div>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">الحواف (Border Radius)</h3>
+  <div class="component-card">
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end;">
+      <div style="text-align: center;"><div style="width: 80px; height: 80px; background: var(--tranquil-200); border-radius: 0;"></div><div class="mono" style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">0 · none</div></div>
+      <div style="text-align: center;"><div style="width: 80px; height: 80px; background: var(--tranquil-200); border-radius: 4px;"></div><div class="mono" style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">4px · sm</div></div>
+      <div style="text-align: center;"><div style="width: 80px; height: 80px; background: var(--tranquil-200); border-radius: 8px;"></div><div class="mono" style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">8px · md</div></div>
+      <div style="text-align: center;"><div style="width: 80px; height: 80px; background: var(--tranquil-200); border-radius: 12px;"></div><div class="mono" style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">12px · lg</div></div>
+      <div style="text-align: center;"><div style="width: 80px; height: 80px; background: var(--tranquil-200); border-radius: 16px;"></div><div class="mono" style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">16px · xl</div></div>
+      <div style="text-align: center;"><div style="width: 80px; height: 80px; background: var(--tranquil-200); border-radius: 50%;"></div><div class="mono" style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">full</div></div>
+    </div>
+  </div>
+
+  <h3 class="subsection-title">الظلال (Shadows)</h3>
+  <div class="component-card">
+    <div style="display: flex; flex-wrap: wrap; gap: 32px; padding: 16px;">
+      <div style="text-align: center;"><div style="width: 100px; height: 100px; background: white; border-radius: 12px; box-shadow: var(--shadow-xs);"></div><div class="mono" style="margin-top: 12px; font-size: 11px; color: var(--gray-500);">shadow-xs</div></div>
+      <div style="text-align: center;"><div style="width: 100px; height: 100px; background: white; border-radius: 12px; box-shadow: var(--shadow-sm);"></div><div class="mono" style="margin-top: 12px; font-size: 11px; color: var(--gray-500);">shadow-sm</div></div>
+      <div style="text-align: center;"><div style="width: 100px; height: 100px; background: white; border-radius: 12px; box-shadow: var(--shadow-md);"></div><div class="mono" style="margin-top: 12px; font-size: 11px; color: var(--gray-500);">shadow-md</div></div>
+      <div style="text-align: center;"><div style="width: 100px; height: 100px; background: white; border-radius: 12px; box-shadow: var(--shadow-lg);"></div><div class="mono" style="margin-top: 12px; font-size: 11px; color: var(--gray-500);">shadow-lg</div></div>
+      <div style="text-align: center;"><div style="width: 100px; height: 100px; background: white; border-radius: 12px; box-shadow: var(--shadow-xl);"></div><div class="mono" style="margin-top: 12px; font-size: 11px; color: var(--gray-500);">shadow-xl</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Buttons ═══ -->
+<section class="section" id="buttons">
+  <header class="section-header">
+    <div class="section-label">05 — Buttons</div>
+    <h2 class="section-title">الأزرار</h2>
+    <p class="section-subtitle">٥ متغيّرات × ٤ أحجام × ٤ حالات</p>
+  </header>
+
+  <div class="component-card">
+    <div class="component-card-title">المتغيّرات</div>
+
+    <div class="component-row">
+      <span class="component-row-label">Primary</span>
+      <button class="btn btn-primary">ابدأ الكفالة</button>
+      <button class="btn btn-primary"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>أضف يتيم</button>
+      <button class="btn btn-primary btn-disabled">مُعطّل</button>
+    </div>
+
+    <div class="component-row">
+      <span class="component-row-label">Secondary</span>
+      <button class="btn btn-secondary">عرض التفاصيل</button>
+      <button class="btn btn-secondary"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0118 0M3 12a9 9 0 0018 0M3 12h18"/></svg>تصفية</button>
+    </div>
+
+    <div class="component-row">
+      <span class="component-row-label">Tertiary</span>
+      <button class="btn btn-tertiary">إلغاء</button>
+      <button class="btn btn-tertiary">رجوع</button>
+    </div>
+
+    <div class="component-row">
+      <span class="component-row-label">Success</span>
+      <button class="btn btn-success"><svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>اعتماد</button>
+    </div>
+
+    <div class="component-row">
+      <span class="component-row-label">Danger</span>
+      <button class="btn btn-danger"><svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>حذف الكفالة</button>
+    </div>
+  </div>
+
+  <div class="component-card">
+    <div class="component-card-title">الأحجام</div>
+    <div class="component-row">
+      <span class="component-row-label">XL</span>
+      <button class="btn btn-primary btn-xl">ابدأ الكفالة الآن</button>
+    </div>
+    <div class="component-row">
+      <span class="component-row-label">Large</span>
+      <button class="btn btn-primary btn-lg">ابدأ الكفالة</button>
+    </div>
+    <div class="component-row">
+      <span class="component-row-label">Default</span>
+      <button class="btn btn-primary">ابدأ الكفالة</button>
+    </div>
+    <div class="component-row">
+      <span class="component-row-label">Small</span>
+      <button class="btn btn-primary btn-sm">حفظ</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Forms ═══ -->
+<section class="section" id="forms">
+  <header class="section-header">
+    <div class="section-label">06 — Forms</div>
+    <h2 class="section-title">حقول الإدخال</h2>
+    <p class="section-subtitle">حقول واضحة، مع تعليقات مساعدة وحالات تحقّق</p>
+  </header>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <div class="component-card">
+      <div class="component-card-title">حقول نصّية</div>
+
+      <div class="field-group">
+        <label class="field-label">الاسم الكامل <span class="required">*</span></label>
+        <input class="input" placeholder="مثلاً: أحمد محمد العلي">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">رقم الهاتف</label>
+        <div class="input-icon-wrap">
+          <input class="input" placeholder="+965 9999 9999">
+          <span class="input-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
+        </div>
+        <div class="field-hint">سيُستخدم لإرسال إشعارات الكفالة</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">البريد الإلكتروني</label>
+        <input class="input error" value="ahmed@invalid">
+        <div class="field-error"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>صيغة البريد غير صحيحة</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">ملاحظات</label>
+        <textarea class="textarea" placeholder="أضف أي ملاحظة..."></textarea>
+      </div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-card-title">الاختيارات</div>
+
+      <div class="field-group">
+        <label class="field-label">العملة المفضّلة</label>
+        <select class="select">
+          <option>الدينار الكويتي (KWD)</option>
+          <option>الريال السعودي (SAR)</option>
+          <option>الدرهم الإماراتي (AED)</option>
+          <option>الدولار الأمريكي (USD)</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">حالة الكفالة</label>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <label class="checkbox-wrap"><input class="checkbox" type="checkbox" checked> كفالة شهرية تلقائية</label>
+          <label class="checkbox-wrap"><input class="checkbox" type="checkbox"> السماح بالكشف عن اسمي للجهة</label>
+          <label class="checkbox-wrap"><input class="checkbox" type="checkbox"> أرغب باستلام تقارير ربعية</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">طريقة الدفع</label>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <label class="radio-wrap"><input class="radio" type="radio" name="pay" checked> K-Net (بطاقة محلية)</label>
+          <label class="radio-wrap"><input class="radio" type="radio" name="pay"> بطاقة ائتمانية</label>
+          <label class="radio-wrap"><input class="radio" type="radio" name="pay"> Apple Pay</label>
+        </div>
+      </div>
+
+      <div class="field-group" style="display: flex; justify-content: space-between; align-items: center;">
+        <label class="field-label" style="margin: 0;">الكفالة كصدقة جارية</label>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Cards ═══ -->
+<section class="section" id="cards">
+  <header class="section-header">
+    <div class="section-label">07 — Cards</div>
+    <h2 class="section-title">البطاقات</h2>
+    <p class="section-subtitle">ثلاثة أنواع: عادية، مرتفعة، ملوّنة</p>
+  </header>
+
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-title">بطاقة عادية</div>
+      <div class="card-body">حدود خفيفة، خلفية بيضاء، تفاعل لطيف عند المرور بالماوس. الأكثر استخداماً في القوائم.</div>
+    </div>
+    <div class="card-elevated">
+      <div class="card-title">بطاقة مرتفعة</div>
+      <div class="card-body">ظلّ خفيف يعطي إحساس الارتفاع. للعناصر التي تحتاج لمزيد من الاهتمام.</div>
+    </div>
+    <div class="card-tinted">
+      <div class="card-title">بطاقة ملوّنة</div>
+      <div class="card-body">بخلفية "سكينة" وحدود "سماء". لإبراز معلومات هامة أو سياق خاص.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Stat Cards ═══ -->
+<section class="section" id="stats">
+  <header class="section-header">
+    <div class="section-label">08 — Stat Cards</div>
+    <h2 class="section-title">بطاقات الإحصاءات</h2>
+    <p class="section-subtitle">للوحات الإدارة — أرقام واضحة مع مؤشرات التغيّر</p>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">إجمالي الأيتام</div>
+      <div class="stat-value">1,247</div>
+      <span class="stat-delta positive">▲ 12 هذا الشهر</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">المكفولون</div>
+      <div class="stat-value">983</div>
+      <span class="stat-delta positive">▲ 8.4%</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">المتبرّعون النشطون</div>
+      <div class="stat-value">2,156</div>
+      <span class="stat-delta neutral">— مستقر</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">تبرّعات الشهر</div>
+      <div class="stat-value">12,450</div>
+      <span class="stat-delta positive">▲ 18.2%</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">كفالات متأخّرة</div>
+      <div class="stat-value">17</div>
+      <span class="stat-delta negative">▼ يحتاج متابعة</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Badges ═══ -->
+<section class="section" id="badges">
+  <header class="section-header">
+    <div class="section-label">09 — Badges</div>
+    <h2 class="section-title">الشارات (Badges)</h2>
+    <p class="section-subtitle">للحالات السريعة، التصنيفات، والوسوم</p>
+  </header>
+
+  <div class="component-card">
+    <div class="component-card-title">شارات ممتلئة</div>
+    <div class="component-row">
+      <span class="badge badge-neutral"><span class="badge-dot"></span>مسودّة</span>
+      <span class="badge badge-trust"><span class="badge-dot"></span>قيد المراجعة</span>
+      <span class="badge badge-success"><span class="badge-dot"></span>نشط</span>
+      <span class="badge badge-warning"><span class="badge-dot"></span>متأخّر</span>
+      <span class="badge badge-danger"><span class="badge-dot"></span>مرفوض</span>
+      <span class="badge badge-info"><span class="badge-dot"></span>محدّث</span>
+    </div>
+  </div>
+
+  <div class="component-card">
+    <div class="component-card-title">شارات بحدود</div>
+    <div class="component-row">
+      <span class="badge badge-outline-neutral">عام</span>
+      <span class="badge badge-outline-success">مكتمل</span>
+      <span class="badge badge-outline-warning">يحتاج اهتمام</span>
+      <span class="badge badge-outline-danger">حرج</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Avatars ═══ -->
+<section class="section" id="avatars">
+  <header class="section-header">
+    <div class="section-label">10 — Avatars</div>
+    <h2 class="section-title">الأفاتارات</h2>
+    <p class="section-subtitle">حروف أولى — لا نستخدم صور الأيتام في الأفاتارات حفاظاً على كرامتهم</p>
+  </header>
+
+  <div class="component-card">
+    <div class="component-row">
+      <span class="component-row-label">الأحجام</span>
+      <div class="avatar avatar-sm">أم</div>
+      <div class="avatar">أم</div>
+      <div class="avatar avatar-lg">أم</div>
+      <div class="avatar avatar-xl">أم</div>
+    </div>
+    <div class="component-row">
+      <span class="component-row-label">مجموعة</span>
+      <div class="avatar-group">
+        <div class="avatar">أح</div>
+        <div class="avatar" style="background: var(--success-100); color: var(--success-700);">سل</div>
+        <div class="avatar" style="background: var(--warning-100); color: var(--warning-700);">فا</div>
+        <div class="avatar" style="background: var(--gray-200); color: var(--gray-700);">+٧</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Tables ═══ -->
+<section class="section" id="tables">
+  <header class="section-header">
+    <div class="section-label">11 — Tables</div>
+    <h2 class="section-title">الجداول</h2>
+    <p class="section-subtitle">للوحة الإدارة — صفوف مع شارات وأزرار وأرقام تابوليّة</p>
+  </header>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>الكود</th>
+          <th>الاسم</th>
+          <th>الدولة</th>
+          <th>الحالة</th>
+          <th class="cell-numeric">المبلغ</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cell-mono">ORF-00045</td>
+          <td><div style="display: flex; align-items: center; gap: 8px;"><div class="avatar avatar-sm">أم</div>أحمد محمد</div></td>
+          <td>فلسطين 🇵🇸</td>
+          <td><span class="badge badge-success"><span class="badge-dot"></span>مكفول</span></td>
+          <td class="cell-numeric">15.000 KWD</td>
+          <td><button class="btn btn-tertiary btn-sm">عرض</button></td>
+        </tr>
+        <tr>
+          <td class="cell-mono">ORF-00046</td>
+          <td><div style="display: flex; align-items: center; gap: 8px;"><div class="avatar avatar-sm">سل</div>سلمى عبدالله</div></td>
+          <td>اليمن 🇾🇪</td>
+          <td><span class="badge badge-trust"><span class="badge-dot"></span>قيد المراجعة</span></td>
+          <td class="cell-numeric">—</td>
+          <td><button class="btn btn-tertiary btn-sm">عرض</button></td>
+        </tr>
+        <tr>
+          <td class="cell-mono">ORF-00047</td>
+          <td><div style="display: flex; align-items: center; gap: 8px;"><div class="avatar avatar-sm">فا</div>فاطمة الزهراء</div></td>
+          <td>سوريا 🇸🇾</td>
+          <td><span class="badge badge-warning"><span class="badge-dot"></span>متأخّر دفعتين</span></td>
+          <td class="cell-numeric">25.000 KWD</td>
+          <td><button class="btn btn-tertiary btn-sm">عرض</button></td>
+        </tr>
+        <tr>
+          <td class="cell-mono">ORF-00048</td>
+          <td><div style="display: flex; align-items: center; gap: 8px;"><div class="avatar avatar-sm">عل</div>علي حسين</div></td>
+          <td>السودان 🇸🇩</td>
+          <td><span class="badge badge-neutral"><span class="badge-dot"></span>متاح للكفالة</span></td>
+          <td class="cell-numeric">—</td>
+          <td><button class="btn btn-secondary btn-sm">كفالة</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ Alerts ═══ -->
+<section class="section" id="alerts">
+  <header class="section-header">
+    <div class="section-label">12 — Alerts</div>
+    <h2 class="section-title">التنبيهات</h2>
+    <p class="section-subtitle">لإبلاغ المستخدم بمعلومات سياقية</p>
+  </header>
+
+  <div class="alert alert-info">
+    <span class="alert-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+    <div class="alert-content">
+      <div class="alert-title">معلومة</div>
+      <div class="alert-body">تذكير: التحويلات الشهرية للجهات الشريكة تُجرى يوم ٢٥ من كل شهر.</div>
+    </div>
+  </div>
+
+  <div class="alert alert-success">
+    <span class="alert-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg></span>
+    <div class="alert-content">
+      <div class="alert-title">تم بنجاح</div>
+      <div class="alert-body">تم اعتماد كفالة المتبرع DON-01230 لليتيم ORF-00045 بقيمة ١٥ دينار شهرياً.</div>
+    </div>
+  </div>
+
+  <div class="alert alert-warning">
+    <span class="alert-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg></span>
+    <div class="alert-content">
+      <div class="alert-title">انتباه</div>
+      <div class="alert-body">١٧ كفالة متأخّرة في الدفع لأكثر من شهرين. ننصح بإرسال تذكير ودّي.</div>
+    </div>
+  </div>
+
+  <div class="alert alert-danger">
+    <span class="alert-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>
+    <div class="alert-content">
+      <div class="alert-title">خطأ</div>
+      <div class="alert-body">فشل التحقّق من بيانات اليتيم: شهادة الميلاد المرفوعة غير واضحة.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Navigation ═══ -->
+<section class="section" id="navigation">
+  <header class="section-header">
+    <div class="section-label">13 — Navigation</div>
+    <h2 class="section-title">عناصر التنقّل</h2>
+    <p class="section-subtitle">Tabs · Breadcrumbs · Sidebar Items</p>
+  </header>
+
+  <div class="component-card">
+    <div class="component-card-title">Tabs</div>
+    <div class="tabs">
+      <div class="tab active">نظرة عامة</div>
+      <div class="tab">الكفالات (٢٤)</div>
+      <div class="tab">المدفوعات</div>
+      <div class="tab">التقارير</div>
+      <div class="tab">الإعدادات</div>
+    </div>
+  </div>
+
+  <div class="component-card">
+    <div class="component-card-title">Breadcrumbs</div>
+    <div class="breadcrumb">
+      <a href="#">الرئيسية</a>
+      <span class="breadcrumb-separator">›</span>
+      <a href="#">الأيتام</a>
+      <span class="breadcrumb-separator">›</span>
+      <a href="#">فلسطين</a>
+      <span class="breadcrumb-separator">›</span>
+      <span class="breadcrumb-current">أحمد محمد (ORF-00045)</span>
+    </div>
+  </div>
+
+  <div class="component-card">
+    <div class="component-card-title">Sidebar Items</div>
+    <div style="max-width: 280px;">
+      <a class="sidebar-item active">
+        <svg class="icon sidebar-item-icon" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        لوحة المعلومات
+      </a>
+      <a class="sidebar-item">
+        <svg class="icon sidebar-item-icon" viewBox="0 0 24 24"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a3 3 0 015.36-1.84M15 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        الأيتام
+      </a>
+      <a class="sidebar-item">
+        <svg class="icon sidebar-item-icon" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/></svg>
+        الكفالات
+      </a>
+      <a class="sidebar-item">
+        <svg class="icon sidebar-item-icon" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        المدفوعات
+      </a>
+      <a class="sidebar-item">
+        <svg class="icon sidebar-item-icon" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        التقارير
+      </a>
+      <a class="sidebar-item">
+        <svg class="icon sidebar-item-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.36.15.66.41.87.74.21.33.32.71.32 1.1 0 .39-.11.77-.32 1.1-.21.33-.51.59-.87.74z"/></svg>
+        الإعدادات
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>منصة رفقاء — نظام التصميم v0.1</p>
+  <p>أحد مشاريع أوقاف سامح عبدالعزيز الإلكترونية</p>
+  <p class="footer-quote">«وحُسن أولئك رفيقاً» — النساء: ٦٩</p>
+</footer>
+
+</main>
+</div>
+
+</body>
+</html>

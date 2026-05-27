@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — حساب جديد · تسجيل كفيل</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+  color: var(--gray-900);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(214,230,242,.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 90%, rgba(214,230,242,.3) 0%, transparent 50%),
+    var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; }
+input { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Page */
+.page-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 36px 24px 64px;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 40px; height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+}
+
+.brand-info h1 { font-size: 16px; font-weight: 600; line-height: 1.2; color: var(--gray-900); }
+.brand-info p { font-size: 12px; color: var(--gray-500); }
+
+.login-link {
+  font-size: 13.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+}
+.login-link:hover { color: var(--trust-700); text-decoration: underline; }
+
+/* Card */
+.card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-head {
+  padding: 26px 28px 18px;
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, white 100%);
+  border-bottom: 1px solid var(--sky-200);
+}
+
+.card-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--trust-600);
+  font-weight: 500;
+  background: white;
+  border: 1px solid var(--sky-200);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: 12px;
+}
+
+.card-head h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+
+.card-head p {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* Progress */
+.progress {
+  padding: 14px 28px 18px;
+  border-bottom: 1px solid var(--gray-100);
+  background: white;
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.progress-row strong {
+  color: var(--trust-600);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.progress-track {
+  height: 5px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--trust-300), var(--trust-400));
+  border-radius: var(--radius-full);
+  transition: width 320ms cubic-bezier(.4,0,.2,1);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: 6px;
+}
+
+.p-step {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+
+.p-step-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: white; border: 2px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--gray-500);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: var(--transition);
+}
+
+.p-step.done .p-step-dot { background: var(--success-500); border-color: var(--success-500); color: white; }
+.p-step.active .p-step-dot {
+  background: var(--trust-300); border-color: var(--trust-300); color: white;
+  box-shadow: 0 0 0 4px rgba(118,159,205,.18);
+}
+
+.p-step-label { font-size: 10.5px; color: var(--gray-500); font-weight: 500; text-align: center; }
+.p-step.active .p-step-label { color: var(--trust-600); font-weight: 600; }
+
+@media (max-width: 480px) { .p-step-label { display: none; } }
+
+/* Step body */
+.card-body {
+  padding: 24px 28px 8px;
+  min-height: 360px;
+}
+
+@media (max-width: 480px) { .card-body { padding: 20px 18px 8px; } }
+
+.step {
+  display: none;
+  animation: stepIn 240ms ease;
+}
+.step.active { display: block; }
+
+@keyframes stepIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+.field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: .02em;
+}
+
+.field-input-wrap { position: relative; }
+
+.field input, .field select {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.field input.latin { font-family: 'IBM Plex Sans', sans-serif; letter-spacing: .02em; font-feature-settings: "tnum" 1; }
+
+.field input:focus, .field select:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.field input.error {
+  border-color: var(--danger-600);
+  background: var(--danger-50);
+}
+
+.field-hint { font-size: 11.5px; color: var(--gray-500); margin-top: 4px; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+/* Password strength */
+.password-strength {
+  margin-top: 8px;
+}
+
+.strength-bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.strength-bar {
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  transition: var(--transition);
+}
+
+.strength-bar.weak { background: var(--danger-600); }
+.strength-bar.ok { background: var(--warning-700); }
+.strength-bar.good { background: var(--trust-400); }
+.strength-bar.strong { background: var(--success-600); }
+
+.strength-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+.strength-checks {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+.strength-check { display: inline-flex; align-items: center; gap: 5px; }
+.strength-check.ok { color: var(--success-700); }
+.strength-check svg { color: currentColor; }
+
+/* Terms */
+.terms-agree {
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  color: var(--gray-700);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.terms-check {
+  width: 18px; height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  transition: var(--transition-fast);
+}
+
+.terms-agree.checked .terms-check { background: var(--trust-400); border-color: var(--trust-400); }
+.terms-agree.checked .terms-check::after {
+  content: '';
+  width: 10px; height: 5px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.terms-agree a { color: var(--trust-500); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+
+/* OTP boxes */
+.otp-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin: 18px 0 12px;
+  direction: ltr;
+}
+
+.otp-box {
+  aspect-ratio: 1;
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--trust-700);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: var(--transition);
+}
+
+.otp-box:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-400);
+  box-shadow: var(--shadow-focus);
+}
+
+.otp-box.filled {
+  background: white;
+  border-color: var(--trust-400);
+}
+
+.otp-help {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--gray-600);
+  margin-bottom: 8px;
+}
+
+.otp-help .latin { color: var(--gray-900); font-weight: 600; }
+
+.otp-resend {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+
+.otp-resend a {
+  color: var(--trust-500);
+  font-weight: 500;
+  text-decoration: none;
+  margin-inline-start: 4px;
+}
+.otp-resend a:hover { color: var(--trust-700); text-decoration: underline; }
+
+.otp-resend.live a { color: var(--gray-400); cursor: not-allowed; }
+.otp-resend.live .timer { color: var(--gray-700); font-weight: 500; font-family: 'IBM Plex Sans', sans-serif; }
+
+/* Phone field with country */
+.phone-input-wrap {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
+}
+
+/* Step head per step */
+.step-head { margin-bottom: 18px; }
+.step-head h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  margin-bottom: 4px;
+}
+.step-head p { font-size: 13px; color: var(--gray-600); line-height: 1.55; }
+
+/* Success */
+.success-step {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.success-icon {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  background: var(--success-50);
+  color: var(--success-600);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  position: relative;
+}
+.success-icon::before {
+  content: ''; position: absolute; inset: -6px;
+  border-radius: 50%; border: 2px solid var(--success-100);
+}
+
+.success-step h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  margin-bottom: 8px;
+}
+
+.success-step p {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+
+.success-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) { .success-actions { grid-template-columns: 1fr; } }
+
+/* Foot */
+.card-foot {
+  padding: 16px 28px 20px;
+  border-top: 1px solid var(--gray-100);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: white;
+}
+
+@media (max-width: 480px) { .card-foot { padding: 14px 18px 18px; } }
+
+.foot-btn {
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+  min-height: 44px;
+}
+
+.foot-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+.foot-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+}
+.foot-btn-secondary:hover:not([aria-disabled="true"]) { border-color: var(--sky-300); color: var(--trust-600); }
+
+.foot-btn-primary {
+  background: var(--trust-400);
+  color: white;
+  border-color: var(--trust-400);
+  flex: 1;
+  justify-content: center;
+}
+.foot-btn-primary:hover:not([aria-disabled="true"]) { background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-sm); }
+
+/* OR + social */
+.or-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 16px 0;
+  font-size: 11.5px; color: var(--gray-400);
+}
+.or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+.social-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.social-btn {
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-800);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+.social-btn:hover { border-color: var(--gray-300); background: var(--gray-50); }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="brand-row">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>منصّة عالميّة لكفالة الأيتام</p>
+      </div>
+    </div>
+    <a href="A-01 Shared Login.html" class="login-link">
+      عندي حساب
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+  </div>
+
+  <div class="card">
+
+    <div class="card-head">
+      <span class="card-eyebrow">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        رحلة جديدة كرفيق
+      </span>
+      <h2>أنشئ حسابك في دقيقة</h2>
+      <p>كل ما تحتاجه للبدء — وستجد أيتاماً ينتظرون رفيقاً يلامس قلوبهم.</p>
+    </div>
+
+    <div class="progress">
+      <div class="progress-row">
+        <span>الخطوة <strong><span id="cur-step">1</span> من 4</strong></span>
+        <span><span id="pct-done">25%</span> منجز</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1">
+        <div class="progress-fill" id="progress-fill" style="width: 25%;"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="p-step active" data-marker="1"><div class="p-step-dot">١</div><div class="p-step-label">الحساب</div></div>
+        <div class="p-step" data-marker="2"><div class="p-step-dot">٢</div><div class="p-step-label">معلوماتك</div></div>
+        <div class="p-step" data-marker="3"><div class="p-step-dot">٣</div><div class="p-step-label">تأكيد البريد</div></div>
+        <div class="p-step" data-marker="4"><div class="p-step-dot">٤</div><div class="p-step-label">تأكيد الجوّال</div></div>
+      </div>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Step 1: Email + Password -->
+      <section class="step active" data-step="1" aria-labelledby="s1-title">
+        <div class="step-head">
+          <h3 id="s1-title">بريدك وكلمة المرور</h3>
+          <p>سنستخدم البريد لإرسال الإيصالات وتحديثات أيتامك.</p>
+        </div>
+
+        <div class="field">
+          <label for="email">البريد الإلكتروني</label>
+          <input type="email" id="email" class="latin" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" class="latin" placeholder="••••••••" autocomplete="new-password" required>
+          <div class="password-strength">
+            <div class="strength-bars" aria-hidden="true">
+              <div class="strength-bar" id="sb1"></div>
+              <div class="strength-bar" id="sb2"></div>
+              <div class="strength-bar" id="sb3"></div>
+              <div class="strength-bar" id="sb4"></div>
+            </div>
+            <div class="strength-label" id="strength-label">قوّة كلمة المرور</div>
+            <div class="strength-checks">
+              <span class="strength-check" id="c-len">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                8 أحرف أو أكثر
+              </span>
+              <span class="strength-check" id="c-num">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                رقم واحد على الأقل
+              </span>
+              <span class="strength-check" id="c-upper">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                حرف كبير لاتيني
+              </span>
+              <span class="strength-check" id="c-sym">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                رمز خاص
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="confirm">تأكيد كلمة المرور</label>
+          <input type="password" id="confirm" class="latin" placeholder="••••••••" autocomplete="new-password" required>
+        </div>
+
+        <div class="or-divider">أو سجّل بسرعة عبر</div>
+
+        <div class="social-buttons">
+          <button class="social-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button class="social-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.6 12.7c0-2.1 1.7-3.1 1.7-3.1-.9-1.4-2.4-1.5-2.9-1.5-1.2-.1-2.4.7-3 .7s-1.5-.7-2.5-.7c-1.3 0-2.5.7-3.1 1.9-1.4 2.3-.4 5.8 1 7.7.7.9 1.4 2 2.4 2 1 0 1.3-.6 2.5-.6s1.5.6 2.5.6 1.7-.9 2.3-1.8c.7-1 1-2 1-2 0-.1-2-.7-2-3.2zM15.7 6.8c.5-.6.9-1.5.8-2.3-.8 0-1.7.5-2.2 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.7-.4 2.2-1z"/></svg>
+            Apple
+          </button>
+        </div>
+      </section>
+
+      <!-- Step 2: Personal info -->
+      <section class="step" data-step="2" aria-labelledby="s2-title">
+        <div class="step-head">
+          <h3 id="s2-title">معلوماتك الشخصيّة</h3>
+          <p>لا تظهر هذه المعلومات لأهل اليتيم — فقط للجهة المسؤولة.</p>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="fname">الاسم الأوّل</label>
+            <input type="text" id="fname" placeholder="مثلاً: عبدالله" required>
+          </div>
+          <div class="field">
+            <label for="lname">اسم العائلة</label>
+            <input type="text" id="lname" placeholder="مثلاً: السالم" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="phone">رقم الجوّال</label>
+          <div class="phone-input-wrap">
+            <select id="country-code">
+              <option>+965</option>
+              <option>+966</option>
+              <option>+971</option>
+              <option>+974</option>
+              <option>+973</option>
+              <option>+1</option>
+              <option>+44</option>
+            </select>
+            <input type="tel" id="phone" class="latin" placeholder="9876 5432" required>
+          </div>
+          <div class="field-hint">سنرسل رمز تأكيد عبر <span class="latin">SMS</span>.</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="nationality">الجنسية</label>
+            <select id="nationality">
+              <option>اختر…</option>
+              <option>الكويت</option>
+              <option>السعودية</option>
+              <option>الإمارات</option>
+              <option>قطر</option>
+              <option>البحرين</option>
+              <option>عُمان</option>
+              <option>أخرى</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="residence">بلد الإقامة</label>
+            <select id="residence">
+              <option>اختر…</option>
+              <option>الكويت</option>
+              <option>السعودية</option>
+              <option>الإمارات</option>
+              <option>أخرى</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="terms-agree" id="terms-btn">
+          <span class="terms-check" aria-hidden="true"></span>
+          <span>
+            أوافق على <a href="#">شروط الاستخدام</a> و<a href="#">سياسة الخصوصيّة</a>،
+            وأقرّ بأنّ معلوماتي صحيحة وأنّني المالك الفعلي لطرق الدفع التي سأستخدمها.
+          </span>
+        </button>
+      </section>
+
+      <!-- Step 3: Verify email -->
+      <section class="step" data-step="3" aria-labelledby="s3-title">
+        <div class="step-head">
+          <h3 id="s3-title">أكّد بريدك الإلكتروني</h3>
+          <p>أرسلنا رمزاً مكوّناً من <span class="latin">6</span> أرقام إلى بريدك.</p>
+        </div>
+
+        <div class="otp-help">
+          أرسلنا الرمز إلى <span class="latin" id="email-display">you@example.com</span>
+        </div>
+
+        <div class="otp-row" role="group" aria-label="رمز التحقق">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="email">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="email">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="email">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="email">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="email">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="email">
+        </div>
+
+        <div class="otp-resend live" id="resend-email">
+          لم يصلك الرمز؟ يمكنك إعادة الإرسال بعد <span class="timer">٠:<span class="latin">45</span></span>
+        </div>
+
+        <div style="background: var(--snow-200); border: 1px solid var(--sky-200); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12.5px; color: var(--gray-700); line-height: 1.55; margin-top: 18px; display: flex; gap: 10px; align-items: flex-start;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--trust-500); flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>لم تجد الرسالة؟ ابحث في <strong>صندوق البريد المزعج</strong> (Spam) أو في تبويب الترويج.</span>
+        </div>
+      </section>
+
+      <!-- Step 4: Verify phone (optional) -->
+      <section class="step" data-step="4" aria-labelledby="s4-title">
+        <div class="step-head">
+          <h3 id="s4-title">أكّد رقم جوّالك</h3>
+          <p>اختياري — لكن يساعدنا في التواصل معك بسرعة عند الحاجة. <a href="#" style="color: var(--trust-500);" id="skip-phone">تخطّي</a></p>
+        </div>
+
+        <div class="otp-help">
+          أرسلنا الرمز إلى <span class="latin" id="phone-display">+965 9876 5432</span>
+        </div>
+
+        <div class="otp-row" role="group" aria-label="رمز التحقق">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="phone">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="phone">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="phone">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="phone">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="phone">
+          <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" data-otp="phone">
+        </div>
+
+        <div class="otp-resend">
+          لم يصلك الرمز؟ <a href="#">إعادة الإرسال</a>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 20px;">
+          <button type="button" class="foot-btn foot-btn-secondary" style="font-size: 12.5px; font-weight: 500; padding: 8px 12px; min-height: auto;">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            استلم عبر واتساب
+          </button>
+          <button type="button" class="foot-btn foot-btn-secondary" style="font-size: 12.5px; font-weight: 500; padding: 8px 12px; min-height: auto;">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            استلم عبر مكالمة
+          </button>
+        </div>
+      </section>
+
+      <!-- Success -->
+      <section class="step" data-step="5" aria-labelledby="s5-title">
+        <div class="success-step">
+          <div class="success-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="40" height="40" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3 id="s5-title">جزاكم الله خيراً، حسابك جاهز</h3>
+          <p>بإمكانك الآن استكشاف الأيتام واختيار من تحبّ كفالته. سنوجّهك للوحتك مباشرة.</p>
+          <div class="success-actions">
+            <button type="button" class="foot-btn foot-btn-secondary" style="justify-content: center;" onclick="location.href='D-01 Donor Dashboard.html'">
+              عودة للوحتي
+            </button>
+            <button type="button" class="foot-btn foot-btn-primary" onclick="location.href='D-02 Browse Available Orphans.html'">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              ابدأ الاستكشاف
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="card-foot" id="card-foot">
+      <button type="button" class="foot-btn foot-btn-secondary" id="btn-prev" aria-disabled="true">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        السابق
+      </button>
+      <button type="button" class="foot-btn foot-btn-primary" id="btn-next">
+        التالي
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let step = 1;
+
+function goToStep(n) {
+  step = Math.max(1, Math.min(5, n));
+  document.querySelectorAll('.step').forEach(s => {
+    s.classList.toggle('active', +s.dataset.step === step);
+  });
+  document.getElementById('cur-step').textContent = Math.min(step, 4);
+  const pct = Math.min(step, 4) / 4 * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('pct-done').textContent = Math.round(pct) + '%';
+  document.querySelector('.progress-track').setAttribute('aria-valuenow', Math.min(step, 4));
+
+  document.querySelectorAll('.p-step').forEach(el => {
+    const m = +el.dataset.marker;
+    el.classList.toggle('active', m === step);
+    el.classList.toggle('done', m < step);
+  });
+
+  document.getElementById('btn-prev').setAttribute('aria-disabled', step === 1 ? 'true' : 'false');
+  const next = document.getElementById('btn-next');
+  if (step === 5) {
+    document.getElementById('card-foot').style.display = 'none';
+  } else {
+    document.getElementById('card-foot').style.display = 'flex';
+    next.innerHTML = step === 4
+      ? 'أنهي التسجيل <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : 'التالي <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  }
+}
+
+document.getElementById('btn-prev').addEventListener('click', () => goToStep(step - 1));
+document.getElementById('btn-next').addEventListener('click', () => goToStep(step + 1));
+document.getElementById('skip-phone').addEventListener('click', e => { e.preventDefault(); goToStep(5); });
+
+/* Password strength */
+const pw = document.getElementById('password');
+pw.addEventListener('input', () => {
+  const v = pw.value;
+  const checks = {
+    len: v.length >= 8,
+    num: /\d/.test(v),
+    upper: /[A-Z]/.test(v),
+    sym: /[^A-Za-z0-9]/.test(v),
+  };
+  ['len','num','upper','sym'].forEach(k => {
+    document.getElementById('c-' + k).classList.toggle('ok', checks[k]);
+  });
+  const score = Object.values(checks).filter(Boolean).length;
+  const labels = ['قوّة كلمة المرور', 'ضعيفة', 'متوسّطة', 'جيّدة', 'قويّة'];
+  const cls = ['', 'weak', 'ok', 'good', 'strong'];
+  document.getElementById('strength-label').textContent = labels[score];
+  for (let i = 1; i <= 4; i++) {
+    const b = document.getElementById('sb' + i);
+    b.className = 'strength-bar' + (i <= score ? ' ' + cls[score] : '');
+  }
+});
+
+/* Terms */
+document.getElementById('terms-btn').addEventListener('click', e => {
+  e.preventDefault();
+  e.currentTarget.classList.toggle('checked');
+});
+
+/* OTP boxes */
+document.querySelectorAll('.otp-box').forEach((box, i, all) => {
+  box.addEventListener('input', e => {
+    const v = e.target.value.replace(/\D/g, '');
+    e.target.value = v.slice(-1);
+    e.target.classList.toggle('filled', !!e.target.value);
+    if (e.target.value && i < all.length - 1 && all[i+1].dataset.otp === e.target.dataset.otp) {
+      all[i+1].focus();
+    }
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !e.target.value && i > 0 && all[i-1].dataset.otp === e.target.dataset.otp) {
+      all[i-1].focus();
+    }
+  });
+});
+
+/* Resend countdown demo */
+let secs = 45;
+const resendEl = document.getElementById('resend-email');
+const timer = setInterval(() => {
+  secs--;
+  if (secs <= 0) {
+    clearInterval(timer);
+    resendEl.classList.remove('live');
+    resendEl.innerHTML = 'لم يصلك الرمز؟ <a href="#">إعادة الإرسال</a>';
+  } else {
+    resendEl.querySelector('.timer').innerHTML = `٠:<span class="latin">${String(secs).padStart(2,'0')}</span>`;
+  }
+}, 1000);
+</script>
+
+</body>
+</html>

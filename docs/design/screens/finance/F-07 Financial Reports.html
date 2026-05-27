@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — التقارير المالية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --fin-50: #ECFDF5; --fin-100: #D1FAE5; --fin-200: #A7F3D0; --fin-300: #6EE7B7;
+  --fin-500: #10B981; --fin-600: #059669; --fin-700: #047857; --fin-800: #065F46; --fin-900: #064E3B;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-focus: 0 0 0 3px rgba(16,185,129,.22);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: linear-gradient(135deg, var(--fin-50), white); border: 1px solid var(--fin-100); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--fin-700), var(--fin-900)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--fin-50); color: var(--fin-700); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--fin-700); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+.nav-item-badge.fin { background: var(--fin-700); color: white; }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--fin-50); color: var(--fin-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--fin-700); font-weight: 500; }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--fin-700); color: white; border: 1px solid var(--fin-700); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--fin-800); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--fin-200); color: var(--fin-700); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; }
+.btn-ghost:hover { background: var(--gray-100); }
+
+.page { padding: 22px 28px 56px; max-width: 1480px; margin: 0 auto; width: 100%; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; margin-bottom: 18px; border-bottom: 1px solid var(--gray-200); overflow-x: auto; }
+.tab { padding: 11px 16px; font-size: 13px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.tab:hover { color: var(--gray-900); }
+.tab.active { color: var(--fin-700); border-bottom-color: var(--fin-500); font-weight: 600; }
+.tab .pp { font-family: 'IBM Plex Sans', sans-serif; font-size: 10.5px; padding: 1px 6px; border-radius: var(--radius-full); background: var(--gray-200); color: var(--gray-600); font-weight: 600; }
+.tab.active .pp { background: var(--fin-100); color: var(--fin-700); }
+
+/* Year hero strip */
+.year-hero { background: linear-gradient(135deg, var(--fin-700), var(--fin-900)); color: white; border-radius: var(--radius-2xl); padding: 22px 26px; position: relative; overflow: hidden; margin-bottom: 18px; }
+.year-hero::after { content: ""; position: absolute; right: -50px; top: -60px; width: 240px; height: 240px; border-radius: 50%; background: rgba(255,255,255,.05); }
+.year-hero .yh-row { display: grid; grid-template-columns: 1fr auto; gap: 24px; position: relative; z-index: 1; align-items: center; }
+.year-hero .lbl { font-size: 11.5px; opacity: .85; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+.year-hero .ttl { font-size: 22px; font-weight: 600; margin-top: 4px; }
+.year-hero .ttl .yr { font-family: 'IBM Plex Sans', sans-serif; }
+.year-hero .ds { font-size: 13px; opacity: .85; margin-top: 6px; line-height: 1.55; max-width: 600px; }
+.year-hero .quick { display: flex; gap: 8px; }
+.year-hero .quick button { padding: 9px 14px; background: rgba(255,255,255,.14); color: white; border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-md); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.year-hero .quick button:hover { background: rgba(255,255,255,.22); }
+.year-hero .quick button.primary { background: white; color: var(--fin-700); border-color: white; }
+.year-hero .quick button.primary:hover { background: var(--snow-200); }
+
+.yh-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; position: relative; z-index: 1; }
+@media (max-width: 800px) { .yh-stats { grid-template-columns: repeat(2, 1fr); } }
+.yh-stat { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: var(--radius-md); padding: 11px 14px; }
+.yh-stat .l { font-size: 10.5px; opacity: .8; font-weight: 500; }
+.yh-stat .v { font-size: 18px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; line-height: 1.2; margin-top: 2px; }
+.yh-stat .v .u { font-size: 11px; opacity: .75; font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 3px; }
+
+/* Section heading */
+.section-h { display: flex; align-items: baseline; justify-content: space-between; margin: 24px 0 12px; flex-wrap: wrap; gap: 10px; }
+.section-h .t { font-size: 15px; font-weight: 600; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
+.section-h .t svg { width: 16px; height: 16px; color: var(--gray-500); }
+.section-h .t .count { font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; color: var(--gray-500); font-size: 12px; padding: 1px 7px; background: var(--gray-100); border-radius: var(--radius-full); }
+.section-h .all { font-size: 12.5px; color: var(--fin-700); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.section-h .all svg { width: 12px; height: 12px; }
+
+/* Statutory reports grid */
+.rep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.rep-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 0; overflow: hidden; transition: all var(--transition-fast); display: flex; flex-direction: column; position: relative; }
+.rep-card:hover { border-color: var(--fin-200); box-shadow: var(--shadow-sm); }
+.rep-stripe { position: absolute; top: 0; right: 0; left: 0; height: 3px; }
+.rep-stripe.rev { background: var(--fin-500); }
+.rep-stripe.exp { background: var(--info-500); }
+.rep-stripe.bal { background: var(--purple-700); }
+.rep-stripe.zak { background: var(--gold-700); }
+.rep-stripe.don { background: var(--rose-500); }
+.rep-stripe.aud { background: var(--gray-700); }
+.rep-stripe.tax { background: var(--teal-700); }
+.rep-stripe.cust { background: linear-gradient(90deg, var(--fin-500), var(--info-500)); }
+
+.rep-head { padding: 16px 18px 12px; display: flex; align-items: flex-start; gap: 12px; }
+.rep-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rep-icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
+.rep-icon.rev { background: var(--fin-50); color: var(--fin-700); }
+.rep-icon.exp { background: var(--info-50); color: var(--info-700); }
+.rep-icon.bal { background: var(--purple-50); color: var(--purple-700); }
+.rep-icon.zak { background: var(--gold-50); color: var(--gold-700); }
+.rep-icon.don { background: var(--rose-50); color: var(--rose-700); }
+.rep-icon.aud { background: var(--gray-100); color: var(--gray-700); }
+.rep-icon.tax { background: var(--teal-50); color: var(--teal-700); }
+.rep-info { flex: 1; min-width: 0; }
+.rep-info .nm { font-size: 14.5px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.rep-info .ds { font-size: 12px; color: var(--gray-500); margin-top: 4px; line-height: 1.55; }
+
+.rep-body { padding: 0 18px 14px; flex: 1; }
+.rep-flags { display: flex; gap: 5px; flex-wrap: wrap; }
+.flag { display: inline-flex; align-items: center; padding: 2px 8px; font-size: 10.5px; font-weight: 600; border-radius: var(--radius-full); font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.flag.req { background: var(--danger-50); color: var(--danger-600); border: 1px solid var(--danger-100); }
+.flag.sched { background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); }
+.flag.ann { background: var(--gold-50); color: var(--gold-700); border: 1px solid var(--gold-100); }
+.flag.qtr { background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); }
+.flag.mon { background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100); }
+
+.rep-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--gray-100); background: var(--gray-50); }
+.rep-foot .last { font-size: 11.5px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 5px; }
+.rep-foot .last svg { width: 12px; height: 12px; color: var(--gray-400); }
+.rep-foot .last strong { color: var(--gray-700); font-weight: 600; }
+.foot-btns { display: flex; gap: 6px; }
+.pdf-btn, .xls-btn { padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: var(--radius-md); border: 1px solid; }
+.pdf-btn { background: var(--rose-50); color: var(--rose-700); border-color: var(--rose-100); }
+.pdf-btn:hover { background: var(--rose-100); }
+.xls-btn { background: var(--fin-50); color: var(--fin-700); border-color: var(--fin-100); }
+.xls-btn:hover { background: var(--fin-100); }
+
+/* Featured (zakat) */
+.rep-card.featured { background: linear-gradient(180deg, var(--gold-50), white 50%); border-color: var(--gold-100); }
+.flag-feat { position: absolute; top: 10px; left: 10px; padding: 3px 8px; font-size: 10.5px; font-weight: 700; border-radius: var(--radius-full); background: var(--gold-700); color: white; display: inline-flex; align-items: center; gap: 4px; }
+.flag-feat svg { width: 10px; height: 10px; }
+
+/* Recent runs table */
+.runs-tbl-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.runs-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.runs-tbl thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 10px 14px; text-align: right; }
+.runs-tbl tbody td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+.runs-tbl tbody tr:last-child td { border-bottom: none; }
+.runs-tbl tbody tr:hover { background: var(--snow-200); cursor: pointer; }
+.rn-cell { display: flex; align-items: center; gap: 10px; }
+.rn-cell .ic { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'IBM Plex Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.rn-cell .ic.pdf { background: var(--rose-50); color: var(--rose-700); }
+.rn-cell .ic.xls { background: var(--fin-50); color: var(--fin-700); }
+.rn-cell .ic.csv { background: var(--info-50); color: var(--info-700); }
+.rn-cell .info .nm { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.rn-cell .info .meta { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+.by-cell { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-700); }
+.by-av { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-shrink: 0; }
+.by-av.c1 { background: var(--tranquil-200); color: var(--trust-700); }
+.by-av.c2 { background: var(--fin-50); color: var(--fin-700); }
+.by-av.c3 { background: var(--gray-200); color: var(--gray-700); }
+.size-cell { font-family: 'IBM Plex Sans', sans-serif; font-size: 11.5px; color: var(--gray-600); font-feature-settings: "tnum" 1; }
+.ts-cell { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: var(--gray-700); font-feature-settings: "tnum" 1; }
+.ts-cell .sub { font-size: 10.5px; color: var(--gray-500); margin-top: 1px; }
+.row-actions-r { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn-sm { width: 28px; height: 28px; border-radius: var(--radius-md); background: transparent; border: none; color: var(--gray-500); display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn-sm:hover { background: var(--gray-100); color: var(--gray-900); }
+
+/* Schedule rail */
+.schedule-card { background: linear-gradient(135deg, var(--info-50), white); border: 1px solid var(--info-100); border-radius: var(--radius-xl); padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-top: 20px; }
+.schedule-card .ic { width: 42px; height: 42px; border-radius: var(--radius-md); background: var(--info-100); color: var(--info-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.schedule-card .ic svg { width: 20px; height: 20px; }
+.schedule-card .text { flex: 1; min-width: 0; }
+.schedule-card .ttl { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.schedule-card .ds { font-size: 12.5px; color: var(--gray-600); margin-top: 4px; line-height: 1.55; }
+.schedule-card .ds strong { color: var(--gray-900); font-weight: 600; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>المالية</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير ماليّة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="F-01 Finance Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسيّة
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير المالية
+    </a>
+
+    <div class="nav-section">المدفوعات</div>
+    <a class="nav-item" href="F-02 Incoming Payments.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      المدفوعات الواردة
+      <span class="nav-item-badge fin"><span class="latin">82</span></span>
+    </a>
+    <a class="nav-item" href="F-03 Overdue Donors.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      المتأخّرون
+      <span class="nav-item-badge warn"><span class="latin">42</span></span>
+    </a>
+    <a class="nav-item" href="F-06 Bank Statement Import.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      استيراد كشف بنك
+    </a>
+
+    <div class="nav-section">التحويلات</div>
+    <a class="nav-item" href="F-04 Create Bank Transfer.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+      إنشاء تحويل
+    </a>
+    <a class="nav-item" href="F-05 Pending Transfers.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      التحويلات المعلّقة
+      <span class="nav-item-badge"><span class="latin">5</span></span>
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      المراجعات
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">خ.م</div>
+      <div class="user-info">
+        <div class="user-name">د. خالد المطيري</div>
+        <div class="user-role">مدير المالية</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>التقارير المالية</h2>
+        <p>التقارير القانونيّة والإداريّة لأوقاف سامح عبدالعزيز</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          مكتبة التقارير المحفوظة
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          تقرير مخصّص
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Year hero -->
+      <section class="year-hero">
+        <div class="yh-row">
+          <div>
+            <div class="lbl">السنة المالية الجارية</div>
+            <div class="ttl"><span class="yr"><span class="latin">1446</span> هـ</span> · المحرّم - ذو الحجّة</div>
+            <div class="ds">جميع التقارير المالية لهذا العام · ٧ أشهر من السنة المالية مضت · متبقّي ٧ شهور لإقفال السنة وتجهيز التقرير السنوي المُدقَّق.</div>
+          </div>
+          <div class="quick">
+            <button>
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="latin">1445</span>
+            </button>
+            <button class="primary">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              توليد إقفال شهري
+            </button>
+          </div>
+        </div>
+        <div class="yh-stats">
+          <div class="yh-stat"><div class="l">إجمالي الإيرادات</div><div class="v"><span class="latin">8.42</span><span class="u">م دك</span></div></div>
+          <div class="yh-stat"><div class="l">إجمالي المصاريف (تحويلات)</div><div class="v"><span class="latin">5.81</span><span class="u">م دك</span></div></div>
+          <div class="yh-stat"><div class="l">الزكوات المُستلَمة</div><div class="v"><span class="latin">1.96</span><span class="u">م دك</span></div></div>
+          <div class="yh-stat"><div class="l">الرصيد الجاري</div><div class="v"><span class="latin">2.84</span><span class="u">م دك</span></div></div>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <nav class="tabs">
+        <button class="tab active">التقارير الجاهزة <span class="pp"><span class="latin">8</span></span></button>
+        <button class="tab">تقاريري المحفوظة <span class="pp"><span class="latin">14</span></span></button>
+        <button class="tab">المُدقَّقة سنوياً <span class="pp"><span class="latin">3</span></span></button>
+        <button class="tab">مولّد التقارير</button>
+      </nav>
+
+      <!-- Statutory + standard reports -->
+      <div class="section-h">
+        <div class="t">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          التقارير القانونيّة <span class="count"><span class="latin">8</span></span>
+        </div>
+        <span style="font-size: 12.5px; color: var(--gray-500);">جاهزة للتوليد لأيّ فترة</span>
+      </div>
+
+      <section class="rep-grid">
+
+        <!-- Featured: Zakat -->
+        <article class="rep-card featured">
+          <span class="rep-stripe zak"></span>
+          <span class="flag-feat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            موسمي
+          </span>
+          <header class="rep-head">
+            <div class="rep-icon zak">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">تقرير الزكاة السنوي</div>
+              <div class="ds">تجميع كامل للزكوات وكيفيّة صرفها على الأيتام مع شهادات شرعيّة لكلّ متبرّع</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag ann">سنوي</span>
+              <span class="flag req">إلزامي شرعاً</span>
+              <span class="flag sched">١ محرّم</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              أُصدر <strong><span class="latin">١</span> محرّم <span class="latin">1446</span></strong>
+            </span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Revenue report -->
+        <article class="rep-card">
+          <span class="rep-stripe rev"></span>
+          <header class="rep-head">
+            <div class="rep-icon rev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">تقرير الإيرادات</div>
+              <div class="ds">جميع المدفوعات الواردة مصنّفة حسب القناة، الجنسيّة، طريقة الدفع، ونوع التبرّع</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag mon">شهري</span>
+              <span class="flag qtr">ربعي</span>
+              <span class="flag ann">سنوي</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> آخر تشغيل <strong>قبل ٣ أيّام</strong></span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Expenses -->
+        <article class="rep-card">
+          <span class="rep-stripe exp"></span>
+          <header class="rep-head">
+            <div class="rep-icon exp">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">تقرير المصاريف · التحويلات</div>
+              <div class="ds">جميع التحويلات للجهات الشريكة مفصّلة بالعملة الموحّدة + رسوم البنك + فروق الصرف</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag mon">شهري</span>
+              <span class="flag qtr">ربعي</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> آخر تشغيل <strong>قبل أسبوع</strong></span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Balance sheet -->
+        <article class="rep-card">
+          <span class="rep-stripe bal"></span>
+          <header class="rep-head">
+            <div class="rep-icon bal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l9 13 9-13"/><path d="M21 6H3"/><path d="M12 19V6"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">الميزانية العموميّة</div>
+              <div class="ds">الأصول، الخصوم، حقوق الواقفين كما هي في تاريخ محدّد</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag ann">سنوي</span>
+              <span class="flag req">إلزامي محاسبيّاً</span>
+              <span class="flag qtr">ربعي</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Q3 <strong>مُصدَّق</strong></span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Cash flow -->
+        <article class="rep-card">
+          <span class="rep-stripe rev"></span>
+          <header class="rep-head">
+            <div class="rep-icon rev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l5-5 5 5"/><path d="M7 7l5 5 5-5"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">التدفّق النقدي</div>
+              <div class="ds">حركة الداخل والخارج يومياً، أسبوعياً، شهرياً مع تحليل صافي التدفّق</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag mon">شهري</span>
+              <span class="flag qtr">ربعي</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> آخر تشغيل <strong>أمس</strong></span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Donor list -->
+        <article class="rep-card">
+          <span class="rep-stripe don"></span>
+          <header class="rep-head">
+            <div class="rep-icon don">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">قائمة الكفلاء التفصيلية</div>
+              <div class="ds">كلّ متبرّع · إجمالي مساهماته · مدّة كفالته · حالة دفعاته</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag mon">شهري</span>
+              <span class="flag ann">سنوي</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> آخر تشغيل <strong>قبل أسبوعين</strong></span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Audit log -->
+        <article class="rep-card">
+          <span class="rep-stripe aud"></span>
+          <header class="rep-head">
+            <div class="rep-icon aud">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">تقرير سجلّ التدقيق</div>
+              <div class="ds">عمليات حسّاسة (موافقات، تعديلات، حذف) موقّعة بتوقيع رقمي للمدقّق الخارجي</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag qtr">ربعي</span>
+              <span class="flag req">للمدقّق</span>
+            </div>
+          </div>
+          <footer class="rep-foot">
+            <span class="last"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> آخر تشغيل <strong>Q3 <span class="latin">1446</span></strong></span>
+            <div class="foot-btns">
+              <button class="pdf-btn">PDF</button>
+              <button class="xls-btn">Excel</button>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Custom builder -->
+        <article class="rep-card" style="background: linear-gradient(180deg, var(--snow-200), white 50%); border: 1.5px dashed var(--fin-300);">
+          <span class="rep-stripe cust"></span>
+          <header class="rep-head">
+            <div class="rep-icon" style="background: white; color: var(--fin-700); border: 1px dashed var(--fin-300);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="rep-info">
+              <div class="nm">تقرير مخصّص</div>
+              <div class="ds">ابني تقريراً بحقولك الخاصّة عبر مولّد السحب والإفلات</div>
+            </div>
+          </header>
+          <div class="rep-body">
+            <div class="rep-flags">
+              <span class="flag" style="background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100);">سحب وإفلات</span>
+              <span class="flag" style="background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100);">قابل للجدولة</span>
+            </div>
+          </div>
+          <footer class="rep-foot" style="background: white;">
+            <span class="last">١٤ تقريراً مخصّصاً محفوظاً</span>
+            <button class="btn-primary" style="padding: 5px 12px; font-size: 12px;">
+              ابدأ
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+      </section>
+
+      <!-- Recent runs -->
+      <div class="section-h">
+        <div class="t">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          آخر التشغيلات
+        </div>
+        <a class="all" href="#">عرض كلّ السجلّ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
+      </div>
+
+      <section class="runs-tbl-card">
+        <table class="runs-tbl">
+          <thead>
+            <tr>
+              <th>التقرير</th>
+              <th style="width: 180px;">الفترة</th>
+              <th style="width: 160px;">الموقِّع</th>
+              <th style="width: 100px;">الحجم</th>
+              <th style="width: 140px;">الوقت</th>
+              <th style="width: 100px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="rn-cell">
+                  <span class="ic pdf">PDF</span>
+                  <div class="info">
+                    <div class="nm">الميزانية العموميّة · Q3 <span class="latin">1446</span></div>
+                    <div class="meta">مُصدَّق · موقّع رقمياً</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 12px; color: var(--gray-700);">١ شعبان – ٣٠ شوّال <span class="latin">1446</span></span></td>
+              <td><span class="by-cell"><span class="by-av c1">س.ع</span> سامح ع.</span></td>
+              <td><span class="size-cell"><span class="latin">2.4</span> MB</span></td>
+              <td><span class="ts-cell">قبل ٣ ساعات<span class="sub" style="display:block;">٢٢ ذو القعدة · ١٤:٢٢</span></span></td>
+              <td><div class="row-actions-r"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="rn-cell">
+                  <span class="ic xls">XLSX</span>
+                  <div class="info">
+                    <div class="nm">تقرير الإيرادات · ذو القعدة</div>
+                    <div class="meta">شهري · ٢,٨٤٧ صفّاً</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 12px; color: var(--gray-700);">١ – ٢١ ذو القعدة <span class="latin">1446</span></span></td>
+              <td><span class="by-cell"><span class="by-av c2">خ.م</span> د. خالد</span></td>
+              <td><span class="size-cell"><span class="latin">412</span> KB</span></td>
+              <td><span class="ts-cell">قبل يومين<span class="sub" style="display:block;">٢٠ ذو القعدة</span></span></td>
+              <td><div class="row-actions-r"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="rn-cell">
+                  <span class="ic pdf">PDF</span>
+                  <div class="info">
+                    <div class="nm">سجلّ تدقيق · Q3</div>
+                    <div class="meta">للمدقّق الخارجي · موقّع</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 12px; color: var(--gray-700);">١ شعبان – ٣٠ شوّال</span></td>
+              <td><span class="by-cell"><span class="by-av c3">نظام</span> النظام</span></td>
+              <td><span class="size-cell"><span class="latin">8.2</span> MB</span></td>
+              <td><span class="ts-cell">قبل ٤ أيّام<span class="sub" style="display:block;">١٨ ذو القعدة</span></span></td>
+              <td><div class="row-actions-r"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="rn-cell">
+                  <span class="ic csv">CSV</span>
+                  <div class="info">
+                    <div class="nm">قائمة الكفلاء · شوّال</div>
+                    <div class="meta">٨٩٦ كفيلاً</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 12px; color: var(--gray-700);">شهر شوّال <span class="latin">1446</span></span></td>
+              <td><span class="by-cell"><span class="by-av c2">خ.م</span> د. خالد</span></td>
+              <td><span class="size-cell"><span class="latin">128</span> KB</span></td>
+              <td><span class="ts-cell">قبل أسبوع<span class="sub" style="display:block;">١٥ ذو القعدة</span></span></td>
+              <td><div class="row-actions-r"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="rn-cell">
+                  <span class="ic pdf">PDF</span>
+                  <div class="info">
+                    <div class="nm">تقرير الزكاة السنوي <span class="latin">1445</span></div>
+                    <div class="meta">شامل · ٣١٢ إيصالاً</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 12px; color: var(--gray-700);">السنة الكاملة <span class="latin">1445</span></span></td>
+              <td><span class="by-cell"><span class="by-av c1">س.ع</span> سامح ع.</span></td>
+              <td><span class="size-cell"><span class="latin">14.8</span> MB</span></td>
+              <td><span class="ts-cell">قبل شهر<span class="sub" style="display:block;">١ محرّم <span class="latin">1446</span></span></span></td>
+              <td><div class="row-actions-r"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="rn-cell">
+                  <span class="ic xls">XLSX</span>
+                  <div class="info">
+                    <div class="nm">التحويلات الصادرة · Q3</div>
+                    <div class="meta">١٢ تحويلاً · ٥ جهات</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-size: 12px; color: var(--gray-700);">شعبان – شوّال</span></td>
+              <td><span class="by-cell"><span class="by-av c2">خ.م</span> د. خالد</span></td>
+              <td><span class="size-cell"><span class="latin">220</span> KB</span></td>
+              <td><span class="ts-cell">قبل شهر<span class="sub" style="display:block;">٥ شوّال</span></span></td>
+              <td><div class="row-actions-r"><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg></button><button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Annual close banner -->
+      <div class="schedule-card">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="text">
+          <div class="ttl">الإقفال السنوي <span class="latin">1446</span></div>
+          <div class="ds">بعد <strong><span class="latin">7</span> أشهر</strong> يبدأ الإقفال — يمكنك الآن إعداد جدول التقارير المُدقَّقة وحجز موعد المدقّق الخارجي. <strong>كلّ تقارير الزكاة لـ <span class="latin">1446</span> ستُصدر تلقائياً في ١ محرّم <span class="latin">1447</span></strong>.</div>
+        </div>
+        <button class="btn-secondary" style="border-color: var(--info-100); color: var(--info-700);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+          خطّة الإقفال
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(o => o.classList.remove('active'));
+  t.classList.add('active');
+}));
+</script>
+
+</body>
+</html>

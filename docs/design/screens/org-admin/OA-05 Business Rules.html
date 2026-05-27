@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — قواعد العمل · إدارة المؤسسة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-500: #14B8A6; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* ───────────── App shell ───────────── */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-600), var(--trust-800)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); border-radius: var(--radius-full); font-weight: 600; }
+
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--purple-700); font-weight: 500; }
+
+/* ───────────── Main ───────────── */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.page { padding: 22px 28px 80px; max-width: 1280px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 240px 1fr; gap: 28px; }
+@media (max-width: 1100px) { .page { grid-template-columns: 1fr; } .page-toc { display: none; } }
+
+/* ───────────── TOC (sticky left in RTL) ───────────── */
+.page-toc { position: sticky; top: 80px; align-self: start; padding: 16px 0; max-height: calc(100vh - 100px); overflow-y: auto; }
+.page-toc h4 { font-size: 11px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 0 12px 8px; }
+.toc-list { display: flex; flex-direction: column; gap: 1px; }
+.toc-link { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; color: var(--gray-600); border-radius: var(--radius-md); border-inline-start: 2px solid transparent; transition: all var(--transition-fast); }
+.toc-link:hover { color: var(--gray-900); background: var(--gray-50); }
+.toc-link.active { color: var(--trust-600); background: var(--tranquil-100); border-inline-start-color: var(--trust-400); font-weight: 600; }
+.toc-link svg { width: 13px; height: 13px; color: var(--gray-400); flex-shrink: 0; }
+.toc-link.active svg { color: var(--trust-500); }
+.toc-link .changed { width: 6px; height: 6px; border-radius: 50%; background: var(--warning-500); margin-inline-start: auto; flex-shrink: 0; }
+
+/* ───────────── Content ───────────── */
+.content { min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+
+.rule-section { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; scroll-margin-top: 80px; }
+.section-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start; gap: 14px; }
+.section-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.section-icon.assign { background: var(--info-50); color: var(--info-700); }
+.section-icon.payment { background: var(--success-50); color: var(--success-700); }
+.section-icon.orphan { background: var(--teal-50); color: var(--teal-700); }
+.section-icon.report { background: var(--gold-50); color: var(--gold-700); }
+.section-icon.approval { background: var(--purple-50); color: var(--purple-700); }
+.section-icon.visibility { background: var(--rose-50); color: var(--rose-700); }
+.section-icon.custom { background: var(--gray-100); color: var(--gray-700); }
+.section-icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
+.section-meta { flex: 1; min-width: 0; }
+.section-meta h3 { font-size: 15.5px; font-weight: 600; color: var(--gray-900); }
+.section-meta p { font-size: 12.5px; color: var(--gray-500); margin-top: 3px; line-height: 1.55; max-width: 640px; }
+.section-flag { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); flex-shrink: 0; }
+.section-flag svg { width: 11px; height: 11px; }
+
+.section-body { padding: 8px 22px 22px; }
+
+/* Rule row */
+.rule-row { padding: 16px 0; border-bottom: 1px solid var(--gray-100); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 18px; }
+.rule-row:last-child { border-bottom: none; }
+.rule-row.changed { background: var(--warning-50); margin: 0 -22px; padding-inline-start: 22px; padding-inline-end: 22px; }
+.rule-row.changed::before {  }
+.rule-row .rt { min-width: 0; }
+.rule-row .rt-title { font-size: 13.5px; font-weight: 500; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.rule-row .rt-title .changed-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warning-500); }
+.rule-row .rt-title .pill { font-size: 10.5px; padding: 1px 6px; border-radius: var(--radius-full); background: var(--gray-100); color: var(--gray-700); font-weight: 600; }
+.rule-row .rt-title .pill.req { background: var(--danger-50); color: var(--danger-600); border: 1px solid var(--danger-100); }
+.rule-row .rt-desc { font-size: 12px; color: var(--gray-500); margin-top: 4px; line-height: 1.5; max-width: 560px; }
+.rule-row .rt-desc code { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: var(--gray-100); padding: 1px 5px; border-radius: 3px; color: var(--gray-700); }
+.rule-row .rt-desc .ar-was { font-size: 11.5px; color: var(--warning-700); margin-top: 4px; display: block; }
+.rule-row .rt-desc .ar-was .was { text-decoration: line-through; color: var(--gray-500); margin-inline-end: 6px; }
+
+.rule-row .rc { display: flex; align-items: center; gap: 8px; }
+
+/* Toggle */
+.toggle { width: 38px; height: 22px; background: var(--gray-300); border-radius: var(--radius-full); position: relative; cursor: pointer; transition: background var(--transition-fast); flex-shrink: 0; border: none; }
+.toggle::after { content: ""; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform var(--transition-fast); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.toggle.on { background: var(--success-500); }
+.toggle.on::after { transform: translateX(-16px); }
+.toggle:focus-visible { box-shadow: var(--shadow-focus); }
+
+/* Number stepper */
+.stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; overflow: hidden; }
+.stepper button { width: 28px; background: var(--gray-50); border: none; color: var(--gray-600); display: flex; align-items: center; justify-content: center; }
+.stepper button:hover { background: var(--gray-100); color: var(--gray-900); }
+.stepper .val { padding: 6px 10px; min-width: 50px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--gray-900); font-feature-settings: "tnum" 1; border-inline: 1px solid var(--gray-200); }
+.stepper-unit { font-size: 12px; color: var(--gray-500); margin-inline-start: 8px; }
+
+/* Select */
+.rule-select { padding: 7px 28px 7px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-size: 13px; color: var(--gray-900); min-width: 180px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A8590' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; appearance: none; }
+.rule-select:focus { outline: none; border-color: var(--sky-300); box-shadow: var(--shadow-focus); }
+
+/* Multi-select chip bar */
+.multi-select { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: var(--radius-md); flex-wrap: wrap; }
+.ms-btn { padding: 5px 10px; font-size: 12px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-radius: var(--radius-sm); }
+.ms-btn:hover { color: var(--gray-900); }
+.ms-btn.active { background: white; color: var(--trust-600); font-weight: 600; box-shadow: var(--shadow-xs); }
+
+/* Radio cards (small) */
+.choice-strip { display: flex; gap: 6px; }
+.choice { padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--gray-700); background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); }
+.choice:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.choice.active { border-color: var(--trust-400); background: var(--tranquil-100); color: var(--trust-700); font-weight: 600; }
+
+/* Sub-rules indented */
+.sub-rules { padding: 4px 24px 0; margin: 4px 0 0; border-inline-start: 2px solid var(--gray-100); display: none; }
+.sub-rules.show { display: block; }
+
+/* Rule preview (banner inside section) */
+.preview { margin: 12px 0 0; padding: 12px 14px; background: var(--info-50); border: 1px solid var(--info-100); border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; color: var(--info-700); line-height: 1.55; }
+.preview svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+.preview strong { font-weight: 600; }
+.preview code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; background: white; padding: 1px 6px; border-radius: 3px; color: var(--info-700); }
+
+/* Custom JSON editor */
+.json-editor { background: var(--gray-900); border-radius: var(--radius-md); overflow: hidden; }
+.json-toolbar { background: #232932; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+.json-toolbar .lab { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--gray-300); }
+.json-toolbar .status { font-size: 11px; color: var(--success-500); display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Sans', sans-serif; }
+.json-toolbar .status svg { width: 11px; height: 11px; }
+.json-toolbar .btns { display: flex; gap: 4px; }
+.json-toolbar button { background: #2D3540; color: #D2D8DF; border: 1px solid #3a4350; padding: 3px 9px; font-size: 11px; border-radius: 4px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; }
+.json-toolbar button:hover { background: #3a4350; color: white; }
+
+pre.json-code { margin: 0; padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.75; color: #E7EBEF; overflow-x: auto; direction: ltr; text-align: left; min-height: 180px; }
+.j-key { color: #88C9F1; }
+.j-str { color: #A8D586; }
+.j-num { color: #F6B370; }
+.j-bool { color: #C792EA; }
+.j-null { color: #999; }
+.j-comment { color: #6A7280; font-style: italic; }
+
+/* Floating save bar */
+.save-bar { position: fixed; bottom: 20px; right: 50%; transform: translateX(50%) translateY(100%); transition: transform 300ms ease, opacity 250ms ease; background: white; border: 1px solid var(--gray-200); box-shadow: 0 8px 24px rgba(11,30,51,.18); padding: 12px 14px; border-radius: var(--radius-xl); display: flex; align-items: center; gap: 14px; z-index: 50; min-width: 480px; max-width: 92vw; opacity: 0; pointer-events: none; }
+.save-bar.show { transform: translateX(50%) translateY(0); opacity: 1; pointer-events: auto; }
+.save-bar .summary { font-size: 13px; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
+.save-bar .summary .pill { background: var(--warning-100); color: var(--warning-700); padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); font-family: 'IBM Plex Sans', sans-serif; }
+.save-bar .actions { display: flex; gap: 8px; margin-inline-start: auto; }
+
+/* Sticky info */
+.info-banner { background: var(--tranquil-100); border: 1px solid var(--tranquil-200); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; font-size: 13px; color: var(--trust-700); line-height: 1.6; }
+.info-banner svg { width: 18px; height: 18px; color: var(--trust-500); flex-shrink: 0; margin-top: 2px; }
+.info-banner strong { font-weight: 600; }
+
+.last-edit { font-size: 11.5px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 5px; }
+.last-edit svg { width: 11px; height: 11px; }
+
+/* Icons */
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+.icon-md { width: 18px; height: 18px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>إدارة المؤسسة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير المؤسسة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="OA-01 Executive Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة التنفيذيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير الشاملة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18"/></svg>
+      شاشة الشفافيّة
+    </a>
+
+    <div class="nav-section">الإدارة</div>
+    <a class="nav-item" href="OA-02 Users Management.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      المستخدمون
+    </a>
+    <a class="nav-item" href="OA-03 Partner Organizations.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+      الجهات الشريكة
+      <span class="nav-item-badge muted"><span class="latin">12</span></span>
+    </a>
+    <a class="nav-item" href="OA-04 Marketing Channels.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/><circle cx="12" cy="14" r="2"/></svg>
+      قنوات التسويق
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      قواعد العمل
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      مركز الاعتمادات
+      <span class="nav-item-badge"><span class="latin">8</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      الإشعارات
+      <span class="nav-item-badge warn"><span class="latin">3</span></span>
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">س.ع</div>
+      <div class="user-info">
+        <div class="user-name">سامح عبدالعزيز</div>
+        <div class="user-role">مدير عام</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>قواعد العمل</h2>
+        <p>الإعدادات التي تتحكّم في كيفيّة عمل النظام داخل المؤسسة</p>
+      </div>
+      <div class="topbar-actions">
+        <span class="last-edit" style="margin-inline-end: 8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          آخر تعديل قبل <span class="latin">3</span> أيام بواسطة سامح
+        </span>
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          عرض السجلّ
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- TOC -->
+      <nav class="page-toc" aria-label="فهرس الأقسام">
+        <h4>الأقسام</h4>
+        <div class="toc-list">
+          <a class="toc-link active" href="#sec-assign">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/></svg>
+            تخصيص الأيتام
+            <span class="changed"></span>
+          </a>
+          <a class="toc-link" href="#sec-payment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            تأخّر الدفع
+          </a>
+          <a class="toc-link" href="#sec-orphan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg>
+            دورة حياة اليتيم
+            <span class="changed"></span>
+          </a>
+          <a class="toc-link" href="#sec-report">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            متطلّبات التقارير
+          </a>
+          <a class="toc-link" href="#sec-approval">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            قواعد الاعتماد
+          </a>
+          <a class="toc-link" href="#sec-visibility">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            رؤية ولي الأمر
+          </a>
+          <a class="toc-link" href="#sec-custom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            قواعد مخصّصة
+          </a>
+        </div>
+      </nav>
+
+      <!-- Content -->
+      <div class="content">
+
+        <div class="info-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <div>
+            تطبق هذه القواعد على المؤسسة بأكملها (<strong>أوقاف سامح عبدالعزيز</strong>). يمكن لكلّ جهة شريكة استثناءً محدوداً بإذن منك. أيّ تغيير يدخل حيّز التنفيذ فوراً بعد الحفظ ويُسجَّل في <strong>سجلّ التدقيق</strong>.
+          </div>
+        </div>
+
+        <!-- ─────────── 1. Marketing Assignment ─────────── -->
+        <section class="rule-section" id="sec-assign">
+          <header class="section-head">
+            <div class="section-icon assign">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/><polyline points="3 11 12 19 21 11" style="display:none"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>تخصيص الأيتام لقنوات التسويق</h3>
+              <p>كم من الوقت يبقى اليتيم محجوزاً لقناة تسويق قبل أن يعود للأيتام المتاحين، ومن يقرّر إعادته يدوياً.</p>
+            </div>
+            <span class="section-flag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              تعديل غير محفوظ
+            </span>
+          </header>
+          <div class="section-body">
+
+            <div class="rule-row changed">
+              <div class="rt">
+                <div class="rt-title">
+                  <span class="changed-dot"></span>
+                  مدّة التخصيص الافتراضيّة للقناة
+                </div>
+                <div class="rt-desc">
+                  المدّة القصوى لاحتفاظ القناة بيتيم محدّد قبل إعادته للأيتام المتاحين.
+                  <span class="ar-was"><span class="was">كان: <span class="latin">90</span> يوماً</span> الآن: <span class="latin">120</span> يوماً</span>
+                </div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button aria-label="نقص">−</button>
+                  <span class="val"><span class="latin">120</span></span>
+                  <button aria-label="زيادة">+</button>
+                </div>
+                <span class="stepper-unit">يوماً</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">
+                  تحذيرات اقتراب انتهاء المهلة
+                  <span class="pill">إشعارات</span>
+                </div>
+                <div class="rt-desc">عدد الأيّام قبل انتهاء المهلة عند إرسال تذكير لمسؤول القناة.</div>
+              </div>
+              <div class="rc">
+                <div class="choice-strip">
+                  <button class="choice">عند <span class="latin">14</span></button>
+                  <button class="choice active">عند <span class="latin">10</span></button>
+                  <button class="choice">عند <span class="latin">7</span></button>
+                  <button class="choice">عند <span class="latin">3</span></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إعادة تلقائيّة بعد انتهاء المهلة</div>
+                <div class="rt-desc">إن لم يُكفل اليتيم قبل انتهاء المدّة، يعود تلقائياً للأيتام المتاحين لكلّ القنوات. عند الإيقاف، يحتاج قراراً يدوياً من مدير المؤسسة.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true" aria-label="إعادة تلقائيّة"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">السماح بتخصيص يتيم لأكثر من قناة</div>
+                <div class="rt-desc">عند التفعيل، يمكن لقنوات متعدّدة تسويق نفس اليتيم في وقت واحد. يُنصح بإبقائها مغلقة لتفادي التضارب.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle" aria-pressed="false" aria-label="تخصيص متعدّد"></button>
+              </div>
+            </div>
+
+            <div class="preview">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 9 19 4 22 7 17 12"/><path d="M5 16l-2 2 4 4 2-2"/><line x1="9" y1="14" x2="14" y2="9"/></svg>
+              <div>
+                <strong>ملخّص بعد التغيير:</strong> سيكون لكلّ قناة <code><span class="latin">120</span> يوماً</code> للترويج لليتيم، مع تذكير عند <code><span class="latin">10</span> أيام متبقّية</code>، ثم إعادة تلقائيّة للمتاحين.
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─────────── 2. Payment Delays ─────────── -->
+        <section class="rule-section" id="sec-payment">
+          <header class="section-head">
+            <div class="section-icon payment">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>تأخّر دفعات الكفلاء</h3>
+              <p>متى يُعتبر الكفيل متأخّراً، ومتى تُعلَّق الكفالة تلقائياً، وكيفيّة تذكير المتأخّرين بلطف.</p>
+            </div>
+          </header>
+          <div class="section-body">
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">عتبة «متأخّر بسيط»</div>
+                <div class="rt-desc">عدد الأيّام بعد تاريخ الاستحقاق قبل تصنيف الكفيل كـ«متأخّر بسيط». يُرسَل تذكير ودّي فقط.</div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button>−</button><span class="val"><span class="latin">7</span></span><button>+</button>
+                </div>
+                <span class="stepper-unit">أيّام</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">عتبة «متأخّر متوسّط»</div>
+                <div class="rt-desc">يُرسَل تذكير ثانٍ مع عرض المساعدة في تحديث طريقة الدفع أو اقتراح تأجيل.</div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button>−</button><span class="val"><span class="latin">30</span></span><button>+</button>
+                </div>
+                <span class="stepper-unit">يوماً</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">
+                  عتبة التعليق التلقائي للكفالة
+                  <span class="pill req">حسّاس</span>
+                </div>
+                <div class="rt-desc">بعد هذه المدّة، يتحوّل اليتيم تلقائياً للحالة «بانتظار كفيل جديد». يبقى ملفّ الكفيل مفتوحاً لاستئناف الكفالة لاحقاً.</div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button>−</button><span class="val"><span class="latin">90</span></span><button>+</button>
+                </div>
+                <span class="stepper-unit">يوماً</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">قنوات تذكير المتأخّرين</div>
+                <div class="rt-desc">القنوات التي تُرسَل عبرها التذكيرات. يُفعَّل المتاح فقط لكلّ كفيل حسب تفضيلاته.</div>
+              </div>
+              <div class="rc">
+                <div class="multi-select">
+                  <button class="ms-btn active">بريد</button>
+                  <button class="ms-btn active">واتساب</button>
+                  <button class="ms-btn">SMS</button>
+                  <button class="ms-btn">مكالمة</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">السماح بتأجيل الدفع لمرّة واحدة</div>
+                <div class="rt-desc">يستطيع الكفيل تأجيل دفعة واحدة كلّ سنة بنقرة ذاتيّة دون موافقة المؤسسة، حدّ أقصى <strong><span class="latin">30</span> يوماً</strong>.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─────────── 3. Orphan Lifecycle ─────────── -->
+        <section class="rule-section" id="sec-orphan">
+          <header class="section-head">
+            <div class="section-icon orphan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>دورة حياة اليتيم</h3>
+              <p>سنّ التخرّج، الحالات الانتقاليّة، ومتى يصبح اليتيم بالغاً يدير حسابه بنفسه.</p>
+            </div>
+            <span class="section-flag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              تعديل غير محفوظ
+            </span>
+          </header>
+          <div class="section-body">
+
+            <div class="rule-row changed">
+              <div class="rt">
+                <div class="rt-title">
+                  <span class="changed-dot"></span>
+                  السنّ الأدنى لحساب اليتيم المستقلّ
+                </div>
+                <div class="rt-desc">
+                  السنّ الذي يستطيع فيه اليتيم تسجيل دخوله بنفسه ورؤية صفحته الخاصّة.
+                  <span class="ar-was"><span class="was">كان: <span class="latin">14</span> سنة</span> الآن: <span class="latin">12</span> سنة</span>
+                </div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button>−</button><span class="val"><span class="latin">12</span></span><button>+</button>
+                </div>
+                <span class="stepper-unit">سنة</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">سنّ التخرّج الافتراضي</div>
+                <div class="rt-desc">السنّ الذي ينتقل فيه اليتيم تلقائياً للحالة «متخرّج» وتنتهي كفالته. يمكن تمديده يدوياً لطلّاب الجامعة.</div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button>−</button><span class="val"><span class="latin">18</span></span><button>+</button>
+                </div>
+                <span class="stepper-unit">سنة</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">السماح بتمديد الكفالة لطلّاب الجامعة</div>
+                <div class="rt-desc">تمديد الكفالة حتّى سنّ <span class="latin">24</span> سنة عند تقديم إثبات تسجيل جامعي.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إشعار قبل التخرّج</div>
+                <div class="rt-desc">عدد الأشهر التي تُرسَل فيها إشعارات للكفيل وولي الأمر قبل تخرّج اليتيم لتنسيق التحويل.</div>
+              </div>
+              <div class="rc">
+                <div class="choice-strip">
+                  <button class="choice"><span class="latin">3</span> أشهر</button>
+                  <button class="choice active"><span class="latin">6</span> أشهر</button>
+                  <button class="choice"><span class="latin">9</span> أشهر</button>
+                  <button class="choice">سنة</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─────────── 4. Reports ─────────── -->
+        <section class="rule-section" id="sec-report">
+          <header class="section-head">
+            <div class="section-icon report">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>متطلّبات التقارير من أولياء الأمور</h3>
+              <p>وتيرة التقارير، الحقول الإلزاميّة، والتذكيرات.</p>
+            </div>
+          </header>
+          <div class="section-body">
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">وتيرة التقرير الإلزامي</div>
+                <div class="rt-desc">عدد مرّات رفع التقرير عن كلّ يتيم خلال السنة.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option>كلّ شهر</option>
+                  <option selected>كلّ شهرين</option>
+                  <option>كلّ ٣ أشهر</option>
+                  <option>كلّ ٦ أشهر</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إلزاميّة صورة مع التقرير</div>
+                <div class="rt-desc">عند التفعيل، لا يُقبَل التقرير إلّا بصورة واحدة على الأقل ضمن إعدادات الخصوصيّة المعتمدة.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">تذكير ولي الأمر بالتقرير المستحقّ</div>
+                <div class="rt-desc">عدد الأيّام قبل تاريخ الاستحقاق لإرسال التذكير الأوّل عبر واتساب.</div>
+              </div>
+              <div class="rc">
+                <div class="stepper">
+                  <button>−</button><span class="val"><span class="latin">5</span></span><button>+</button>
+                </div>
+                <span class="stepper-unit">أيّام قبل</span>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">قبول التسجيل الصوتي بدلاً من النص</div>
+                <div class="rt-desc">يسمح لولي الأمر بإرسال تسجيل صوتي يصل لـ<strong><span class="latin">60</span> ثانية</strong> بدلاً من كتابة الملخّص.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إخطار الكفيل تلقائياً بالتقرير المعتمد</div>
+                <div class="rt-desc">يُرسَل ملخّص التقرير للكفيل فور اعتماده من المؤسسة دون نقرة إضافيّة.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─────────── 5. Approval Rules ─────────── -->
+        <section class="rule-section" id="sec-approval">
+          <header class="section-head">
+            <div class="section-icon approval">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>قواعد الاعتماد</h3>
+              <p>تحديد ما إذا كانت العمليّات الحسّاسة تحتاج اعتماداً مفرداً (موظّف) أم مزدوجاً (موظّف + مدير).</p>
+            </div>
+          </header>
+          <div class="section-body">
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">اعتماد ملفّ يتيم جديد <span class="pill req">حسّاس</span></div>
+                <div class="rt-desc">من يعتمد ملفّ يتيم جديد بعد تسجيله من قِبَل الموظّف.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option>موظّف الجهة فقط</option>
+                  <option selected>موظّف + مدير الجهة</option>
+                  <option>موظّف + مدير الجهة + مدير المؤسسة</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">اعتماد التقارير الشهريّة</div>
+                <div class="rt-desc">من يراجع التقارير قبل إرسالها للكفلاء.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option selected>موظّف الجهة فقط</option>
+                  <option>موظّف + مدير الجهة</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">اعتماد الوسائط (صور/فيديو)</div>
+                <div class="rt-desc">يُكمَّل الاعتماد بعد فحص AI تلقائي + مراجعة بشريّة.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option>AI فقط</option>
+                  <option selected>AI + موظّف</option>
+                  <option>AI + موظّف + مدير</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">اعتماد التحويلات البنكيّة <span class="pill req">حسّاس</span></div>
+                <div class="rt-desc">من يعتمد التحويلات الشهريّة للجهات الشريكة قبل التنفيذ.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option>الموظّف المالي + مدير المالية</option>
+                  <option selected>الموظّف المالي + مدير المالية + مدير المؤسسة</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">رسائل الكفلاء لأولياء الأمور</div>
+                <div class="rt-desc">قبل وصول الرسالة لولي الأمر.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option>تلقائي بعد فحص AI</option>
+                  <option selected>AI + مراجعة موظّف</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─────────── 6. Guardian Visibility ─────────── -->
+        <section class="rule-section" id="sec-visibility">
+          <header class="section-head">
+            <div class="section-icon visibility">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>رؤية ولي الأمر داخل التطبيق</h3>
+              <p>ما الذي يستطيع ولي الأمر رؤيته في ملفّ اليتيم. القاعدة الذهبيّة: <strong>لا أرقام ماليّة، لا اسم متبرّع</strong>.</p>
+            </div>
+          </header>
+          <div class="section-body">
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">رؤية مبلغ الكفالة <span class="pill req">قاعدة ذهبيّة</span></div>
+                <div class="rt-desc">يجب أن يبقى مبلغ الكفالة مخفياً عن ولي الأمر دائماً. تعديل هذا الإعداد يحتاج تأكيداً من مدير المؤسسة + توقيع شرعي.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle" aria-pressed="false" disabled style="opacity:.6;"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إظهار اسم الكفيل لولي الأمر <span class="pill req">قاعدة ذهبيّة</span></div>
+                <div class="rt-desc">يظهر فقط «كفيل [اسم اليتيم]» — حتى لو أذِن الكفيل بإظهار اسمه، تحفظ الخصوصيّة على مستوى المنصّة.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle" aria-pressed="false" disabled style="opacity:.6;"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إظهار جنسيّة الكفيل أو بلده</div>
+                <div class="rt-desc">عند التفعيل، يستطيع ولي الأمر معرفة بلد الكفيل (دون اسمه) — مفيد للدعاء الموجَّه.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">إظهار «منذ متى يَكفل»</div>
+                <div class="rt-desc">يظهر «يكفل ابنكم منذ <span class="latin">٣</span> سنوات» دون تواريخ دقيقة.</div>
+              </div>
+              <div class="rc">
+                <button class="toggle on" aria-pressed="true"></button>
+              </div>
+            </div>
+
+            <div class="rule-row">
+              <div class="rt">
+                <div class="rt-title">مستوى تفصيل تقارير الكفيل المعروضة</div>
+                <div class="rt-desc">كم يَرى ولي الأمر من السجلّ السابق على نفس اليتيم.</div>
+              </div>
+              <div class="rc">
+                <select class="rule-select">
+                  <option>كلّ التقارير</option>
+                  <option selected>آخر <span class="latin">6</span> تقارير</option>
+                  <option>آخر تقرير فقط</option>
+                  <option>لا يُعرَض</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ─────────── 7. Custom Rules (JSON) ─────────── -->
+        <section class="rule-section" id="sec-custom">
+          <header class="section-head">
+            <div class="section-icon custom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div class="section-meta">
+              <h3>قواعد مخصّصة (محرّر متقدّم)</h3>
+              <p>قواعد إضافيّة بصيغة JSON لخصوصيّات لا تغطّيها الأقسام أعلاه. تَطبَّق على مستوى المؤسسة كلّها.</p>
+            </div>
+          </header>
+          <div class="section-body">
+
+            <div class="json-editor">
+              <div class="json-toolbar">
+                <span class="lab">business_rules.custom.json</span>
+                <span class="status">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  JSON صالح
+                </span>
+                <div class="btns">
+                  <button>تنسيق</button>
+                  <button>تحقّق</button>
+                  <button>وضع كامل الشاشة</button>
+                </div>
+              </div>
+              <pre class="json-code"><span class="j-comment">// قواعد إضافيّة على مستوى المؤسسة</span>
+{
+  <span class="j-key">"ramadan_period"</span>: {
+    <span class="j-key">"start_hijri"</span>: <span class="j-str">"1446-09-01"</span>,
+    <span class="j-key">"end_hijri"</span>: <span class="j-str">"1446-09-30"</span>,
+    <span class="j-key">"boost_orphan_visibility"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"allow_one_time_zakat_donations"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"zakat_calculator_visible"</span>: <span class="j-bool">true</span>
+  },
+  <span class="j-key">"emergency_orphan_priority"</span>: {
+    <span class="j-key">"enabled"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"max_days_visible"</span>: <span class="j-num">14</span>,
+    <span class="j-key">"sort_boost"</span>: <span class="j-num">100</span>
+  },
+  <span class="j-key">"sibling_grouping"</span>: {
+    <span class="j-key">"enabled"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"suggest_sibling_to_same_donor"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"max_suggestions_per_donor"</span>: <span class="j-num">2</span>
+  },
+  <span class="j-key">"new_donor_welcome"</span>: {
+    <span class="j-key">"send_voice_message_from_dg"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"send_arabic_dua_card"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"delay_hours"</span>: <span class="j-num">2</span>
+  },
+  <span class="j-key">"currency_overrides"</span>: {
+    <span class="j-key">"default"</span>: <span class="j-str">"KWD"</span>,
+    <span class="j-key">"display_local_for_orphan"</span>: <span class="j-bool">true</span>,
+    <span class="j-key">"fx_refresh_minutes"</span>: <span class="j-num">60</span>
+  }
+}</pre>
+            </div>
+
+            <div class="preview" style="margin-top: 14px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                التعديل على هذا القسم محصور على <strong>مدير المؤسسة</strong> فقط. يُحفَظ ملف JSON كاملاً عند الضغط على حفظ، ويمكن استرجاع إصدار سابق من <strong>سجلّ التدقيق</strong>.
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Floating save bar -->
+<div class="save-bar show" id="saveBar" role="status" aria-live="polite">
+  <div class="summary">
+    <span class="pill"><span class="latin">3</span> تغييرات</span>
+    تعديلات في «تخصيص الأيتام» و«دورة حياة اليتيم» — لم تُحفَظ بعد
+  </div>
+  <div class="actions">
+    <button class="btn-ghost" id="discardBtn">تجاهل</button>
+    <button class="btn-primary" id="saveBtn">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      حفظ التغييرات
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Toggle behavior
+  document.querySelectorAll('.toggle:not([disabled])').forEach(t => {
+    t.addEventListener('click', () => {
+      t.classList.toggle('on');
+      t.setAttribute('aria-pressed', t.classList.contains('on') ? 'true' : 'false');
+    });
+  });
+
+  // Multi-select
+  document.querySelectorAll('.multi-select .ms-btn').forEach(b => {
+    b.addEventListener('click', () => b.classList.toggle('active'));
+  });
+
+  // Choice strips (radio)
+  document.querySelectorAll('.choice-strip').forEach(group => {
+    group.querySelectorAll('.choice').forEach(c => {
+      c.addEventListener('click', () => {
+        group.querySelectorAll('.choice').forEach(o => o.classList.remove('active'));
+        c.classList.add('active');
+      });
+    });
+  });
+
+  // Stepper
+  document.querySelectorAll('.stepper').forEach(s => {
+    const valEl = s.querySelector('.val .latin');
+    const [minus, plus] = s.querySelectorAll('button');
+    function get() { return parseInt(valEl.textContent.replace(/[^\d-]/g, ''), 10) || 0; }
+    function set(v) { valEl.textContent = v; }
+    minus.addEventListener('click', () => set(Math.max(0, get() - 1)));
+    plus.addEventListener('click', () => set(get() + 1));
+  });
+
+  // TOC scroll-spy (simple intersection)
+  const links = document.querySelectorAll('.toc-link');
+  const sections = [...document.querySelectorAll('.rule-section')];
+  links.forEach(l => l.addEventListener('click', e => {
+    e.preventDefault();
+    const id = l.getAttribute('href').slice(1);
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    links.forEach(o => o.classList.remove('active'));
+    l.classList.add('active');
+  }));
+
+  // Save bar — discard
+  document.getElementById('discardBtn').addEventListener('click', () => {
+    document.getElementById('saveBar').classList.remove('show');
+  });
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    document.getElementById('saveBar').classList.remove('show');
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — إعدادات المؤسسة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-500: #14B8A6; --teal-700: #0F766E;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* App shell */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-600), var(--trust-800)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--purple-700); font-weight: 500; }
+
+/* Main */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+.btn-danger { padding: 8px 14px; background: white; color: var(--danger-600); border: 1px solid var(--danger-100); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-danger:hover { background: var(--danger-50); }
+
+.page { padding: 22px 28px 64px; max-width: 1280px; margin: 0 auto; width: 100%; }
+
+/* Settings tabs */
+.settings-tabs { display: flex; gap: 0; margin-bottom: 22px; border-bottom: 1px solid var(--gray-200); overflow-x: auto; }
+.s-tab { padding: 12px 16px; font-size: 13.5px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: color var(--transition-fast); }
+.s-tab:hover { color: var(--gray-900); }
+.s-tab.active { color: var(--trust-600); border-bottom-color: var(--trust-400); font-weight: 600; }
+.s-tab svg { width: 15px; height: 15px; color: var(--gray-400); }
+.s-tab.active svg { color: var(--trust-500); }
+
+/* Card */
+.card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); margin-bottom: 18px; overflow: hidden; }
+.card-head { padding: 16px 22px 12px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.card-head h3 { font-size: 14.5px; font-weight: 600; color: var(--gray-900); }
+.card-head p { font-size: 12.5px; color: var(--gray-500); margin-top: 4px; line-height: 1.55; max-width: 600px; }
+.card-body { padding: 18px 22px 20px; }
+
+/* Form grid */
+.form-grid { display: grid; grid-template-columns: 200px 1fr; gap: 18px 24px; align-items: flex-start; }
+@media (max-width: 720px) { .form-grid { grid-template-columns: 1fr; gap: 8px 12px; } }
+.form-label-r { font-size: 13px; font-weight: 500; color: var(--gray-700); padding-top: 8px; }
+.form-label-r .opt { font-size: 11.5px; color: var(--gray-500); font-weight: 400; display: block; margin-top: 2px; }
+.form-control { display: flex; flex-direction: column; gap: 4px; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-size: 13.5px; color: var(--gray-900); font-family: inherit; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--sky-300); box-shadow: var(--shadow-focus); }
+.form-input[readonly] { background: var(--gray-50); color: var(--gray-600); }
+.form-textarea { resize: vertical; min-height: 70px; line-height: 1.55; }
+.form-hint { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Brand block */
+.brand-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 720px) { .brand-row { grid-template-columns: 1fr; } }
+
+.logo-uploader { display: flex; align-items: center; gap: 14px; padding: 14px; border: 1.5px dashed var(--gray-300); border-radius: var(--radius-lg); background: var(--gray-50); }
+.logo-preview { width: 64px; height: 64px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--trust-500), var(--trust-700)); color: white; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; flex-shrink: 0; }
+.logo-info { flex: 1; min-width: 0; }
+.logo-info .nm { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.logo-info .sub { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+.logo-info .btns { margin-top: 10px; display: flex; gap: 6px; }
+
+/* Color swatches */
+.color-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.swatch-card { width: 80px; padding: 8px 8px 10px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; text-align: center; cursor: pointer; transition: all var(--transition-fast); }
+.swatch-card:hover { border-color: var(--sky-300); }
+.swatch-card.selected { border-color: var(--trust-400); box-shadow: 0 0 0 2px var(--tranquil-200); }
+.swatch-card .sw { height: 36px; border-radius: var(--radius-sm); margin-bottom: 6px; }
+.swatch-card .sn { font-size: 11px; color: var(--gray-700); font-weight: 600; }
+.swatch-card .sh { font-size: 9.5px; color: var(--gray-500); font-family: 'IBM Plex Mono', monospace; margin-top: 1px; }
+
+/* Integration tile */
+.integration-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.integ-card { padding: 14px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); background: white; display: flex; flex-direction: column; gap: 10px; }
+.integ-card:hover { border-color: var(--sky-300); }
+.integ-head { display: flex; align-items: center; gap: 10px; }
+.integ-logo { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.integ-logo.f { background: #0E72B5; color: white; }
+.integ-logo.wa { background: #25D366; color: white; }
+.integ-logo.em { background: var(--info-50); color: var(--info-700); }
+.integ-logo.sms { background: var(--warning-100); color: var(--warning-700); }
+.integ-logo.s3 { background: #FF9900; color: white; }
+.integ-logo.an { background: var(--gray-900); color: white; }
+.integ-logo svg { width: 18px; height: 18px; stroke-width: 1.8; }
+.integ-info { flex: 1; min-width: 0; }
+.integ-info .nm { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.integ-info .sub { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+.integ-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); }
+.integ-status.live { background: var(--success-50); color: var(--success-700); }
+.integ-status.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--success-500); }
+.integ-status.off { background: var(--gray-100); color: var(--gray-600); }
+.integ-status.warn { background: var(--warning-50); color: var(--warning-700); }
+.integ-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--gray-100); font-size: 11.5px; color: var(--gray-500); }
+.integ-meta a { color: var(--trust-500); font-weight: 600; font-size: 12px; }
+.integ-meta a:hover { color: var(--trust-700); }
+
+/* Webhooks table */
+.tbl-wrap { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--gray-200); }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 720px; }
+table.tbl thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 9px 14px; text-align: right; }
+table.tbl tbody td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+table.tbl tbody tr:last-child td { border-bottom: none; }
+table.tbl tbody tr:hover { background: var(--snow-200); }
+.wh-url { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--gray-700); }
+.wh-pill { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; font-size: 10.5px; font-weight: 600; border-radius: var(--radius-full); background: var(--tranquil-100); color: var(--trust-600); font-family: 'IBM Plex Sans', sans-serif; }
+.wh-pill + .wh-pill { margin-inline-start: 4px; }
+.wh-status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); }
+.wh-status.healthy { background: var(--success-50); color: var(--success-700); }
+.wh-status.healthy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--success-500); }
+.wh-status.failing { background: var(--danger-50); color: var(--danger-600); }
+.wh-status.failing::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--danger-500); }
+.tbl-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.tbl-icon-btn { width: 28px; height: 28px; border-radius: var(--radius-md); background: transparent; border: none; color: var(--gray-500); display: inline-flex; align-items: center; justify-content: center; }
+.tbl-icon-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+.tbl-icon-btn.danger:hover { background: var(--danger-50); color: var(--danger-600); }
+
+/* API key */
+.key-list { display: flex; flex-direction: column; gap: 10px; }
+.key-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); background: white; }
+.key-icon { width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--gray-100); color: var(--gray-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.key-info { flex: 1; min-width: 0; }
+.key-info .nm { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.key-info .meta { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+.key-secret { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--gray-800); background: var(--gray-50); padding: 6px 10px; border-radius: var(--radius-md); border: 1px dashed var(--gray-200); }
+.key-actions { display: flex; gap: 6px; }
+
+.scope-chip { display: inline-flex; align-items: center; padding: 1px 7px; font-size: 10.5px; font-weight: 600; border-radius: var(--radius-full); background: var(--info-50); color: var(--info-700); font-family: 'IBM Plex Sans', sans-serif; margin-inline-start: 6px; }
+
+/* Danger zone */
+.danger-zone { border: 1px solid var(--danger-100); border-radius: var(--radius-xl); background: var(--danger-50); }
+.danger-zone .card-head { background: var(--danger-50); border-bottom-color: var(--danger-100); }
+.danger-zone .card-head h3 { color: var(--danger-700); }
+.danger-action { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--danger-100); }
+.danger-action:last-child { border-bottom: none; }
+.danger-action .da-text .nm { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.danger-action .da-text .sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; max-width: 540px; line-height: 1.5; }
+
+/* Toggle */
+.toggle { width: 38px; height: 22px; background: var(--gray-300); border-radius: var(--radius-full); position: relative; cursor: pointer; border: none; flex-shrink: 0; transition: background var(--transition-fast); }
+.toggle::after { content: ""; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform var(--transition-fast); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.toggle.on { background: var(--success-500); }
+.toggle.on::after { transform: translateX(-16px); }
+
+/* Save bar at bottom of cards */
+.card-foot { background: var(--gray-50); padding: 12px 22px; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+.card-foot .last-saved { margin-inline-end: auto; font-size: 11.5px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 5px; }
+.card-foot .last-saved svg { width: 11px; height: 11px; color: var(--success-500); }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+.icon-md { width: 18px; height: 18px; }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>إدارة المؤسسة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير المؤسسة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="OA-01 Executive Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة التنفيذيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير الشاملة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18"/></svg>
+      شاشة الشفافيّة
+    </a>
+
+    <div class="nav-section">الإدارة</div>
+    <a class="nav-item" href="OA-02 Users Management.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      المستخدمون
+    </a>
+    <a class="nav-item" href="OA-03 Partner Organizations.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+      الجهات الشريكة
+      <span class="nav-item-badge muted"><span class="latin">12</span></span>
+    </a>
+    <a class="nav-item" href="OA-04 Marketing Channels.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/><circle cx="12" cy="14" r="2"/></svg>
+      قنوات التسويق
+    </a>
+    <a class="nav-item" href="OA-05 Business Rules.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51"/></svg>
+      قواعد العمل
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      إعدادات المؤسسة
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      مركز الاعتمادات
+      <span class="nav-item-badge"><span class="latin">8</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      الإشعارات
+      <span class="nav-item-badge warn"><span class="latin">3</span></span>
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">س.ع</div>
+      <div class="user-info">
+        <div class="user-name">سامح عبدالعزيز</div>
+        <div class="user-role">مدير عام</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>إعدادات المؤسسة</h2>
+        <p>هوية المؤسسة، الإعدادات الإقليميّة، التكاملات، وأدوات المطوّر</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          تصدير الإعدادات
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <nav class="settings-tabs" role="tablist" aria-label="أقسام الإعدادات">
+        <button class="s-tab active" role="tab" data-tab="general">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/></svg>
+          عام
+        </button>
+        <button class="s-tab" role="tab" data-tab="regional">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          إقليمي ولغات
+        </button>
+        <button class="s-tab" role="tab" data-tab="integrations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          التكاملات
+        </button>
+        <button class="s-tab" role="tab" data-tab="webhooks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Webhooks
+        </button>
+        <button class="s-tab" role="tab" data-tab="api">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          مفاتيح API
+        </button>
+        <button class="s-tab" role="tab" data-tab="danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          منطقة الخطر
+        </button>
+      </nav>
+
+      <!-- ─────────── General Tab ─────────── -->
+      <div class="tab-pane active" data-pane="general">
+
+        <section class="card">
+          <header class="card-head">
+            <div>
+              <h3>هويّة المؤسسة</h3>
+              <p>المعلومات الأساسيّة التي تظهر للجهات الشريكة والكفلاء في كلّ الصفحات والإيصالات والتقارير.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <div class="form-grid">
+              <label class="form-label-r">الاسم الرسمي</label>
+              <div class="form-control">
+                <input class="form-input" value="أوقاف سامح عبدالعزيز">
+                <div class="form-row-2" style="margin-top: 10px;">
+                  <input class="form-input latin" value="Sameh Abdulaziz Endowments" dir="ltr">
+                  <input class="form-input" placeholder="اسم مختصر (للعناوين)" value="رفقاء — أوقاف سامح">
+                </div>
+                <div class="form-hint">الاسم بالعربيّة والإنجليزيّة معاً يستخدمه النظام في الإيصالات الرسميّة</div>
+              </div>
+
+              <label class="form-label-r">الشعار <span class="opt">PNG/SVG · حدّ أقصى 2 ميجا</span></label>
+              <div class="form-control">
+                <div class="logo-uploader">
+                  <div class="logo-preview">و</div>
+                  <div class="logo-info">
+                    <div class="nm">logo-rufaqaa-v2.svg</div>
+                    <div class="sub"><span class="latin">220 × 220</span> px · 14 كيلوبايت · رُفع في <span class="latin">12 شعبان 1446</span></div>
+                    <div class="btns">
+                      <button class="btn-secondary" style="padding: 6px 10px; font-size: 12px;">استبدال</button>
+                      <button class="btn-ghost" style="color: var(--danger-600);">حذف</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <label class="form-label-r">لون الهويّة الأساسي</label>
+              <div class="form-control">
+                <div class="color-row">
+                  <div class="swatch-card selected">
+                    <div class="sw" style="background: var(--trust-400);"></div>
+                    <div class="sn">ثقة</div>
+                    <div class="sh">#769FCD</div>
+                  </div>
+                  <div class="swatch-card">
+                    <div class="sw" style="background: var(--teal-500);"></div>
+                    <div class="sn">طمأنينة</div>
+                    <div class="sh">#14B8A6</div>
+                  </div>
+                  <div class="swatch-card">
+                    <div class="sw" style="background: var(--gold-700);"></div>
+                    <div class="sn">سكينة</div>
+                    <div class="sh">#855E08</div>
+                  </div>
+                  <div class="swatch-card">
+                    <div class="sw" style="background: var(--purple-700);"></div>
+                    <div class="sn">وقار</div>
+                    <div class="sh">#6D28D9</div>
+                  </div>
+                  <button class="btn-ghost" style="border: 1px dashed var(--gray-300); padding: 8px 10px;">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    لون مخصّص
+                  </button>
+                </div>
+                <div class="form-hint">يُستخدم في الأزرار الرئيسيّة والروابط ورؤوس البريد</div>
+              </div>
+
+              <label class="form-label-r">الشعار النصّي <span class="opt">يظهر تحت اللوغو</span></label>
+              <div class="form-control">
+                <input class="form-input" value="كافل اليتيم.. رفيق النبي ﷺ">
+                <div class="form-hint">جملة قصيرة تعكس روح المؤسسة — مأخوذة من الحديث الشريف</div>
+              </div>
+
+              <label class="form-label-r">بيانات التواصل الرسميّة</label>
+              <div class="form-control">
+                <div class="form-row-2">
+                  <input class="form-input latin" value="info@rufaqaa.app" dir="ltr">
+                  <input class="form-input mono" value="+965 2245 6700" dir="ltr">
+                </div>
+                <div class="form-row-2" style="margin-top: 8px;">
+                  <input class="form-input latin" placeholder="رابط الموقع" value="https://rufaqaa.app" dir="ltr">
+                  <input class="form-input" placeholder="عنوان المقر" value="مدينة الكويت — حي الحدائق">
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="card-foot">
+            <span class="last-saved">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              حُفظ قبل دقيقتين
+            </span>
+            <button class="btn-ghost">تراجع</button>
+            <button class="btn-primary">حفظ التغييرات</button>
+          </footer>
+        </section>
+
+        <section class="card">
+          <header class="card-head">
+            <div>
+              <h3>عن المؤسسة</h3>
+              <p>وصف يظهر في صفحة «من نحن» العامّة وعلى التقارير السنويّة.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <div class="form-grid">
+              <label class="form-label-r">نبذة عربيّة</label>
+              <div class="form-control">
+                <textarea class="form-textarea" rows="4">منصّة عالميّة مفتوحة المصدر لإدارة كفالة الأيتام، وقف إلكتروني أحد أوقاف سامح عبدالعزيز. تربط بين الكفلاء والجمعيات الشريكة وأولياء أمور الأيتام عبر تقنية متطوّرة تحفظ الكرامة وتضمن الشفافيّة.</textarea>
+                <div class="form-hint"><span class="latin">256</span> / <span class="latin">600</span> حرفاً</div>
+              </div>
+              <label class="form-label-r">نبذة إنجليزيّة</label>
+              <div class="form-control">
+                <textarea class="form-textarea latin" rows="4" dir="ltr">A global open-source platform for orphan sponsorship management — a digital endowment that connects sponsors with partner charities and guardians through technology that preserves dignity and ensures transparency.</textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ─────────── Regional Tab ─────────── -->
+      <div class="tab-pane" data-pane="regional">
+
+        <section class="card">
+          <header class="card-head">
+            <div>
+              <h3>اللغات والمنطقة الزمنيّة</h3>
+              <p>تضبط هذه الإعدادات سلوك النظام الافتراضي. يمكن لكلّ مستخدم تخصيص تفضيلاته من إعداداته الشخصيّة.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <div class="form-grid">
+              <label class="form-label-r">اللغة الافتراضيّة</label>
+              <div class="form-control">
+                <select class="form-select">
+                  <option selected>العربيّة — العربيّة الفصحى</option>
+                  <option>الإنجليزيّة — English</option>
+                  <option>أردو — اردو</option>
+                </select>
+                <div class="form-hint">اللغة التي يفتح بها التطبيق للزوّار الجدد قبل تسجيل الدخول</div>
+              </div>
+
+              <label class="form-label-r">اللغات المدعومة</label>
+              <div class="form-control" style="display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap;">
+                <span class="wh-pill" style="font-size: 12px; padding: 4px 10px;">العربيّة <button style="background:none;border:none;color:inherit;margin-inline-start:4px;cursor:pointer;">×</button></span>
+                <span class="wh-pill" style="font-size: 12px; padding: 4px 10px;">English <button style="background:none;border:none;color:inherit;margin-inline-start:4px;cursor:pointer;">×</button></span>
+                <button class="btn-ghost" style="border: 1px dashed var(--gray-300); padding: 4px 10px;">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  إضافة لغة
+                </button>
+              </div>
+
+              <label class="form-label-r">المنطقة الزمنيّة</label>
+              <div class="form-control">
+                <select class="form-select">
+                  <option selected>توقيت الكويت (UTC+3)</option>
+                  <option>توقيت الرياض (UTC+3)</option>
+                  <option>توقيت القاهرة (UTC+2)</option>
+                  <option>توقيت دبي (UTC+4)</option>
+                </select>
+              </div>
+
+              <label class="form-label-r">تقويم العرض</label>
+              <div class="form-control" style="display: flex; gap: 8px;">
+                <button class="btn-secondary" style="background: var(--tranquil-100); border-color: var(--trust-400); color: var(--trust-700);">هجري — رئيسي</button>
+                <button class="btn-secondary">ميلادي — رئيسي</button>
+                <button class="btn-secondary">كلاهما</button>
+              </div>
+
+              <label class="form-label-r">العملة الافتراضيّة <span class="opt">للتقارير والإحصاءات</span></label>
+              <div class="form-control">
+                <select class="form-select">
+                  <option selected>دينار كويتي (KWD)</option>
+                  <option>ريال سعودي (SAR)</option>
+                  <option>درهم إماراتي (AED)</option>
+                  <option>دولار أمريكي (USD)</option>
+                </select>
+                <div class="form-hint">المتبرعون يرون أيضاً عملتهم المفضّلة في حسابهم — التحويل تلقائي حسب أسعار الصرف اليوميّة</div>
+              </div>
+
+              <label class="form-label-r">صيغة الأرقام</label>
+              <div class="form-control" style="display: flex; gap: 8px;">
+                <button class="btn-secondary" style="background: var(--tranquil-100); border-color: var(--trust-400); color: var(--trust-700);"><span class="latin">12,500.50</span></button>
+                <button class="btn-secondary">١٢٬٥٠٠٫٥٠</button>
+                <button class="btn-secondary"><span class="latin">12.500,50</span></button>
+              </div>
+
+              <label class="form-label-r">أول يوم في الأسبوع</label>
+              <div class="form-control" style="display: flex; gap: 8px;">
+                <button class="btn-secondary" style="background: var(--tranquil-100); border-color: var(--trust-400); color: var(--trust-700);">الأحد</button>
+                <button class="btn-secondary">السبت</button>
+                <button class="btn-secondary">الاثنين</button>
+              </div>
+            </div>
+          </div>
+          <footer class="card-foot">
+            <button class="btn-ghost">تراجع</button>
+            <button class="btn-primary">حفظ التغييرات</button>
+          </footer>
+        </section>
+
+      </div>
+
+      <!-- ─────────── Integrations Tab ─────────── -->
+      <div class="tab-pane" data-pane="integrations">
+
+        <section class="card">
+          <header class="card-head">
+            <div>
+              <h3>التكاملات المتاحة</h3>
+              <p>اربط رفقاء بأدوات الدفع والمراسلة والتخزين. كلّ تكامل يحتفظ بإعداداته منفصلاً.</p>
+            </div>
+            <button class="btn-secondary">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 8 21 8 21 19 3 19 3 8z"/><polyline points="3 8 12 13 21 8"/></svg>
+              تصفّح كلّ التكاملات
+            </button>
+          </header>
+          <div class="card-body">
+            <div class="integration-list">
+
+              <div class="integ-card">
+                <div class="integ-head">
+                  <div class="integ-logo f">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  </div>
+                  <div class="integ-info">
+                    <div class="nm">MyFatoorah</div>
+                    <div class="sub">بوّابة الدفع الإلكتروني</div>
+                  </div>
+                  <span class="integ-status live">متّصل</span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray-600); line-height: 1.55;">
+                  كلّ مدفوعات الكفلاء تمرّ عبر MyFatoorah — K-Net، فيزا، Apple Pay، STC Pay.
+                </div>
+                <div class="integ-meta">
+                  <span>منذ <span class="latin">8</span> أشهر</span>
+                  <a href="#">إدارة الإعدادات →</a>
+                </div>
+              </div>
+
+              <div class="integ-card">
+                <div class="integ-head">
+                  <div class="integ-logo wa">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6"/></svg>
+                  </div>
+                  <div class="integ-info">
+                    <div class="nm">WhatsApp Business</div>
+                    <div class="sub">تذكيرات ورسائل الكفلاء</div>
+                  </div>
+                  <span class="integ-status live">متّصل</span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray-600); line-height: 1.55;">
+                  <span class="latin">12,400</span> رسالة في آخر ٣٠ يوماً · معدّل التسليم <span class="latin">98.4</span>%
+                </div>
+                <div class="integ-meta">
+                  <span>API الرسمي</span>
+                  <a href="#">إدارة الإعدادات →</a>
+                </div>
+              </div>
+
+              <div class="integ-card">
+                <div class="integ-head">
+                  <div class="integ-logo em">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <div class="integ-info">
+                    <div class="nm">SendGrid</div>
+                    <div class="sub">البريد الإلكتروني الإجرائي</div>
+                  </div>
+                  <span class="integ-status live">متّصل</span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray-600); line-height: 1.55;">
+                  إيصالات + تذكيرات + نشرة شهريّة. النطاق الموثّق: <code style="background: var(--gray-100); padding: 1px 5px; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;">mail.rufaqaa.app</code>
+                </div>
+                <div class="integ-meta">
+                  <span>SPF · DKIM موثّقان</span>
+                  <a href="#">إدارة الإعدادات →</a>
+                </div>
+              </div>
+
+              <div class="integ-card">
+                <div class="integ-head">
+                  <div class="integ-logo sms">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                  <div class="integ-info">
+                    <div class="nm">Twilio SMS</div>
+                    <div class="sub">رسائل الـ SMS</div>
+                  </div>
+                  <span class="integ-status warn">حدّ شهري قريب</span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray-600); line-height: 1.55;">
+                  <span class="latin">8,200</span> / <span class="latin">10,000</span> رسالة هذا الشهر
+                </div>
+                <div class="integ-meta">
+                  <span>تجديد في <span class="latin">٢٨</span> ذو القعدة</span>
+                  <a href="#">رفع الباقة →</a>
+                </div>
+              </div>
+
+              <div class="integ-card">
+                <div class="integ-head">
+                  <div class="integ-logo s3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                  </div>
+                  <div class="integ-info">
+                    <div class="nm">AWS S3</div>
+                    <div class="sub">تخزين الصور والملفّات</div>
+                  </div>
+                  <span class="integ-status live">متّصل</span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray-600); line-height: 1.55;">
+                  <span class="latin">242</span> غيغابايت مستخدمة · CloudFront CDN مفعّل
+                </div>
+                <div class="integ-meta">
+                  <span>منطقة: me-south-1</span>
+                  <a href="#">إدارة الإعدادات →</a>
+                </div>
+              </div>
+
+              <div class="integ-card">
+                <div class="integ-head">
+                  <div class="integ-logo an">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                  </div>
+                  <div class="integ-info">
+                    <div class="nm">Anthropic — Claude</div>
+                    <div class="sub">مراجعة AI للوسائط</div>
+                  </div>
+                  <span class="integ-status live">متّصل</span>
+                </div>
+                <div style="font-size: 12px; color: var(--gray-600); line-height: 1.55;">
+                  مراجعة الصور والتقارير ورسائل المتبرعين قبل النشر — <span class="latin">99.2</span>% دقّة
+                </div>
+                <div class="integ-meta">
+                  <span>Sonnet 4</span>
+                  <a href="#">إدارة الإعدادات →</a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ─────────── Webhooks Tab ─────────── -->
+      <div class="tab-pane" data-pane="webhooks">
+
+        <section class="card">
+          <header class="card-head">
+            <div>
+              <h3>Webhooks</h3>
+              <p>روابط تُستدعى تلقائياً عند وقوع أحداث في رفقاء. تُسلَّم كـ POST مع توقيع HMAC للتحقّق من المصدر.</p>
+            </div>
+            <button class="btn-primary">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              إضافة Webhook
+            </button>
+          </header>
+          <div class="card-body" style="padding: 0;">
+            <div class="tbl-wrap" style="border: none; border-radius: 0;">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>الرابط</th>
+                    <th>الأحداث</th>
+                    <th>الحالة</th>
+                    <th>آخر استدعاء</th>
+                    <th style="text-align: left; padding-inline-end: 22px;"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <span class="wh-url">https://crm.najat.org.kw/rufaqaa/webhook</span>
+                      <div style="font-size: 11px; color: var(--gray-500); margin-top: 3px;">CRM جمعية النجاة</div>
+                    </td>
+                    <td>
+                      <span class="wh-pill">sponsorship.created</span>
+                      <span class="wh-pill">payment.succeeded</span>
+                      <span class="wh-pill">+<span class="latin">3</span></span>
+                    </td>
+                    <td><span class="wh-status healthy">سليم</span></td>
+                    <td><span class="latin" style="font-family: 'IBM Plex Sans', sans-serif; color: var(--gray-700);">قبل 4 د</span></td>
+                    <td>
+                      <div class="tbl-actions">
+                        <button class="tbl-icon-btn" aria-label="عرض">
+                          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <button class="tbl-icon-btn" aria-label="إعادة المحاولة">
+                          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        </button>
+                        <button class="tbl-icon-btn danger" aria-label="حذف">
+                          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span class="wh-url">https://orman.org/api/v2/sponsorships/sync</span>
+                      <div style="font-size: 11px; color: var(--gray-500); margin-top: 3px;">جمعية الأورمان — مزامنة</div>
+                    </td>
+                    <td>
+                      <span class="wh-pill">orphan.report.approved</span>
+                      <span class="wh-pill">media.approved</span>
+                    </td>
+                    <td><span class="wh-status healthy">سليم</span></td>
+                    <td><span class="latin" style="font-family: 'IBM Plex Sans', sans-serif; color: var(--gray-700);">قبل 22 د</span></td>
+                    <td>
+                      <div class="tbl-actions">
+                        <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                        <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/></svg></button>
+                        <button class="tbl-icon-btn danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span class="wh-url">https://hooks.zapier.com/hooks/catch/8421/k7xn4...</span>
+                      <div style="font-size: 11px; color: var(--gray-500); margin-top: 3px;">Zapier — Slack notifications</div>
+                    </td>
+                    <td>
+                      <span class="wh-pill">donor.signup</span>
+                      <span class="wh-pill">milestone.reached</span>
+                    </td>
+                    <td><span class="wh-status failing">٣ محاولات فاشلة</span></td>
+                    <td style="color: var(--danger-600);"><span class="latin" style="font-family: 'IBM Plex Sans', sans-serif; font-weight: 600;">قبل ساعتين</span></td>
+                    <td>
+                      <div class="tbl-actions">
+                        <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></button>
+                        <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/></svg></button>
+                        <button class="tbl-icon-btn danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span class="wh-url">https://internal.rufaqaa.app/analytics/events</span>
+                      <div style="font-size: 11px; color: var(--gray-500); margin-top: 3px;">مستودع بيانات داخلي</div>
+                    </td>
+                    <td>
+                      <span class="wh-pill">all events</span>
+                    </td>
+                    <td><span class="wh-status healthy">سليم</span></td>
+                    <td><span class="latin" style="font-family: 'IBM Plex Sans', sans-serif; color: var(--gray-700);">قبل ثانية</span></td>
+                    <td>
+                      <div class="tbl-actions">
+                        <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></button>
+                        <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/></svg></button>
+                        <button class="tbl-icon-btn danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/></svg></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ─────────── API Keys Tab ─────────── -->
+      <div class="tab-pane" data-pane="api">
+
+        <section class="card">
+          <header class="card-head">
+            <div>
+              <h3>مفاتيح API</h3>
+              <p>مفاتيح للوصول البرمجي. لا تشارك مفتاحاً سرّياً عبر بريد عادي — استخدم مدير كلمات المرور.</p>
+            </div>
+            <button class="btn-primary">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              إنشاء مفتاح
+            </button>
+          </header>
+          <div class="card-body">
+            <div class="key-list">
+
+              <div class="key-row">
+                <div class="key-icon">
+                  <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div class="key-info">
+                  <div class="nm">مفتاح إنتاج رئيسي
+                    <span class="scope-chip">read</span>
+                    <span class="scope-chip" style="background: var(--purple-50); color: var(--purple-700);">write</span>
+                  </div>
+                  <div class="meta">أُنشئ في ربيع الأوّل <span class="latin">1446</span> · آخر استخدام قبل ٣ دقائق · أنشأه سامح ع.</div>
+                </div>
+                <div class="key-secret">rfqa_live_•••••••••••••••••••••<span style="color: var(--gray-500);">a92F</span></div>
+                <div class="key-actions">
+                  <button class="tbl-icon-btn" aria-label="نسخ">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                  <button class="tbl-icon-btn" aria-label="عرض">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                  <button class="tbl-icon-btn danger" aria-label="إلغاء">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="key-row">
+                <div class="key-icon" style="background: var(--info-50); color: var(--info-700);">
+                  <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                </div>
+                <div class="key-info">
+                  <div class="nm">MCP Server — Claude
+                    <span class="scope-chip">read</span>
+                  </div>
+                  <div class="meta">للأتمتة عبر Claude · مقروء فقط · آخر استخدام قبل ١٢ دقيقة</div>
+                </div>
+                <div class="key-secret">rfqa_mcp_•••••••••••••••••••••<span style="color: var(--gray-500);">b14X</span></div>
+                <div class="key-actions">
+                  <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+                  <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></button>
+                  <button class="tbl-icon-btn danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
+                </div>
+              </div>
+
+              <div class="key-row">
+                <div class="key-icon" style="background: var(--warning-50); color: var(--warning-700);">
+                  <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div class="key-info">
+                  <div class="nm">مفتاح تطوير — الفريق الفنّي
+                    <span class="scope-chip">test only</span>
+                  </div>
+                  <div class="meta">للبيئة التجريبيّة · ينتهي في <span class="latin">15 ذو الحجّة 1446</span></div>
+                </div>
+                <div class="key-secret">rfqa_test_•••••••••••••••••••••<span style="color: var(--gray-500);">c44Z</span></div>
+                <div class="key-actions">
+                  <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+                  <button class="tbl-icon-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></button>
+                  <button class="tbl-icon-btn danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ─────────── Danger Zone Tab ─────────── -->
+      <div class="tab-pane" data-pane="danger">
+
+        <section class="card danger-zone">
+          <header class="card-head">
+            <div>
+              <h3>منطقة الخطر</h3>
+              <p>إجراءات لا يمكن التراجع عنها بسهولة. كلّ إجراء يحتاج تأكيداً مزدوجاً + تسجيلاً في سجلّ التدقيق.</p>
+            </div>
+          </header>
+          <div class="card-body">
+
+            <div class="danger-action">
+              <div class="da-text">
+                <div class="nm">تصدير كامل لبيانات المؤسسة</div>
+                <div class="sub">ملفّ JSON + CSV يحوي كلّ بيانات الأيتام والكفلاء والمعاملات. يستغرق إنشاؤه عدّة دقائق ويُرسَل إلى بريدك.</div>
+              </div>
+              <button class="btn-secondary">طلب تصدير</button>
+            </div>
+
+            <div class="danger-action">
+              <div class="da-text">
+                <div class="nm">تجميد المؤسسة مؤقّتاً</div>
+                <div class="sub">يوقف استقبال تبرّعات جديدة لكن يبقي التقارير والوسائط تعمل. مفيد أثناء عمليّات صيانة كبرى أو مراجعات قانونيّة.</div>
+              </div>
+              <button class="btn-secondary" style="color: var(--warning-700); border-color: var(--warning-100);">تجميد</button>
+            </div>
+
+            <div class="danger-action">
+              <div class="da-text">
+                <div class="nm">نقل المؤسسة إلى مالك جديد</div>
+                <div class="sub">نقل ملكيّة المؤسسة لمدير عام آخر. يحتاج توقيعاً من ولي الأمر الحالي + مدير المنصّة + توثيقاً قانونياً.</div>
+              </div>
+              <button class="btn-secondary" style="color: var(--warning-700); border-color: var(--warning-100);">بدء النقل</button>
+            </div>
+
+            <div class="danger-action">
+              <div class="da-text">
+                <div class="nm">حذف المؤسسة من رفقاء</div>
+                <div class="sub">سيُحفَظ نسخة قانونيّة للبيانات لمدّة <span class="latin">7</span> سنوات (متطلّب رقابي) ثم تُتلَف. الإجراء غير قابل للتراجع.</div>
+              </div>
+              <button class="btn-danger">حذف نهائي</button>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  // Tab switching
+  const tabs = document.querySelectorAll('.s-tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(o => o.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      t.classList.add('active');
+      const k = t.getAttribute('data-tab');
+      document.querySelector(`[data-pane="${k}"]`).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Color swatches
+  document.querySelectorAll('.swatch-card').forEach(s => {
+    s.addEventListener('click', () => {
+      document.querySelectorAll('.swatch-card').forEach(o => o.classList.remove('selected'));
+      s.classList.add('selected');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

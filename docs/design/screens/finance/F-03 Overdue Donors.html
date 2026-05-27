@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — المتبرعون المتأخّرون · المالية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --fin-50: #ECFDF5; --fin-100: #D1FAE5; --fin-200: #A7F3D0; --fin-500: #10B981; --fin-600: #059669; --fin-700: #047857; --fin-800: #065F46; --fin-900: #064E3B;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626; --danger-700: #B91C1C;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-focus: 0 0 0 3px rgba(16,185,129,.22);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: linear-gradient(135deg, var(--fin-50), white); border: 1px solid var(--fin-100); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--fin-700), var(--fin-900)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--fin-50); color: var(--fin-700); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--fin-700); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+.nav-item-badge.fin { background: var(--fin-700); color: white; }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--fin-50); color: var(--fin-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--fin-700); font-weight: 500; }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--fin-700); color: white; border: 1px solid var(--fin-700); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--fin-800); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--fin-200); color: var(--fin-700); }
+.btn-warn { padding: 8px 14px; background: white; color: var(--warning-700); border: 1px solid var(--warning-100); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-warn:hover { background: var(--warning-50); }
+.btn-danger { padding: 8px 14px; background: white; color: var(--danger-600); border: 1px solid var(--danger-100); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-danger:hover { background: var(--danger-50); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.page { padding: 22px 28px 64px; max-width: 1580px; margin: 0 auto; width: 100%; }
+
+/* Tone reminder banner */
+.tone-banner { background: linear-gradient(135deg, var(--tranquil-100), white); border: 1px solid var(--sky-200); border-radius: var(--radius-xl); padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; font-size: 13px; color: var(--trust-700); line-height: 1.55; }
+.tone-banner .ic { width: 36px; height: 36px; border-radius: var(--radius-md); background: white; color: var(--trust-500); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tone-banner .ic svg { width: 18px; height: 18px; }
+.tone-banner strong { color: var(--trust-800); font-weight: 600; }
+
+/* Severity bands */
+.bands { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+@media (max-width: 1100px) { .bands { grid-template-columns: repeat(2, 1fr); } }
+.band { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 16px 18px; cursor: pointer; transition: all var(--transition-fast); display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+.band:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.band.active { box-shadow: 0 0 0 2px currentColor; }
+.band::before { content: ""; position: absolute; top: 0; right: 0; left: 0; height: 3px; background: currentColor; }
+.band.b1 { color: var(--info-700); border-color: var(--info-100); }
+.band.b2 { color: var(--warning-700); border-color: var(--warning-100); }
+.band.b3 { color: #C2410C; border-color: #FED7AA; }
+.band.b4 { color: var(--danger-700); border-color: var(--danger-100); }
+
+.band-head { display: flex; align-items: center; gap: 10px; }
+.band-icon { width: 36px; height: 36px; border-radius: var(--radius-md); background: currentColor; opacity: .12; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.band-icon-wrap { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+.band-icon-wrap::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: .12; border-radius: var(--radius-md); }
+.band-icon-wrap svg { width: 18px; height: 18px; stroke-width: 1.8; position: relative; z-index: 1; }
+.band .lab { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.band .sub { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.band .count { font-family: 'IBM Plex Sans', sans-serif; font-size: 28px; font-weight: 700; line-height: 1; color: var(--gray-900); font-feature-settings: "tnum" 1; }
+.band .count .small { font-size: 14px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 4px; }
+.band .amt { font-size: 12px; color: var(--gray-600); }
+.band .amt strong { color: currentColor; font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-weight: 700; }
+
+/* Toolbar */
+.toolbar { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.search-input { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); height: 36px; }
+.search-input:focus-within { border-color: var(--fin-200); background: white; box-shadow: var(--shadow-focus); }
+.search-input svg { color: var(--gray-400); }
+.search-input input { flex: 1; border: none; background: transparent; outline: none; font-size: 13px; color: var(--gray-900); }
+.filter-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700); }
+.filter-pill:hover { border-color: var(--fin-200); }
+.filter-pill svg { color: var(--gray-400); }
+
+/* Bulk bar */
+.bulk-bar { display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--fin-700); color: white; border-radius: var(--radius-lg); margin-bottom: 12px; font-size: 13px; }
+.bulk-bar.show { display: flex; }
+.bulk-bar .count-pill { background: rgba(255,255,255,.15); padding: 2px 10px; border-radius: var(--radius-full); font-weight: 600; }
+.bulk-bar .bulk-actions { display: flex; gap: 6px; }
+.bulk-bar .bulk-btn { background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.2); padding: 5px 12px; font-size: 12.5px; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 5px; }
+.bulk-bar .bulk-btn:hover { background: rgba(255,255,255,.18); }
+
+/* Table */
+.tbl-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.tbl-scroll { overflow-x: auto; }
+table.late { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 1200px; }
+table.late thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 10px 14px; text-align: right; }
+table.late thead th.num-h { text-align: left; padding-inline-end: 14px; }
+table.late tbody td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+table.late tbody tr:hover { background: var(--snow-200); }
+table.late tbody tr:last-child td { border-bottom: none; }
+table.late tbody tr.selected { background: var(--fin-50); }
+table.late tbody tr.b1 { border-inline-end: 3px solid var(--info-500); }
+table.late tbody tr.b2 { border-inline-end: 3px solid var(--warning-500); }
+table.late tbody tr.b3 { border-inline-end: 3px solid #F97316; }
+table.late tbody tr.b4 { border-inline-end: 3px solid var(--danger-500); background: var(--danger-50); }
+table.late tbody tr.b4:hover { background: #FBE3E3; }
+
+th.col-chk, td.col-chk { width: 44px; text-align: center; padding: 12px 0; }
+.check { width: 16px; height: 16px; border: 1.5px solid var(--gray-300); border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
+.check.on { background: var(--fin-700); border-color: var(--fin-700); }
+.check.on::after { content: ""; width: 8px; height: 5px; border: 2px solid white; border-top: none; border-right: none; transform: rotate(-45deg) translateY(-1px); }
+
+.donor { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.d-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11.5px; font-weight: 600; }
+.d-avatar.c1 { background: var(--tranquil-200); color: var(--trust-700); }
+.d-avatar.c2 { background: var(--purple-100); color: var(--purple-700); }
+.d-avatar.c3 { background: var(--gold-100); color: var(--gold-700); }
+.d-avatar.c4 { background: var(--fin-50); color: var(--fin-700); }
+.d-avatar.c5 { background: var(--rose-100); color: var(--rose-700); }
+.d-avatar.c6 { background: var(--teal-100); color: var(--teal-700); }
+.donor .info { min-width: 0; }
+.donor .info .nm { font-size: 13.5px; font-weight: 600; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.donor .info .meta { font-size: 11.5px; color: var(--gray-500); display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Sans', sans-serif; }
+.donor .info .meta .ar { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.donor .info .meta .flag { font-size: 12px; font-family: initial; }
+.donor .info .meta .dot { color: var(--gray-300); }
+
+/* Lateness badge */
+.late-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); white-space: nowrap; }
+.late-badge svg { width: 11px; height: 11px; }
+.late-badge.b1 { background: var(--info-50); color: var(--info-700); }
+.late-badge.b2 { background: var(--warning-50); color: var(--warning-700); }
+.late-badge.b3 { background: #FFEDD5; color: #C2410C; }
+.late-badge.b4 { background: var(--danger-50); color: var(--danger-700); }
+
+/* Reminder timeline */
+.rem-trail { display: flex; align-items: center; gap: 4px; }
+.rem-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--gray-100); border: 1.5px solid var(--gray-200); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rem-dot svg { width: 9px; height: 9px; color: var(--gray-400); }
+.rem-dot.done { background: var(--fin-100); border-color: var(--fin-200); }
+.rem-dot.done svg { color: var(--fin-700); }
+.rem-dot.skipped { background: var(--gray-200); border-color: var(--gray-300); }
+.rem-dot.next { background: white; border-color: var(--info-300); animation: pulse-r 1.8s ease-in-out infinite; }
+.rem-dot.next::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--info-500); }
+@keyframes pulse-r { 0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,.4); } 50% { box-shadow: 0 0 0 4px rgba(59,130,246,0); } }
+.rem-line { width: 12px; height: 1.5px; background: var(--gray-200); flex-shrink: 0; }
+.rem-line.done { background: var(--fin-300); }
+
+.amt-cell { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; text-align: left; direction: ltr; padding-inline-end: 14px; }
+.amt-cell .a { font-size: 13.5px; font-weight: 700; color: var(--gray-900); }
+.amt-cell .a .u { font-size: 10.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 3px; }
+.amt-cell .sub { font-size: 10.5px; color: var(--gray-500); margin-top: 2px; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
+.orph-cell { font-size: 12px; color: var(--gray-700); display: flex; align-items: center; gap: 6px; }
+.orph-cell .pill { font-family: 'IBM Plex Sans', sans-serif; padding: 1px 6px; background: var(--gray-100); border-radius: 3px; font-size: 11px; font-weight: 600; color: var(--gray-700); }
+
+.row-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+.action-btn-sm { padding: 5px 9px; font-size: 11.5px; font-weight: 600; border-radius: var(--radius-md); border: 1px solid; background: white; display: inline-flex; align-items: center; gap: 4px; }
+.action-btn-sm svg { width: 11px; height: 11px; stroke-width: 2.4; }
+.action-btn-sm.primary { color: var(--fin-700); border-color: var(--fin-100); }
+.action-btn-sm.primary:hover { background: var(--fin-50); }
+.action-btn-sm.warn { color: var(--warning-700); border-color: var(--warning-100); }
+.action-btn-sm.warn:hover { background: var(--warning-50); }
+.action-btn-sm.danger { color: var(--danger-600); border-color: var(--danger-100); }
+.action-btn-sm.danger:hover { background: var(--danger-50); }
+.icon-btn-sm { width: 26px; height: 26px; border-radius: var(--radius-md); background: transparent; border: none; color: var(--gray-500); display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn-sm:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.tbl-foot { padding: 12px 18px; border-top: 1px solid var(--gray-100); background: var(--gray-50); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--gray-600); }
+.tbl-foot .latin { color: var(--gray-800); font-weight: 600; }
+
+/* Reminder template modal */
+.scrim { position: fixed; inset: 0; background: rgba(11,30,51,.45); backdrop-filter: blur(2px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+.scrim.show { display: flex; }
+.modal { background: white; border-radius: var(--radius-xl); width: 600px; max-width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(11,30,51,.18); }
+.modal-head { padding: 16px 22px; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: flex-start; }
+.modal-head h3 { font-size: 16px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.modal-head h3 svg { color: var(--fin-500); }
+.modal-head p { font-size: 12.5px; color: var(--gray-500); margin-top: 3px; }
+.modal-close { width: 30px; height: 30px; background: transparent; border: none; color: var(--gray-500); border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--gray-100); }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+.modal-foot { padding: 14px 22px; background: var(--gray-50); border-top: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; }
+.channel-pills { display: flex; gap: 6px; }
+.channel-pill { padding: 7px 12px; background: white; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700); display: inline-flex; align-items: center; gap: 6px; }
+.channel-pill svg { width: 13px; height: 13px; }
+.channel-pill.selected { border-color: var(--fin-500); background: var(--fin-50); color: var(--fin-700); }
+
+.msg-preview { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-md); padding: 14px 16px; font-size: 13.5px; color: var(--gray-800); line-height: 1.7; }
+.msg-preview .arabic { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.msg-preview .var { background: var(--fin-100); color: var(--fin-700); padding: 0 4px; border-radius: 3px; font-weight: 600; }
+
+.tip-banner { background: var(--info-50); border: 1px solid var(--info-100); border-radius: var(--radius-md); padding: 10px 14px; font-size: 12px; color: var(--info-700); display: flex; align-items: flex-start; gap: 8px; line-height: 1.55; margin-top: 12px; }
+.tip-banner svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>المالية</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير ماليّة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="F-01 Finance Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير المالية
+    </a>
+
+    <div class="nav-section">المدفوعات</div>
+    <a class="nav-item" href="F-02 Incoming Payments.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      المدفوعات الواردة
+      <span class="nav-item-badge fin"><span class="latin">82</span></span>
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      المتأخّرون
+      <span class="nav-item-badge warn"><span class="latin">42</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      استيراد كشف بنك
+    </a>
+
+    <div class="nav-section">التحويلات</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+      إنشاء تحويل
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      التحويلات المعلّقة
+      <span class="nav-item-badge"><span class="latin">5</span></span>
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      المراجعات
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">خ.م</div>
+      <div class="user-info">
+        <div class="user-name">د. خالد المطيري</div>
+        <div class="user-role">مدير المالية</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>المتبرّعون المتأخّرون في الدفع</h2>
+        <p>تذكير ودود لمن تأخّر — لا ضغط، فقط دعوة لطيفة لمتابعة الكفالة</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          تصدير
+        </button>
+        <button class="btn-primary" id="openSendAll">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          تذكير جماعي
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Tone reminder -->
+      <div class="tone-banner">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div>
+          تذكّري دائماً: الكفيل ليس مدينا — قد يكون مشغولاً، نسي، أو يواجه ظرفاً مالياً.
+          <strong>تواصلي بالرحمة، اعرضي المساعدة قبل الضغط</strong>. هدفنا استمرار الكفالة بكرامة، لا تحصيل دفعة فقط.
+        </div>
+      </div>
+
+      <!-- Severity bands -->
+      <section class="bands">
+        <button class="band b1" type="button">
+          <div class="band-head">
+            <div class="band-icon-wrap" style="color: var(--info-700);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div><div class="lab">تأخّر بسيط</div><div class="sub"><span class="latin">7</span>–<span class="latin">30</span> يوماً</div></div>
+          </div>
+          <div class="count"><span class="latin">21</span><span class="small">متبرّعاً</span></div>
+          <div class="amt">قيمة <strong><span class="latin">14,200</span> دك</strong> · تذكير ودّي</div>
+        </button>
+
+        <button class="band b2 active" type="button">
+          <div class="band-head">
+            <div class="band-icon-wrap" style="color: var(--warning-700);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            </div>
+            <div><div class="lab">تأخّر متوسّط</div><div class="sub"><span class="latin">31</span>–<span class="latin">60</span> يوماً</div></div>
+          </div>
+          <div class="count"><span class="latin">14</span><span class="small">متبرّعاً</span></div>
+          <div class="amt">قيمة <strong><span class="latin">18,640</span> دك</strong> · مكالمة + اقتراح تأجيل</div>
+        </button>
+
+        <button class="band b3" type="button">
+          <div class="band-head">
+            <div class="band-icon-wrap" style="color: #C2410C;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div><div class="lab">تأخّر طويل</div><div class="sub"><span class="latin">61</span>–<span class="latin">90</span> يوماً</div></div>
+          </div>
+          <div class="count"><span class="latin">5</span><span class="small">متبرّعين</span></div>
+          <div class="amt">قيمة <strong><span class="latin">9,800</span> دك</strong> · مراجعة فردية</div>
+        </button>
+
+        <button class="band b4" type="button">
+          <div class="band-head">
+            <div class="band-icon-wrap" style="color: var(--danger-700);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7"/></svg>
+            </div>
+            <div><div class="lab">حرج · بانتظار قرار</div><div class="sub">٣+ أشهر</div></div>
+          </div>
+          <div class="count"><span class="latin">2</span><span class="small">متبرّعين</span></div>
+          <div class="amt">قيمة <strong><span class="latin">5,520</span> دك</strong> · تعليق الكفالة</div>
+        </button>
+      </section>
+
+      <!-- Filter -->
+      <section class="toolbar">
+        <div class="search-input">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="ابحث بالاسم أو رقم الكفيل…">
+        </div>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M3.6 9h16.8"/></svg>
+          الدولة
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="12" y1="21" x2="12" y2="12"/></svg>
+          الترتيب: الأقدم تأخّراً
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </section>
+
+      <!-- Bulk -->
+      <div class="bulk-bar" id="bulkBar">
+        <span><span class="count-pill"><span class="latin">2</span></span> متبرّع محدّد</span>
+        <div class="bulk-actions">
+          <button class="bulk-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7"/></svg>
+            تذكير عبر واتساب
+          </button>
+          <button class="bulk-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            تذكير عبر بريد
+          </button>
+          <button class="bulk-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/></svg>
+            إخفاء من القائمة
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <section class="tbl-card">
+        <div class="tbl-scroll">
+          <table class="late">
+            <thead>
+              <tr>
+                <th class="col-chk"><span class="check" id="checkAll"></span></th>
+                <th>المتبرّع</th>
+                <th style="width: 150px;">مدّة التأخّر</th>
+                <th class="num-h" style="width: 130px;">المتأخّر</th>
+                <th style="width: 200px;">اليتيم</th>
+                <th style="width: 150px;">مسار التذكير</th>
+                <th style="width: 280px;">إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+
+              <!-- Critical band b4 -->
+              <tr class="b4">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c5">س.ك</div>
+                    <div class="info">
+                      <div class="nm">سعد الكليب</div>
+                      <div class="meta"><span class="flag">🇰🇼</span><span class="ar">الكويت</span><span class="dot">·</span>DON-4422</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b4">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  <span class="latin">112</span> يوماً
+                </span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">2,880</span><span class="u">دك</span></div><div class="sub">٣ دفعات</div></td>
+                <td><span class="orph-cell">عمر ر.ج <span class="pill">WLD-128</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line done"></span>
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line done"></span>
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm danger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                      تعليق الكفالة
+                    </button>
+                    <button class="action-btn-sm warn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+                      مكالمة
+                    </button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="b4">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c1">ح.ج</div>
+                    <div class="info">
+                      <div class="nm">حمد الجاسم</div>
+                      <div class="meta"><span class="flag">🇧🇭</span><span class="ar">البحرين</span><span class="dot">·</span>DON-3308</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b4">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  <span class="latin">98</span> يوماً
+                </span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">2,640</span><span class="u">دك</span></div><div class="sub">٣ دفعات</div></td>
+                <td><span class="orph-cell">أحمد خ.ر <span class="pill">RHM-841</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line done"></span>
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line done"></span>
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm danger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                      تعليق الكفالة
+                    </button>
+                    <button class="action-btn-sm warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2"/></svg>مكالمة</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Long band b3 -->
+              <tr class="b3">
+                <td class="col-chk"><span class="check on"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c2">ع.م</div>
+                    <div class="info">
+                      <div class="nm">عبدالرحمن المنصور</div>
+                      <div class="meta"><span class="flag">🇸🇦</span><span class="ar">السعوديّة</span><span class="dot">·</span>DON-2418</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span class="latin">82</span> يوماً
+                </span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">2,400</span><span class="u">ر.س</span></div><div class="sub">~<span class="latin">196</span> دك · ٢ دفعتان</div></td>
+                <td><span class="orph-cell">مريم أ.ك <span class="pill">ORM-441</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line done"></span>
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary" data-modal="send">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7"/></svg>
+                      تذكير واتساب
+                    </button>
+                    <button class="action-btn-sm warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/></svg>اقتراح تأجيل</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="b3">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c3">ف.ع</div>
+                    <div class="info">
+                      <div class="nm">فاطمة العتيبي <span style="font-size: 10px; color: var(--gray-500); background: var(--gray-100); padding: 0 4px; border-radius: 3px; margin-inline-start: 4px;">مجهولة</span></div>
+                      <div class="meta"><span class="flag">🇰🇼</span><span class="ar">الكويت</span><span class="dot">·</span>DON-1841</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> <span class="latin">71</span> يوماً</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">480</span><span class="u">دك</span></div><div class="sub">٢ دفعتان</div></td>
+                <td><span class="orph-cell">يوسف م.ع <span class="pill">ORM-842</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line done"></span>
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير واتساب</button>
+                    <button class="action-btn-sm warn">اقتراح تأجيل</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Medium band b2 -->
+              <tr class="b2">
+                <td class="col-chk"><span class="check on"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c4">ف.ق</div>
+                    <div class="info">
+                      <div class="nm">فيصل القحطاني</div>
+                      <div class="meta"><span class="flag">🇸🇦</span><span class="ar">السعوديّة</span><span class="dot">·</span>DON-1192</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span class="latin">52</span> يوماً</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">1,440</span><span class="u">ر.س</span></div><div class="sub">~<span class="latin">118</span> دك · دفعة واحدة</div></td>
+                <td><span class="orph-cell">زينب ح.ف <span class="pill">TKF-919</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير واتساب</button>
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>بريد</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="b2">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c5">س.م</div>
+                    <div class="info">
+                      <div class="nm">سهيلة المسبّاح</div>
+                      <div class="meta"><span class="flag">🇶🇦</span><span class="ar">قطر</span><span class="dot">·</span>DON-2018</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> <span class="latin">42</span> يوماً</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">800</span><span class="u">ر.ق</span></div><div class="sub">~<span class="latin">67</span> دك</div></td>
+                <td><span class="orph-cell">عبدالله م.س <span class="pill">MST-103</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير واتساب</button>
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12"/></svg>بريد</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Light band b1 -->
+              <tr class="b1">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c6">ر.ب</div>
+                    <div class="info">
+                      <div class="nm">رشا بوكمّال</div>
+                      <div class="meta"><span class="flag">🇦🇪</span><span class="ar">الإمارات</span><span class="dot">·</span>DON-3204</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span class="latin">22</span> يوماً</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">240</span><span class="u">د.إ</span></div><div class="sub">~<span class="latin">20</span> دك</div></td>
+                <td><span class="orph-cell">فاطمة ع.أ <span class="pill">NJT-824</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير ودّي</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="b1">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c1">ج.ع</div>
+                    <div class="info">
+                      <div class="nm">جواهر العنزي</div>
+                      <div class="meta"><span class="flag">🇰🇼</span><span class="ar">الكويت</span><span class="dot">·</span>DON-0918</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> <span class="latin">18</span> يوماً</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">96</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">سارة ع.م <span class="pill">WLD-221</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير ودّي</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="b1">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c2">م.س</div>
+                    <div class="info">
+                      <div class="nm">مشاري السبيعي</div>
+                      <div class="meta"><span class="flag">🇸🇦</span><span class="ar">السعوديّة</span><span class="dot">·</span>DON-4488</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> <span class="latin">11</span> أيّام</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">600</span><span class="u">ر.س</span></div><div class="sub">~<span class="latin">49</span> دك</div></td>
+                <td><span class="orph-cell">أحمد خ.ر <span class="pill">RHM-841</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير ودّي</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="b1">
+                <td class="col-chk"><span class="check"></span></td>
+                <td>
+                  <div class="donor">
+                    <div class="d-avatar c4">ن.ح</div>
+                    <div class="info">
+                      <div class="nm">نوّاف الحمدان</div>
+                      <div class="meta"><span class="flag">🇰🇼</span><span class="ar">الكويت</span><span class="dot">·</span>DON-7102</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="late-badge b1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg> <span class="latin">8</span> أيّام</span></td>
+                <td class="amt-cell"><div class="a"><span class="latin">240</span><span class="u">دك</span></div></td>
+                <td><span class="orph-cell">مريم أ.ك <span class="pill">ORM-441</span></span></td>
+                <td>
+                  <div class="rem-trail">
+                    <span class="rem-dot next"></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                    <span class="rem-line"></span>
+                    <span class="rem-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="action-btn-sm primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8"/></svg>تذكير ودّي</button>
+                    <button class="icon-btn-sm"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-foot">
+          <span>عرض <span class="latin">1–10</span> من <span class="latin">42</span> متبرّع · إجمالي مبالغ متأخّرة <strong><span class="latin">48,160</span> دك</strong></span>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-secondary" disabled style="opacity:.5; cursor:not-allowed;">السابق</button>
+            <button class="btn-secondary">التالي</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Reminder template modal -->
+<div class="scrim" id="sendScrim">
+  <div class="modal">
+    <header class="modal-head">
+      <div>
+        <h3>
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          تذكير ودود
+        </h3>
+        <p>عبدالرحمن المنصور · DON-2418 · تأخّر <span class="latin">82</span> يوماً</p>
+      </div>
+      <button class="modal-close" id="sendClose">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">القناة</label>
+        <div class="channel-pills">
+          <button class="channel-pill selected">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #25D366;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7"/></svg>
+            واتساب
+          </button>
+          <button class="channel-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+            بريد
+          </button>
+          <button class="channel-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            SMS
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">القالب · لطيف</label>
+        <div class="msg-preview arabic">
+          السلام عليكم ورحمة الله وبركاته أخي الكريم <span class="var">عبدالرحمن</span>،<br><br>
+          نسأل الله أن تكون بخير. لاحظنا أنّ آخر دفعة لكفالة <span class="var">مريم أ.ك</span> كانت قبل أكثر من شهرين، وأردنا الاطمئنان عليك ومعرفة إن كنت تحتاج أي مساعدة في تحديث طريقة الدفع.<br><br>
+          إن كانت ظروفك المالية متعبة، نستطيع تأجيل الدفعات أو تخفيف المبلغ — كرامتك ورضى الله أهمّ من أيّ شيء.<br><br>
+          هل نستطيع مساعدتك بشيء؟<br>
+          <span style="color: var(--gray-500); font-size: 12px;">— فريق رفقاء</span>
+        </div>
+      </div>
+
+      <div class="tip-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div>سيُسجَّل هذا التذكير في ملفّ الكفيل وسجلّ التدقيق · هذا التذكير رقم <strong style="font-weight: 600;">٣ من ٤</strong>.</div>
+      </div>
+    </div>
+    <footer class="modal-foot">
+      <button class="btn-ghost" id="sendCancel">إلغاء</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          جدولة لاحقاً
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          إرسال الآن
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  const checks = document.querySelectorAll('.check');
+  const bulkBar = document.getElementById('bulkBar');
+  function update() {
+    const n = Array.from(checks).filter(c => c !== document.getElementById('checkAll') && c.classList.contains('on')).length;
+    if (n > 0) { bulkBar.classList.add('show'); bulkBar.querySelector('.count-pill .latin').textContent = n; }
+    else bulkBar.classList.remove('show');
+  }
+  checks.forEach(c => c.addEventListener('click', e => {
+    e.stopPropagation();
+    c.classList.toggle('on');
+    const row = c.closest('tr');
+    if (row) row.classList.toggle('selected', c.classList.contains('on'));
+    if (c.id === 'checkAll') {
+      const on = c.classList.contains('on');
+      checks.forEach(o => { if (o === c) return; o.classList.toggle('on', on); const r = o.closest('tr'); if (r) r.classList.toggle('selected', on); });
+    }
+    update();
+  }));
+  update();
+
+  // Bands toggle
+  document.querySelectorAll('.band').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.band').forEach(o => o.classList.remove('active'));
+    b.classList.add('active');
+  }));
+
+  // Modal
+  const scrim = document.getElementById('sendScrim');
+  document.querySelectorAll('[data-modal="send"]').forEach(b => b.addEventListener('click', () => scrim.classList.add('show')));
+  document.getElementById('openSendAll').addEventListener('click', () => scrim.classList.add('show'));
+  document.getElementById('sendClose').addEventListener('click', () => scrim.classList.remove('show'));
+  document.getElementById('sendCancel').addEventListener('click', () => scrim.classList.remove('show'));
+  scrim.addEventListener('click', e => { if (e.target === scrim) scrim.classList.remove('show'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') scrim.classList.remove('show'); });
+
+  document.querySelectorAll('.channel-pill').forEach(p => p.addEventListener('click', () => {
+    document.querySelectorAll('.channel-pill').forEach(o => o.classList.remove('selected'));
+    p.classList.add('selected');
+  }));
+})();
+</script>
+
+</body>
+</html>

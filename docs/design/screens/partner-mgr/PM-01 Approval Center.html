@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — مركز الاعتمادات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626; --danger-700: #B91C1C;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+  --sidebar-w: 220px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 15px; line-height: 1.55;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-500), var(--trust-700)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tenant-switcher .chev { color: var(--gray-400); }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--purple-700); font-weight: 500; }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 17px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.topbar-title h2 .mgr-badge { background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); padding: 2px 9px; border-radius: var(--radius-full); font-size: 11px; font-weight: 500; }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; }
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+.page { padding: 20px 28px 48px; max-width: 1380px; width: 100%; margin: 0 auto; }
+
+/* KPI strip */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+@media (max-width: 900px) { .kpi-strip { grid-template-columns: 1fr 1fr; } }
+
+.kpi-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.kpi-card:hover { border-color: var(--sky-300); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.kpi-card.active { border-color: var(--trust-400); background: linear-gradient(160deg, var(--tranquil-100), white); }
+
+.kpi-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.kpi-icon.orphans { background: var(--tranquil-100); color: var(--trust-600); }
+.kpi-icon.reports { background: var(--purple-50); color: var(--purple-700); }
+.kpi-icon.media { background: var(--success-50); color: var(--success-700); }
+.kpi-icon.bank { background: var(--gold-50); color: var(--gold-700); }
+
+.kpi-num { font-size: 22px; font-weight: 600; color: var(--gray-900); letter-spacing: -.01em; line-height: 1; font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.kpi-name { font-size: 11.5px; color: var(--gray-600); margin-top: 3px; line-height: 1.3; }
+
+/* Tabs */
+.tabs-wrap {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  padding: 0 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-500);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+}
+.tab:hover { color: var(--gray-800); }
+.tab.active { color: var(--trust-600); border-bottom-color: var(--trust-300); background: white; font-weight: 600; }
+.tab-count { background: var(--gray-200); color: var(--gray-600); font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); font-family: 'IBM Plex Sans', sans-serif; }
+.tab.active .tab-count { background: var(--tranquil-200); color: var(--trust-700); }
+.tab-count.urgent { background: var(--danger-600); color: white; }
+
+.tab-body { padding: 16px; display: none; }
+.tab-body.active { display: block; }
+
+/* Approval card */
+.approval-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  margin-bottom: 8px;
+  transition: var(--transition-fast);
+}
+.approval-row:hover { border-color: var(--sky-300); box-shadow: var(--shadow-xs); }
+.approval-row.urgent { border-color: var(--warning-100); background: var(--warning-50); }
+
+.app-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 600;
+}
+.app-icon.orphan {
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 6px, var(--tranquil-100) 6px, var(--tranquil-100) 12px);
+  color: var(--trust-700);
+}
+.app-icon.report { background: var(--purple-50); color: var(--purple-700); }
+.app-icon.media { background: var(--success-50); color: var(--success-700); }
+.app-icon.bank { background: var(--gold-50); color: var(--gold-700); }
+
+.app-info { min-width: 0; }
+.app-name { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.3; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.app-name .urgent-pill { background: var(--danger-50); color: var(--danger-700); border: 1px solid var(--danger-100); font-size: 10px; padding: 1px 7px; border-radius: var(--radius-full); font-weight: 600; }
+.app-meta { font-size: 11.5px; color: var(--gray-500); margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.app-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+.app-meta .latin { font-family: 'IBM Plex Sans', sans-serif; }
+
+.app-staff-stamp {
+  font-size: 11px; color: var(--gray-700);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  padding: 4px 9px;
+  border-radius: var(--radius-md);
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.app-staff-stamp .av {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700;
+}
+
+.app-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.mini-btn {
+  width: 32px; height: 32px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  color: var(--gray-600);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: var(--transition-fast);
+}
+.mini-btn:hover { background: white; }
+.mini-btn.ok:hover { background: var(--success-500); color: white; border-color: var(--success-500); }
+.mini-btn.no:hover { background: var(--danger-600); color: white; border-color: var(--danger-600); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+.empty-state svg {
+  width: 56px; height: 56px;
+  margin-bottom: 12px;
+  color: var(--success-500);
+  opacity: .8;
+}
+.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>بوابة الجهة الشريكة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">فجر</span>
+      <span class="name">جمعية الفجر — غزّة</span>
+      <span class="role-badge">مدير</span>
+    </button>
+
+    <div class="nav-section">الإدارة</div>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة التنفيذيّة
+    </button>
+    <button class="nav-item active">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      مركز الاعتمادات
+      <span class="nav-item-badge">٢٤</span>
+    </button>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      الموظّفون
+    </button>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      التحويلات الواردة
+      <span class="nav-item-badge muted"><span class="latin">3</span></span>
+    </button>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      تقارير الأداء
+    </button>
+
+    <div class="nav-section">العمليّات</div>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      كل الأيتام
+    </button>
+    <button class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      التقارير
+    </button>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">خ.م</div>
+      <div class="user-info">
+        <div class="user-name">خالد المنصور</div>
+        <div class="user-role">مدير الفرع</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>مركز الاعتمادات <span class="mgr-badge">صلاحيات المدير</span></h2>
+        <p>٢٤ عنصراً ينتظر اعتمادك · متوسّط زمن الاعتماد <span class="latin">8</span> دقائق</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          تصفية
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          اعتمد الكلّ الآمن
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- KPI cards (clickable tabs) -->
+      <div class="kpi-strip">
+
+        <button class="kpi-card active" data-tab="orphans">
+          <div class="kpi-icon orphans">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="kpi-num"><span class="latin">7</span></div>
+            <div class="kpi-name">أيتام قيد الاعتماد</div>
+          </div>
+        </button>
+
+        <button class="kpi-card" data-tab="reports">
+          <div class="kpi-icon reports">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="kpi-num"><span class="latin">9</span></div>
+            <div class="kpi-name">تقارير اعتماد مزدوج</div>
+          </div>
+        </button>
+
+        <button class="kpi-card" data-tab="media">
+          <div class="kpi-icon media">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div>
+            <div class="kpi-num"><span class="latin">5</span></div>
+            <div class="kpi-name">وسائط حسّاسة</div>
+          </div>
+        </button>
+
+        <button class="kpi-card" data-tab="bank">
+          <div class="kpi-icon bank">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div>
+            <div class="kpi-num"><span class="latin">3</span></div>
+            <div class="kpi-name">تحويلات بنكيّة مستلَمة</div>
+          </div>
+        </button>
+
+      </div>
+
+      <!-- Tabs body -->
+      <section class="tabs-wrap">
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="orphans">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            أيتام قيد الاعتماد
+            <span class="tab-count urgent">٧</span>
+          </button>
+          <button class="tab" data-tab="reports">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            تقارير اعتماد مزدوج
+            <span class="tab-count">٩</span>
+          </button>
+          <button class="tab" data-tab="media">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            وسائط حسّاسة
+            <span class="tab-count">٥</span>
+          </button>
+          <button class="tab" data-tab="bank">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            تحويلات بنكيّة
+            <span class="tab-count">٣</span>
+          </button>
+        </div>
+
+        <!-- Orphans tab -->
+        <div class="tab-body active" data-tab="orphans">
+
+          <div class="approval-row urgent">
+            <div class="app-icon orphan">س</div>
+            <div class="app-info">
+              <div class="app-name">
+                سلمى عبد الكريم العبيدي
+                <span class="urgent-pill">عاجل · ينتظر <span class="latin">5</span> أيام</span>
+              </div>
+              <div class="app-meta">
+                <span class="latin">ORP-02841</span><span class="dot"></span><span>أنثى · ٨ سنوات</span><span class="dot"></span><span>غزّة</span>
+              </div>
+            </div>
+            <span class="app-staff-stamp">
+              <span class="av">س.ع</span>
+              أرسلتها سارة العلي
+            </span>
+            <div class="app-actions">
+              <button class="mini-btn" title="معاينة"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no" title="رفض"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok" title="اعتماد"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="approval-row">
+            <div class="app-icon orphan">إ</div>
+            <div class="app-info">
+              <div class="app-name">إبراهيم خميس الكفراوي</div>
+              <div class="app-meta"><span class="latin">ORP-02842</span><span class="dot"></span><span>ذكر · ١٠ سنوات</span><span class="dot"></span><span>قبل ساعة</span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">م.خ</span>أرسلها محمود الخالد</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="approval-row">
+            <div class="app-icon orphan">ن</div>
+            <div class="app-info">
+              <div class="app-name">نور جمال الأشقر</div>
+              <div class="app-meta"><span class="latin">ORP-02843</span><span class="dot"></span><span>أنثى · ٤ سنوات</span><span class="dot"></span><span>قبل ٣ ساعات</span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">س.ع</span>أرسلتها سارة العلي</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="approval-row">
+            <div class="app-icon orphan">م</div>
+            <div class="app-info">
+              <div class="app-name">مهند سعيد القاسم</div>
+              <div class="app-meta"><span class="latin">ORP-02844</span><span class="dot"></span><span>ذكر · ٩ سنوات</span><span class="dot"></span><span>أمس</span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">ن.ز</span>أرسلها نادر الزيتون</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="approval-row">
+            <div class="app-icon orphan">ز</div>
+            <div class="app-info">
+              <div class="app-name">زين جلال أبو هاني</div>
+              <div class="app-meta"><span class="latin">ORP-02845</span><span class="dot"></span><span>ذكر · ٧ سنوات</span><span class="dot"></span><span>قبل يومين</span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">م.خ</span>أرسلها محمود الخالد</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Reports tab -->
+        <div class="tab-body" data-tab="reports">
+          <div class="approval-row">
+            <div class="app-icon report">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="app-info">
+              <div class="app-name">تقرير شوّال — سلمى ع.</div>
+              <div class="app-meta"><span>اعتمدته سارة قبل ٥ ساعات</span><span class="dot"></span><span>محتوى حسّاس: «يحتاج اهتمام»</span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">س.ع</span>سارة العلي</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+          <div class="approval-row">
+            <div class="app-icon report">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="app-info">
+              <div class="app-name">تقرير شوّال — إبراهيم خ.</div>
+              <div class="app-meta"><span>اعتمدته سارة أمس</span><span class="dot"></span><span>محتوى حسّاس: «يحتاج اهتمام»</span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">س.ع</span>سارة العلي</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Media tab -->
+        <div class="tab-body" data-tab="media">
+          <div class="approval-row">
+            <div class="app-icon media">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="app-info">
+              <div class="app-name">صورة عائليّة — أحمد محمد</div>
+              <div class="app-meta"><span>وجوه أخرى غير محميّة <span class="latin">(2)</span></span><span class="dot"></span><span>AI <span class="latin">62%</span></span></div>
+            </div>
+            <span class="app-staff-stamp"><span class="av">س.ع</span>سارة العلي</span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="mini-btn no"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              <button class="mini-btn ok"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank tab -->
+        <div class="tab-body" data-tab="bank">
+
+          <div class="approval-row">
+            <div class="app-icon bank">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="app-info">
+              <div class="app-name">
+                تحويل من المنظّمة الأم — <span class="latin">42,500 ₪</span>
+              </div>
+              <div class="app-meta">
+                <span>دفعات شهر شوّال</span><span class="dot"></span><span>أُرسل أمس</span><span class="dot"></span><span class="latin">WIRE-2026-0428</span>
+              </div>
+            </div>
+            <span class="app-staff-stamp" style="color: var(--gold-700); background: var(--gold-50); border-color: var(--gold-100);">
+              ينتظر تأكيد استلامك
+            </span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></button>
+              <button class="mini-btn ok" style="border-color: var(--gold-100); color: var(--gold-700);"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="approval-row">
+            <div class="app-icon bank">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="app-info">
+              <div class="app-name">تحويل من المنظّمة الأم — <span class="latin">18,200 ₪</span></div>
+              <div class="app-meta"><span>دفعات احتياطيّة طارئة</span><span class="dot"></span><span>قبل ٣ أيّام</span><span class="dot"></span><span class="latin">WIRE-2026-0421</span></div>
+            </div>
+            <span class="app-staff-stamp" style="color: var(--gold-700); background: var(--gold-50); border-color: var(--gold-100);">
+              ينتظر تأكيد استلامك
+            </span>
+            <div class="app-actions">
+              <button class="mini-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></button>
+              <button class="mini-btn ok" style="border-color: var(--gold-100); color: var(--gold-700);"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+const tabs = document.querySelectorAll('.tab');
+const bodies = document.querySelectorAll('.tab-body');
+const kpis = document.querySelectorAll('.kpi-card');
+
+function showTab(key) {
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === key));
+  bodies.forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+  kpis.forEach(k => k.classList.toggle('active', k.dataset.tab === key));
+}
+
+tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+kpis.forEach(k => k.addEventListener('click', () => showTab(k.dataset.tab)));
+
+document.querySelectorAll('.nav-item').forEach(it => {
+  it.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    it.classList.add('active');
+  });
+});
+
+/* Approve/reject animations */
+document.querySelectorAll('.mini-btn.ok, .mini-btn.no').forEach(b => {
+  b.addEventListener('click', e => {
+    const row = e.currentTarget.closest('.approval-row');
+    row.style.opacity = '0.4';
+    row.style.transform = 'translateX(-10px)';
+    setTimeout(() => row.remove(), 280);
+  });
+});
+</script>
+
+</body>
+</html>

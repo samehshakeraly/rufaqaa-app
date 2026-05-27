@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — إعدادات حسابك</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-200: #97B7D6; --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626; --danger-700: #B91C1C;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ═══ HEADER ═══ */
+.app-header { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 32px; position: sticky; top: 0; z-index: 50; }
+.app-header-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 40px; height: 40px; background: var(--trust-300); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 20px; }
+.brand-info h1 { font-size: 16px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 12px; color: var(--gray-500); }
+
+.nav-tabs { display: flex; gap: 4px; margin-inline-start: 24px; }
+.nav-tab { padding: 8px 14px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; transition: var(--transition-fast); }
+.nav-tab:hover { background: var(--gray-100); color: var(--gray-900); }
+.nav-tab.active { background: var(--tranquil-100); color: var(--trust-600); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.icon-btn { width: 40px; height: 40px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; position: relative; transition: var(--transition); color: var(--gray-600); }
+.icon-btn:hover { background: white; border-color: var(--sky-300); color: var(--trust-500); }
+.icon-btn-badge { position: absolute; top: -4px; left: -4px; background: var(--danger-600); color: white; font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2px solid white; font-family: 'IBM Plex Sans', sans-serif; }
+.user-chip { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); transition: var(--transition); }
+.user-chip:hover { background: white; border-color: var(--sky-300); }
+.user-chip-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 12px; }
+.user-chip-name { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+
+@media (max-width: 1024px) { .nav-tabs { display: none; } }
+
+/* ═══ PAGE ═══ */
+.page { max-width: 1240px; margin: 0 auto; padding: 26px 32px 64px; }
+
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-500); margin-bottom: 18px; }
+.breadcrumb a { color: var(--gray-600); }
+.breadcrumb a:hover { color: var(--trust-500); }
+.breadcrumb-sep { color: var(--gray-300); display: inline-flex; }
+.breadcrumb-current { color: var(--gray-900); font-weight: 500; }
+
+.page-head { margin-bottom: 26px; }
+.page-head h1 { font-size: 30px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; line-height: 1.2; margin-bottom: 6px; }
+.page-head p { font-size: 14.5px; color: var(--gray-600); max-width: 640px; line-height: 1.6; }
+
+/* ═══ LAYOUT ═══ */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* Side nav */
+.side-nav {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 8px;
+  position: sticky;
+  top: 90px;
+}
+
+.side-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: right;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.side-nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+
+.side-nav-item.active {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  font-weight: 600;
+}
+
+.side-nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.side-nav-item.active svg { color: var(--trust-500); }
+
+.side-nav-divider {
+  height: 1px;
+  background: var(--gray-100);
+  margin: 6px 14px;
+}
+
+.side-nav-item.danger { color: var(--danger-600); }
+.side-nav-item.danger svg { color: var(--danger-600); }
+.side-nav-item.danger:hover { background: var(--danger-50); }
+
+/* ═══ SECTIONS ═══ */
+.main-col { min-width: 0; }
+
+.section {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 24px 26px;
+  margin-bottom: 18px;
+  scroll-margin-top: 90px;
+}
+
+.section-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.section-head h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-head h2 svg { color: var(--trust-400); }
+
+.section-head p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.section-head .head-text { flex: 1; min-width: 0; }
+
+.section-head-action {
+  font-size: 12.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.section-head-action:hover { background: var(--tranquil-100); color: var(--trust-700); }
+
+/* Field grid */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 540px) { .field-grid { grid-template-columns: 1fr; } }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+.field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field label .opt {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--gray-500);
+}
+
+.field label .verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.field input, .field select {
+  padding: 10px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.field input:focus, .field select:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.field .field-hint {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+/* Profile header (top of personal info section) */
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  background: linear-gradient(160deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  margin-bottom: 18px;
+}
+
+.profile-avatar {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 600;
+  flex-shrink: 0;
+  border: 3px solid white;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-text { flex: 1; min-width: 0; }
+.profile-text h3 {
+  font-size: 18px; font-weight: 600; color: var(--gray-900);
+  margin-bottom: 2px;
+}
+.profile-text p { font-size: 12.5px; color: var(--gray-600); }
+
+.profile-edit-btn {
+  padding: 8px 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.profile-edit-btn:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+/* Toggle rows */
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-fast);
+}
+
+.toggle-row:hover { border-color: var(--sky-300); }
+
+.toggle-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.toggle-text { flex: 1; min-width: 0; }
+.toggle-title { font-size: 13.5px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.toggle-sub { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; line-height: 1.45; }
+
+.toggle-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-inline-end: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.toggle-meta.on { color: var(--success-700); font-weight: 500; }
+
+.switch {
+  width: 44px; height: 24px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  position: relative;
+  transition: var(--transition);
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.switch::after {
+  content: ''; position: absolute;
+  top: 3px; right: 3px;
+  width: 18px; height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+
+.switch.on { background: var(--trust-400); }
+.switch.on::after { right: 23px; }
+
+/* Radio pills */
+.radio-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.radio-pill {
+  padding: 7px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.radio-pill:hover { background: white; border-color: var(--sky-300); }
+.radio-pill.selected { background: var(--trust-300); border-color: var(--trust-300); color: white; }
+
+/* Session row */
+.session-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+}
+
+.session-row + .session-row { margin-top: 8px; }
+
+.session-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-600);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.session-info { min-width: 0; }
+.session-device {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.session-current {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.session-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.session-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+
+.session-revoke {
+  padding: 7px 12px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.session-revoke:hover {
+  border-color: var(--danger-600);
+  color: var(--danger-600);
+}
+
+/* Save bar */
+.save-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.btn-cancel {
+  padding: 10px 16px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.btn-cancel:hover { border-color: var(--gray-300); }
+
+.btn-save {
+  padding: 10px 18px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.btn-save:hover { background: var(--trust-500); border-color: var(--trust-500); }
+
+/* Danger zone */
+.section.danger { border-color: var(--danger-100); background: var(--danger-50); }
+.section.danger .section-head h2 { color: var(--danger-700); }
+.section.danger .section-head h2 svg { color: var(--danger-600); }
+
+.danger-card {
+  background: white;
+  border: 1px solid var(--danger-100);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.danger-card:last-child { margin-bottom: 0; }
+
+.danger-card-text { min-width: 0; }
+.danger-card-title { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 3px; }
+.danger-card-sub { font-size: 12px; color: var(--gray-600); line-height: 1.5; }
+
+.danger-btn {
+  padding: 9px 14px;
+  background: white;
+  border: 1px solid var(--danger-600);
+  color: var(--danger-700);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.danger-btn:hover { background: var(--danger-600); color: white; }
+
+/* Icon */
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .page { padding: 18px 16px 48px; }
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+  .page-head h1 { font-size: 24px; }
+  .section { padding: 20px 18px; }
+  .side-nav { position: static; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة الكفيل</p>
+      </div>
+    </div>
+    <nav class="nav-tabs" aria-label="التنقّل">
+      <button class="nav-tab">لوحتي</button>
+      <button class="nav-tab">أيتامي</button>
+      <button class="nav-tab">استكشف أيتام</button>
+      <button class="nav-tab">الإيصالات</button>
+      <button class="nav-tab">الرسائل</button>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="التنبيهات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-badge">٤</span>
+      </button>
+      <button class="user-chip" aria-label="حساب أبو عمر">
+        <span class="user-chip-avatar" aria-hidden="true">أ.ع</span>
+        <span class="user-chip-name">أبو عمر</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ PAGE ═══ -->
+<main class="page" role="main">
+
+  <nav class="breadcrumb" aria-label="مسار التنقّل">
+    <a href="D-01 Donor Dashboard.html">لوحتي</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <span class="breadcrumb-current" aria-current="page">الإعدادات</span>
+  </nav>
+
+  <div class="page-head">
+    <h1>إعدادات حسابك</h1>
+    <p>كل ما يتعلّق بحسابك في رفقاء — معلوماتك، تفضيلاتك، أمانك، وطريقة استلامك للتحديثات.</p>
+  </div>
+
+  <div class="layout">
+
+    <!-- ═══ SIDE NAV ═══ -->
+    <aside class="side-nav" aria-label="أقسام الإعدادات">
+      <a href="#personal" class="side-nav-item active">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        المعلومات الشخصية
+      </a>
+      <a href="#preferences" class="side-nav-item">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        التفضيلات
+      </a>
+      <a href="#notifications" class="side-nav-item">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        التنبيهات
+      </a>
+      <a href="#security" class="side-nav-item">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        الأمان والدخول
+      </a>
+      <a href="#sponsorships" class="side-nav-item">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        الكفالات
+      </a>
+      <div class="side-nav-divider" aria-hidden="true"></div>
+      <a href="#danger" class="side-nav-item danger">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        منطقة الخطر
+      </a>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <div class="main-col">
+
+      <!-- Personal info -->
+      <section class="section" id="personal" aria-labelledby="personal-title">
+        <div class="section-head">
+          <div class="head-text">
+            <h2 id="personal-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              المعلومات الشخصية
+            </h2>
+            <p>هذه المعلومات تظهر للجهة المسؤولة فقط — أهل اليتيم لا يرونها إلا إذا سمحت أنت بذلك.</p>
+          </div>
+        </div>
+
+        <div class="profile-head">
+          <div class="profile-avatar" aria-hidden="true">أ.ع</div>
+          <div class="profile-text">
+            <h3>أبو عمر السالم</h3>
+            <p>كافل منذ <span class="latin">2022</span> · ٣ كفالات نشطة · الكويت</p>
+          </div>
+          <button class="profile-edit-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            تغيير الصورة
+          </button>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="name-first">الاسم الأوّل</label>
+            <input type="text" id="name-first" value="عبدالله">
+          </div>
+          <div class="field">
+            <label for="name-last">اسم العائلة</label>
+            <input type="text" id="name-last" value="السالم">
+          </div>
+          <div class="field full">
+            <label for="email">البريد الإلكتروني <span class="verified"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>موثّق</span></label>
+            <input type="email" id="email" class="latin" value="abdullah.alsalem@example.com">
+          </div>
+          <div class="field">
+            <label for="phone">رقم الجوّال <span class="verified"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>موثّق</span></label>
+            <input type="tel" id="phone" class="latin" value="+965 9876 5432">
+          </div>
+          <div class="field">
+            <label for="nationality">الجنسية</label>
+            <select id="nationality">
+              <option>الكويت</option>
+              <option>السعودية</option>
+              <option>الإمارات</option>
+              <option>قطر</option>
+              <option>البحرين</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="residence">بلد الإقامة</label>
+            <select id="residence">
+              <option>الكويت</option>
+              <option>السعودية</option>
+              <option>الإمارات</option>
+              <option>أخرى</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="currency">العملة المفضّلة</label>
+            <select id="currency">
+              <option>دينار كويتي (KWD)</option>
+              <option>ريال سعودي (SAR)</option>
+              <option>درهم إماراتي (AED)</option>
+              <option>دولار أمريكي (USD)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn-cancel">إلغاء</button>
+          <button class="btn-save">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            حفظ التغييرات
+          </button>
+        </div>
+      </section>
+
+      <!-- Preferences -->
+      <section class="section" id="preferences" aria-labelledby="prefs-title">
+        <div class="section-head">
+          <div class="head-text">
+            <h2 id="prefs-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              التفضيلات
+            </h2>
+            <p>لغة العرض، الخصوصية، وكيف يظهر اسمك للآخرين.</p>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom: 18px;">
+          <label>لغة العرض</label>
+          <div class="radio-pills">
+            <button class="radio-pill selected">العربية</button>
+            <button class="radio-pill"><span class="latin">English</span></button>
+          </div>
+        </div>
+
+        <div class="toggle-list">
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">إخفاء اسمي عند التبرّع</div>
+              <div class="toggle-sub">يظهر بدل اسمك «متبرّع كريم» في كل ما يصل لأهل اليتيم.</div>
+            </div>
+            <button class="switch" aria-label="إخفاء الاسم" aria-pressed="false"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">السماح لأهل اليتيم برؤية اسمي</div>
+              <div class="toggle-sub">حين يقرأون رسائلك يرون اسمك الحقيقي. مفعّل افتراضياً عند تبرّعاتك السابقة.</div>
+            </div>
+            <span class="toggle-meta on">مفعّل</span>
+            <button class="switch on" aria-label="السماح برؤية الاسم" aria-pressed="true"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">ظهور قصّتك في صفحة المنصّة</div>
+              <div class="toggle-sub">شارك تجربتك مع رفقاء بشكل مجهول لتشجيع الآخرين.</div>
+            </div>
+            <button class="switch" aria-label="نشر القصة" aria-pressed="false"></button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="section" id="notifications" aria-labelledby="notif-title">
+        <div class="section-head">
+          <div class="head-text">
+            <h2 id="notif-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              التنبيهات
+            </h2>
+            <p>اختر كيف تصلك أخبار أيتامك وتنبيهات حسابك.</p>
+          </div>
+        </div>
+
+        <div class="toggle-list">
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">البريد الإلكتروني</div>
+              <div class="toggle-sub">تقارير شهرية، إيصالات، وتحديثات مهمّة.</div>
+            </div>
+            <span class="toggle-meta on">مفعّل</span>
+            <button class="switch on" aria-label="بريد إلكتروني" aria-pressed="true"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">رسائل قصيرة <span class="latin">SMS</span></div>
+              <div class="toggle-sub">للتنبيهات العاجلة فقط (محاولة دفع فاشلة، رسالة مهمّة).</div>
+            </div>
+            <button class="switch" aria-label="SMS" aria-pressed="false"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">واتساب</div>
+              <div class="toggle-sub">تحديثات سريعة حين يصلك تقرير جديد أو رسالة من الأهل.</div>
+            </div>
+            <span class="toggle-meta on">مفعّل</span>
+            <button class="switch on" aria-label="واتساب" aria-pressed="true"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">إشعارات الجوّال (Push)</div>
+              <div class="toggle-sub">إشعارات داخل تطبيق رفقاء على جوّالك.</div>
+            </div>
+            <button class="switch on" aria-label="Push" aria-pressed="true"></button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Security -->
+      <section class="section" id="security" aria-labelledby="sec-title">
+        <div class="section-head">
+          <div class="head-text">
+            <h2 id="sec-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              الأمان والدخول
+            </h2>
+            <p>حماية حسابك من الوصول غير المصرّح به.</p>
+          </div>
+        </div>
+
+        <div class="toggle-list" style="margin-bottom: 18px;">
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="16" r="1"/><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">كلمة المرور</div>
+              <div class="toggle-sub">تم تغييرها قبل <span class="latin">3</span> أشهر · يُنصح بالتغيير كل <span class="latin">6</span> أشهر.</div>
+            </div>
+            <button class="profile-edit-btn">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+              تغيير
+            </button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">المصادقة الثنائية <span class="latin">(2FA)</span></div>
+              <div class="toggle-sub">طبقة حماية إضافية عبر تطبيق <span class="latin">Authenticator</span>.</div>
+            </div>
+            <span class="toggle-meta on">مفعّلة</span>
+            <button class="switch on" aria-label="2FA" aria-pressed="true"></button>
+          </div>
+
+        </div>
+
+        <div style="font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 10px;">الجلسات النشطة</div>
+
+        <div class="session-row">
+          <div class="session-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="session-info">
+            <div class="session-device">
+              <span>متصفّح Safari · macOS</span>
+              <span class="session-current">هذه الجلسة</span>
+            </div>
+            <div class="session-meta">
+              <span>الكويت · مدينة الكويت</span>
+              <span class="dot" aria-hidden="true"></span>
+              <span class="latin">192.168.•.•</span>
+              <span class="dot" aria-hidden="true"></span>
+              <span>منذ <span class="latin">15</span> دقيقة</span>
+            </div>
+          </div>
+          <button class="session-revoke" disabled style="opacity: .4; cursor: not-allowed;">جارية</button>
+        </div>
+
+        <div class="session-row">
+          <div class="session-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div class="session-info">
+            <div class="session-device">
+              <span>تطبيق رفقاء · iOS</span>
+            </div>
+            <div class="session-meta">
+              <span>الكويت</span>
+              <span class="dot" aria-hidden="true"></span>
+              <span>آخر نشاط أمس</span>
+            </div>
+          </div>
+          <button class="session-revoke">إنهاء</button>
+        </div>
+
+        <div class="session-row">
+          <div class="session-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="session-info">
+            <div class="session-device">
+              <span>متصفّح Chrome · Windows</span>
+            </div>
+            <div class="session-meta">
+              <span>السعودية · الرياض</span>
+              <span class="dot" aria-hidden="true"></span>
+              <span>منذ <span class="latin">12</span> يوماً</span>
+            </div>
+          </div>
+          <button class="session-revoke">إنهاء</button>
+        </div>
+      </section>
+
+      <!-- Sponsorships -->
+      <section class="section" id="sponsorships" aria-labelledby="sp-title">
+        <div class="section-head">
+          <div class="head-text">
+            <h2 id="sp-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              تفضيلات الكفالات
+            </h2>
+            <p>تطبَّق هذه الإعدادات على كل الكفالات الجديدة. يمكنك تعديل أيّ كفالة قائمة من صفحتها.</p>
+          </div>
+        </div>
+
+        <div class="toggle-list">
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">التجديد التلقائي</div>
+              <div class="toggle-sub">تجدّد كفالاتك تلقائياً قبل انتهائها بأسبوع لضمان عدم انقطاعها.</div>
+            </div>
+            <span class="toggle-meta on">مفعّل</span>
+            <button class="switch on" aria-pressed="true"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">التقارير الربعية الموسّعة</div>
+              <div class="toggle-sub">إضافة للتقارير الشهرية، أرسلوا تقريراً تفصيلياً كل ٣ أشهر.</div>
+            </div>
+            <span class="toggle-meta on">مفعّل</span>
+            <button class="switch on" aria-pressed="true"></button>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+            </div>
+            <div class="toggle-text">
+              <div class="toggle-title">تصنيف الكفالات كزكاة افتراضياً</div>
+              <div class="toggle-sub">يُحتسب المبلغ ضمن إيصال الزكاة السنوي. يمكنك تعديله لكل كفالة.</div>
+            </div>
+            <button class="switch" aria-pressed="false"></button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Danger zone -->
+      <section class="section danger" id="danger" aria-labelledby="danger-title">
+        <div class="section-head">
+          <div class="head-text">
+            <h2 id="danger-title">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              منطقة الخطر
+            </h2>
+            <p>إجراءات لا رجعة فيها. تأكّد قبل المتابعة.</p>
+          </div>
+        </div>
+
+        <div class="danger-card">
+          <div class="danger-card-text">
+            <div class="danger-card-title">تصدير كل بياناتي</div>
+            <div class="danger-card-sub">احصل على نسخة من جميع بياناتك في رفقاء (إيصالات، تقارير، رسائل) بصيغة <span class="latin">JSON + PDF</span>.</div>
+          </div>
+          <button class="danger-btn" style="border-color: var(--gray-300); color: var(--gray-700);">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-inline-end: 4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            طلب تصدير
+          </button>
+        </div>
+
+        <div class="danger-card">
+          <div class="danger-card-text">
+            <div class="danger-card-title">إيقاف كل الكفالات</div>
+            <div class="danger-card-sub">يتمّ إخطار الجهات الراعية، ولا يُخصم أيّ مبلغ جديد. تبقى الكفالات الحاليّة سارية حتى نهاية فترتها المدفوعة.</div>
+          </div>
+          <button class="danger-btn">
+            إيقاف كل الكفالات
+          </button>
+        </div>
+
+        <div class="danger-card">
+          <div class="danger-card-text">
+            <div class="danger-card-title">حذف حسابي نهائيّاً</div>
+            <div class="danger-card-sub">يُحذف حسابك بعد <span class="latin">30</span> يوماً. خلال هذه المدّة يمكنك التراجع. لا تُحذف الإيصالات المرتبطة بالكفالات الفعليّة.</div>
+          </div>
+          <button class="danger-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-inline-end: 4px;"><polyline points="3 6 5 6 21 6"/><path d="m19 6-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            حذف الحساب
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+/* Side nav scroll-spy */
+const navItems = document.querySelectorAll('.side-nav-item');
+const sections = document.querySelectorAll('.section');
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    navItems.forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(n => n.classList.toggle('active', n.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-100px 0px -50% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+/* Switches */
+document.querySelectorAll('.switch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    sw.classList.toggle('on');
+    sw.setAttribute('aria-pressed', sw.classList.contains('on') ? 'true' : 'false');
+  });
+});
+
+/* Radio pills */
+document.querySelectorAll('.radio-pills').forEach(group => {
+  group.addEventListener('click', e => {
+    const pill = e.target.closest('.radio-pill');
+    if (!pill) return;
+    group.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+  });
+});
+
+/* Session revoke */
+document.querySelectorAll('.session-revoke:not([disabled])').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (confirm('إنهاء هذه الجلسة؟')) {
+      btn.closest('.session-row').style.opacity = '.4';
+      btn.disabled = true;
+      btn.textContent = 'تم';
+    }
+  });
+});
+
+/* Nav tabs */
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

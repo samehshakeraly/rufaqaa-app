@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — تقرير الأداء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+  --sidebar-w: 220px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 15px; line-height: 1.55;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-500), var(--trust-700)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--purple-700); font-weight: 500; }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 17px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; }
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.filter-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700);
+}
+
+.page { padding: 22px 28px 48px; max-width: 1380px; margin: 0 auto; width: 100%; }
+
+/* KPI row */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+.kpi {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+}
+.kpi-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.kpi-label { font-size: 11.5px; color: var(--gray-500); font-weight: 500; margin-bottom: 6px; }
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  display: flex; align-items: baseline; gap: 4px;
+}
+.kpi-value .unit { font-size: 12px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
+.kpi-trend {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.kpi-trend.up { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.kpi-trend.down { background: var(--danger-50); color: var(--danger-600); border: 1px solid var(--danger-100); }
+
+.kpi-bench { font-size: 11px; color: var(--gray-500); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+.kpi-bench .ok { color: var(--success-700); font-weight: 600; }
+.kpi-bench .warn { color: var(--warning-700); font-weight: 600; }
+
+/* Grid 2-cols */
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
+
+.card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.card-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  background: var(--gray-50);
+}
+.card-head h3 { font-size: 14.5px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.card-head h3 svg { color: var(--trust-400); }
+.card-head .head-meta { font-size: 11.5px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; }
+
+.card-body { padding: 18px 20px; }
+
+/* Trend chart (mock) */
+.trend-chart { height: 160px; position: relative; margin-bottom: 8px; }
+.trend-chart svg { width: 100%; height: 100%; overflow: visible; }
+.chart-x-labels { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+.chart-legend { display: flex; gap: 16px; margin-bottom: 14px; font-size: 11.5px; }
+.chart-legend-item { display: inline-flex; align-items: center; gap: 6px; color: var(--gray-700); }
+.chart-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.chart-legend-dot.target { background: var(--gray-300); }
+.chart-legend-dot.actual { background: var(--trust-400); }
+
+/* Staff leaderboard */
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 28px 32px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.leaderboard-row:last-child { border-bottom: none; }
+.leaderboard-row:hover { background: var(--snow-200); }
+
+.lb-rank {
+  font-size: 12px; font-weight: 600;
+  color: var(--gray-500);
+  text-align: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.lb-rank.gold { color: var(--gold-700); }
+.lb-rank.silver { color: var(--gray-500); }
+.lb-rank.bronze { color: #c0826b; }
+
+.lb-avatar {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.lb-avatar.c2 { background: var(--purple-50); color: var(--purple-700); }
+.lb-avatar.c3 { background: var(--success-50); color: var(--success-700); }
+
+.lb-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.lb-name-sub { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.lb-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.lb-bar {
+  width: 80px; height: 6px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.lb-bar-fill { height: 100%; background: var(--trust-400); border-radius: var(--radius-full); }
+.lb-bar-num {
+  font-size: 12.5px; font-weight: 600; color: var(--gray-900);
+  font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1;
+  min-width: 26px; text-align: left;
+}
+
+/* SLA breakdown */
+.sla-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.sla-row:last-child { border-bottom: none; }
+
+.sla-label { font-size: 13px; color: var(--gray-700); }
+.sla-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.sla-value .label { font-size: 11px; font-weight: 400; color: var(--gray-500); margin-inline-start: 6px; }
+.sla-value.ok { color: var(--success-700); }
+.sla-value.warn { color: var(--warning-700); }
+
+.sla-progress {
+  margin-top: 6px;
+  height: 5px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.sla-progress-fill { height: 100%; border-radius: var(--radius-full); }
+.sla-progress-fill.green { background: var(--success-500); }
+.sla-progress-fill.amber { background: var(--warning-700); }
+.sla-progress-fill.red { background: var(--danger-600); }
+
+/* Donut */
+.donut-card { text-align: center; padding: 22px 18px; }
+.donut-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 12px; }
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.donut-num {
+  font-size: 26px; font-weight: 600; color: var(--gray-900);
+  font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1;
+  letter-spacing: -.02em;
+}
+.donut-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.donut-legend-item {
+  display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center;
+  font-size: 12.5px; color: var(--gray-700);
+}
+.donut-legend-dot { width: 12px; height: 12px; border-radius: 4px; }
+.donut-legend-num {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+/* Region table */
+.region-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.region-table th, .region-table td {
+  text-align: right; padding: 10px 16px; border-bottom: 1px solid var(--gray-100);
+}
+.region-table th {
+  font-size: 11px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em;
+  text-transform: uppercase; background: var(--gray-50);
+}
+.region-table td:last-child, .region-table th:last-child { text-align: left; }
+.region-table tbody tr:last-child td { border-bottom: none; }
+.region-table tbody tr:hover { background: var(--snow-200); }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>بوابة الجهة الشريكة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">فجر</span>
+      <span class="name">جمعية الفجر — غزّة</span>
+      <span class="role-badge">مدير</span>
+    </button>
+
+    <div class="nav-section">الإدارة</div>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>اللوحة التنفيذيّة</button>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>مركز الاعتمادات<span class="nav-item-badge">٢٤</span></button>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>الموظّفون</button>
+    <button class="nav-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>التحويلات الواردة</button>
+    <button class="nav-item active"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقارير الأداء</button>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">خ.م</div>
+      <div class="user-info">
+        <div class="user-name">خالد المنصور</div>
+        <div class="user-role">مدير الفرع</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>تقارير أداء الفرع</h2>
+        <p>قياس مستمرّ لمستوى الفرع مقارنة بالمعايير ومقارنة بالفروع الشقيقة</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="filter-pill">الفترة: شوّال <span class="latin">1447</span> <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <button class="btn-secondary"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>تصدير PDF</button>
+        <button class="btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>تقرير شهري كامل</button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- KPI row -->
+      <div class="kpi-grid">
+
+        <div class="kpi">
+          <div class="kpi-top">
+            <div class="kpi-label">إجمالي المعاملات</div>
+            <span class="kpi-trend up">+<span class="latin">14%</span></span>
+          </div>
+          <div class="kpi-value"><span class="latin">486</span> <span class="unit">معاملة</span></div>
+          <div class="kpi-bench">المعدّل بالفروع: <span class="ok latin">312</span> · أعلى من المعدّل</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-top">
+            <div class="kpi-label">معدّل القبول</div>
+            <span class="kpi-trend up">+<span class="latin">2%</span></span>
+          </div>
+          <div class="kpi-value"><span class="latin">94</span><span class="unit">%</span></div>
+          <div class="kpi-bench">الهدف: <span class="ok latin">90%</span> · مُحقَّق</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-top">
+            <div class="kpi-label">متوسّط زمن المعاملة</div>
+            <span class="kpi-trend up">-<span class="latin">12%</span></span>
+          </div>
+          <div class="kpi-value"><span class="latin">8</span> <span class="unit">دقائق</span></div>
+          <div class="kpi-bench">الهدف: <span class="ok latin">≤ 15 د</span> · مُحقَّق</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-top">
+            <div class="kpi-label">رضا أولياء الأمر</div>
+            <span class="kpi-trend up">+<span class="latin">0.3</span></span>
+          </div>
+          <div class="kpi-value"><span class="latin">4.6</span><span class="unit">/ 5</span></div>
+          <div class="kpi-bench">من <span class="latin">128</span> استبياناً مكتملاً</div>
+        </div>
+
+      </div>
+
+      <!-- Grid -->
+      <div class="grid">
+        <div>
+
+          <!-- Trend chart -->
+          <div class="card">
+            <div class="card-head">
+              <h3>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                أداء الفرع — آخر <span class="latin">6</span> شهور
+              </h3>
+              <span class="head-meta">المعاملات الشهريّة</span>
+            </div>
+
+            <div class="card-body">
+              <div class="chart-legend">
+                <span class="chart-legend-item"><span class="chart-legend-dot actual"></span>الأداء الفعلي</span>
+                <span class="chart-legend-item"><span class="chart-legend-dot target"></span>الهدف الشهري</span>
+                <span class="chart-legend-item"><span class="chart-legend-dot" style="background: var(--success-100); border: 1px dashed var(--success-500);"></span>المعدّل بالفروع</span>
+              </div>
+
+              <div class="trend-chart">
+                <svg viewBox="0 0 600 160" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--trust-300)" stop-opacity=".25"/>
+                      <stop offset="100%" stop-color="var(--trust-300)" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- target line -->
+                  <line x1="0" y1="78" x2="600" y2="78" stroke="var(--gray-300)" stroke-dasharray="4 4" stroke-width="1.5"/>
+
+                  <!-- benchmark average -->
+                  <line x1="0" y1="100" x2="600" y2="100" stroke="var(--success-500)" stroke-dasharray="2 4" stroke-width="1" opacity=".5"/>
+
+                  <!-- actual area + line -->
+                  <path d="M 0 120 Q 60 105 120 110 T 240 95 T 360 75 T 480 60 T 600 35" fill="none" stroke="var(--trust-400)" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M 0 120 Q 60 105 120 110 T 240 95 T 360 75 T 480 60 T 600 35 L 600 160 L 0 160 Z" fill="url(#ga)"/>
+
+                  <!-- points -->
+                  <circle cx="0" cy="120" r="4" fill="white" stroke="var(--trust-400)" stroke-width="2"/>
+                  <circle cx="120" cy="110" r="4" fill="white" stroke="var(--trust-400)" stroke-width="2"/>
+                  <circle cx="240" cy="95" r="4" fill="white" stroke="var(--trust-400)" stroke-width="2"/>
+                  <circle cx="360" cy="75" r="4" fill="white" stroke="var(--trust-400)" stroke-width="2"/>
+                  <circle cx="480" cy="60" r="4" fill="white" stroke="var(--trust-400)" stroke-width="2"/>
+                  <circle cx="600" cy="35" r="5" fill="var(--trust-500)" stroke="white" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="chart-x-labels">
+                <span>جمادى ١</span><span>جمادى ٢</span><span>رجب</span><span>شعبان</span><span>رمضان</span><span style="color: var(--trust-600); font-weight: 600;">شوّال</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="card">
+            <div class="card-head">
+              <h3>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                ترتيب الموظّفين هذا الشهر
+              </h3>
+              <span class="head-meta">حسب عدد المعاملات + معدّل القبول</span>
+            </div>
+
+            <div style="padding: 0;">
+              <div class="leaderboard-row">
+                <span class="lb-rank gold">1</span>
+                <div class="lb-avatar c2">س.ع</div>
+                <div>
+                  <div class="lb-name">سارة العلي</div>
+                  <div class="lb-name-sub">موظّفة شؤون + مراجعة تقارير · <span class="latin">98%</span> قبول</div>
+                </div>
+                <div class="lb-bar-wrap">
+                  <div class="lb-bar"><div class="lb-bar-fill" style="width: 100%;"></div></div>
+                </div>
+                <span class="lb-bar-num"><span class="latin">142</span></span>
+              </div>
+
+              <div class="leaderboard-row">
+                <span class="lb-rank silver">2</span>
+                <div class="lb-avatar c3">م.خ</div>
+                <div>
+                  <div class="lb-name">محمود الخالد</div>
+                  <div class="lb-name-sub">موظّف شؤون + مراجعة وسائط · <span class="latin">96%</span> قبول</div>
+                </div>
+                <div class="lb-bar-wrap">
+                  <div class="lb-bar"><div class="lb-bar-fill" style="width: 69%;"></div></div>
+                </div>
+                <span class="lb-bar-num"><span class="latin">98</span></span>
+              </div>
+
+              <div class="leaderboard-row">
+                <span class="lb-rank bronze">3</span>
+                <div class="lb-avatar">ن.ز</div>
+                <div>
+                  <div class="lb-name">نادر الزيتون</div>
+                  <div class="lb-name-sub">موظّف شؤون · <span class="latin">94%</span> قبول</div>
+                </div>
+                <div class="lb-bar-wrap">
+                  <div class="lb-bar"><div class="lb-bar-fill" style="width: 61%;"></div></div>
+                </div>
+                <span class="lb-bar-num"><span class="latin">87</span></span>
+              </div>
+
+              <div class="leaderboard-row">
+                <span class="lb-rank">4</span>
+                <div class="lb-avatar">خ.م</div>
+                <div>
+                  <div class="lb-name">خالد المنصور</div>
+                  <div class="lb-name-sub">مدير + اعتمادات نهائيّة</div>
+                </div>
+                <div class="lb-bar-wrap">
+                  <div class="lb-bar"><div class="lb-bar-fill" style="width: 66%;"></div></div>
+                </div>
+                <span class="lb-bar-num"><span class="latin">94</span></span>
+              </div>
+
+              <div class="leaderboard-row">
+                <span class="lb-rank">5</span>
+                <div class="lb-avatar">ع.ح</div>
+                <div>
+                  <div class="lb-name">عمر الحجار</div>
+                  <div class="lb-name-sub">مدير مساعد</div>
+                </div>
+                <div class="lb-bar-wrap">
+                  <div class="lb-bar"><div class="lb-bar-fill" style="width: 48%;"></div></div>
+                </div>
+                <span class="lb-bar-num"><span class="latin">68</span></span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Region table -->
+          <div class="card">
+            <div class="card-head">
+              <h3>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                توزّع الأيتام جغرافيّاً
+              </h3>
+              <span class="head-meta">داخل غزّة</span>
+            </div>
+            <table class="region-table">
+              <thead>
+                <tr>
+                  <th>المنطقة</th>
+                  <th>عدد الأيتام</th>
+                  <th>المكفولون</th>
+                  <th>نسبة الكفالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>غزّة (وسط)</td><td><span class="latin">412</span></td><td><span class="latin">348</span></td><td style="color: var(--success-700); font-weight: 600;"><span class="latin">84%</span></td></tr>
+                <tr><td>الشمال</td><td><span class="latin">286</span></td><td><span class="latin">208</span></td><td style="color: var(--success-700); font-weight: 600;"><span class="latin">73%</span></td></tr>
+                <tr><td>خان يونس</td><td><span class="latin">198</span></td><td><span class="latin">152</span></td><td style="color: var(--success-700); font-weight: 600;"><span class="latin">77%</span></td></tr>
+                <tr><td>رفح</td><td><span class="latin">182</span></td><td><span class="latin">128</span></td><td style="color: var(--warning-700); font-weight: 600;"><span class="latin">70%</span></td></tr>
+                <tr><td>دير البلح</td><td><span class="latin">162</span></td><td><span class="latin">146</span></td><td style="color: var(--success-700); font-weight: 600;"><span class="latin">90%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Side col -->
+        <aside>
+
+          <!-- Donut: workload breakdown -->
+          <div class="card">
+            <div class="card-head">
+              <h3>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+                توزّع العمل
+              </h3>
+            </div>
+            <div class="donut-card">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 100 100" style="width:100%; height:100%; transform: rotate(-90deg);">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gray-100)" stroke-width="16"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--trust-400)" stroke-width="16" stroke-dasharray="125 251" stroke-linecap="butt"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--success-500)" stroke-width="16" stroke-dasharray="80 251" stroke-dashoffset="-125" stroke-linecap="butt"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gold-700)" stroke-width="16" stroke-dasharray="30 251" stroke-dashoffset="-205" stroke-linecap="butt"/>
+                </svg>
+                <div class="donut-center">
+                  <div class="donut-num">486</div>
+                  <div class="donut-label">معاملة هذا الشهر</div>
+                </div>
+              </div>
+
+              <div class="donut-legend">
+                <div class="donut-legend-item">
+                  <span class="donut-legend-dot" style="background: var(--trust-400);"></span>
+                  <span>تسجيل أيتام جدد</span>
+                  <span class="donut-legend-num"><span class="latin">242</span> · <span class="latin">50%</span></span>
+                </div>
+                <div class="donut-legend-item">
+                  <span class="donut-legend-dot" style="background: var(--success-500);"></span>
+                  <span>مراجعة تقارير</span>
+                  <span class="donut-legend-num"><span class="latin">156</span> · <span class="latin">32%</span></span>
+                </div>
+                <div class="donut-legend-item">
+                  <span class="donut-legend-dot" style="background: var(--gold-700);"></span>
+                  <span>مراجعة وسائط</span>
+                  <span class="donut-legend-num"><span class="latin">62</span> · <span class="latin">13%</span></span>
+                </div>
+                <div class="donut-legend-item">
+                  <span class="donut-legend-dot" style="background: var(--gray-200);"></span>
+                  <span>أخرى</span>
+                  <span class="donut-legend-num"><span class="latin">26</span> · <span class="latin">5%</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLA breakdown -->
+          <div class="card">
+            <div class="card-head">
+              <h3>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                التزام الـ <span class="latin">SLA</span>
+              </h3>
+            </div>
+            <div class="card-body">
+
+              <div class="sla-row">
+                <div>
+                  <div class="sla-label">تسجيل يتيم → اعتماد</div>
+                  <div class="sla-progress"><div class="sla-progress-fill green" style="width: 92%;"></div></div>
+                </div>
+                <div class="sla-value ok"><span class="latin">2.1</span> <span class="label">يوم (هدف ≤ <span class="latin">3</span>)</span></div>
+              </div>
+
+              <div class="sla-row">
+                <div>
+                  <div class="sla-label">تقرير شهري → موافقة كفيل</div>
+                  <div class="sla-progress"><div class="sla-progress-fill green" style="width: 88%;"></div></div>
+                </div>
+                <div class="sla-value ok"><span class="latin">1.4</span> <span class="label">يوم (هدف ≤ <span class="latin">2</span>)</span></div>
+              </div>
+
+              <div class="sla-row">
+                <div>
+                  <div class="sla-label">رسالة كفيل → ولي الأمر</div>
+                  <div class="sla-progress"><div class="sla-progress-fill amber" style="width: 76%;"></div></div>
+                </div>
+                <div class="sla-value warn"><span class="latin">22</span> <span class="label">ساعة (هدف ≤ <span class="latin">24</span>)</span></div>
+              </div>
+
+              <div class="sla-row">
+                <div>
+                  <div class="sla-label">تأكيد تحويل بنكي</div>
+                  <div class="sla-progress"><div class="sla-progress-fill green" style="width: 95%;"></div></div>
+                </div>
+                <div class="sla-value ok"><span class="latin">1.2</span> <span class="label">يوم</span></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Health flags -->
+          <div class="card">
+            <div class="card-head">
+              <h3>
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                إشارات صحّية
+              </h3>
+            </div>
+            <div class="card-body" style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
+
+              <div style="display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--success-50); border: 1px solid var(--success-100); border-radius: var(--radius-md); font-size: 12px; color: var(--success-700); line-height: 1.5;">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" style="flex-shrink: 0;"><polyline points="20 6 9 17 4 12"/></svg>
+                <span><strong>أداء ممتاز</strong> — أنت ضمن أعلى <span class="latin">10%</span> من فروع رفقاء عالمياً.</span>
+              </div>
+
+              <div style="display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--warning-50); border: 1px solid var(--warning-100); border-radius: var(--radius-md); font-size: 12px; color: var(--warning-700); line-height: 1.5;">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" style="flex-shrink: 0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+                <span>منطقة <strong>رفح</strong> ما تزال أقلّ من معدّل الكفالة. تحتاج حملة موجَّهة.</span>
+              </div>
+
+              <div style="display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--info-50); border: 1px solid var(--info-100); border-radius: var(--radius-md); font-size: 12px; color: var(--info-700); line-height: 1.5;">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span><span class="latin">5</span> أيتام جاوزوا سنّ التخرّج وينتظرون نقلهم لبرنامج الشباب.</span>
+              </div>
+
+            </div>
+          </div>
+
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+document.querySelectorAll('.nav-item').forEach(it => {
+  it.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    it.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

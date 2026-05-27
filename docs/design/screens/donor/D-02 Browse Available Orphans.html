@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — استكشف أيتاماً للكفالة</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-700: #B45309;
+  --danger-600: #DC2626;
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ═══ HEADER (مطابق لـ D-01) ═══ */
+.app-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.app-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 40px; height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+}
+.brand-info h1 { font-size: 16px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 12px; color: var(--gray-500); }
+
+.nav-tabs { display: flex; gap: 4px; margin-inline-start: 24px; }
+.nav-tab {
+  padding: 8px 14px; border-radius: var(--radius-md);
+  font-size: 14px; font-weight: 500; color: var(--gray-600);
+  background: transparent; border: none; transition: var(--transition-fast);
+}
+.nav-tab:hover { background: var(--gray-100); color: var(--gray-900); }
+.nav-tab.active { background: var(--tranquil-100); color: var(--trust-600); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.icon-btn {
+  width: 40px; height: 40px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; transition: var(--transition); color: var(--gray-600);
+}
+.icon-btn:hover { background: white; border-color: var(--sky-300); color: var(--trust-500); }
+.icon-btn-badge {
+  position: absolute; top: -4px; left: -4px;
+  background: var(--danger-600); color: white;
+  font-size: 10px; font-weight: 600;
+  min-width: 18px; height: 18px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 5px; border: 2px solid white;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.user-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); transition: var(--transition);
+}
+.user-chip:hover { background: white; border-color: var(--sky-300); }
+.user-chip-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--tranquil-200); color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 12px;
+}
+.user-chip-name { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+
+@media (max-width: 1024px) { .nav-tabs { display: none; } }
+
+/* ═══ PAGE TITLE ═══ */
+.page-head {
+  background: linear-gradient(180deg, white 0%, var(--snow-100) 100%);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 32px 32px 26px;
+}
+.page-head-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.breadcrumb {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--gray-500);
+  margin-bottom: 14px;
+}
+.breadcrumb a:hover { color: var(--trust-500); }
+.breadcrumb-sep { color: var(--gray-300); display: inline-flex; }
+.breadcrumb-current { color: var(--gray-900); font-weight: 500; }
+
+.page-head h1 {
+  font-size: 30px; font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em; line-height: 1.2;
+  margin-bottom: 8px;
+}
+.page-head p {
+  font-size: 15px;
+  color: var(--gray-600);
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+/* ═══ LAYOUT ═══ */
+.workspace {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 28px;
+  padding: 24px 32px 64px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .workspace { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+  .filters { position: static; }
+  .filters-mobile-toggle { display: flex !important; }
+  .filters-body { display: none; }
+  .filters[open] .filters-body { display: block; }
+}
+
+/* ═══ FILTERS SIDEBAR ═══ */
+.filters {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  position: sticky;
+  top: 90px;
+  overflow: hidden;
+}
+
+.filters-head {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.filters-head h2 {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filters-head h2 svg { color: var(--trust-500); }
+
+.filters-clear {
+  background: transparent;
+  border: none;
+  color: var(--trust-500);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.filters-clear:hover { background: var(--tranquil-100); color: var(--trust-600); }
+
+.filters-mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 18px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-800);
+}
+
+.filters-body { padding: 6px 0; }
+
+.filter-group {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.filter-group:last-child { border-bottom: none; }
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  margin-bottom: 12px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-label .count {
+  font-weight: 500;
+  color: var(--trust-500);
+  background: var(--tranquil-100);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Country chips */
+.country-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.country-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: inherit;
+}
+
+.country-chip:hover { background: white; border-color: var(--sky-300); }
+
+.country-chip.selected {
+  background: var(--tranquil-100);
+  border-color: var(--trust-300);
+  color: var(--trust-700);
+  font-weight: 500;
+}
+
+.country-chip-flag { font-size: 14px; }
+
+/* Range slider (two-handle visual) */
+.range-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--gray-700);
+}
+
+.range-display .value {
+  font-weight: 600;
+  color: var(--trust-600);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.range-track {
+  position: relative;
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  margin: 10px 8px;
+}
+
+.range-fill {
+  position: absolute;
+  height: 100%;
+  background: var(--trust-300);
+  border-radius: var(--radius-full);
+}
+
+.range-thumb {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--trust-400);
+  transform: translate(50%, -50%);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+}
+
+.range-min { font-size: 11px; color: var(--gray-500); }
+.range-max { font-size: 11px; color: var(--gray-500); }
+.range-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+/* Radio pills (gender, duration) */
+.pill-radios {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill-radio {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--gray-700);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.pill-radio:hover { background: white; border-color: var(--sky-300); }
+
+.pill-radio.selected {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+  color: white;
+  font-weight: 500;
+}
+
+/* Active filters strip */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--trust-700);
+}
+
+.active-chip button {
+  border: none;
+  background: var(--sky-200);
+  color: var(--trust-700);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+.active-chip button:hover { background: var(--trust-300); color: white; }
+
+/* ═══ RESULTS ═══ */
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.results-count {
+  font-size: 13.5px;
+  color: var(--gray-600);
+}
+
+.results-count strong {
+  color: var(--gray-900);
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.results-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 8px 10px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.sort-select:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+.sort-select svg.chev { color: var(--gray-400); }
+
+.view-toggle {
+  display: flex;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-toggle button {
+  width: 32px; height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--gray-500);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.view-toggle button.active {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+}
+
+/* Cards grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.orphan-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.orphan-card:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.orphan-card-media {
+  aspect-ratio: 4 / 5;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 12px, var(--tranquil-100) 12px, var(--tranquil-100) 24px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--trust-400);
+}
+
+.orphan-card-media .letter {
+  font-size: 64px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.02em;
+  opacity: .25;
+}
+
+.orphan-card-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--success-100);
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--success-700);
+}
+
+.orphan-card-status.urgent {
+  border-color: var(--warning-100);
+  color: var(--warning-700);
+}
+
+.orphan-card-status .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.orphan-card-flag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.orphan-card-priv {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(11,30,51,.55);
+  backdrop-filter: blur(6px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.orphan-card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.orphan-card-name {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+
+.orphan-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+}
+
+.orphan-card-meta .dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+
+.orphan-card-desc {
+  font-size: 13.5px;
+  color: var(--gray-700);
+  line-height: 1.55;
+  margin-bottom: 14px;
+  min-height: 42px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.orphan-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.orphan-card-tag {
+  font-size: 11px;
+  color: var(--gray-600);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.orphan-card-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px dashed var(--gray-200);
+  margin-bottom: 12px;
+}
+
+.orphan-card-price-label {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.orphan-card-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--trust-700);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.orphan-card-price .unit {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  margin-inline-start: 3px;
+}
+
+.orphan-card-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.btn-primary {
+  padding: 9px 14px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+}
+
+.btn-secondary {
+  padding: 9px 12px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+/* Footer / end-of-list */
+.end-of-results {
+  margin-top: 32px;
+  background: white;
+  border: 1px dashed var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.end-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--tranquil-100);
+  color: var(--trust-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.end-icon svg { width: 28px; height: 28px; }
+
+.end-of-results h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+}
+
+.end-of-results p {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  max-width: 420px;
+  margin: 0 auto 16px;
+  line-height: 1.6;
+}
+
+.end-of-results .latin { color: var(--trust-600); font-weight: 600; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 12px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  color: var(--gray-700);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.page-btn:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+.page-btn.active {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+  color: white;
+}
+
+.page-btn[aria-disabled="true"] {
+  opacity: .4; cursor: not-allowed;
+}
+
+.page-ellipsis { color: var(--gray-400); padding: 0 4px; }
+
+/* Icon */
+.icon {
+  width: 20px; height: 20px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .page-head { padding: 22px 16px 20px; }
+  .page-head h1 { font-size: 24px; }
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة الكفيل</p>
+      </div>
+    </div>
+    <nav class="nav-tabs" aria-label="التنقّل الرئيسي">
+      <button class="nav-tab">لوحتي</button>
+      <button class="nav-tab">أيتامي</button>
+      <button class="nav-tab active">استكشف أيتام</button>
+      <button class="nav-tab">الإيصالات</button>
+      <button class="nav-tab">الرسائل</button>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="التنبيهات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-badge">٤</span>
+      </button>
+      <button class="user-chip" aria-label="حساب أبو عمر">
+        <span class="user-chip-avatar" aria-hidden="true">أ.ع</span>
+        <span class="user-chip-name">أبو عمر</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE TITLE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="page-head" aria-labelledby="page-title">
+  <div class="page-head-inner">
+    <nav class="breadcrumb" aria-label="مسار التنقّل">
+      <a href="D-01 Donor Dashboard.html">لوحتي</a>
+      <span class="breadcrumb-sep" aria-hidden="true">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </span>
+      <span class="breadcrumb-current" aria-current="page">استكشف أيتاماً للكفالة</span>
+    </nav>
+    <h1 id="page-title">من تختار قلبك أن يكون رفيقك؟</h1>
+    <p>
+      هؤلاء أيتام موثّقون من مؤسسات شريكة، ينتظرون أن يقف أحدٌ بجانبهم.
+      اختر بهدوء — كل قرار بكفالة هو بداية رحلة طويلة من المتابعة والدعاء.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     WORKSPACE
+     ═══════════════════════════════════════════════════════════════ -->
+<main class="workspace" role="main">
+
+  <!-- ─── FILTERS ─── -->
+  <aside class="filters" id="filters" open aria-label="فلاتر البحث">
+
+    <button type="button" class="filters-mobile-toggle" id="filters-toggle" aria-expanded="true" aria-controls="filters-body">
+      <span style="display: inline-flex; align-items: center; gap: 8px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        الفلاتر
+      </span>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <div class="filters-head">
+      <h2>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        تصفية النتائج
+      </h2>
+      <button type="button" class="filters-clear">مسح الكل</button>
+    </div>
+
+    <div class="filters-body" id="filters-body">
+
+      <div class="filter-group">
+        <div class="filter-label">الفلاتر النشطة <span class="count">٢</span></div>
+        <div class="active-filters">
+          <span class="active-chip">
+            الكويت
+            <button aria-label="إزالة">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </span>
+          <span class="active-chip">
+            <span class="latin">6–12</span> سنة
+            <button aria-label="إزالة">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">الدولة <span class="count">٤ مختارة</span></div>
+        <div class="country-chips">
+          <button class="country-chip selected"><span class="country-chip-flag">🇰🇼</span>الكويت</button>
+          <button class="country-chip selected"><span class="country-chip-flag">🇯🇴</span>الأردن</button>
+          <button class="country-chip selected"><span class="country-chip-flag">🇵🇸</span>فلسطين</button>
+          <button class="country-chip selected"><span class="country-chip-flag">🇾🇪</span>اليمن</button>
+          <button class="country-chip"><span class="country-chip-flag">🇸🇩</span>السودان</button>
+          <button class="country-chip"><span class="country-chip-flag">🇸🇾</span>سوريا</button>
+          <button class="country-chip"><span class="country-chip-flag">🇱🇧</span>لبنان</button>
+          <button class="country-chip"><span class="country-chip-flag">🇲🇦</span>المغرب</button>
+          <button class="country-chip"><span class="country-chip-flag">🇪🇬</span>مصر</button>
+          <button class="country-chip"><span class="country-chip-flag">🇮🇶</span>العراق</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">العمر</div>
+        <div class="range-display">
+          <span>من <span class="value latin">٦</span></span>
+          <span>إلى <span class="value latin">١٢</span> سنة</span>
+        </div>
+        <div class="range-track" role="slider" aria-valuemin="3" aria-valuemax="18" aria-valuenow="6 to 12" aria-label="نطاق العمر">
+          <div class="range-fill" style="right: 20%; left: 33%;"></div>
+          <div class="range-thumb" style="right: 20%;" aria-hidden="true"></div>
+          <div class="range-thumb" style="right: 67%;" aria-hidden="true"></div>
+        </div>
+        <div class="range-meta">
+          <span class="range-min">٣ سنوات</span>
+          <span class="range-max">١٨ سنة</span>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">الجنس</div>
+        <div class="pill-radios">
+          <button class="pill-radio selected">الجميع</button>
+          <button class="pill-radio">ذكور</button>
+          <button class="pill-radio">إناث</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">نوع الكفالة</div>
+        <div class="pill-radios" style="flex-direction: column;">
+          <button class="pill-radio selected" style="text-align: right;">شهريّة</button>
+          <button class="pill-radio" style="text-align: right;">سنويّة</button>
+          <button class="pill-radio" style="text-align: right;">دفعة واحدة</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">المبلغ الشهري</div>
+        <div class="range-display">
+          <span>من <span class="value latin">٤٠</span> دك</span>
+          <span>إلى <span class="value latin">٨٠</span> دك</span>
+        </div>
+        <div class="range-track" role="slider" aria-label="نطاق المبلغ">
+          <div class="range-fill" style="right: 35%; left: 15%;"></div>
+          <div class="range-thumb" style="right: 35%;" aria-hidden="true"></div>
+          <div class="range-thumb" style="right: 85%;" aria-hidden="true"></div>
+        </div>
+        <div class="range-meta">
+          <span class="range-min latin">25 دك</span>
+          <span class="range-max latin">150 دك</span>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ─── RESULTS ─── -->
+  <section aria-label="الأيتام المتاحون">
+
+    <div class="results-head">
+      <div class="results-count">
+        <strong>١٢٨</strong> يتيماً متاحاً للكفالة الآن — <span class="latin">٢٤</span> منهم يطابقون فلاترك
+      </div>
+      <div class="results-actions">
+        <button class="sort-select" aria-label="ترتيب">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="m19 6-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          الأكثر احتياجاً أولاً
+          <svg class="icon icon-sm chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="view-toggle" role="tablist" aria-label="طريقة العرض">
+          <button class="active" aria-label="بطاقات" role="tab" aria-selected="true">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <button aria-label="قائمة" role="tab" aria-selected="false">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="فلسطين">🇵🇸</span>
+          <span class="orphan-card-status urgent">
+            <span class="dot" aria-hidden="true"></span>
+            باقي <span class="latin">يومان</span> للكفالة
+          </span>
+          <span class="letter" aria-hidden="true">س</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            صورة محميّة بالخصوصيّة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">سلمى ع.</h3>
+          <div class="orphan-card-meta">
+            <span>٨ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>فلسطين — غزّة</span>
+          </div>
+          <p class="orphan-card-desc">تحبّ الرسم وتمتاز بأخلاق رفيعة في مدرستها. تحفظ ربع جزء عمّ.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">رسم</span>
+            <span class="orphan-card-tag">حفظ قرآن</span>
+            <span class="orphan-card-tag">الصف الثاني</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">35</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل سلمى</button>
+            <button class="btn-secondary">تعرّف عليها</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="اليمن">🇾🇪</span>
+          <span class="orphan-card-status">
+            <span class="dot" aria-hidden="true"></span>
+            متاح
+          </span>
+          <span class="letter" aria-hidden="true">م</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            صورة متاحة بعد الكفالة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">معاذ ح.</h3>
+          <div class="orphan-card-meta">
+            <span>١٢ سنة</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>اليمن — تعز</span>
+          </div>
+          <p class="orphan-card-desc">طالب متفوّق يحبّ الرياضيات، ويساعد إخوته الأصغر بدراستهم يوميّاً.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">رياضيات</span>
+            <span class="orphan-card-tag">الصف السادس</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">40</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل معاذ</button>
+            <button class="btn-secondary">تعرّف عليه</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="الأردن">🇯🇴</span>
+          <span class="orphan-card-status">
+            <span class="dot" aria-hidden="true"></span>
+            متاح
+          </span>
+          <span class="letter" aria-hidden="true">ر</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            صورة متاحة بعد الكفالة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">ريمان أ.</h3>
+          <div class="orphan-card-meta">
+            <span>٦ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>الأردن — إربد</span>
+          </div>
+          <p class="orphan-card-desc">طفلة هادئة في صفّها الأوّل، شغوفة بقراءة قصص الأطفال المصوّرة.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">قراءة</span>
+            <span class="orphan-card-tag">روضة</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">30</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل ريمان</button>
+            <button class="btn-secondary">تعرّف عليها</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="السودان">🇸🇩</span>
+          <span class="orphan-card-status urgent">
+            <span class="dot" aria-hidden="true"></span>
+            باقي <span class="latin">٥</span> أيام
+          </span>
+          <span class="letter" aria-hidden="true">إ</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            صورة محميّة بالخصوصيّة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">إبراهيم ج.</h3>
+          <div class="orphan-card-meta">
+            <span>١٠ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>السودان — أم درمان</span>
+          </div>
+          <p class="orphan-card-desc">يحب كرة القدم ولاعب موهوب في فريق مدرسته. درجاته جيّدة جداً.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">كرة قدم</span>
+            <span class="orphan-card-tag">الصف الرابع</span>
+            <span class="orphan-card-tag">رياضة</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">45</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل إبراهيم</button>
+            <button class="btn-secondary">تعرّف عليه</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="فلسطين">🇵🇸</span>
+          <span class="orphan-card-status">
+            <span class="dot" aria-hidden="true"></span>
+            متاح
+          </span>
+          <span class="letter" aria-hidden="true">ز</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            صورة متاحة بعد الكفالة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">زينب م.</h3>
+          <div class="orphan-card-meta">
+            <span>٩ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>فلسطين — رام الله</span>
+          </div>
+          <p class="orphan-card-desc">تتفوّق في العلوم وتحلم بأن تكون طبيبة أطفال يوماً ما.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">علوم</span>
+            <span class="orphan-card-tag">الصف الثالث</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">35</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل زينب</button>
+            <button class="btn-secondary">تعرّف عليها</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="الكويت">🇰🇼</span>
+          <span class="orphan-card-status">
+            <span class="dot" aria-hidden="true"></span>
+            متاح
+          </span>
+          <span class="letter" aria-hidden="true">ع</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            صورة متاحة بعد الكفالة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">عبدالعزيز ف.</h3>
+          <div class="orphan-card-meta">
+            <span>٧ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>الكويت — الفروانية</span>
+          </div>
+          <p class="orphan-card-desc">طفل اجتماعي مرح، يحبّ المسرح المدرسي وأنشطة الكشّافة.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">مسرح</span>
+            <span class="orphan-card-tag">كشّافة</span>
+            <span class="orphan-card-tag">الصف الثاني</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">50</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل عبدالعزيز</button>
+            <button class="btn-secondary">تعرّف عليه</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="اليمن">🇾🇪</span>
+          <span class="orphan-card-status">
+            <span class="dot" aria-hidden="true"></span>
+            متاح
+          </span>
+          <span class="letter" aria-hidden="true">ج</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            صورة محميّة بالخصوصيّة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">جنى س.</h3>
+          <div class="orphan-card-meta">
+            <span>١١ سنة</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>اليمن — صنعاء</span>
+          </div>
+          <p class="orphan-card-desc">حافظة لخمسة أجزاء من القرآن، تساعد والدتها في تربية إخوتها.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">حفظ قرآن</span>
+            <span class="orphan-card-tag">الصف الخامس</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">40</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل جنى</button>
+            <button class="btn-secondary">تعرّف عليها</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="الأردن">🇯🇴</span>
+          <span class="orphan-card-status urgent">
+            <span class="dot" aria-hidden="true"></span>
+            باقي <span class="latin">٤</span> أيام
+          </span>
+          <span class="letter" aria-hidden="true">ح</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            صورة متاحة بعد الكفالة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">حمزة ع.</h3>
+          <div class="orphan-card-meta">
+            <span>١٢ سنة</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>الأردن — عمّان</span>
+          </div>
+          <p class="orphan-card-desc">شغوف بالبرمجة والحاسوب، يحضر دروساً مجانية في الجمعية المحليّة.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">برمجة</span>
+            <span class="orphan-card-tag">حاسوب</span>
+            <span class="orphan-card-tag">الصف السادس</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">45</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل حمزة</button>
+            <button class="btn-secondary">تعرّف عليه</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="orphan-card">
+        <div class="orphan-card-media">
+          <span class="orphan-card-flag" title="السودان">🇸🇩</span>
+          <span class="orphan-card-status">
+            <span class="dot" aria-hidden="true"></span>
+            متاح
+          </span>
+          <span class="letter" aria-hidden="true">آ</span>
+          <span class="orphan-card-priv">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            صورة متاحة بعد الكفالة
+          </span>
+        </div>
+        <div class="orphan-card-body">
+          <h3 class="orphan-card-name">آلاء م.</h3>
+          <div class="orphan-card-meta">
+            <span>٨ سنوات</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>السودان — كسلا</span>
+          </div>
+          <p class="orphan-card-desc">طفلة ذكيّة تحبّ الموسيقى والإنشاد، تشارك في فريق الإنشاد المدرسي.</p>
+          <div class="orphan-card-tags">
+            <span class="orphan-card-tag">إنشاد</span>
+            <span class="orphan-card-tag">الصف الثالث</span>
+          </div>
+          <div class="orphan-card-price-row">
+            <span class="orphan-card-price-label">من</span>
+            <div class="orphan-card-price"><span class="latin">35</span><span class="unit">دك/شهر</span></div>
+          </div>
+          <div class="orphan-card-actions">
+            <button class="btn-primary">اكفل آلاء</button>
+            <button class="btn-secondary">تعرّف عليها</button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Pagination -->
+    <nav class="pagination" aria-label="تنقّل بين الصفحات">
+      <button class="page-btn" aria-label="الصفحة السابقة" aria-disabled="true">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="page-btn active" aria-current="page">١</button>
+      <button class="page-btn">٢</button>
+      <button class="page-btn">٣</button>
+      <span class="page-ellipsis">…</span>
+      <button class="page-btn">٧</button>
+      <button class="page-btn" aria-label="الصفحة التالية">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </nav>
+
+    <!-- End-of-results -->
+    <aside class="end-of-results" aria-label="ملاحظة">
+      <div class="end-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M5 9v9a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V9"/><path d="M9 9V5a3 3 0 0 1 6 0v4"/></svg>
+      </div>
+      <h3>تُضاف أيتام جدد للقائمة باستمرار</h3>
+      <p>كل أسبوع تنضمّ مؤسسات شريكة بأطفال جدد. فعّل التنبيهات لتعرف فور توفّر يتيم يطابق ما تبحث عنه.</p>
+      <button class="btn-secondary" style="padding: 10px 20px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-inline-end: 6px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        فعّل تنبيهات الأيتام الجدد
+      </button>
+    </aside>
+
+  </section>
+
+</main>
+
+<script>
+/* Filters interactivity */
+document.querySelectorAll('.country-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('selected'));
+});
+
+document.querySelectorAll('.pill-radios').forEach(group => {
+  group.addEventListener('click', e => {
+    const pill = e.target.closest('.pill-radio');
+    if (!pill) return;
+    group.querySelectorAll('.pill-radio').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+  });
+});
+
+/* Mobile filter toggle */
+const filters = document.getElementById('filters');
+document.getElementById('filters-toggle').addEventListener('click', () => {
+  const isOpen = filters.hasAttribute('open');
+  if (isOpen) filters.removeAttribute('open');
+  else filters.setAttribute('open', '');
+});
+
+/* Active chip remove */
+document.querySelectorAll('.active-chip button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    btn.closest('.active-chip').remove();
+  });
+});
+
+/* Nav tabs */
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+/* View toggle */
+document.querySelectorAll('.view-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-toggle button').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+  });
+});
+</script>
+
+</body>
+</html>

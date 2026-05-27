@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — تعرّف على سلمى · للكفالة</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-700: #B45309;
+  --danger-600: #DC2626;
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 92px; /* sticky CTA space */
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ═══ HEADER ═══ */
+.app-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.app-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 40px; height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+}
+.brand-info h1 { font-size: 16px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 12px; color: var(--gray-500); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.icon-btn {
+  width: 40px; height: 40px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; transition: var(--transition); color: var(--gray-600);
+}
+.icon-btn:hover { background: white; border-color: var(--sky-300); color: var(--trust-500); }
+.user-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+.user-chip-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--tranquil-200); color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 12px;
+}
+.user-chip-name { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+
+/* ═══ PAGE ═══ */
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+}
+
+.breadcrumb {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--gray-500);
+  margin-bottom: 20px;
+}
+.breadcrumb a { color: var(--gray-600); transition: var(--transition-fast); }
+.breadcrumb a:hover { color: var(--trust-500); }
+.breadcrumb-sep { color: var(--gray-300); display: inline-flex; }
+.breadcrumb-current { color: var(--gray-900); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════════ */
+.hero {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  min-height: 460px;
+}
+
+@media (max-width: 880px) {
+  .hero { grid-template-columns: 1fr; }
+}
+
+.hero-media {
+  position: relative;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 18px, var(--tranquil-100) 18px, var(--tranquil-100) 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
+}
+
+.hero-media .letter {
+  font-size: 180px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.02em;
+  opacity: .18;
+  line-height: 1;
+}
+
+.hero-flag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  padding: 6px 14px 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-800);
+}
+
+.hero-flag .emoji { font-size: 18px; }
+
+.hero-status {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--warning-700);
+}
+
+.hero-status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.hero-priv {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(11,30,51,.6);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.hero-priv-tip {
+  position: absolute;
+  bottom: 60px;
+  left: 20px;
+  background: white;
+  border: 1px solid var(--sky-200);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--gray-700);
+  max-width: 260px;
+  line-height: 1.5;
+  box-shadow: var(--shadow-md);
+  display: none;
+}
+
+.hero-priv:hover + .hero-priv-tip,
+.hero-priv-tip:hover { display: block; }
+
+.hero-info {
+  padding: 36px 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--trust-600);
+  font-weight: 500;
+  align-self: flex-start;
+  padding: 4px 12px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-full);
+}
+
+.hero-name {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.15;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--gray-600);
+}
+
+.hero-meta .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+
+.hero-quick-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.fact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.fact-pill svg { color: var(--trust-400); }
+
+.hero-cost {
+  margin-top: auto;
+  padding: 18px 20px;
+  background: linear-gradient(160deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.hero-cost-text { min-width: 0; }
+.hero-cost-label { font-size: 12px; color: var(--gray-500); margin-bottom: 3px; }
+.hero-cost-amount {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.01em;
+  line-height: 1.1;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  display: flex; align-items: baseline; gap: 6px;
+}
+
+.hero-cost-amount .unit {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.hero-cost-sub {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+.btn-primary-lg {
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-lg);
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-primary-lg:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  box-shadow: var(--shadow-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS / GRID
+   ═══════════════════════════════════════════════════════════════ */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.section {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 26px 28px;
+  margin-bottom: 18px;
+}
+
+.section h2 {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section h2 svg { color: var(--trust-400); }
+
+.section-sub {
+  font-size: 13.5px;
+  color: var(--gray-500);
+  margin-bottom: 20px;
+}
+
+/* Summary 3 cards */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .summary-row { grid-template-columns: 1fr; }
+}
+
+.summary-card {
+  padding: 16px 18px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.summary-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-icon.health { background: var(--success-50); color: var(--success-700); }
+.summary-icon.family { background: var(--warning-50); color: var(--warning-700); }
+
+.summary-text { min-width: 0; }
+.summary-label { font-size: 12px; color: var(--gray-500); margin-bottom: 3px; font-weight: 500; }
+.summary-value { font-size: 14.5px; font-weight: 600; color: var(--gray-900); line-height: 1.4; }
+.summary-meta { font-size: 12px; color: var(--gray-600); margin-top: 4px; line-height: 1.5; }
+
+/* Story */
+.story {
+  font-size: 16px;
+  color: var(--gray-800);
+  line-height: 1.85;
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, var(--snow-100) 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 26px 28px;
+  position: relative;
+  margin-top: 16px;
+}
+
+.story::before {
+  content: '“';
+  position: absolute;
+  top: 8px;
+  right: 18px;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--sky-300);
+  opacity: .5;
+  font-family: serif;
+}
+
+.story p {
+  padding-inline-start: 8px;
+}
+
+.story p + p { margin-top: 14px; }
+
+.story-attr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: var(--gray-600);
+  padding-top: 14px;
+  border-top: 1px dashed var(--sky-200);
+}
+
+/* Cost plans */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 720px) {
+  .plans { grid-template-columns: 1fr; }
+}
+
+.plan {
+  padding: 18px 18px 16px;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.plan:hover { border-color: var(--sky-300); }
+
+.plan.selected {
+  border-color: var(--trust-400);
+  background: var(--tranquil-100);
+}
+
+.plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.plan-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.plan.featured .plan-name {
+  background: var(--trust-300);
+  color: white;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+}
+
+.plan-discount {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.plan-price {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.01em;
+  line-height: 1.1;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.plan-price .unit {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  margin-inline-start: 4px;
+}
+
+.plan-cadence {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.plan-meta {
+  font-size: 12px;
+  color: var(--gray-600);
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--gray-200);
+  line-height: 1.45;
+}
+
+.plan-check {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plan.selected .plan-check {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+}
+
+.plan.selected .plan-check::after {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: white;
+}
+
+.amount-suggest {
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  color: var(--info-700);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.amount-suggest svg { flex-shrink: 0; }
+
+.amount-suggest strong { font-weight: 600; }
+
+/* Partner org */
+.partner {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+}
+
+.partner-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: var(--trust-600);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.partner-info { min-width: 0; }
+.partner-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.partner-verify {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.partner-meta { font-size: 12.5px; color: var(--gray-500); line-height: 1.5; }
+.partner-meta strong { color: var(--gray-700); font-weight: 600; }
+
+.partner-action {
+  padding: 9px 14px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.partner-action:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+/* Transparency / sample report */
+.transparency-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .transparency-grid { grid-template-columns: 1fr; }
+}
+
+.trans-pill {
+  padding: 14px 14px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trans-pill-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.trans-pill-title { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.trans-pill-sub { font-size: 12px; color: var(--gray-600); line-height: 1.5; }
+
+.sample-report {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 14px;
+  align-items: flex-start;
+  background: white;
+  border: 1px dashed var(--sky-300);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.sample-report-month {
+  width: 60px;
+  text-align: center;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  padding: 8px 6px;
+}
+
+.sample-report-num {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--trust-700);
+  line-height: 1;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.sample-report-name { font-size: 10.5px; color: var(--trust-500); margin-top: 2px; }
+
+.sample-report-body { min-width: 0; }
+.sample-report-title {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+
+.sample-report-text {
+  font-size: 13.5px;
+  color: var(--gray-700);
+  line-height: 1.65;
+  font-style: italic;
+}
+
+.sample-report-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 14px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+/* FAQ */
+.faq-item {
+  border-bottom: 1px solid var(--gray-200);
+  padding: 16px 0;
+}
+
+.faq-item:last-child { border-bottom: none; }
+
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: right;
+  font-family: inherit;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.faq-q-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--gray-600);
+  transition: var(--transition);
+}
+
+.faq-item.open .faq-q-icon {
+  background: var(--trust-300);
+  color: white;
+  transform: rotate(180deg);
+}
+
+.faq-a {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.7;
+  display: none;
+}
+
+.faq-item.open .faq-a { display: block; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════════════════════════ */
+.side-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 88px;
+}
+
+.side-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.side-card h3 svg { color: var(--trust-400); }
+
+.side-mini-fact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 13px;
+}
+
+.side-mini-fact:last-of-type { border-bottom: none; }
+
+.side-mini-fact span:first-child { color: var(--gray-600); }
+.side-mini-fact span:last-child { color: var(--gray-900); font-weight: 500; }
+
+.side-cta {
+  margin-top: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.btn-block-primary {
+  padding: 12px 16px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.btn-block-primary:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+}
+
+.btn-block-ghost {
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.btn-block-ghost:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+.side-share {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STICKY BOTTOM CTA
+   ═══════════════════════════════════════════════════════════════ */
+.sticky-cta {
+  position: fixed;
+  bottom: 0;
+  inset-inline: 0;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  padding: 14px 24px;
+  z-index: 40;
+  box-shadow: 0 -2px 12px rgba(11,30,51,.05);
+}
+
+.sticky-cta-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sticky-cta-text { min-width: 0; }
+.sticky-cta-name { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.sticky-cta-price { font-size: 12.5px; color: var(--gray-500); margin-top: 1px; }
+.sticky-cta-price .latin { color: var(--trust-600); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .sticky-cta { padding: 12px 14px; }
+  .sticky-cta-text .sticky-cta-name { font-size: 13px; }
+  .btn-primary-lg { padding: 12px 18px; font-size: 14px; }
+}
+
+/* ═══ Icon ═══ */
+.icon {
+  width: 20px; height: 20px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .page { padding: 18px 16px 32px; }
+  .hero-info { padding: 24px 22px; }
+  .hero-name { font-size: 28px; }
+  .section { padding: 22px 20px; }
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+  .side-card { position: static; }
+  body { padding-bottom: 88px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة الكفيل</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="حفظ في المفضّلة">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="مشاركة">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+      <button class="user-chip" aria-label="حساب أبو عمر">
+        <span class="user-chip-avatar" aria-hidden="true">أ.ع</span>
+        <span class="user-chip-name">أبو عمر</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ PAGE ═══ -->
+<main class="page" role="main">
+
+  <nav class="breadcrumb" aria-label="مسار التنقّل">
+    <a href="D-01 Donor Dashboard.html">لوحتي</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <a href="D-02 Browse Available Orphans.html">استكشف أيتاماً</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <span class="breadcrumb-current" aria-current="page">سلمى ع.</span>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" aria-labelledby="orphan-name">
+
+    <div class="hero-media">
+      <span class="hero-flag" title="فلسطين">
+        <span class="emoji">🇵🇸</span>
+        فلسطين
+      </span>
+      <span class="hero-status">
+        <span class="dot" aria-hidden="true"></span>
+        باقي يومان للكفالة
+      </span>
+      <span class="letter" aria-hidden="true">س</span>
+      <span class="hero-priv">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        صورة محميّة بالخصوصية
+      </span>
+      <div class="hero-priv-tip" role="tooltip">
+        قرّرت الجهة المسؤولة عدم نشر صورتها قبل الكفالة احتراماً لخصوصيّتها. بعد الكفالة ستتلقّى صورها الأصلية ضمن تقاريرها الشهرية.
+      </div>
+    </div>
+
+    <div class="hero-info">
+      <span class="hero-eyebrow">
+        موثّق من جمعية الفجر الخيرية
+      </span>
+      <h2 class="hero-name" id="orphan-name">سلمى ع.</h2>
+      <div class="hero-meta">
+        <span>٨ سنوات</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>فلسطين — غزّة</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>الصف الثاني الابتدائي</span>
+      </div>
+
+      <div class="hero-quick-facts">
+        <span class="fact-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          تتفوّق في الرسم
+        </span>
+        <span class="fact-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          حفظت ربع جزء عمّ
+        </span>
+        <span class="fact-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+          أخلاق رفيعة
+        </span>
+      </div>
+
+      <div class="hero-cost">
+        <div class="hero-cost-text">
+          <div class="hero-cost-label">الكفالة تبدأ من</div>
+          <div class="hero-cost-amount">
+            <span class="latin">35</span>
+            <span class="unit">دك / شهر</span>
+          </div>
+          <div class="hero-cost-sub">متوسّط الكفلاء يكفلونها بـ <span class="latin" style="color: var(--trust-600); font-weight: 600;">42 دك</span></div>
+        </div>
+        <button class="btn-primary-lg">
+          اكفل سلمى
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══ LAYOUT ═══ -->
+  <div class="layout">
+
+    <!-- ─── MAIN COLUMN ─── -->
+    <div>
+
+      <!-- Quick summary 3 cards -->
+      <section class="section" aria-labelledby="summary-title">
+        <h2 id="summary-title">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          نظرة سريعة على وضع سلمى
+        </h2>
+        <p class="section-sub">معلومات بسيطة، دون تفاصيل حسّاسة، تساعدك على معرفة وضعها العام.</p>
+
+        <div class="summary-row">
+
+          <div class="summary-card">
+            <div class="summary-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="summary-text">
+              <div class="summary-label">التعليم</div>
+              <div class="summary-value">الصف الثاني</div>
+              <div class="summary-meta">مدرسة حكوميّة · مستواها جيّد جدّاً</div>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon health" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="summary-text">
+              <div class="summary-label">الصحّة</div>
+              <div class="summary-value">بصحّة جيّدة</div>
+              <div class="summary-meta">لا أمراض مزمنة · آخر فحص قبل شهر</div>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-icon family" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="summary-text">
+              <div class="summary-label">العائلة</div>
+              <div class="summary-value">والدتها وأخوان</div>
+              <div class="summary-meta">تعيش بكنف والدتها · ترعى إخوتها الصغار</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Story -->
+      <section aria-labelledby="story-title">
+        <div class="story">
+          <h2 id="story-title" class="sr-only">عن سلمى</h2>
+          <p>
+            سلمى طفلة هادئة في الثامنة، تعيش مع والدتها وأخويها الأصغر في حيٍّ صغير شمال غزّة.
+            تحبّ الرسم بالألوان المائيّة وتعلّق رسومها على جدار غرفتها كأنّها معرض صغير.
+          </p>
+          <p>
+            تتميّز في مدرستها بأخلاقها وحبّها للقراءة، وحفظت ربع جزء عمّ في حلقة التحفيظ المسائيّة بالحيّ.
+            مدرّستها تقول إنّها واحدة من أكثر الطالبات اجتهاداً، وتطمح أن تصير معلّمة فنون يوماً ما.
+          </p>
+          <div class="story-attr">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+            <span>كتبتها أخصّائيّة شؤون الأيتام في جمعية الفجر — راجعتها مديرة الفرع.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cost & plans -->
+      <section class="section" aria-labelledby="plans-title" style="margin-top: 18px;">
+        <h2 id="plans-title">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          خطط الكفالة
+        </h2>
+        <p class="section-sub">اختر ما يناسبك. كل المبالغ تذهب لسلمى عبر جمعية الفجر، مع تقارير شهرية موثّقة.</p>
+
+        <div class="plans">
+
+          <div class="plan">
+            <div class="plan-check" aria-hidden="true"></div>
+            <div class="plan-head">
+              <div class="plan-name">شهريّة</div>
+            </div>
+            <div class="plan-price">
+              <span class="latin">35</span>
+              <span class="unit">دك</span>
+            </div>
+            <div class="plan-cadence">في الشهر · تجديد تلقائي</div>
+            <div class="plan-meta">المرونة الكاملة — يمكنك التعديل أو الإيقاف في أيّ وقت.</div>
+          </div>
+
+          <div class="plan selected featured">
+            <div class="plan-check" aria-hidden="true"></div>
+            <div class="plan-head">
+              <div class="plan-name">سنويّة · موصى بها</div>
+              <span class="plan-discount">وفّر <span class="latin">10%</span></span>
+            </div>
+            <div class="plan-price">
+              <span class="latin">380</span>
+              <span class="unit">دك</span>
+            </div>
+            <div class="plan-cadence">دفعة واحدة لسنة كاملة</div>
+            <div class="plan-meta">راحة بال طوال السنة + أولويّة في التقارير الموسّعة.</div>
+          </div>
+
+          <div class="plan">
+            <div class="plan-check" aria-hidden="true"></div>
+            <div class="plan-head">
+              <div class="plan-name">دفعة واحدة</div>
+            </div>
+            <div class="plan-price">
+              <span class="latin">120</span>
+              <span class="unit">دك</span>
+            </div>
+            <div class="plan-cadence">لمدّة ٣ شهور</div>
+            <div class="plan-meta">إن أردت تجربة الكفالة قبل الالتزام الطويل.</div>
+          </div>
+
+        </div>
+
+        <div class="amount-suggest">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>متوسّط ما يكفل به الكفلاء سلمى: <strong><span class="latin">42 دك</span> شهرياً</strong> — يمكنك تعديل المبلغ في أي وقت.</span>
+        </div>
+      </section>
+
+      <!-- Partner org -->
+      <section class="section" aria-labelledby="partner-title">
+        <h2 id="partner-title">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          الجهة الراعية لسلمى
+        </h2>
+        <p class="section-sub">المسؤولة عن متابعتها يوميّاً، توثيق تقاريرها، وإيصال كفالتك إلى أهلها.</p>
+
+        <div class="partner">
+          <div class="partner-logo" aria-hidden="true">فجر</div>
+          <div class="partner-info">
+            <div class="partner-name">
+              جمعية الفجر الخيرية — فرع غزّة
+              <span class="partner-verify">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                موثّقة
+              </span>
+            </div>
+            <div class="partner-meta">
+              مرخّصة منذ <strong><span class="latin">2014</span></strong>
+              · ترعى <strong><span class="latin">1,240</span> يتيماً</strong>
+              · شريكة رفقاء منذ <strong><span class="latin">2022</span></strong>
+            </div>
+          </div>
+          <button class="partner-action">
+            عرض الجهة
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-inline-start: 4px;"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Transparency -->
+      <section class="section" aria-labelledby="trans-title">
+        <h2 id="trans-title">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          ماذا يصلك بعد الكفالة؟
+        </h2>
+        <p class="section-sub">كل شهر، تأتيك تقارير ومستجدّات عن سلمى — موثّقة، معتمدة، ومحفوظة في حسابك.</p>
+
+        <div class="transparency-grid">
+
+          <div class="trans-pill">
+            <div class="trans-pill-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="trans-pill-title">تقرير شهري</div>
+            <div class="trans-pill-sub">حالها الدراسي والصحّي بكلمات أهلها، مراجَع من الجهة.</div>
+          </div>
+
+          <div class="trans-pill">
+            <div class="trans-pill-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="trans-pill-title">صور دوريّة</div>
+            <div class="trans-pill-sub">صورها الحقيقيّة بعد المصادقة عليها من الجهة.</div>
+          </div>
+
+          <div class="trans-pill">
+            <div class="trans-pill-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="trans-pill-title">رسائل من أهلها</div>
+            <div class="trans-pill-sub">رسائل والدتها — مع إمكانية الردّ عبر بوابة آمنة.</div>
+          </div>
+        </div>
+
+        <div class="sample-report">
+          <div class="sample-report-month" aria-hidden="true">
+            <div class="sample-report-num">10</div>
+            <div class="sample-report-name">شوّال</div>
+          </div>
+          <div class="sample-report-body">
+            <div class="sample-report-title">مثال لتقرير شهري سابق (مجهول الهويّة)</div>
+            <p class="sample-report-text">
+              «هذا الشهر [الاسم] بخير والحمد لله. أنهت اختبارات منتصف الفصل بدرجات جيّدة جدّاً، وبدأت تحفظ سورة الملك في حلقة الحيّ. صحّتها ممتازة، ووزنها وطولها طبيعيّان لعمرها…»
+            </p>
+            <div class="sample-report-meta">
+              <span>قدّمته الأم</span>
+              <span>•</span>
+              <span>اعتمدته الجهة</span>
+              <span>•</span>
+              <span>صورة + ٣ ملاحظات تربوية</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section" aria-labelledby="faq-title">
+        <h2 id="faq-title">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          أسئلة قد تخطر ببالك
+        </h2>
+
+        <div class="faq-item open">
+          <button class="faq-q">
+            كيف تصلني التقارير والصور؟
+            <span class="faq-q-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </button>
+          <div class="faq-a">
+            بمجرّد بدء الكفالة، ستفتح صفحة سلمى الخاصّة بك في لوحتك. كل شهر يضع ولي أمرها تقريراً شهريّاً وصوراً جديدة، تمرّ بمراجعة الجهة المسؤولة، ثم تظهر لك مع إشعار. يصلك أيضاً عبر البريد إن اخترت ذلك.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            هل يمكنني التواصل مع أهلها؟
+            <span class="faq-q-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </button>
+          <div class="faq-a">
+            نعم — عبر بوّابة الرسائل الآمنة في حسابك. كل رسالة (في الاتجاهين) تمرّ بمراجعة الجهة قبل وصولها، حفاظاً على خصوصيّة الجميع.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            ماذا لو أردت إيقاف الكفالة لاحقاً؟
+            <span class="faq-q-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </button>
+          <div class="faq-a">
+            بإمكانك إيقاف التجديد التلقائي متى شئت من إعدادات الكفالة، دون أيّ غرامة. سنبحث عن كفيل بديل لها بأقصى سرعة لئلّا تنقطع متابعتها.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q">
+            هل الكفالة من الزكاة الواجبة؟
+            <span class="faq-q-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </button>
+          <div class="faq-a">
+            نعم — جمعية الفجر معتمدة لإخراج الزكاة. ستجد خياراً عند الدفع لتحديد كون المبلغ من الزكاة، وسيُصدَر لك إيصال زكاة سنوي مفصّل.
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ─── SIDEBAR ─── -->
+    <aside>
+      <div class="side-card">
+        <h3>
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          ابدأ كفالة سلمى
+        </h3>
+
+        <div class="side-mini-fact"><span>الخطّة المختارة</span><span>سنويّة</span></div>
+        <div class="side-mini-fact"><span>المبلغ</span><span><span class="latin">380</span> دك</span></div>
+        <div class="side-mini-fact"><span>وفرت</span><span style="color: var(--success-700);"><span class="latin">40</span> دك</span></div>
+        <div class="side-mini-fact"><span>طريقة الدفع</span><span>تختارها لاحقاً</span></div>
+
+        <div class="side-cta">
+          <button class="btn-block-primary">
+            متابعة الكفالة
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="btn-block-ghost">
+            تعديل المبلغ
+          </button>
+        </div>
+
+        <div class="side-share">
+          <button class="btn-block-ghost">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            حفظ
+          </button>
+          <button class="btn-block-ghost">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            مشاركة
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+</main>
+
+<!-- ═══ STICKY CTA ═══ -->
+<div class="sticky-cta" role="region" aria-label="إجراء سريع">
+  <div class="sticky-cta-inner">
+    <div class="sticky-cta-text">
+      <div class="sticky-cta-name">سلمى ع. · فلسطين</div>
+      <div class="sticky-cta-price">سنويّة <span class="latin">380 دك</span> · باقي يومان للكفالة</div>
+    </div>
+    <button class="btn-primary-lg">
+      اكفل سلمى الآن
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+/* Plan selection */
+document.querySelectorAll('.plan').forEach(plan => {
+  plan.addEventListener('click', () => {
+    document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+    plan.classList.add('selected');
+  });
+});
+
+/* FAQ */
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.parentElement.classList.toggle('open');
+  });
+});
+</script>
+
+</body>
+</html>

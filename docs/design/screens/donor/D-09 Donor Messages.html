@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — الرسائل · بوابة الكفيل</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — نظام تصميم رفقاء v0.1
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-50: #FDFEFE;
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --sky-100: #C9DDED;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-100: #B8CFE3;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+  --trust-800: #142E4D;
+  --trust-900: #0B1E33;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --warning-700: #B45309;
+
+  --danger-50: #FEF2F2;
+  --danger-100: #FEE2E2;
+  --danger-600: #DC2626;
+
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  --header-h: 69px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, textarea { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APP HEADER — مطابق لـ G-02, G-03
+   ═══════════════════════════════════════════════════════════════ */
+.app-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 32px;
+  position: relative;
+  z-index: 50;
+}
+
+.app-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+
+.brand-info h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+}
+
+.brand-info p {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: var(--transition);
+  color: var(--gray-600);
+}
+
+.icon-btn:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-500);
+}
+
+.icon-btn.active {
+  background: var(--tranquil-100);
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+.icon-btn-badge {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background: var(--danger-600);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid white;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.user-chip:hover { background: white; border-color: var(--sky-300); }
+
+.user-chip-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.user-chip-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+.workspace {
+  height: calc(100vh - var(--header-h));
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+  border-inline: 1px solid var(--gray-200);
+}
+
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; }
+  .workspace[data-view="chat"] .convo-list { display: none; }
+  .workspace[data-view="list"] .chat-panel { display: none; }
+}
+
+@media (min-width: 901px) {
+  .workspace[data-view] .convo-list,
+  .workspace[data-view] .chat-panel { display: flex; }
+  .convo-back-btn { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONVO LIST (sidebar)
+   ═══════════════════════════════════════════════════════════════ */
+.convo-list {
+  border-inline-start: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.convo-list-head {
+  padding: 20px 20px 14px;
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
+.convo-list-head h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.convo-list-head h2 .count-pill {
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.convo-list-head p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+.convo-search {
+  position: relative;
+  margin-top: 14px;
+}
+
+.convo-search input {
+  width: 100%;
+  padding: 10px 38px 10px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.convo-search input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.convo-search input::placeholder { color: var(--gray-400); }
+
+.convo-search svg {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.convo-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.convo-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 10px 20px 6px;
+  margin-top: 4px;
+}
+
+.convo-item {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 18px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: right;
+  transition: var(--transition-fast);
+  position: relative;
+  border-inline-end: 3px solid transparent;
+}
+
+.convo-item:hover { background: var(--snow-200); }
+
+.convo-item.active {
+  background: white;
+  border-inline-end-color: var(--trust-400);
+}
+
+.convo-item.active::before {
+  content: '';
+  position: absolute;
+  inset-block: 6px;
+  inset-inline-start: 0;
+  width: 3px;
+  background: var(--trust-400);
+  border-radius: var(--radius-full);
+}
+
+.convo-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 17px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.convo-avatar.color-2 { background: #E2EEF3; color: #2D5683; }
+.convo-avatar.color-3 { background: #FEF3C7; color: #B45309; }
+.convo-avatar.color-4 { background: #D1FAE5; color: #047857; }
+
+.convo-text { min-width: 0; }
+
+.convo-top-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.convo-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.convo-time {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.convo-item.unread .convo-time { color: var(--trust-600); font-weight: 600; }
+
+.convo-sub {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.convo-sub::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+
+.convo-preview {
+  font-size: 13px;
+  color: var(--gray-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.convo-item.unread .convo-preview {
+  color: var(--gray-800);
+  font-weight: 500;
+}
+
+.convo-preview-prefix {
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+.convo-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.convo-unread {
+  background: var(--trust-400);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.convo-status-dot {
+  font-size: 10.5px;
+  color: var(--warning-700);
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHAT PANEL
+   ═══════════════════════════════════════════════════════════════ */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background:
+    radial-gradient(circle at 20% 8%, rgba(214,230,242,.4) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(214,230,242,.3) 0%, transparent 40%),
+    var(--snow-100);
+}
+
+/* Chat header */
+.chat-head {
+  padding: 14px 24px;
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.convo-back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chat-head-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.chat-head-info { flex: 1; min-width: 0; }
+
+.chat-head-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-head-info p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chat-head-info p .sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--gray-400);
+  display: inline-block;
+}
+
+.chat-head-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chat-head-action {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.chat-head-action:hover { background: var(--gray-100); color: var(--trust-600); }
+
+/* Moderation banner */
+.moderation-banner {
+  margin: 14px 18px 0;
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--info-700);
+  line-height: 1.5;
+}
+
+.moderation-banner svg { flex-shrink: 0; }
+
+.moderation-banner strong { font-weight: 600; }
+
+/* Messages scroll */
+.messages-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px 8px;
+  scroll-behavior: smooth;
+}
+
+.date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0 18px;
+  gap: 10px;
+}
+
+.date-divider span {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gray-500);
+  background: white;
+  border: 1px solid var(--gray-200);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  letter-spacing: .02em;
+}
+
+.msg {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: flex-end;
+  max-width: 100%;
+}
+
+/* Incoming (sponsor) — left in RTL */
+.msg.in { flex-direction: row; justify-content: flex-start; }
+/* Outgoing (guardian/self) — right in RTL */
+.msg.out { flex-direction: row-reverse; justify-content: flex-start; }
+
+.msg-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12.5px;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.msg.in .msg-avatar { background: var(--tranquil-200); color: var(--trust-700); }
+.msg.out .msg-avatar { background: var(--gray-200); color: var(--gray-700); }
+
+.msg-stack { max-width: 78%; display: flex; flex-direction: column; gap: 3px; }
+.msg.out .msg-stack { align-items: flex-end; }
+.msg.in  .msg-stack { align-items: flex-start; }
+
+.msg-from {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+  padding: 0 4px;
+}
+
+.msg-from strong { color: var(--gray-800); font-weight: 600; }
+
+.msg-bubble {
+  padding: 11px 14px 8px;
+  font-size: 14.5px;
+  color: var(--gray-800);
+  line-height: 1.65;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: var(--shadow-xs);
+}
+
+.msg.in .msg-bubble {
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-bottom-left-radius: 4px;
+}
+
+.msg.out .msg-bubble {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-bottom-right-radius: 4px;
+}
+
+.msg.out.pending .msg-bubble {
+  background: var(--gray-50);
+  border-style: dashed;
+  border-color: var(--gray-300);
+  color: var(--gray-700);
+}
+
+.msg-bubble-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin-top: 4px;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.msg.out .msg-bubble-foot { justify-content: flex-end; }
+.msg.in  .msg-bubble-foot { justify-content: flex-start; }
+
+.msg-bubble-foot .time {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.msg-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.msg-status.approved { color: var(--success-600); }
+.msg-status.pending  { color: var(--warning-700); }
+.msg-status.read     { color: var(--trust-500); }
+
+.msg-status svg { width: 14px; height: 14px; }
+
+/* Voice bubble */
+.msg-voice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.msg-voice-play {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.msg-voice-wave {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.msg-voice-wave i {
+  display: block;
+  flex: 1;
+  background: var(--trust-300);
+  border-radius: var(--radius-full);
+  opacity: .55;
+}
+
+.msg-voice-wave i:nth-child(1) { height: 30%; }
+.msg-voice-wave i:nth-child(2) { height: 60%; }
+.msg-voice-wave i:nth-child(3) { height: 90%; }
+.msg-voice-wave i:nth-child(4) { height: 70%; }
+.msg-voice-wave i:nth-child(5) { height: 50%; }
+.msg-voice-wave i:nth-child(6) { height: 85%; }
+.msg-voice-wave i:nth-child(7) { height: 40%; }
+.msg-voice-wave i:nth-child(8) { height: 65%; }
+.msg-voice-wave i:nth-child(9) { height: 80%; }
+.msg-voice-wave i:nth-child(10) { height: 35%; }
+.msg-voice-wave i:nth-child(11) { height: 55%; }
+.msg-voice-wave i:nth-child(12) { height: 75%; }
+.msg-voice-wave i:nth-child(13) { height: 45%; }
+.msg-voice-wave i:nth-child(14) { height: 60%; }
+
+.msg-voice-time {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 12px;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+/* System / info chip in middle of conversation */
+.msg-system {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px auto 16px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--gray-600);
+  font-weight: 500;
+  max-width: 90%;
+  text-align: center;
+}
+
+.msg-system svg { color: var(--trust-400); flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPOSER
+   ═══════════════════════════════════════════════════════════════ */
+.composer {
+  flex-shrink: 0;
+  padding: 14px 18px 16px;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+}
+
+.composer-review-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.composer-review-hint svg { color: var(--gray-400); }
+
+.composer-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: end;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 18px;
+  padding: 6px 6px 6px 6px;
+  transition: var(--transition);
+}
+
+.composer-row:focus-within {
+  background: white;
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.composer-attach {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  align-self: end;
+  margin-bottom: 2px;
+}
+
+.composer-attach:hover { background: var(--gray-200); color: var(--trust-600); }
+
+.composer textarea {
+  min-height: 38px;
+  max-height: 140px;
+  padding: 9px 6px;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-size: 14.5px;
+  color: var(--gray-900);
+  line-height: 1.5;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+
+.composer textarea::placeholder { color: var(--gray-400); }
+
+.composer-send {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.composer-send:hover { background: var(--trust-400); }
+
+.composer-send[aria-disabled="true"] {
+  background: var(--gray-200);
+  color: var(--gray-400);
+  cursor: not-allowed;
+}
+
+.composer-send svg { transform: rotate(180deg); /* point left in RTL toward chat direction */ }
+
+/* ═══════════════════════════════════════════════════════════════
+   ICON
+   ═══════════════════════════════════════════════════════════════ */
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* Scrollbars */
+.convo-scroll::-webkit-scrollbar,
+.messages-scroll::-webkit-scrollbar { width: 8px; }
+.convo-scroll::-webkit-scrollbar-thumb,
+.messages-scroll::-webkit-scrollbar-thumb {
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+}
+.convo-scroll::-webkit-scrollbar-thumb:hover,
+.messages-scroll::-webkit-scrollbar-thumb:hover { background: var(--gray-300); }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+  .chat-head { padding: 12px 16px; gap: 10px; }
+  .messages-scroll { padding: 12px 14px 8px; }
+  .composer { padding: 12px 14px 14px; }
+  .moderation-banner { margin: 12px 14px 0; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة الكفيل</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn active" aria-label="الرسائل (الصفحة الحالية)">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span class="icon-btn-badge">2</span>
+      </button>
+      <button class="icon-btn" aria-label="التنبيهات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-badge">٤</span>
+      </button>
+      <button class="user-chip" aria-label="حساب أبو عمر">
+        <span class="user-chip-avatar" aria-hidden="true">أ.ع</span>
+        <span class="user-chip-name">أبو عمر</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     WORKSPACE
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="workspace" id="workspace" data-view="chat">
+
+  <!-- ═══ CHAT PANEL (left in RTL = visually left) ═══ -->
+  <section class="chat-panel" aria-label="محادثة مفتوحة">
+
+    <header class="chat-head">
+      <button type="button" class="convo-back-btn" id="back-to-list" aria-label="العودة لقائمة الرسائل">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="chat-head-avatar" aria-hidden="true">و</div>
+      <div class="chat-head-info">
+        <h3>والدة يوسف خليل</h3>
+        <p>
+          <span>محادثة عن: يوسف خليل · فلسطين</span>
+          <span class="sep" aria-hidden="true"></span>
+          <span>كفيله منذ ٣ سنوات</span>
+        </p>
+      </div>
+      <div class="chat-head-actions">
+        <button class="chat-head-action" aria-label="عرض ملف أحمد">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
+        <button class="chat-head-action" aria-label="إعدادات المحادثة">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="moderation-banner" role="status">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span><strong>كل الرسائل تمرّ بمراجعة المؤسسة</strong> قبل وصولها لأهل اليتيم، عادةً خلال يوم واحد.</span>
+    </div>
+
+    <div class="messages-scroll" id="messages-scroll">
+
+      <div class="date-divider"><span>الإثنين ٢٢ شوّال</span></div>
+
+      <div class="msg in">
+        <div class="msg-avatar" aria-hidden="true">و</div>
+        <div class="msg-stack">
+          <div class="msg-from"><strong>والدة يوسف</strong></div>
+          <div class="msg-bubble">
+            السلام عليكم ورحمة الله وبركاته. جزاكم الله خيراً على دعمكم ليوسف طوال هذه السنوات. هو بخير والحمد لله، وأنهى اختباراته بتفوّق واضح.
+            <div class="msg-bubble-foot">
+              <span class="time">٩:٤٢ ص</span>
+              <span class="msg-status approved" title="معتمدة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg in">
+        <div class="msg-avatar" aria-hidden="true">و</div>
+        <div class="msg-stack">
+          <div class="msg-bubble">
+            يوسف أصرّ أن أبعث لكم صورته وهو يرتدي بدلة التخرّج من حلقة تحفيظ القرآن، ستصلكم مع تقرير الشهر.
+            <div class="msg-bubble-foot">
+              <span class="time">٩:٤٥ ص</span>
+              <span class="msg-status approved" title="معتمدة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg-system">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        راجعت المؤسسة الرسالتين قبل وصولهما إليك
+      </div>
+
+      <div class="msg out">
+        <div class="msg-avatar" aria-hidden="true">أ.ع</div>
+        <div class="msg-stack">
+          <div class="msg-bubble">
+            وعليكم السلام ورحمة الله. بلّغي يوسف سلامي ومحبّتي، وأخبريه أنّ هناك من يفتخر بإنجازاته من بعيد، ويدعو له بالتوفيق دائماً.
+            <div class="msg-bubble-foot">
+              <span class="msg-status read" title="وصلت لأم يوسف وقُرئت">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/><polyline points="14 6 5 17"/></svg>
+                قُرئت
+              </span>
+              <span class="time">١٢:١٠ م</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg out">
+        <div class="msg-avatar" aria-hidden="true">أ.ع</div>
+        <div class="msg-stack">
+          <div class="msg-bubble">
+            وإن أمكن، أحبّ أن تصلني صورة له في حفل التخرّج — ستكون أجمل هديّة أستقبلها هذا الشهر بإذن الله.
+            <div class="msg-bubble-foot">
+              <span class="msg-status read" title="وصلت وقُرئت">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/><polyline points="14 6 5 17"/></svg>
+                قُرئت
+              </span>
+              <span class="time">١٢:١٢ م</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="date-divider"><span>اليوم · الأربعاء ٢٤ شوّال</span></div>
+
+      <div class="msg in">
+        <div class="msg-avatar" aria-hidden="true">و</div>
+        <div class="msg-stack">
+          <div class="msg-from"><strong>والدة يوسف</strong> · رسالة صوتية</div>
+          <div class="msg-bubble">
+            <div class="msg-voice">
+              <button type="button" class="msg-voice-play" aria-label="تشغيل الرسالة الصوتية">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+              </button>
+              <div class="msg-voice-wave" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <span class="msg-voice-time">٠:٢٤</span>
+            </div>
+            <div class="msg-bubble-foot">
+              <span class="time">٨:٠٢ ص</span>
+              <span class="msg-status approved" title="معتمدة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg in">
+        <div class="msg-avatar" aria-hidden="true">و</div>
+        <div class="msg-stack">
+          <div class="msg-bubble">
+            وصلت الصورة التي طلبتها، وهو يصرّ أن يرفع إصبع السّبّابة فيها. دعواتنا لكم بالعافية ورأس المال.
+            <div class="msg-bubble-foot">
+              <span class="time">٨:٠٤ ص</span>
+              <span class="msg-status approved" title="معتمدة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg out pending">
+        <div class="msg-avatar" aria-hidden="true">أ.ع</div>
+        <div class="msg-stack">
+          <div class="msg-bubble">
+            الحمد لله، فرحتُ لها كثيراً. أبلغي يوسف أن تفوّقه فرحة لنا جميعاً، وأنّ هديّة بسيطة في الطريق له بإذن الله تقديراً لأخلاقه.
+            <div class="msg-bubble-foot">
+              <span class="msg-status pending" title="قيد المراجعة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                قيد المراجعة
+              </span>
+              <span class="time">قبل دقائق</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="composer">
+      <div class="composer-review-hint">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        ستراجع الجهة المسؤولة رسالتكِ قبل وصولها للكفيل
+      </div>
+      <div class="composer-row">
+        <button type="button" class="composer-attach" aria-label="تسجيل صوتي" id="composer-voice">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <textarea id="composer-text" rows="1" placeholder="اكتبي رسالتك لكفيل أحمد…" aria-label="اكتبي رسالتك"></textarea>
+        <button type="button" class="composer-send" id="composer-send" aria-label="إرسال" aria-disabled="true">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══ CONVO LIST (right side in RTL — first column) ═══ -->
+  <aside class="convo-list" aria-label="قائمة المحادثات">
+
+    <div class="convo-list-head">
+      <h2>الرسائل <span class="count-pill">٤</span></h2>
+      <p>محادثاتك مع أهل أيتامك — كلّ يتيم على حدة</p>
+      <div class="convo-search">
+        <input type="search" placeholder="ابحث عن محادثة…" aria-label="بحث في المحادثات">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+    </div>
+
+    <div class="convo-scroll">
+
+      <div class="convo-section-label">جديدة</div>
+
+      <button type="button" class="convo-item unread active" data-convo="yusuf">
+        <div class="convo-avatar" aria-hidden="true">ي</div>
+        <div class="convo-text">
+          <div class="convo-top-row">
+            <span class="convo-name">يوسف خليل</span>
+            <span class="convo-time">٨:٠٤ ص</span>
+          </div>
+          <div class="convo-sub">والدة يوسف · فلسطين</div>
+          <div class="convo-preview">وصلت الصورة التي طلبتها، وهو يصرّ أن يرفع…</div>
+        </div>
+        <div class="convo-meta">
+          <span class="convo-unread" aria-label="رسالتان غير مقروءتين">٢</span>
+        </div>
+      </button>
+
+      <button type="button" class="convo-item unread" data-convo="layla">
+        <div class="convo-avatar color-3" aria-hidden="true">ل</div>
+        <div class="convo-text">
+          <div class="convo-top-row">
+            <span class="convo-name">ليلى عبدالرحمن</span>
+            <span class="convo-time">أمس</span>
+          </div>
+          <div class="convo-sub">والدة ليلى · الأردن</div>
+          <div class="convo-preview"><span class="convo-preview-prefix">🎤</span> رسالة صوتية · ٠:٤٢</div>
+        </div>
+        <div class="convo-meta">
+          <span class="convo-unread" aria-label="رسالة جديدة">١</span>
+        </div>
+      </button>
+
+      <div class="convo-section-label">سابقة</div>
+
+      <button type="button" class="convo-item" data-convo="ahmad">
+        <div class="convo-avatar color-2" aria-hidden="true">أ</div>
+        <div class="convo-text">
+          <div class="convo-top-row">
+            <span class="convo-name">أحمد محمد</span>
+            <span class="convo-time">قبل ٣ أيام</span>
+          </div>
+          <div class="convo-sub">أم أحمد · الكويت</div>
+          <div class="convo-preview"><span class="convo-preview-prefix">أنت:</span> جزاكم الله خيراً، وصلني تقرير الشهر…</div>
+        </div>
+      </button>
+
+      <button type="button" class="convo-item" data-convo="salma">
+        <div class="convo-avatar color-4" aria-hidden="true">س</div>
+        <div class="convo-text">
+          <div class="convo-top-row">
+            <span class="convo-name">سلمى ع.</span>
+            <span class="convo-time">قبل أسبوع</span>
+          </div>
+          <div class="convo-sub">والدة سلمى · فلسطين · جديدة</div>
+          <div class="convo-preview">أهلاً بكم في عائلتنا. بارك الله فيكم على كفالتكم…</div>
+        </div>
+        <div class="convo-meta">
+          <span class="convo-status-dot">قيد المراجعة</span>
+        </div>
+      </button>
+
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SCRIPT
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+const workspace = document.getElementById('workspace');
+const messagesScroll = document.getElementById('messages-scroll');
+const headInfo = document.querySelector('.chat-head-info');
+const headAvatar = document.querySelector('.chat-head-avatar');
+
+const convos = {
+  yusuf:  { name: 'والدة يوسف خليل',    orphan: 'يوسف خليل · فلسطين',  duration: 'كفيله منذ ٣ سنوات', initial: 'و', color: '' },
+  layla:  { name: 'والدة ليلى عبدالرحمن', orphan: 'ليلى · الأردن',         duration: 'كفيلها منذ ٢٢ شهراً', initial: 'و', color: 'color-3' },
+  ahmad:  { name: 'أم أحمد محمد',          orphan: 'أحمد · الكويت',        duration: 'كفيله منذ ١٤ شهراً', initial: 'أ', color: 'color-2' },
+  salma:  { name: 'والدة سلمى ع.',          orphan: 'سلمى · فلسطين',        duration: 'جديدة · بدأت هذا الأسبوع', initial: 'و', color: 'color-4' },
+};
+
+document.querySelectorAll('.convo-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.convo-item').forEach(c => c.classList.remove('active'));
+    item.classList.add('active');
+    item.classList.remove('unread');
+    const unread = item.querySelector('.convo-unread');
+    if (unread) unread.remove();
+
+    const key = item.dataset.convo;
+    const c = convos[key];
+    if (c) {
+      headInfo.querySelector('h3').textContent = c.name;
+      headInfo.querySelector('p span:first-child').textContent = `محادثة عن: ${c.orphan}`;
+      headInfo.querySelector('p span:last-child').textContent = c.duration;
+      headAvatar.className = 'chat-head-avatar ' + c.color;
+      headAvatar.textContent = c.initial;
+    }
+
+    workspace.dataset.view = 'chat';
+    messagesScroll.scrollTop = messagesScroll.scrollHeight;
+  });
+});
+
+document.getElementById('back-to-list').addEventListener('click', () => {
+  workspace.dataset.view = 'list';
+});
+
+/* Composer */
+const text = document.getElementById('composer-text');
+const sendBtn = document.getElementById('composer-send');
+
+function autoresize() {
+  text.style.height = 'auto';
+  text.style.height = Math.min(text.scrollHeight, 140) + 'px';
+}
+
+text.addEventListener('input', () => {
+  autoresize();
+  sendBtn.setAttribute('aria-disabled', text.value.trim() ? 'false' : 'true');
+});
+
+text.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+});
+
+sendBtn.addEventListener('click', send);
+
+function send() {
+  const value = text.value.trim();
+  if (!value) return;
+
+  const msg = document.createElement('div');
+  msg.className = 'msg out pending';
+  msg.innerHTML = `
+    <div class="msg-avatar" aria-hidden="true">أ.ع</div>
+    <div class="msg-stack">
+      <div class="msg-bubble">
+        ${escapeHtml(value)}
+        <div class="msg-bubble-foot">
+          <span class="msg-status pending" title="قيد المراجعة">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            قيد المراجعة
+          </span>
+          <span class="time">الآن</span>
+        </div>
+      </div>
+    </div>
+  `;
+  messagesScroll.appendChild(msg);
+  messagesScroll.scrollTop = messagesScroll.scrollHeight;
+
+  text.value = '';
+  autoresize();
+  sendBtn.setAttribute('aria-disabled', 'true');
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+/* Voice button — توهج خفيف */
+document.getElementById('composer-voice').addEventListener('click', () => {
+  alert('سيُفتح مسجّل الصوت (مع مؤقّت ٦٠ ث) — تماماً كما في G-04');
+});
+
+/* Init scroll to bottom */
+messagesScroll.scrollTop = messagesScroll.scrollHeight;
+</script>
+
+</body>
+</html>

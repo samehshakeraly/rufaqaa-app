@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — تسجيل يتيم جديد</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 15px; line-height: 1.55;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* ═══ HEADER ═══ */
+.wiz-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 28px;
+  position: sticky; top: 0; z-index: 50;
+}
+.wiz-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.wiz-back { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--gray-200); background: var(--gray-50); color: var(--gray-700); font-size: 13px; font-weight: 500; transition: var(--transition); }
+.wiz-back:hover { background: white; border-color: var(--sky-300); color: var(--trust-600); }
+
+.wiz-title { text-align: center; flex: 1; min-width: 0; }
+.wiz-title h1 { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+.wiz-title p { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+.wiz-save-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px;
+  background: var(--success-50); border: 1px solid var(--success-100);
+  border-radius: var(--radius-full); color: var(--success-700);
+  font-size: 11.5px; font-weight: 500;
+}
+
+@media (max-width: 540px) { .wiz-save-status { display: none; } }
+
+/* ═══ STAGE: 2 cols (sidebar + form) ═══ */
+.stage {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  padding: 24px 28px 140px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .stage { grid-template-columns: 1fr; }
+  .step-nav { position: static; }
+}
+
+/* Side step nav */
+.step-nav {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 14px 12px;
+  position: sticky; top: 88px;
+}
+
+.step-nav-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 0 10px 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 12px;
+}
+
+.step-nav-head .label { color: var(--gray-600); font-weight: 500; }
+.step-nav-head .progress { color: var(--trust-600); font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+
+.step-nav-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: right;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+.step-nav-item:hover:not(.locked) { background: var(--gray-50); }
+.step-nav-item.active { background: var(--tranquil-100); color: var(--trust-700); font-weight: 600; }
+.step-nav-item.locked { color: var(--gray-400); cursor: not-allowed; }
+
+.snd {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans', sans-serif;
+  flex-shrink: 0;
+}
+
+.step-nav-item.done .snd { background: var(--success-500); border-color: var(--success-500); color: white; }
+.step-nav-item.active .snd { background: var(--trust-300); border-color: var(--trust-300); color: white; box-shadow: 0 0 0 3px rgba(118,159,205,.18); }
+
+.snd-meta {
+  font-size: 11px; color: var(--gray-500);
+}
+
+.step-nav-item.active .snd-meta,
+.step-nav-item.done .snd-meta { color: var(--trust-500); }
+
+/* Form column */
+.form-col { min-width: 0; }
+
+.step-section {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 30px;
+  display: none;
+  animation: fadeIn 200ms ease;
+}
+.step-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.step-head { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--gray-100); }
+.step-head h2 {
+  font-size: 22px; font-weight: 600; color: var(--gray-900);
+  letter-spacing: -.02em; line-height: 1.25; margin-bottom: 4px;
+}
+.step-head p { font-size: 13.5px; color: var(--gray-600); line-height: 1.6; }
+
+.section-title {
+  font-size: 12px; font-weight: 600; color: var(--gray-500);
+  letter-spacing: .04em; text-transform: uppercase;
+  margin: 22px 0 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--gray-100); }
+.section-title:first-of-type { margin-top: 0; }
+.section-title svg { color: var(--trust-400); }
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+@media (max-width: 540px) { .field-grid { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field.full { grid-column: 1 / -1; }
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: .02em;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.field label .req { color: var(--danger-600); font-weight: 700; }
+.field label .help { color: var(--gray-400); cursor: help; }
+
+.field input, .field select, .field textarea {
+  padding: 9px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.field input.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; letter-spacing: .02em; }
+
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; background: white;
+  border-color: var(--trust-300); box-shadow: var(--shadow-focus);
+}
+
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+.field-hint { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+/* Radio pills (e.g., gender) */
+.radio-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.radio-pill {
+  padding: 8px 16px;
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px; font-weight: 500;
+  color: var(--gray-700); cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: inherit;
+}
+.radio-pill:hover { background: white; border-color: var(--sky-300); }
+.radio-pill.selected { background: var(--trust-300); border-color: var(--trust-300); color: white; }
+
+/* Duplicate check */
+.dup-result {
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.dup-result.clean {
+  background: var(--success-50);
+  border-color: var(--success-100);
+}
+
+.dup-result-icon {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--warning-700);
+}
+.dup-result.clean .dup-result-icon { color: var(--success-700); }
+
+.dup-result-title {
+  font-size: 13.5px; font-weight: 600;
+  color: var(--warning-700);
+}
+.dup-result.clean .dup-result-title { color: var(--success-700); }
+
+.dup-result-sub {
+  font-size: 11.5px; color: var(--gray-700); margin-top: 2px;
+}
+
+.dup-result-btn {
+  font-size: 11.5px;
+  background: white;
+  border: 1px solid var(--warning-100);
+  color: var(--warning-700);
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+}
+
+.dup-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dup-match {
+  display: grid;
+  grid-template-columns: 32px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+.dup-match-photo {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--tranquil-100);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.dup-match-name { font-weight: 600; color: var(--gray-900); }
+.dup-match-meta { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.dup-match-score {
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100);
+}
+
+.dup-match-action {
+  font-size: 11.5px; color: var(--trust-500); font-weight: 500;
+  background: transparent; border: none; padding: 4px 6px;
+}
+.dup-match-action:hover { color: var(--trust-700); text-decoration: underline; }
+
+/* Family picker */
+.family-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 540px) { .family-picker { grid-template-columns: 1fr; } }
+
+.family-option {
+  padding: 14px 16px;
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: right;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.family-option:hover { border-color: var(--sky-300); background: white; }
+.family-option.selected { border-color: var(--trust-400); background: var(--tranquil-100); }
+
+.family-option-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: white;
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+}
+
+.family-option.selected .family-option-icon { background: var(--trust-300); color: white; }
+
+.family-option-title { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
+.family-option-sub { font-size: 11.5px; color: var(--gray-600); line-height: 1.5; }
+
+/* Document upload */
+.doc-list { display: flex; flex-direction: column; gap: 8px; }
+
+.doc-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+
+.doc-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: white;
+  color: var(--trust-500);
+  border: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.doc-text { min-width: 0; }
+.doc-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.doc-name .req { color: var(--danger-600); margin-inline-start: 3px; }
+.doc-meta { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+.doc-row.uploaded { background: var(--success-50); border-color: var(--success-100); }
+.doc-row.uploaded .doc-icon { background: var(--success-500); border-color: var(--success-500); color: white; }
+
+.doc-upload-btn {
+  font-size: 12px;
+  background: white;
+  border: 1px dashed var(--sky-300);
+  color: var(--trust-600);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.doc-upload-btn:hover { background: var(--tranquil-100); border-style: solid; }
+
+.doc-uploaded-meta { font-size: 11px; color: var(--success-700); font-weight: 500; }
+.doc-uploaded-meta button { background: transparent; border: none; color: var(--danger-600); padding: 2px 4px; cursor: pointer; }
+
+/* Review step */
+.review-block {
+  margin-bottom: 18px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.review-block-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.review-block-head .edit {
+  color: var(--trust-500); background: transparent; border: none;
+  font-size: 11.5px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+.review-rows {
+  padding: 4px 14px;
+}
+
+.review-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--gray-100);
+  font-size: 13px;
+}
+.review-row:last-child { border-bottom: none; }
+.review-row-label { color: var(--gray-600); }
+.review-row-value { color: var(--gray-900); font-weight: 500; }
+
+/* Foot bar */
+.foot-bar {
+  position: fixed; bottom: 0; inset-inline: 0;
+  background: white; border-top: 1px solid var(--gray-200);
+  padding: 12px 28px;
+  z-index: 40;
+  box-shadow: 0 -2px 12px rgba(11,30,51,.05);
+}
+
+.foot-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+
+.foot-meta { font-size: 11.5px; color: var(--gray-500); }
+.foot-meta .latin { color: var(--gray-900); font-weight: 600; }
+
+.foot-actions { display: flex; gap: 8px; }
+
+.foot-btn {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.foot-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+.foot-btn-ghost {
+  background: transparent; color: var(--gray-700); border-color: var(--gray-200);
+}
+.foot-btn-ghost:hover { border-color: var(--gray-300); background: var(--gray-50); }
+
+.foot-btn-primary {
+  background: var(--trust-400); color: white; border-color: var(--trust-400);
+}
+.foot-btn-primary:hover:not([aria-disabled="true"]) { background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-sm); }
+
+.foot-btn-confirm {
+  background: var(--success-600); color: white; border-color: var(--success-600);
+}
+.foot-btn-confirm:hover:not([aria-disabled="true"]) { background: var(--success-700); border-color: var(--success-700); }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<header class="wiz-header" role="banner">
+  <div class="wiz-header-inner">
+    <a href="PS-02 Orphans Table.html" class="wiz-back">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      عودة لقائمة الأيتام
+    </a>
+    <div class="wiz-title">
+      <h1>تسجيل يتيم جديد</h1>
+      <p>إنشاء ملف جديد · جمعية الفجر — غزّة</p>
+    </div>
+    <span class="wiz-save-status">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      محفوظ كمسوّدة
+    </span>
+  </div>
+</header>
+
+<main class="stage" role="main">
+
+  <!-- Step nav -->
+  <aside class="step-nav" aria-label="خطوات التسجيل">
+    <div class="step-nav-head">
+      <span class="label">الخطوات</span>
+      <span class="progress"><span class="latin">3</span> / <span class="latin">7</span></span>
+    </div>
+
+    <button class="step-nav-item done" data-jump="1"><span class="snd">١</span><span>بيانات اليتيم<div class="snd-meta">مكتملة</div></span></button>
+    <button class="step-nav-item done" data-jump="2"><span class="snd">٢</span><span>كشف التكرار<div class="snd-meta">لا تكرار</div></span></button>
+    <button class="step-nav-item active" data-jump="3"><span class="snd">٣</span><span>الأب المتوفّى<div class="snd-meta">جارٍ التعبئة</div></span></button>
+    <button class="step-nav-item" data-jump="4"><span class="snd">٤</span><span>العائلة وولي الأمر<div class="snd-meta">لم تبدأ</div></span></button>
+    <button class="step-nav-item" data-jump="5"><span class="snd">٥</span><span>الوضع الاقتصادي/الصحّي<div class="snd-meta">لم تبدأ</div></span></button>
+    <button class="step-nav-item" data-jump="6"><span class="snd">٦</span><span>المستندات<div class="snd-meta">٠ من ٤ مرفوعة</div></span></button>
+    <button class="step-nav-item" data-jump="7"><span class="snd">٧</span><span>المراجعة والإرسال<div class="snd-meta">للاعتماد</div></span></button>
+  </aside>
+
+  <!-- Form col -->
+  <div class="form-col">
+
+    <!-- STEP 1: Basic data -->
+    <section class="step-section" data-step="1">
+      <div class="step-head">
+        <h2>بيانات اليتيم الأساسيّة</h2>
+        <p>أدخل المعلومات الأساسيّة. سيتمّ توليد كود اليتيم تلقائياً بعد الحفظ.</p>
+      </div>
+
+      <div class="section-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>الاسم</div>
+      <div class="field-grid">
+        <div class="field"><label>الاسم الأوّل <span class="req">*</span></label><input type="text" placeholder="مثلاً: سلمى" required></div>
+        <div class="field"><label>اسم الأب <span class="req">*</span></label><input type="text" placeholder="مثلاً: عبد الكريم" required></div>
+        <div class="field"><label>اسم الجد <span class="req">*</span></label><input type="text" placeholder="مثلاً: محمود" required></div>
+        <div class="field"><label>اسم العائلة <span class="req">*</span></label><input type="text" placeholder="مثلاً: العبيدي" required></div>
+      </div>
+
+      <div class="section-title">المعلومات الشخصية</div>
+      <div class="field-grid">
+        <div class="field"><label>تاريخ الميلاد <span class="req">*</span></label><input type="date" class="latin" required></div>
+        <div class="field"><label>العمر (تلقائي)</label><input type="text" class="latin" value="٨ سنوات" disabled style="opacity: .7;"></div>
+        <div class="field"><label>الجنس <span class="req">*</span></label>
+          <div class="radio-pills">
+            <button type="button" class="radio-pill selected">أنثى</button>
+            <button type="button" class="radio-pill">ذكر</button>
+          </div>
+        </div>
+        <div class="field"><label>الجنسيّة <span class="req">*</span></label>
+          <select required><option>فلسطيني</option><option>أردني</option><option>سوري</option><option>يمني</option><option>سوداني</option></select>
+        </div>
+      </div>
+
+      <div class="section-title">العنوان</div>
+      <div class="field-grid">
+        <div class="field"><label>المحافظة <span class="req">*</span></label><select><option>غزّة</option><option>رام الله</option><option>الخليل</option><option>نابلس</option></select></div>
+        <div class="field"><label>المنطقة / الحيّ</label><input type="text" placeholder="مثلاً: حيّ الشيخ رضوان"></div>
+        <div class="field full"><label>تفاصيل العنوان (اختياري)</label><textarea placeholder="شارع، مبنى، علامة مميّزة…"></textarea></div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Duplicate check -->
+    <section class="step-section" data-step="2">
+      <div class="step-head">
+        <h2>كشف التكرار التلقائي</h2>
+        <p>نتحقّق من قاعدة البيانات للتأكّد من عدم وجود ملف مكرّر لهذا اليتيم.</p>
+      </div>
+
+      <div class="dup-result clean">
+        <div class="dup-result-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div class="dup-result-title">لا تكرارات قويّة — يمكنك المتابعة</div>
+          <div class="dup-result-sub">بحثنا عن أيّ يتيم بنفس الاسم والعائلة وتاريخ الميلاد القريب. النتائج أدناه احتياطاً.</div>
+        </div>
+      </div>
+
+      <div class="section-title">تطابقات ضعيفة وُجدت <span style="background: var(--gray-100); color: var(--gray-700); padding: 2px 8px; border-radius: var(--radius-full); font-size: 10.5px;">٢ نتائج</span></div>
+
+      <div class="dup-list">
+        <div class="dup-match">
+          <div class="dup-match-photo">س</div>
+          <div>
+            <div class="dup-match-name">سلمى محمود العبيدي</div>
+            <div class="dup-match-meta">ORP-<span class="latin">02441</span> · ٧ سنوات · رام الله · أم سلمى</div>
+          </div>
+          <span class="dup-match-score">تطابق <span class="latin">42%</span></span>
+          <button class="dup-match-action">عرض</button>
+        </div>
+
+        <div class="dup-match">
+          <div class="dup-match-photo">س</div>
+          <div>
+            <div class="dup-match-name">سلوى عبدالكريم</div>
+            <div class="dup-match-meta">ORP-<span class="latin">02190</span> · ٩ سنوات · غزّة · والدة سلوى</div>
+          </div>
+          <span class="dup-match-score">تطابق <span class="latin">38%</span></span>
+          <button class="dup-match-action">عرض</button>
+        </div>
+      </div>
+
+      <div style="background: var(--info-50); border: 1px solid var(--info-100); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12.5px; color: var(--info-700); line-height: 1.55; display: flex; gap: 10px; align-items: flex-start; margin-top: 18px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>لو تأكّدت أنّ يتيمتك مختلفة، تابع للخطوة التالية. لو لاحظت أنّ يتيمك موجود بالفعل، يمكنك إلغاء العمليّة وفتح ملفه القائم.</span>
+      </div>
+    </section>
+
+    <!-- STEP 3: Deceased father -->
+    <section class="step-section active" data-step="3">
+      <div class="step-head">
+        <h2>بيانات الأب المتوفّى</h2>
+        <p>هذه المعلومات تخصّ الأب الذي توفّي. تكون أساس التحقّق من شرعيّة كفالة اليتيم.</p>
+      </div>
+
+      <div class="section-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>هويّة الأب</div>
+      <div class="field-grid">
+        <div class="field"><label>الاسم الكامل للأب <span class="req">*</span></label><input type="text" placeholder="مثلاً: عبد الكريم محمود العبيدي"></div>
+        <div class="field"><label>الرقم الوطني للأب</label><input type="text" class="latin" placeholder="•••••••••"></div>
+      </div>
+
+      <div class="section-title">الوفاة</div>
+      <div class="field-grid">
+        <div class="field"><label>تاريخ الوفاة <span class="req">*</span></label><input type="date" class="latin" required></div>
+        <div class="field"><label>عمر اليتيم عند الوفاة (تلقائي)</label><input type="text" value="٦ سنوات" disabled style="opacity: .7;"></div>
+        <div class="field full"><label>سبب الوفاة <span class="req">*</span></label>
+          <select><option>اختر سبب الوفاة…</option><option>مرض</option><option>حادث</option><option>قصف / صراع</option><option>غير ذلك</option></select>
+        </div>
+        <div class="field full"><label>ملاحظات (اختياري)</label><textarea placeholder="أيّ تفاصيل إضافيّة تساعد على تقييم الوضع…"></textarea></div>
+      </div>
+
+      <div class="section-title">شهادة الوفاة</div>
+      <div class="doc-list">
+        <div class="doc-row uploaded">
+          <div class="doc-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="doc-text">
+            <div class="doc-name">شهادة الوفاة (نسخة مصدّقة) <span class="req">*</span></div>
+            <div class="doc-meta">death-cert.pdf · <span class="latin">2.4 MB</span> · رُفعت قبل دقيقتين</div>
+          </div>
+          <div class="doc-uploaded-meta">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" style="display:inline; vertical-align: middle;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            معاينة
+            <button aria-label="حذف"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="m19 6-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Family + guardian -->
+    <section class="step-section" data-step="4">
+      <div class="step-head">
+        <h2>العائلة وولي الأمر</h2>
+        <p>هل ينتمي اليتيم لعائلة مسجّلة بالفعل، أم نُنشئ عائلة جديدة؟</p>
+      </div>
+
+      <div class="family-picker">
+        <button class="family-option selected">
+          <div class="family-option-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="family-option-title">إضافة لعائلة موجودة</div>
+          <div class="family-option-sub">ابحث بالاسم أو الكود — يربط هذا اليتيم بأشقّائه المسجّلين.</div>
+        </button>
+        <button class="family-option">
+          <div class="family-option-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="family-option-title">إنشاء عائلة جديدة</div>
+          <div class="family-option-sub">ستُولّد عائلة بكود فريد، يمكن إضافة أشقّاء لاحقاً.</div>
+        </button>
+      </div>
+
+      <div class="section-title">بحث في العائلات</div>
+      <div class="field-grid">
+        <div class="field full">
+          <label>اسم العائلة أو الكود</label>
+          <input type="text" placeholder="مثلاً: العبيدي أو FAM-1024">
+          <div class="field-hint">يظهر هنا قائمة بأقرب التطابقات أثناء الكتابة.</div>
+        </div>
+      </div>
+
+      <div class="section-title">ولي الأمر</div>
+      <div class="field-grid">
+        <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input type="text" placeholder="مثلاً: فاطمة عبد الله"></div>
+        <div class="field"><label>صلة القرابة <span class="req">*</span></label>
+          <select><option>الأم</option><option>الجد</option><option>الجدّة</option><option>العمّ</option><option>الخال</option></select>
+        </div>
+        <div class="field"><label>رقم الجوّال <span class="req">*</span></label><input type="tel" class="latin" placeholder="+970 5• ••• ••••"></div>
+        <div class="field"><label>الرقم الوطني</label><input type="text" class="latin" placeholder="•••••••••"></div>
+        <div class="field"><label>الحالة الاجتماعيّة</label>
+          <select><option>أرملة</option><option>متزوّجة من آخر</option><option>غير متزوّجة</option></select>
+        </div>
+        <div class="field"><label>المستوى التعليمي</label>
+          <select><option>ابتدائي</option><option>متوسط</option><option>ثانوي</option><option>جامعي</option></select>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 5: Economic + health -->
+    <section class="step-section" data-step="5">
+      <div class="step-head">
+        <h2>الوضع الاقتصادي والصحّي</h2>
+        <p>تساعدنا هذه المعلومات على تحديد أولويّة الحالة ومتطلّباتها.</p>
+      </div>
+
+      <div class="section-title">الاقتصاد</div>
+      <div class="field-grid">
+        <div class="field"><label>دخل الأسرة الشهري التقريبي (شيكل)</label><input type="number" class="latin" placeholder="مثلاً: 800"></div>
+        <div class="field"><label>مصدر الدخل</label>
+          <select><option>راتب</option><option>عمل حرّ</option><option>مساعدات حكوميّة</option><option>لا يوجد</option></select>
+        </div>
+        <div class="field"><label>عدد أفراد الأسرة</label><input type="number" class="latin" min="1" placeholder="مثلاً: 5"></div>
+        <div class="field"><label>نوع المسكن</label>
+          <select><option>ملك</option><option>إيجار</option><option>عند الأقارب</option><option>إيواء مؤقّت</option></select>
+        </div>
+      </div>
+
+      <div class="section-title">الصحّة</div>
+      <div class="field-grid">
+        <div class="field"><label>الوضع الصحّي العام</label>
+          <div class="radio-pills">
+            <button type="button" class="radio-pill selected">جيّد</button>
+            <button type="button" class="radio-pill">يحتاج متابعة</button>
+            <button type="button" class="radio-pill">حالة خاصّة</button>
+          </div>
+        </div>
+        <div class="field"><label>التغطية الصحّيّة</label>
+          <select><option>تأمين حكومي</option><option>أونروا</option><option>لا تغطية</option></select>
+        </div>
+        <div class="field full"><label>أمراض مزمنة أو حساسيّات (إن وجدت)</label><textarea placeholder="اذكر أيّ حالة طبيّة أو دواء يحتاجه اليتيم بانتظام…"></textarea></div>
+      </div>
+
+      <div class="section-title">التعليم</div>
+      <div class="field-grid">
+        <div class="field"><label>المرحلة الدراسيّة</label>
+          <select><option>روضة</option><option>الصف الأوّل</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option><option>السادس</option></select>
+        </div>
+        <div class="field"><label>اسم المدرسة</label><input type="text" placeholder="مثلاً: مدرسة الفجر الابتدائيّة"></div>
+        <div class="field"><label>المستوى الدراسي</label>
+          <div class="radio-pills">
+            <button type="button" class="radio-pill">ضعيف</button>
+            <button type="button" class="radio-pill">جيّد</button>
+            <button type="button" class="radio-pill selected">جيّد جداً</button>
+            <button type="button" class="radio-pill">ممتاز</button>
+          </div>
+        </div>
+        <div class="field"><label>الهوايات / المواهب</label><input type="text" placeholder="مثلاً: الرسم، حفظ القرآن"></div>
+      </div>
+    </section>
+
+    <!-- STEP 6: Documents -->
+    <section class="step-section" data-step="6">
+      <div class="step-head">
+        <h2>المستندات المطلوبة</h2>
+        <p>ارفع كل ما هو متاح. شهادات الميلاد والوفاة وبطاقة ولي الأمر إلزاميّة قبل الاعتماد.</p>
+      </div>
+
+      <div class="doc-list">
+
+        <div class="doc-row uploaded">
+          <div class="doc-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="doc-text">
+            <div class="doc-name">شهادة وفاة الأب <span class="req">*</span></div>
+            <div class="doc-meta">death-cert.pdf · <span class="latin">2.4 MB</span></div>
+          </div>
+          <div class="doc-uploaded-meta">
+            معاينة
+            <button aria-label="حذف"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="m19 6-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button>
+          </div>
+        </div>
+
+        <div class="doc-row">
+          <div class="doc-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="doc-text">
+            <div class="doc-name">شهادة ميلاد اليتيم <span class="req">*</span></div>
+            <div class="doc-meta"><span class="latin">PDF / JPG</span> · حتى <span class="latin">10 MB</span></div>
+          </div>
+          <button class="doc-upload-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            رفع ملف
+          </button>
+        </div>
+
+        <div class="doc-row">
+          <div class="doc-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="doc-text">
+            <div class="doc-name">بطاقة هويّة ولي الأمر <span class="req">*</span></div>
+            <div class="doc-meta">صورة الوجهين</div>
+          </div>
+          <button class="doc-upload-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            رفع ملف
+          </button>
+        </div>
+
+        <div class="doc-row">
+          <div class="doc-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="doc-text">
+            <div class="doc-name">صورة شخصيّة لليتيم</div>
+            <div class="doc-meta">اختياريّة — يمكن إضافتها لاحقاً</div>
+          </div>
+          <button class="doc-upload-btn">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            رفع ملف
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STEP 7: Review -->
+    <section class="step-section" data-step="7">
+      <div class="step-head">
+        <h2>راجع البيانات قبل الإرسال</h2>
+        <p>ستُرسَل الحالة لمراجعة مدير الفرع. عند اعتمادها يحصل اليتيم على كود رسمي ويظهر في قاعدة البيانات.</p>
+      </div>
+
+      <div class="review-block">
+        <div class="review-block-head">
+          بيانات اليتيم الأساسيّة
+          <button class="edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل</button>
+        </div>
+        <div class="review-rows">
+          <div class="review-row"><span class="review-row-label">الاسم</span><span class="review-row-value">سلمى عبد الكريم محمود العبيدي</span></div>
+          <div class="review-row"><span class="review-row-label">تاريخ الميلاد · العمر</span><span class="review-row-value"><span class="latin">2017/03/14</span> · ٨ سنوات</span></div>
+          <div class="review-row"><span class="review-row-label">الجنس · الجنسيّة</span><span class="review-row-value">أنثى · فلسطينيّة</span></div>
+          <div class="review-row"><span class="review-row-label">العنوان</span><span class="review-row-value">غزّة — حيّ الشيخ رضوان</span></div>
+        </div>
+      </div>
+
+      <div class="review-block">
+        <div class="review-block-head">
+          الأب المتوفّى
+          <button class="edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل</button>
+        </div>
+        <div class="review-rows">
+          <div class="review-row"><span class="review-row-label">الاسم</span><span class="review-row-value">عبد الكريم محمود العبيدي</span></div>
+          <div class="review-row"><span class="review-row-label">تاريخ الوفاة</span><span class="review-row-value latin">2023/11/08</span></div>
+          <div class="review-row"><span class="review-row-label">سبب الوفاة</span><span class="review-row-value">مرض</span></div>
+        </div>
+      </div>
+
+      <div class="review-block">
+        <div class="review-block-head">
+          العائلة وولي الأمر
+          <button class="edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل</button>
+        </div>
+        <div class="review-rows">
+          <div class="review-row"><span class="review-row-label">العائلة</span><span class="review-row-value">جديدة — ستُولَّد عند الاعتماد</span></div>
+          <div class="review-row"><span class="review-row-label">ولي الأمر</span><span class="review-row-value">فاطمة عبد الله (الأم)</span></div>
+          <div class="review-row"><span class="review-row-label">الجوّال</span><span class="review-row-value latin">+970 59 ••• ••32</span></div>
+        </div>
+      </div>
+
+      <div class="review-block">
+        <div class="review-block-head">
+          المستندات
+          <button class="edit"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>تعديل</button>
+        </div>
+        <div class="review-rows">
+          <div class="review-row"><span class="review-row-label">شهادة وفاة الأب</span><span class="review-row-value" style="color: var(--success-700);">مرفوعة ✓</span></div>
+          <div class="review-row"><span class="review-row-label">شهادة الميلاد</span><span class="review-row-value" style="color: var(--warning-700);">ناقصة — سيُطلب لاحقاً</span></div>
+          <div class="review-row"><span class="review-row-label">هويّة ولي الأمر</span><span class="review-row-value" style="color: var(--warning-700);">ناقصة — سيُطلب لاحقاً</span></div>
+        </div>
+      </div>
+
+      <div style="background: var(--info-50); border: 1px solid var(--info-100); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12.5px; color: var(--info-700); line-height: 1.55; display: flex; gap: 10px; align-items: flex-start;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>الحالة <strong>قيد الاعتماد</strong> حتى يراجعها مدير الفرع. خلال هذه المدّة لا يظهر اليتيم لأيّ متبرّع، ولن يطّلع على البيانات أحد خارج الجهة.</span>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<nav class="foot-bar" aria-label="التنقّل">
+  <div class="foot-bar-inner">
+    <div class="foot-meta">
+      الخطوة <span class="latin" id="cur-step">3</span> من <span class="latin">7</span> · حفظ تلقائي قبل دقيقة
+    </div>
+    <div class="foot-actions">
+      <button class="foot-btn foot-btn-ghost" id="btn-save">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        احفظ كمسوّدة
+      </button>
+      <button class="foot-btn foot-btn-ghost" id="btn-prev">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        السابق
+      </button>
+      <button class="foot-btn foot-btn-primary" id="btn-next">
+        التالي
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="foot-btn foot-btn-confirm" id="btn-submit" style="display: none;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        أرسل للاعتماد
+      </button>
+    </div>
+  </div>
+</nav>
+
+<script>
+let step = 3;
+
+function goToStep(n) {
+  step = Math.max(1, Math.min(7, n));
+  document.querySelectorAll('.step-section').forEach(s => s.classList.toggle('active', +s.dataset.step === step));
+  document.querySelectorAll('.step-nav-item').forEach(it => {
+    const j = +it.dataset.jump;
+    it.classList.toggle('active', j === step);
+    it.classList.toggle('done', j < step);
+  });
+  document.getElementById('cur-step').textContent = step;
+  document.getElementById('btn-prev').setAttribute('aria-disabled', step === 1 ? 'true' : 'false');
+  document.getElementById('btn-next').style.display = step === 7 ? 'none' : 'inline-flex';
+  document.getElementById('btn-submit').style.display = step === 7 ? 'inline-flex' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('btn-prev').addEventListener('click', () => goToStep(step - 1));
+document.getElementById('btn-next').addEventListener('click', () => goToStep(step + 1));
+document.getElementById('btn-submit').addEventListener('click', () => {
+  alert('تم الإرسال — الحالة الآن قيد الاعتماد من مدير الفرع.');
+});
+
+document.querySelectorAll('.step-nav-item').forEach(it => {
+  it.addEventListener('click', () => {
+    if (it.classList.contains('locked')) return;
+    goToStep(+it.dataset.jump);
+  });
+});
+
+/* Radio pills */
+document.querySelectorAll('.radio-pills').forEach(group => {
+  group.addEventListener('click', e => {
+    const pill = e.target.closest('.radio-pill');
+    if (!pill) return;
+    group.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+  });
+});
+
+/* Family picker */
+document.querySelectorAll('.family-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.family-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+  });
+});
+
+goToStep(3);
+</script>
+
+</body>
+</html>

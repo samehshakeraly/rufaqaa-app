@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — تسجيل الدخول</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-200: #97B7D6; --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-600: #DC2626;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; }
+input { font-family: inherit; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ═══ LAYOUT (split) ═══ */
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+}
+
+@media (max-width: 980px) {
+  .login-screen { grid-template-columns: 1fr; }
+  .login-illustration { display: none; }
+}
+
+/* ═══ FORM SIDE (right in RTL — first column) ═══ */
+.login-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 28px;
+  background: white;
+}
+
+.login-form-wrap {
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.login-logo-mark {
+  width: 48px; height: 48px;
+  background: var(--trust-300);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 24px;
+  letter-spacing: -.02em;
+}
+
+.login-logo-text h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+  letter-spacing: -.01em;
+}
+
+.login-logo-text p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.login-greeting { margin-bottom: 22px; }
+
+.login-greeting h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.login-greeting p {
+  font-size: 14.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* Role pills */
+.role-pills {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+
+.role-pill {
+  padding: 9px 6px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--gray-600);
+  transition: var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.role-pill:hover { background: white; color: var(--gray-900); }
+
+.role-pill.active {
+  background: white;
+  color: var(--trust-600);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.role-pill svg { width: 16px; height: 16px; color: var(--gray-400); }
+.role-pill.active svg { color: var(--trust-500); }
+
+@media (max-width: 480px) {
+  .role-pills { grid-template-columns: 1fr 1fr; }
+}
+
+/* Form */
+.login-form { display: flex; flex-direction: column; gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: .02em;
+}
+
+.field-input-wrap {
+  position: relative;
+}
+
+.field input {
+  width: 100%;
+  padding: 13px 44px 13px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.field input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.field input::placeholder { color: var(--gray-400); }
+.field input.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; letter-spacing: .02em; }
+
+.field-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+}
+
+.field-eye {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--gray-400);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.field-eye:hover { color: var(--gray-700); background: var(--gray-100); }
+
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--gray-700);
+  cursor: pointer;
+}
+
+.remember-box {
+  width: 18px; height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.remember.checked .remember-box {
+  background: var(--trust-400); border-color: var(--trust-400);
+}
+
+.remember.checked .remember-box::after {
+  content: '';
+  width: 10px; height: 5px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: var(--trust-500);
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.forgot-link:hover { color: var(--trust-700); text-decoration: underline; }
+
+.btn-submit {
+  margin-top: 6px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 15.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.btn-submit:hover { background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-md); }
+
+/* OR divider */
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+/* Social buttons */
+.social-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.social-btn {
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-800);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.social-btn:hover { border-color: var(--gray-300); background: var(--gray-50); }
+
+.social-btn .logo {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Register link */
+.register-link {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: var(--gray-600);
+}
+.register-link a {
+  color: var(--trust-500);
+  font-weight: 600;
+  text-decoration: none;
+  margin-inline-start: 4px;
+}
+.register-link a:hover { text-decoration: underline; }
+
+/* Footer help */
+.help-row {
+  margin-top: 28px;
+  padding: 14px 16px;
+  background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  color: var(--gray-700);
+  line-height: 1.55;
+}
+
+.help-row svg { color: var(--trust-500); flex-shrink: 0; margin-top: 2px; }
+.help-row strong { color: var(--gray-900); font-weight: 600; }
+.help-row a { color: var(--trust-600); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ═══ ILLUSTRATION SIDE ═══ */
+.login-illustration {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(118,159,205,.20) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(150,183,214,.25) 0%, transparent 50%),
+    linear-gradient(160deg, var(--tranquil-200) 0%, var(--snow-200) 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 56px;
+  color: var(--trust-800);
+}
+
+.illustration-orbit {
+  position: absolute;
+  inset: -10% -20% auto auto;
+  width: 60%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(46,86,131,.12);
+  border-radius: 50%;
+}
+
+.illustration-orbit::before,
+.illustration-orbit::after {
+  content: '';
+  position: absolute;
+  inset: 14%;
+  border: 1px solid rgba(46,86,131,.12);
+  border-radius: 50%;
+}
+.illustration-orbit::after { inset: 28%; }
+
+.illustration-stat {
+  position: absolute;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(118,159,205,.25);
+  border-radius: var(--radius-xl);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-md);
+}
+
+.illustration-stat-num {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.02em;
+  line-height: 1;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.illustration-stat-label { font-size: 11px; color: var(--gray-600); margin-top: 4px; font-weight: 500; }
+
+.stat-orphans { top: 18%; right: 8%; }
+.stat-donors  { top: 38%; right: 24%; }
+.stat-orgs    { top: 58%; right: 4%; }
+.stat-countries { bottom: 18%; right: 28%; }
+
+@media (max-width: 1200px) {
+  .stat-donors { right: 18%; }
+  .stat-orgs { right: 2%; }
+  .stat-countries { right: 22%; }
+}
+
+.illustration-top { position: relative; z-index: 2; }
+.illustration-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.7);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--trust-600);
+  border: 1px solid rgba(118,159,205,.2);
+  backdrop-filter: blur(8px);
+}
+
+.illustration-eyebrow .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--success-500);
+}
+
+.illustration-bottom { position: relative; z-index: 2; max-width: 520px; }
+
+.illustration-bottom h3 {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+  margin-bottom: 14px;
+  color: var(--trust-800);
+}
+
+.illustration-bottom .verse {
+  font-size: 18px;
+  color: var(--trust-700);
+  line-height: 1.85;
+  font-weight: 500;
+  padding: 18px 22px;
+  background: rgba(255,255,255,.5);
+  border: 1px solid rgba(118,159,205,.2);
+  border-radius: var(--radius-lg);
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.illustration-bottom .verse::before {
+  content: '“';
+  position: absolute;
+  top: 4px;
+  right: 14px;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--trust-300);
+  font-family: serif;
+  opacity: .5;
+}
+
+.illustration-bottom .verse-attr {
+  display: block;
+  font-size: 12.5px;
+  color: var(--trust-500);
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+/* Partner logos strip */
+.partner-strip {
+  margin-top: 6px;
+  background: rgba(255,255,255,.4);
+  border: 1px solid rgba(118,159,205,.15);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+}
+
+.partner-strip-label {
+  font-size: 11px;
+  color: var(--gray-600);
+  font-weight: 500;
+  letter-spacing: .06em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.partner-logos {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.partner-logo {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--trust-700);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.partner-logo .mark {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  background: var(--trust-300);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* Lang switcher (top-right of form) */
+.lang-switcher {
+  position: absolute;
+  top: 24px;
+  inset-inline-start: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+}
+.lang-switcher:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.lang-switcher svg { color: var(--gray-400); }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+
+@media (max-width: 540px) {
+  .login-form-side { padding: 20px 18px; }
+  .login-greeting h2 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<button class="lang-switcher" aria-label="تغيير اللغة">
+  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+  <span>العربية</span>
+  <span class="latin" style="color: var(--gray-400);">/ EN</span>
+</button>
+
+<div class="login-screen">
+
+  <!-- ═══ FORM ═══ -->
+  <div class="login-form-side">
+    <div class="login-form-wrap">
+
+      <div class="login-logo">
+        <div class="login-logo-mark" aria-hidden="true">ر</div>
+        <div class="login-logo-text">
+          <h1>رفقاء</h1>
+          <p>منصّة عالميّة لكفالة الأيتام</p>
+        </div>
+      </div>
+
+      <div class="login-greeting">
+        <h2 id="greeting-title">أهلاً بعودتك</h2>
+        <p id="greeting-sub">سجّل دخولك لمتابعة كفالاتك وتقارير أيتامك</p>
+      </div>
+
+      <!-- Role selector -->
+      <div class="role-pills" role="tablist" aria-label="نوع الحساب">
+        <button class="role-pill" role="tab" aria-selected="false" data-role="guardian">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          ولي أمر
+        </button>
+        <button class="role-pill active" role="tab" aria-selected="true" data-role="donor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          كفيل
+        </button>
+        <button class="role-pill" role="tab" aria-selected="false" data-role="partner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          جهة شريكة
+        </button>
+        <button class="role-pill" role="tab" aria-selected="false" data-role="admin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          مشرف
+        </button>
+      </div>
+
+      <form class="login-form" id="login-form">
+        <div class="field">
+          <label for="email">البريد الإلكتروني أو الجوّال</label>
+          <div class="field-input-wrap">
+            <input type="text" id="email" class="latin" placeholder="you@example.com" autocomplete="username" required>
+            <span class="field-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">كلمة المرور</label>
+          <div class="field-input-wrap">
+            <input type="password" id="password" class="latin" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="field-eye" id="eye-toggle" aria-label="إظهار/إخفاء كلمة المرور">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <span class="field-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <button type="button" class="remember checked" id="remember-btn">
+            <span class="remember-box" aria-hidden="true"></span>
+            تذكّرني
+          </button>
+          <a href="#" class="forgot-link">نسيت كلمة المرور؟</a>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          تسجيل الدخول
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </form>
+
+      <div class="or-divider">أو</div>
+
+      <div class="social-buttons">
+        <button class="social-btn">
+          <span class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          </span>
+          Google
+        </button>
+        <button class="social-btn">
+          <span class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.6 12.7c0-2.1 1.7-3.1 1.7-3.1-.9-1.4-2.4-1.5-2.9-1.5-1.2-.1-2.4.7-3 .7s-1.5-.7-2.5-.7c-1.3 0-2.5.7-3.1 1.9-1.4 2.3-.4 5.8 1 7.7.7.9 1.4 2 2.4 2 1 0 1.3-.6 2.5-.6s1.5.6 2.5.6 1.7-.9 2.3-1.8c.7-1 1-2 1-2 0-.1-2-.7-2-3.2zM15.7 6.8c.5-.6.9-1.5.8-2.3-.8 0-1.7.5-2.2 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.7-.4 2.2-1z"/></svg>
+          </span>
+          Apple
+        </button>
+      </div>
+
+      <div class="register-link" id="register-row">
+        ليس لديك حساب؟<a href="#">سجّل ككفيل جديد</a>
+      </div>
+
+      <div class="help-row" id="help-row" style="display: none;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>
+          <strong>لم تستلم بياناتك بعد؟</strong>
+          تواصل مع الجهة المسؤولة عن كفالة أيتامك، أو <a href="#">اتّصل بنا</a> وسنساعدك.
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ ILLUSTRATION ═══ -->
+  <div class="login-illustration" aria-hidden="true">
+    <div class="illustration-orbit"></div>
+
+    <div class="illustration-stat stat-orphans">
+      <div class="illustration-stat-num"><span class="latin">12,840</span></div>
+      <div class="illustration-stat-label">يتيم مكفول</div>
+    </div>
+    <div class="illustration-stat stat-donors">
+      <div class="illustration-stat-num"><span class="latin">8,920</span></div>
+      <div class="illustration-stat-label">كفيل نشط</div>
+    </div>
+    <div class="illustration-stat stat-orgs">
+      <div class="illustration-stat-num"><span class="latin">47</span></div>
+      <div class="illustration-stat-label">جهة شريكة</div>
+    </div>
+    <div class="illustration-stat stat-countries">
+      <div class="illustration-stat-num"><span class="latin">14</span></div>
+      <div class="illustration-stat-label">دولة</div>
+    </div>
+
+    <div class="illustration-top">
+      <span class="illustration-eyebrow">
+        <span class="dot"></span>
+        أكثر من <span class="latin" style="margin: 0 3px;">12,000</span> يتيم تحت رعاية رفقاء الآن
+      </span>
+    </div>
+
+    <div class="illustration-bottom">
+      <h3>وقفة بجانب يتيم<br>تكتب نوراً في صحيفتك.</h3>
+
+      <blockquote class="verse">
+        مَن كَفَلَ يَتيمًا لَهُ أَو لِغَيرِهِ كُنتُ أَنا وَهُوَ كَهاتَينِ فِي الجَنَّةِ
+        <span class="verse-attr">— صحيح مسلم</span>
+      </blockquote>
+
+      <div class="partner-strip">
+        <div class="partner-strip-label">جهات شريكة</div>
+        <div class="partner-logos">
+          <span class="partner-logo"><span class="mark">فجر</span>جمعية الفجر</span>
+          <span class="partner-logo"><span class="mark">أمل</span>جمعية الأمل</span>
+          <span class="partner-logo"><span class="mark">كير</span>جمعية الكرم</span>
+          <span class="partner-logo"><span class="mark">إحس</span>إحسان</span>
+          <span class="partner-logo" style="color: var(--gray-500);">+ <span class="latin">43</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const roleData = {
+  guardian: { title: 'أهلاً يا ولي الأمر', sub: 'سجّل دخولك لمتابعة شؤون أيتامك ورفع تقاريرهم', help: true,  reg: false },
+  donor:    { title: 'أهلاً بعودتك',         sub: 'سجّل دخولك لمتابعة كفالاتك وتقارير أيتامك',     help: false, reg: true  },
+  partner:  { title: 'أهلاً يا جهة شريكة',   sub: 'سجّل دخولك لإدارة الأيتام والمتابعة معهم',     help: false, reg: false },
+  admin:    { title: 'أهلاً بالمشرف',         sub: 'لوحة الإدارة والإشراف على المنصّة',             help: false, reg: false },
+};
+
+const greetingTitle = document.getElementById('greeting-title');
+const greetingSub = document.getElementById('greeting-sub');
+const registerRow = document.getElementById('register-row');
+const helpRow = document.getElementById('help-row');
+
+document.querySelectorAll('.role-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.role-pill').forEach(p => {
+      p.classList.remove('active');
+      p.setAttribute('aria-selected', 'false');
+    });
+    pill.classList.add('active');
+    pill.setAttribute('aria-selected', 'true');
+
+    const data = roleData[pill.dataset.role];
+    greetingTitle.textContent = data.title;
+    greetingSub.textContent = data.sub;
+    registerRow.style.display = data.reg ? 'block' : 'none';
+    helpRow.style.display = data.help ? 'flex' : 'none';
+  });
+});
+
+/* Remember toggle */
+document.getElementById('remember-btn').addEventListener('click', e => {
+  e.preventDefault();
+  e.currentTarget.classList.toggle('checked');
+});
+
+/* Eye toggle */
+const eye = document.getElementById('eye-toggle');
+const pw = document.getElementById('password');
+eye.addEventListener('click', () => {
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+});
+
+/* Form submit */
+document.getElementById('login-form').addEventListener('submit', e => {
+  e.preventDefault();
+  // pretend
+  alert('سيتمّ توجيهك إلى لوحتك حسب نوع حسابك.');
+});
+</script>
+
+</body>
+</html>

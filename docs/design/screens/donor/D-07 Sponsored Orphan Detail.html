@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — يوسف خليل · يتيمي</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══ TOKENS ═══ */
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-200: #97B7D6; --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ═══ HEADER ═══ */
+.app-header { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 32px; position: sticky; top: 0; z-index: 50; }
+.app-header-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 40px; height: 40px; background: var(--trust-300); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 20px; }
+.brand-info h1 { font-size: 16px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 12px; color: var(--gray-500); }
+
+.nav-tabs { display: flex; gap: 4px; margin-inline-start: 24px; }
+.nav-tab { padding: 8px 14px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; transition: var(--transition-fast); }
+.nav-tab:hover { background: var(--gray-100); color: var(--gray-900); }
+.nav-tab.active { background: var(--tranquil-100); color: var(--trust-600); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.icon-btn { width: 40px; height: 40px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; position: relative; transition: var(--transition); color: var(--gray-600); }
+.icon-btn:hover { background: white; border-color: var(--sky-300); color: var(--trust-500); }
+.icon-btn-badge { position: absolute; top: -4px; left: -4px; background: var(--danger-600); color: white; font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; border: 2px solid white; font-family: 'IBM Plex Sans', sans-serif; }
+.user-chip { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); transition: var(--transition); }
+.user-chip:hover { background: white; border-color: var(--sky-300); }
+.user-chip-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 12px; }
+.user-chip-name { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+
+@media (max-width: 1024px) { .nav-tabs { display: none; } }
+
+/* ═══ PAGE ═══ */
+.page { max-width: 1240px; margin: 0 auto; padding: 22px 32px 64px; }
+
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-500); margin-bottom: 18px; }
+.breadcrumb a { color: var(--gray-600); transition: var(--transition-fast); }
+.breadcrumb a:hover { color: var(--trust-500); }
+.breadcrumb-sep { color: var(--gray-300); display: inline-flex; }
+.breadcrumb-current { color: var(--gray-900); font-weight: 500; }
+
+.layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+@media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+
+/* ═══ HERO ═══ */
+.hero {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.hero-top {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(118,159,205,.10) 0%, transparent 50%),
+    linear-gradient(135deg, var(--tranquil-100) 0%, var(--snow-200) 100%);
+  padding: 28px 28px 24px;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.hero-avatar {
+  width: 100px; height: 100px;
+  border-radius: 24px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 10px, var(--tranquil-100) 10px, var(--tranquil-100) 20px);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; font-weight: 600;
+  flex-shrink: 0;
+  letter-spacing: -.02em;
+  box-shadow: var(--shadow-sm);
+  border: 3px solid white;
+  position: relative;
+}
+
+.hero-avatar .flag {
+  position: absolute;
+  bottom: -4px; left: -4px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
+}
+
+.hero-id { flex: 1; min-width: 0; }
+
+.hero-name {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.hero-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+.hero-sub-dot { width: 3px; height: 3px; background: var(--gray-400); border-radius: 50%; display: inline-block; }
+
+.hero-badges {
+  display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  font-size: 12.5px; font-weight: 500;
+  border-radius: var(--radius-full);
+  line-height: 1.5;
+}
+.badge-success { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.badge-trust { background: white; color: var(--trust-600); border: 1px solid var(--sky-200); }
+.badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.hero-quick {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.hero-btn-primary {
+  padding: 11px 18px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+.hero-btn-primary:hover { background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-md); }
+
+.hero-btn-secondary {
+  padding: 11px 14px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.hero-btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+@media (max-width: 720px) {
+  .hero-top { flex-direction: column; text-align: center; padding: 24px 20px; }
+  .hero-quick { width: 100%; }
+  .hero-quick > * { flex: 1; justify-content: center; }
+}
+
+/* Sponsorship bar */
+.hero-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--gray-200);
+}
+
+@media (max-width: 720px) {
+  .hero-bar { grid-template-columns: 1fr 1fr; }
+}
+
+.hero-stat {
+  padding: 18px 20px;
+  border-inline-start: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-stat:first-child { border-inline-start: none; }
+
+@media (max-width: 720px) {
+  .hero-stat:nth-child(3) { border-inline-start: none; border-top: 1px solid var(--gray-200); }
+  .hero-stat:nth-child(4) { border-top: 1px solid var(--gray-200); }
+}
+
+.hero-stat-label {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-stat-label svg { color: var(--trust-400); }
+
+.hero-stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.hero-stat-value .unit {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.hero-stat-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+.hero-stat-meta.up { color: var(--success-700); }
+
+/* ═══ TABS ═══ */
+.tabs-wrap {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 8px;
+  background: var(--gray-50);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-500);
+  margin-bottom: -1px;
+  transition: var(--transition-fast);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--gray-800); }
+.tab.active {
+  color: var(--trust-600);
+  border-bottom-color: var(--trust-300);
+  background: white;
+}
+.tab-count {
+  background: var(--gray-200); color: var(--gray-600);
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.tab.active .tab-count { background: var(--tranquil-200); color: var(--trust-700); }
+
+.tab-content { padding: 22px; display: none; }
+.tab-content.active { display: block; }
+
+/* Section heading inside tab */
+.sec-h {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sec-h h3 { font-size: 15px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.sec-h h3 svg { color: var(--trust-400); }
+.sec-h .more { font-size: 12.5px; color: var(--trust-500); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+.sec-h .more:hover { color: var(--trust-700); }
+
+/* ─── OVERVIEW ─── */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+@media (max-width: 720px) { .overview-grid { grid-template-columns: 1fr; } }
+
+.tile {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.tile-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--gray-500);
+  margin-bottom: 10px; font-weight: 500;
+}
+.tile-title svg { color: var(--trust-400); }
+
+.tile-rows { display: flex; flex-direction: column; gap: 8px; }
+.tile-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13.5px; gap: 12px; }
+.tile-row-label { color: var(--gray-600); }
+.tile-row-value { color: var(--gray-900); font-weight: 500; text-align: left; }
+.tile-row-value.success { color: var(--success-700); }
+.tile-row-value.warn { color: var(--warning-700); }
+
+/* Recent report block */
+.recent-report {
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.recent-month {
+  width: 64px; text-align: center;
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  padding: 8px 4px;
+  flex-shrink: 0;
+}
+.recent-month-num { font-size: 22px; font-weight: 600; color: var(--trust-700); line-height: 1; font-family: 'IBM Plex Sans', sans-serif; }
+.recent-month-name { font-size: 11px; color: var(--trust-500); margin-top: 2px; }
+
+.recent-body { min-width: 0; }
+.recent-meta { font-size: 12px; color: var(--gray-500); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.recent-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+.recent-title { font-size: 15px; font-weight: 600; color: var(--gray-900); margin-bottom: 6px; }
+.recent-text { font-size: 13.5px; color: var(--gray-700); line-height: 1.65; }
+
+.recent-actions { display: flex; gap: 10px; margin-top: 10px; }
+.recent-link { font-size: 12.5px; color: var(--trust-500); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+.recent-link:hover { color: var(--trust-700); }
+
+/* Photos preview */
+.photos-preview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 540px) { .photos-preview { grid-template-columns: repeat(2, 1fr); } }
+
+.photo-tile {
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 8px, var(--tranquil-100) 8px, var(--tranquil-100) 16px);
+  border: 1px solid var(--sky-200);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--trust-400);
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.photo-tile:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
+
+.photo-tile-tag {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  background: rgba(11,30,51,.7);
+  color: white;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+.photo-tile-new {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--success-500);
+  color: white;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/* Recent message preview */
+.recent-msg {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+}
+
+.recent-msg-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 14px;
+}
+
+.recent-msg-from {
+  font-size: 13px;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+}
+.recent-msg-from strong { color: var(--gray-800); font-weight: 600; }
+.recent-msg-from .when { color: var(--gray-500); font-size: 11.5px; }
+
+.recent-msg-text { font-size: 13.5px; color: var(--gray-700); line-height: 1.65; }
+
+.recent-msg-reply {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: var(--trust-300);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.recent-msg-reply:hover { background: var(--trust-400); }
+
+/* ─── REPORTS / PAYMENTS lists ─── */
+.list { display: flex; flex-direction: column; gap: 10px; }
+
+.list-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  transition: var(--transition);
+}
+
+.list-row:hover { border-color: var(--sky-300); box-shadow: var(--shadow-sm); }
+
+.list-row-icon {
+  width: 56px; height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.list-row-icon-num { font-size: 20px; font-weight: 600; color: var(--trust-700); line-height: 1; font-family: 'IBM Plex Sans', sans-serif; }
+.list-row-icon-sub { font-size: 10.5px; color: var(--trust-500); margin-top: 2px; }
+
+.list-row-icon.payment {
+  background: var(--success-50);
+  border-color: var(--success-100);
+  color: var(--success-700);
+}
+.list-row-icon.payment svg { width: 22px; height: 22px; }
+
+.list-row-body { min-width: 0; }
+.list-row-title { font-size: 14.5px; font-weight: 600; color: var(--gray-900); margin-bottom: 3px; }
+.list-row-meta {
+  font-size: 12px; color: var(--gray-500);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.list-row-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+
+.list-row-amount {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  text-align: left;
+}
+
+.list-row-amount .unit { font-size: 11px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 3px; }
+
+.list-row-action {
+  width: 36px; height: 36px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  color: var(--gray-600);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.list-row-action:hover { background: var(--trust-300); border-color: var(--trust-300); color: white; }
+
+/* ═══ SIDEBAR ═══ */
+.sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+.side-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.side-card-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.side-card-title { font-size: 13.5px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.side-card-title svg { color: var(--trust-400); }
+
+.side-card-body { padding: 14px; }
+
+/* Sponsorship card */
+.sp-card {
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+}
+
+.sp-card-label { font-size: 12px; color: var(--trust-500); font-weight: 500; margin-bottom: 6px; }
+
+.sp-card-amount {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.02em;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  line-height: 1.1;
+}
+.sp-card-amount .unit { font-size: 14px; color: var(--trust-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 6px; }
+
+.sp-card-cadence { font-size: 12.5px; color: var(--gray-600); margin-top: 4px; }
+
+.sp-card-progress {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--sky-200);
+}
+
+.sp-progress-track {
+  height: 6px;
+  background: var(--snow-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.sp-progress-fill {
+  height: 100%;
+  background: var(--trust-400);
+  border-radius: var(--radius-full);
+}
+
+.sp-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11.5px;
+  color: var(--gray-600);
+}
+
+.sp-progress-meta .latin { color: var(--trust-700); font-weight: 600; }
+
+.sp-actions { display: grid; gap: 8px; margin-top: 16px; }
+
+.sp-btn-primary {
+  padding: 10px 14px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.sp-btn-primary:hover { background: var(--trust-500); border-color: var(--trust-500); }
+
+.sp-btn-ghost {
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.sp-btn-ghost:hover { border-color: var(--sky-300); color: var(--trust-600); }
+
+/* Family card */
+.family-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.family-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 12px;
+  flex-shrink: 0;
+}
+
+.family-info { flex: 1; min-width: 0; }
+.family-name { font-size: 13.5px; font-weight: 500; color: var(--gray-900); }
+.family-rel { font-size: 11.5px; color: var(--gray-500); }
+
+.family-msg-btn {
+  width: 32px; height: 32px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  color: var(--gray-600);
+  display: flex; align-items: center; justify-content: center;
+}
+.family-msg-btn:hover { background: var(--trust-300); border-color: var(--trust-300); color: white; }
+
+/* ═══ SUGGESTIONS STRIP ═══ */
+.suggestions {
+  margin-top: 24px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 22px 24px;
+}
+
+.sugg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 720px) { .sugg-grid { grid-template-columns: 1fr; } }
+
+.sugg-card {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  text-align: right;
+  transition: var(--transition);
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+}
+
+.sugg-card:hover { background: white; border-color: var(--sky-300); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+
+.sugg-photo {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 6px, var(--tranquil-100) 6px, var(--tranquil-100) 12px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 600; color: var(--trust-700);
+  position: relative;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
+}
+.sugg-photo .flag { position: absolute; bottom: -2px; left: -2px; width: 18px; height: 18px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+.sugg-text { min-width: 0; }
+.sugg-name { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.sugg-meta { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; }
+
+.sugg-chev { color: var(--gray-400); }
+
+/* Icon */
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .page { padding: 18px 16px 48px; }
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+  .hero-name { font-size: 24px; }
+  .hero-avatar { width: 80px; height: 80px; font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة الكفيل</p>
+      </div>
+    </div>
+    <nav class="nav-tabs" aria-label="التنقّل">
+      <button class="nav-tab">لوحتي</button>
+      <button class="nav-tab active">أيتامي</button>
+      <button class="nav-tab">استكشف أيتام</button>
+      <button class="nav-tab">الإيصالات</button>
+      <button class="nav-tab">الرسائل</button>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="التنبيهات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-badge">٤</span>
+      </button>
+      <button class="user-chip" aria-label="حساب أبو عمر">
+        <span class="user-chip-avatar" aria-hidden="true">أ.ع</span>
+        <span class="user-chip-name">أبو عمر</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ PAGE ═══ -->
+<main class="page" role="main">
+
+  <nav class="breadcrumb" aria-label="مسار التنقّل">
+    <a href="D-01 Donor Dashboard.html">لوحتي</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <a href="D-06 My Orphans.html">أيتامي</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <span class="breadcrumb-current" aria-current="page">يوسف خليل</span>
+  </nav>
+
+  <div class="layout">
+
+    <!-- ═══ MAIN ═══ -->
+    <div>
+
+      <!-- HERO -->
+      <section class="hero" aria-labelledby="orphan-name">
+        <div class="hero-top">
+          <div class="hero-avatar" aria-hidden="true">
+            ي
+            <span class="flag" title="فلسطين">🇵🇸</span>
+          </div>
+          <div class="hero-id">
+            <h2 class="hero-name" id="orphan-name">يوسف خليل</h2>
+            <div class="hero-sub">
+              <span>عمره ١٢ سنة</span>
+              <span class="hero-sub-dot" aria-hidden="true"></span>
+              <span>الصف السادس الابتدائي</span>
+              <span class="hero-sub-dot" aria-hidden="true"></span>
+              <span>فلسطين — رام الله</span>
+            </div>
+            <div class="hero-badges">
+              <span class="badge badge-success">
+                <span class="dot" aria-hidden="true"></span>
+                كفالتك نشطة
+              </span>
+              <span class="badge badge-trust">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                كفيله منذ <span class="latin" style="margin: 0 3px;">3</span> سنوات
+              </span>
+              <span class="badge badge-trust">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                جمعية الأمل
+              </span>
+            </div>
+          </div>
+          <div class="hero-quick">
+            <button class="hero-btn-primary">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              راسل أهله
+            </button>
+            <button class="hero-btn-secondary" aria-label="مشاركة">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-bar">
+          <div class="hero-stat">
+            <div class="hero-stat-label">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              المبلغ الشهري
+            </div>
+            <div class="hero-stat-value"><span class="latin">40</span><span class="unit">دك</span></div>
+            <div class="hero-stat-meta">≈ <span class="latin">130</span> دولار</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+              مجموع تبرّعاتك له
+            </div>
+            <div class="hero-stat-value"><span class="latin">1,540</span><span class="unit">دك</span></div>
+            <div class="hero-stat-meta up">منذ <span class="latin">2022</span></div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              الدفعة القادمة
+            </div>
+            <div class="hero-stat-value"><span class="latin">40</span><span class="unit">دك</span></div>
+            <div class="hero-stat-meta">بعد <span class="latin">8</span> أيّام</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              تقاريره
+            </div>
+            <div class="hero-stat-value"><span class="latin">28</span><span class="unit">تقريراً</span></div>
+            <div class="hero-stat-meta">آخر تقرير قبل <span class="latin">5</span> أيّام</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABS -->
+      <section class="tabs-wrap" aria-label="معلومات يوسف">
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" aria-selected="true" data-tab="overview">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            نظرة عامة
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="reports">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            التقارير
+            <span class="tab-count">٢٨</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="photos">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            الصور
+            <span class="tab-count">١٤٢</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="messages">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            الرسائل
+            <span class="tab-count">٨</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="payments">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            المدفوعات
+            <span class="tab-count">٣٦</span>
+          </button>
+        </div>
+
+        <!-- Overview -->
+        <div class="tab-content active" data-tab="overview">
+
+          <div class="overview-grid">
+            <div class="tile">
+              <div class="tile-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                ملخّص التعليم
+              </div>
+              <div class="tile-rows">
+                <div class="tile-row"><span class="tile-row-label">المرحلة</span><span class="tile-row-value">الصف السادس</span></div>
+                <div class="tile-row"><span class="tile-row-label">المدرسة</span><span class="tile-row-value">ابن خلدون الأهلية</span></div>
+                <div class="tile-row"><span class="tile-row-label">المستوى الدراسي</span><span class="tile-row-value success">ممتاز</span></div>
+                <div class="tile-row"><span class="tile-row-label">المادّة المفضّلة</span><span class="tile-row-value">الحاسوب</span></div>
+              </div>
+            </div>
+
+            <div class="tile">
+              <div class="tile-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                الحالة الصحّية
+              </div>
+              <div class="tile-rows">
+                <div class="tile-row"><span class="tile-row-label">الوضع العام</span><span class="tile-row-value success">بصحّة جيّدة</span></div>
+                <div class="tile-row"><span class="tile-row-label">آخر فحص شامل</span><span class="tile-row-value">قبل شهرين</span></div>
+                <div class="tile-row"><span class="tile-row-label">حساسيّات</span><span class="tile-row-value">لا توجد</span></div>
+                <div class="tile-row"><span class="tile-row-label">الطول والوزن</span><span class="tile-row-value">طبيعيّ لعمره</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent report -->
+          <div class="sec-h">
+            <h3>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              آخر تقرير
+            </h3>
+            <a href="#" class="more">كل التقارير <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+          </div>
+
+          <div class="recent-report">
+            <div class="recent-month" aria-hidden="true">
+              <div class="recent-month-num">10</div>
+              <div class="recent-month-name">شوّال</div>
+            </div>
+            <div class="recent-body">
+              <div class="recent-meta">
+                <span>قبل ٥ أيّام</span>
+                <span class="dot" aria-hidden="true"></span>
+                <span>من والدة يوسف</span>
+                <span class="dot" aria-hidden="true"></span>
+                <span style="color: var(--success-700);">معتمد</span>
+              </div>
+              <div class="recent-title">يوسف انتهى من اختبارات الفصل بدرجات ممتازة</div>
+              <div class="recent-text">
+                «حصل يوسف على معدّل <span class="latin">95%</span> هذا الفصل، وتفوّق في الحاسوب والرياضيات. انضمّ لفريق المدرسة في كرة القدم، وتفاعل بشكل ممتاز مع زملائه. صحّته ممتازة بحمد الله…»
+              </div>
+              <div class="recent-actions">
+                <a href="#" class="recent-link">قراءة التقرير الكامل <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent photos -->
+          <div class="sec-h" style="margin-top: 24px;">
+            <h3>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              آخر الصور
+            </h3>
+            <a href="#" class="more">كل الصور (<span class="latin">142</span>) <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+          </div>
+
+          <div class="photos-preview">
+            <div class="photo-tile">
+              <svg class="icon icon-lg" viewBox="0 0 24 24" style="opacity:.45;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="photo-tile-new">جديدة</span>
+              <span class="photo-tile-tag">حفل تخرّج</span>
+            </div>
+            <div class="photo-tile">
+              <svg class="icon icon-lg" viewBox="0 0 24 24" style="opacity:.45;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="photo-tile-tag">المدرسة</span>
+            </div>
+            <div class="photo-tile">
+              <svg class="icon icon-lg" viewBox="0 0 24 24" style="opacity:.45;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="photo-tile-tag">عيد ميلاد</span>
+            </div>
+            <div class="photo-tile">
+              <svg class="icon icon-lg" viewBox="0 0 24 24" style="opacity:.45;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="photo-tile-tag">رمضان</span>
+            </div>
+          </div>
+
+          <!-- Recent message -->
+          <div class="sec-h" style="margin-top: 8px;">
+            <h3>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              آخر رسالة من أهله
+            </h3>
+            <a href="#" class="more">كل الرسائل <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+          </div>
+
+          <div class="recent-msg">
+            <div class="recent-msg-avatar" aria-hidden="true">و</div>
+            <div>
+              <div class="recent-msg-from">
+                <strong>والدة يوسف</strong>
+                <span class="when">· قبل أسبوع</span>
+                <span class="badge badge-success" style="padding: 1px 7px; font-size: 10px;">معتمدة</span>
+              </div>
+              <div class="recent-msg-text">
+                «بارك الله فيكم على دعمكم ليوسف. هو دائماً يسأل عنكم ويدعو لكم. ابعثوا لنا رسالة منكم لو سمحتم، يفرح بها كثيراً…»
+              </div>
+              <button class="recent-msg-reply">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
+                الردّ عليها
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Reports tab -->
+        <div class="tab-content" data-tab="reports">
+          <div class="sec-h">
+            <h3>التقارير الشهرية</h3>
+            <a href="#" class="more">تصدير الكل</a>
+          </div>
+          <div class="list">
+
+            <article class="list-row">
+              <div class="list-row-icon">
+                <div class="list-row-icon-num">10</div>
+                <div class="list-row-icon-sub">شوّال</div>
+              </div>
+              <div class="list-row-body">
+                <div class="list-row-title">تقرير شوّال — تفوّق في الاختبارات</div>
+                <div class="list-row-meta">
+                  <span>قبل ٥ أيّام</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span style="color: var(--success-700);">معتمد</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>صحّة: ممتازة</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>دراسة: ٥/٥</span>
+                </div>
+              </div>
+              <button class="list-row-action" aria-label="عرض">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+            <article class="list-row">
+              <div class="list-row-icon">
+                <div class="list-row-icon-num">09</div>
+                <div class="list-row-icon-sub">رمضان</div>
+              </div>
+              <div class="list-row-body">
+                <div class="list-row-title">تقرير رمضان — حفظ سورة الملك</div>
+                <div class="list-row-meta">
+                  <span>قبل ٤٢ يوماً</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span style="color: var(--success-700);">معتمد</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>صحّة: جيّدة</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>دراسة: ٤/٥</span>
+                </div>
+              </div>
+              <button class="list-row-action" aria-label="عرض">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+            <article class="list-row">
+              <div class="list-row-icon">
+                <div class="list-row-icon-num">08</div>
+                <div class="list-row-icon-sub">شعبان</div>
+              </div>
+              <div class="list-row-body">
+                <div class="list-row-title">تقرير شعبان — انضمام لفريق المدرسة</div>
+                <div class="list-row-meta">
+                  <span>قبل ٧٥ يوماً</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span style="color: var(--success-700);">معتمد</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>صحّة: ممتازة</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>دراسة: ٤/٥</span>
+                </div>
+              </div>
+              <button class="list-row-action" aria-label="عرض">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- Payments tab -->
+        <div class="tab-content" data-tab="payments">
+          <div class="sec-h">
+            <h3>سجلّ مدفوعاتك ليوسف</h3>
+            <a href="#" class="more">تحميل سنوي</a>
+          </div>
+          <div class="list">
+
+            <article class="list-row">
+              <div class="list-row-icon payment">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="list-row-body">
+                <div class="list-row-title">دفعة شهر شوّال</div>
+                <div class="list-row-meta">
+                  <span>قبل ٤ أيّام</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span class="latin">PAY-29874</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>كي–نت</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span style="color: var(--success-700);">مكتملة</span>
+                </div>
+              </div>
+              <div class="list-row-amount"><span class="latin">40</span><span class="unit">دك</span></div>
+            </article>
+
+            <article class="list-row">
+              <div class="list-row-icon payment">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="list-row-body">
+                <div class="list-row-title">دفعة شهر رمضان</div>
+                <div class="list-row-meta">
+                  <span>قبل ٣٤ يوماً</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span class="latin">PAY-28104</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>كي–نت</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span style="color: var(--success-700);">مكتملة</span>
+                </div>
+              </div>
+              <div class="list-row-amount"><span class="latin">40</span><span class="unit">دك</span></div>
+            </article>
+
+            <article class="list-row">
+              <div class="list-row-icon payment">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="list-row-body">
+                <div class="list-row-title">دفعة شهر شعبان</div>
+                <div class="list-row-meta">
+                  <span>قبل ٦٤ يوماً</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span class="latin">PAY-27381</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>كي–نت</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span style="color: var(--success-700);">مكتملة</span>
+                </div>
+              </div>
+              <div class="list-row-amount"><span class="latin">40</span><span class="unit">دك</span></div>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- Photos placeholder -->
+        <div class="tab-content" data-tab="photos">
+          <div class="sec-h"><h3>كل الصور (<span class="latin">142</span>)</h3></div>
+          <div class="photos-preview" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));">
+            <div class="photo-tile"><span class="photo-tile-new">جديدة</span><span class="photo-tile-tag">حفل تخرّج</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">المدرسة</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">عيد ميلاد</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">رمضان</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">عائلة</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">رحلة</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">المدرسة</span></div>
+            <div class="photo-tile"><span class="photo-tile-tag">يومي</span></div>
+          </div>
+        </div>
+
+        <!-- Messages placeholder -->
+        <div class="tab-content" data-tab="messages">
+          <div class="sec-h"><h3>الرسائل مع أهله (<span class="latin">8</span>)</h3></div>
+          <div class="recent-msg" style="margin-bottom: 10px;">
+            <div class="recent-msg-avatar" aria-hidden="true">و</div>
+            <div>
+              <div class="recent-msg-from">
+                <strong>والدة يوسف</strong>
+                <span class="when">· قبل أسبوع</span>
+              </div>
+              <div class="recent-msg-text">«بارك الله فيكم على دعمكم ليوسف. هو دائماً يسأل عنكم ويدعو لكم…»</div>
+            </div>
+          </div>
+          <div class="recent-msg" style="background: var(--gray-50);">
+            <div class="recent-msg-avatar" aria-hidden="true" style="background: var(--gray-200); color: var(--gray-700);">أ.ع</div>
+            <div>
+              <div class="recent-msg-from">
+                <strong>أنت</strong>
+                <span class="when">· قبل ٩ أيّام</span>
+              </div>
+              <div class="recent-msg-text">«بلّغوا يوسف سلامي ومحبّتي، وأخبروه أنّ هناك من يفتخر بإنجازاته من بعيد…»</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar">
+
+      <div class="sp-card">
+        <div class="sp-card-label">كفالتك الشهرية</div>
+        <div class="sp-card-amount"><span class="latin">40</span><span class="unit">دك</span></div>
+        <div class="sp-card-cadence">تتجدّد تلقائياً كل شهر · القادمة بعد <span class="latin">8</span> أيّام</div>
+
+        <div class="sp-card-progress">
+          <div style="display: flex; justify-content: space-between; font-size: 12px;">
+            <span style="color: var(--gray-600);">السنة الحالية</span>
+            <span class="latin" style="color: var(--trust-700); font-weight: 600;">10/12 شهور</span>
+          </div>
+          <div class="sp-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="12" aria-valuenow="10">
+            <div class="sp-progress-fill" style="width: 83%;"></div>
+          </div>
+          <div class="sp-progress-meta">
+            <span>الكفالة تنتهي بعد شهرين</span>
+            <span class="latin">2026/01</span>
+          </div>
+        </div>
+
+        <div class="sp-actions">
+          <button class="sp-btn-primary">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            تجديد لسنة كاملة
+          </button>
+          <button class="sp-btn-ghost">تعديل المبلغ</button>
+          <button class="sp-btn-ghost" style="color: var(--gray-500);">إيقاف الكفالة</button>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-card-head">
+          <div class="side-card-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            أهل يوسف
+          </div>
+        </div>
+        <div class="side-card-body">
+          <div class="family-row">
+            <div class="family-avatar" aria-hidden="true">و</div>
+            <div class="family-info">
+              <div class="family-name">أم يوسف</div>
+              <div class="family-rel">والدته · ولي الأمر</div>
+            </div>
+            <button class="family-msg-btn" aria-label="راسل والدة يوسف">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-card-head">
+          <div class="side-card-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            الجهة الراعية
+          </div>
+        </div>
+        <div class="side-card-body">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 44px; border-radius: 10px; background: var(--trust-600); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;">أمل</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--gray-900);">جمعية الأمل الخيرية</div>
+              <div style="font-size: 11.5px; color: var(--gray-500);">رام الله · شريكة منذ <span class="latin">2019</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- ═══ SUGGESTIONS ═══ -->
+  <section class="suggestions" aria-labelledby="sugg-title">
+    <div class="sec-h">
+      <h3 id="sugg-title">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        أيتام آخرون قد يهمّونك
+      </h3>
+      <a href="D-02 Browse Available Orphans.html" class="more">استكشف الكل <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></a>
+    </div>
+
+    <div class="sugg-grid">
+
+      <button class="sugg-card">
+        <div class="sugg-photo" aria-hidden="true">
+          م
+          <span class="flag">🇵🇸</span>
+        </div>
+        <div class="sugg-text">
+          <div class="sugg-name">مالك ك. · ١٠ سنوات</div>
+          <div class="sugg-meta">فلسطين — رام الله · من <span class="latin">35</span> دك</div>
+        </div>
+        <svg class="sugg-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+      <button class="sugg-card">
+        <div class="sugg-photo" aria-hidden="true">
+          س
+          <span class="flag">🇵🇸</span>
+        </div>
+        <div class="sugg-text">
+          <div class="sugg-name">سامي ع. · ١١ سنة</div>
+          <div class="sugg-meta">فلسطين — الخليل · من <span class="latin">35</span> دك</div>
+        </div>
+        <svg class="sugg-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+      <button class="sugg-card">
+        <div class="sugg-photo" aria-hidden="true">
+          ر
+          <span class="flag">🇯🇴</span>
+        </div>
+        <div class="sugg-text">
+          <div class="sugg-name">رنا أ. · ٩ سنوات</div>
+          <div class="sugg-meta">الأردن — جرش · من <span class="latin">30</span> دك</div>
+        </div>
+        <svg class="sugg-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* Tabs */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+
+    const k = tab.dataset.tab;
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.dataset.tab === k));
+  });
+});
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

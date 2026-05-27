@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — لوحتك · بوابة الكفيل</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — نظام تصميم رفقاء v0.1
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-50: #FDFEFE;
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --sky-100: #C9DDED;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-100: #B8CFE3;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+  --trust-800: #142E4D;
+  --trust-900: #0B1E33;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --warning-700: #B45309;
+
+  --danger-50: #FEF2F2;
+  --danger-100: #FEE2E2;
+  --danger-600: #DC2626;
+
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APP HEADER
+   ═══════════════════════════════════════════════════════════════ */
+.app-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+
+.brand-info h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+}
+
+.brand-info p {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  margin-inline-start: 24px;
+}
+
+.nav-tab {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: transparent;
+  border: none;
+  transition: var(--transition-fast);
+}
+
+.nav-tab:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.nav-tab.active {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: var(--transition);
+  color: var(--gray-600);
+}
+
+.icon-btn:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-500);
+}
+
+.icon-btn-badge {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background: var(--danger-600);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid white;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.user-chip:hover { background: white; border-color: var(--sky-300); }
+
+.user-chip-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.user-chip-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+@media (max-width: 1024px) {
+  .nav-tabs { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGE LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 32px 64px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO — البطاقة العلوية الكبيرة
+   ═══════════════════════════════════════════════════════════════ */
+.hero {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 50%;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(118,159,205,.12) 0%, transparent 55%),
+    radial-gradient(circle at 95% 90%, rgba(150,183,214,.18) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; }
+}
+
+.hero-greeting {
+  padding: 32px 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--trust-600);
+  font-weight: 500;
+  align-self: flex-start;
+  padding: 4px 12px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-full);
+}
+
+.hero-eyebrow .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success-500);
+}
+
+.hero-title {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+}
+
+.hero-title .accent {
+  background: linear-gradient(180deg, transparent 65%, var(--tranquil-200) 65%, var(--tranquil-200) 92%, transparent 92%);
+  padding: 0 2px;
+}
+
+.hero-lede {
+  font-size: 15px;
+  color: var(--gray-600);
+  line-height: 1.65;
+  max-width: 540px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 28px;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+
+@media (max-width: 540px) {
+  .hero-stats { grid-template-columns: 1fr 1fr; gap: 18px; }
+}
+
+.hero-stat-label {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+
+.hero-stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.hero-stat-value .unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.hero-stat-meta {
+  font-size: 12px;
+  color: var(--success-700);
+  margin-top: 4px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hero-verse {
+  padding: 32px 30px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(118,159,205,.08) 0%, transparent 50%),
+    linear-gradient(160deg, var(--tranquil-100) 0%, var(--snow-200) 100%);
+  border-inline-start: 1px solid var(--sky-200);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  position: relative;
+}
+
+.hero-verse::before {
+  content: '“';
+  position: absolute;
+  top: 12px;
+  right: 24px;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--sky-300);
+  opacity: .55;
+  font-family: serif;
+}
+
+.hero-verse-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--trust-700);
+  line-height: 1.85;
+  position: relative;
+  padding-inline-start: 8px;
+}
+
+.hero-verse-attr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+}
+
+.hero-verse-attr .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--trust-300);
+}
+
+@media (max-width: 900px) {
+  .hero-verse { border-inline-start: none; border-top: 1px solid var(--sky-200); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUICK ACTIONS
+   ═══════════════════════════════════════════════════════════════ */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 768px) {
+  .quick-actions { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 420px) {
+  .quick-actions { grid-template-columns: 1fr; }
+}
+
+.qa-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  text-align: right;
+  transition: var(--transition);
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+}
+
+.qa-card:hover {
+  border-color: var(--sky-300);
+  background: var(--snow-100);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.qa-card.primary {
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  border-color: var(--trust-500);
+  color: white;
+}
+
+.qa-card.primary:hover {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  border-color: var(--trust-600);
+}
+
+.qa-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qa-card.primary .qa-icon { background: rgba(255,255,255,.18); color: white; }
+
+.qa-text { flex: 1; min-width: 0; }
+.qa-title { font-size: 14.5px; font-weight: 600; line-height: 1.25; }
+.qa-sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.qa-card.primary .qa-sub { color: rgba(255,255,255,.85); }
+
+.qa-chev { color: var(--gray-400); flex-shrink: 0; }
+.qa-card.primary .qa-chev { color: rgba(255,255,255,.7); }
+
+/* ═══════════════════════════════════════════════════════════════
+   GRID — main + side
+   ═══════════════════════════════════════════════════════════════ */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION HEAD
+   ═══════════════════════════════════════════════════════════════ */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 14px;
+}
+
+.sec-head h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sec-head h2 .count-pill {
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.sec-head .sec-link {
+  font-size: 13.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition-fast);
+}
+
+.sec-head .sec-link:hover { color: var(--trust-700); }
+
+/* ═══════════════════════════════════════════════════════════════
+   MY ORPHANS
+   ═══════════════════════════════════════════════════════════════ */
+.orphans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 600px) {
+  .orphans-grid { grid-template-columns: 1fr; }
+}
+
+.orphan-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+
+.orphan-card:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.orphan-card-top {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.orphan-card-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background:
+    repeating-linear-gradient(135deg, var(--snow-200) 0, var(--snow-200) 6px, var(--tranquil-100) 6px, var(--tranquil-100) 12px);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--trust-700);
+  position: relative;
+  overflow: hidden;
+}
+
+.orphan-card-flag {
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background: white;
+}
+
+.orphan-card-id { flex: 1; min-width: 0; }
+
+.orphan-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.orphan-card-meta {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.orphan-card-meta .dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+
+.orphan-card-news {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--gray-200);
+  flex-wrap: wrap;
+}
+
+.news-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid var(--sky-200);
+}
+
+.news-pill.fresh {
+  background: var(--success-50);
+  color: var(--success-700);
+  border-color: var(--success-100);
+}
+
+.news-pill.warn {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border-color: var(--warning-100);
+}
+
+.news-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIMELINE
+   ═══════════════════════════════════════════════════════════════ */
+.timeline-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 22px 24px;
+}
+
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  right: 16px;
+  width: 1px;
+  background: var(--gray-200);
+}
+
+.tl-item {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 14px;
+  padding: 14px 0;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.tl-item:last-child { border-bottom: none; }
+
+.tl-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  color: var(--trust-500);
+}
+
+.tl-dot.report  { color: var(--trust-500); border-color: var(--trust-200); background: var(--tranquil-100); }
+.tl-dot.photo   { color: var(--success-700); border-color: var(--success-100); background: var(--success-50); }
+.tl-dot.message { color: var(--warning-700); border-color: var(--warning-100); background: var(--warning-50); }
+.tl-dot.payment { color: var(--trust-700); border-color: var(--trust-100); background: var(--tranquil-200); }
+
+.tl-body { min-width: 0; }
+
+.tl-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.tl-meta .who { color: var(--trust-600); font-weight: 500; }
+.tl-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+
+.tl-title {
+  font-size: 14.5px;
+  color: var(--gray-900);
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+.tl-title strong { font-weight: 600; }
+
+.tl-cta {
+  font-size: 12.5px;
+  color: var(--trust-500);
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+  align-self: center;
+}
+
+.tl-cta:hover { background: var(--trust-300); color: white; border-color: var(--trust-300); }
+
+@media (max-width: 600px) {
+  .tl-cta { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDE — chart + countries + sponsorship cycle
+   ═══════════════════════════════════════════════════════════════ */
+.side { display: flex; flex-direction: column; gap: 20px; }
+
+.side-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.side-card-head {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.side-card-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.side-card-title svg { color: var(--trust-400); }
+
+.side-card-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.side-card-body { padding: 18px 20px; }
+
+/* Monthly chart */
+.chart-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.chart-summary-amount {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.01em;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.chart-summary-amount .unit {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  margin-inline-start: 4px;
+}
+
+.chart-summary-trend {
+  font-size: 12px;
+  color: var(--success-700);
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chart {
+  display: flex;
+  gap: 5px;
+  align-items: flex-end;
+  height: 90px;
+  margin-bottom: 8px;
+}
+
+.chart-bar {
+  flex: 1;
+  background: var(--tranquil-200);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  position: relative;
+  transition: var(--transition);
+  min-height: 4px;
+}
+
+.chart-bar:hover { background: var(--trust-300); }
+
+.chart-bar.current {
+  background: var(--trust-400);
+}
+
+.chart-bar.current::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  inset-inline: 0;
+  height: 3px;
+  background: var(--trust-600);
+  border-radius: var(--radius-full);
+}
+
+.chart-labels {
+  display: flex;
+  gap: 5px;
+  font-size: 10.5px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans', sans-serif;
+  margin-top: 6px;
+}
+
+.chart-labels span {
+  flex: 1;
+  text-align: center;
+}
+
+.chart-labels span.cur { color: var(--trust-600); font-weight: 600; }
+
+/* Countries list */
+.countries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.country-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.country-flag {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.country-name {
+  font-size: 13.5px;
+  color: var(--gray-800);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.country-orphans {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+
+.country-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.country-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.country-bar-fill {
+  height: 100%;
+  background: var(--trust-300);
+  border-radius: var(--radius-full);
+}
+
+.country-count {
+  font-size: 13px;
+  color: var(--gray-800);
+  font-weight: 600;
+  min-width: 14px;
+  text-align: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+/* Next payment side card */
+.next-payment {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(118,159,205,.18) 0%, transparent 50%),
+    linear-gradient(160deg, white 0%, var(--tranquil-100) 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+}
+
+.next-payment-eyebrow {
+  font-size: 12px;
+  color: var(--trust-500);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.next-payment-amount {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -.02em;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  margin-bottom: 4px;
+}
+
+.next-payment-amount .unit {
+  font-size: 14px;
+  color: var(--trust-500);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.next-payment-when {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin-bottom: 16px;
+}
+
+.next-payment-method {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--gray-700);
+}
+
+.next-payment-method-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--gray-900);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  flex-shrink: 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.next-payment-method-text { flex: 1; }
+.next-payment-method-text strong { display: block; font-weight: 600; color: var(--gray-900); }
+.next-payment-method-text span { font-size: 11.5px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif; }
+
+.next-payment-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.next-payment-actions .btn-primary {
+  padding: 10px 14px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.next-payment-actions .btn-primary:hover { background: var(--trust-500); border-color: var(--trust-500); }
+
+.next-payment-actions .btn-secondary {
+  padding: 10px 14px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.next-payment-actions .btn-secondary:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ICON
+   ═══════════════════════════════════════════════════════════════ */
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .page { padding: 20px 16px 48px; }
+  .hero-greeting { padding: 24px 22px; }
+  .hero-verse { padding: 22px 22px; }
+  .hero-title { font-size: 24px; }
+  .hero-verse-text { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة الكفيل</p>
+      </div>
+    </div>
+
+    <nav class="nav-tabs" aria-label="التنقّل الرئيسي">
+      <button class="nav-tab active">لوحتي</button>
+      <button class="nav-tab">أيتامي</button>
+      <button class="nav-tab">استكشف أيتام</button>
+      <button class="nav-tab">الإيصالات</button>
+      <button class="nav-tab">الرسائل</button>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="التنبيهات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-badge">٤</span>
+      </button>
+      <button class="user-chip" aria-label="حساب أبو عمر">
+        <span class="user-chip-avatar" aria-hidden="true">أ.ع</span>
+        <span class="user-chip-name">أبو عمر</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE
+     ═══════════════════════════════════════════════════════════════ -->
+<main class="page" role="main">
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-inner">
+
+      <div class="hero-greeting">
+        <span class="hero-eyebrow">
+          <span class="badge-dot" aria-hidden="true"></span>
+          ٣ كفالات نشطة الآن
+        </span>
+        <h2 class="hero-title" id="hero-title">
+          أهلاً، أبا عمر —
+          <br>
+          <span class="accent">كافل منذ ٣ سنوات و ٤ أشهر</span>
+        </h2>
+        <p class="hero-lede">
+          هذا ملخّص رحلتك مع رفقاء. أيتامك بخير، آخر تقاريرهم وصلت، وهناك رسالتان جديدتان تنتظرانك.
+        </p>
+
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-label">أيتام تكفلهم</div>
+            <div class="hero-stat-value">
+              ٣
+              <span class="unit">أيتام</span>
+            </div>
+            <div class="hero-stat-meta">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              الكل نشط
+            </div>
+          </div>
+          <div>
+            <div class="hero-stat-label">إجمالي ما تبرّعت به</div>
+            <div class="hero-stat-value">
+              <span class="latin">4,820</span>
+              <span class="unit">دك</span>
+            </div>
+            <div class="hero-stat-meta" style="color: var(--gray-500);">
+              من <span class="latin" style="margin: 0 3px;">2022</span> حتى الآن
+            </div>
+          </div>
+          <div>
+            <div class="hero-stat-label">رسائل جديدة</div>
+            <div class="hero-stat-value">
+              ٢
+              <span class="unit">من الأهل</span>
+            </div>
+            <div class="hero-stat-meta" style="color: var(--warning-700);">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              تنتظر ردّك
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-verse">
+        <p class="hero-verse-text">
+          مَن كَفَلَ يَتيمًا لَهُ أَو لِغَيرِهِ كُنتُ أَنا وَهُوَ كَهاتَينِ فِي الجَنَّةِ
+        </p>
+        <div class="hero-verse-attr">
+          <span>صحيح مسلم</span>
+          <span class="dot" aria-hidden="true"></span>
+          <span>اقتباس الأسبوع</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ QUICK ACTIONS ═══ -->
+  <section class="quick-actions" aria-label="إجراءات سريعة">
+
+    <button class="qa-card primary">
+      <div class="qa-icon" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <div class="qa-text">
+        <div class="qa-title">استكشف أيتاماً جدداً</div>
+        <div class="qa-sub">١٢٨ متاحاً للكفالة</div>
+      </div>
+      <svg class="qa-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <button class="qa-card">
+      <div class="qa-icon" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="qa-text">
+        <div class="qa-title">إيصالاتك</div>
+        <div class="qa-sub">١٨ معاملة هذا العام</div>
+      </div>
+      <svg class="qa-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <button class="qa-card">
+      <div class="qa-icon" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="qa-text">
+        <div class="qa-title">رسائل الأهل</div>
+        <div class="qa-sub">رسالتان لم تُقرأ</div>
+      </div>
+      <svg class="qa-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <button class="qa-card">
+      <div class="qa-icon" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div class="qa-text">
+        <div class="qa-title">إيصال الزكاة السنوي</div>
+        <div class="qa-sub">جاهز للتحميل</div>
+      </div>
+      <svg class="qa-chev icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+  </section>
+
+  <!-- ═══ GRID ═══ -->
+  <div class="grid">
+
+    <!-- ─── MAIN COLUMN ─── -->
+    <div>
+
+      <!-- My Orphans -->
+      <section aria-labelledby="orphans-title">
+        <div class="sec-head">
+          <h2 id="orphans-title">أيتامك <span class="count-pill">٣</span></h2>
+          <a class="sec-link" href="#">
+            عرض الكل
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+        </div>
+
+        <div class="orphans-grid">
+
+          <button class="orphan-card">
+            <div class="orphan-card-top">
+              <div class="orphan-card-avatar" aria-hidden="true">
+                أ
+                <span class="orphan-card-flag" title="الكويت">🇰🇼</span>
+              </div>
+              <div class="orphan-card-id">
+                <div class="orphan-card-name">أحمد محمد</div>
+                <div class="orphan-card-meta">
+                  <span>١٠ سنوات</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>الكويت — الجهراء</span>
+                </div>
+                <div class="orphan-card-meta" style="margin-top: 4px;">
+                  <span>كفالة منذ <span class="latin">١٤ شهراً</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="orphan-card-news">
+              <span class="news-pill fresh">
+                <span class="dot" aria-hidden="true"></span>
+                تقرير جديد · شوّال
+              </span>
+              <span class="news-pill">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                ٣ صور جديدة
+              </span>
+            </div>
+          </button>
+
+          <button class="orphan-card">
+            <div class="orphan-card-top">
+              <div class="orphan-card-avatar" aria-hidden="true">
+                ل
+                <span class="orphan-card-flag" title="الأردن">🇯🇴</span>
+              </div>
+              <div class="orphan-card-id">
+                <div class="orphan-card-name">ليلى عبدالرحمن</div>
+                <div class="orphan-card-meta">
+                  <span>٧ سنوات</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>الأردن — الزرقاء</span>
+                </div>
+                <div class="orphan-card-meta" style="margin-top: 4px;">
+                  <span>كفالة منذ <span class="latin">٢٢ شهراً</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="orphan-card-news">
+              <span class="news-pill warn">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                رسالة من والدتها
+              </span>
+              <span class="news-pill">
+                تقرير قبل ٣ أيام
+              </span>
+            </div>
+          </button>
+
+          <button class="orphan-card">
+            <div class="orphan-card-top">
+              <div class="orphan-card-avatar" aria-hidden="true">
+                ي
+                <span class="orphan-card-flag" title="فلسطين">🇵🇸</span>
+              </div>
+              <div class="orphan-card-id">
+                <div class="orphan-card-name">يوسف خليل</div>
+                <div class="orphan-card-meta">
+                  <span>١٢ سنة</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>فلسطين — رام الله</span>
+                </div>
+                <div class="orphan-card-meta" style="margin-top: 4px;">
+                  <span>كفالة منذ <span class="latin">٣ سنوات</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="orphan-card-news">
+              <span class="news-pill fresh">
+                <span class="dot" aria-hidden="true"></span>
+                صورة جديدة
+              </span>
+              <span class="news-pill">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                درجاته ممتازة
+              </span>
+            </div>
+          </button>
+
+          <button class="orphan-card" style="border-style: dashed; background: var(--snow-100);">
+            <div class="orphan-card-top">
+              <div class="orphan-card-avatar" aria-hidden="true" style="background: var(--gray-50); border-color: var(--gray-200); color: var(--gray-400);">
+                <svg class="icon icon-lg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div class="orphan-card-id">
+                <div class="orphan-card-name" style="color: var(--trust-600);">اكفل يتيماً جديداً</div>
+                <div class="orphan-card-meta">
+                  <span>توسّع رحلتك مع رفقاء</span>
+                </div>
+                <div class="orphan-card-meta" style="margin-top: 4px;">
+                  <span style="color: var(--trust-500);">١٢٨ متاحاً للكفالة الآن</span>
+                </div>
+              </div>
+            </div>
+            <div class="orphan-card-news" style="border-top-style: solid;">
+              <span class="news-pill">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                ابدأ الاستكشاف
+              </span>
+            </div>
+          </button>
+
+        </div>
+      </section>
+
+      <!-- Latest updates timeline -->
+      <section aria-labelledby="updates-title" style="margin-top: 8px;">
+        <div class="sec-head">
+          <h2 id="updates-title">آخر التحديثات</h2>
+          <a class="sec-link" href="#">
+            كل التحديثات
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline">
+
+            <div class="tl-item">
+              <div class="tl-dot photo">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <div class="tl-body">
+                <div class="tl-meta">
+                  <span class="who">يوسف خليل</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>قبل ساعتين</span>
+                </div>
+                <div class="tl-title">
+                  وصلت <strong>صورة جديدة</strong> من حفل تخرّجه من حلقة تحفيظ القرآن.
+                </div>
+              </div>
+              <button class="tl-cta">عرض الصورة</button>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot report">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div class="tl-body">
+                <div class="tl-meta">
+                  <span class="who">أحمد محمد</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>أمس · ٧:٢١ م</span>
+                </div>
+                <div class="tl-title">
+                  <strong>تقرير شهر شوّال</strong> اعتمدته الجهة المسؤولة — حالته الصحّية ممتازة ودراسته جيّدة جدّاً.
+                </div>
+              </div>
+              <button class="tl-cta">قراءة التقرير</button>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot message">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="tl-body">
+                <div class="tl-meta">
+                  <span class="who">والدة ليلى</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>قبل يومين</span>
+                </div>
+                <div class="tl-title">
+                  «جزاكم الله خيراً، ليلى دائماً تسأل عنكم. هذه أوّل مرّة تقول إنّها تريد أن تكتب لكم رسالة بنفسها…»
+                </div>
+              </div>
+              <button class="tl-cta">الردّ عليها</button>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot payment">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </div>
+              <div class="tl-body">
+                <div class="tl-meta">
+                  <span class="who">كفالة أحمد + ليلى + يوسف</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>قبل ٤ أيام</span>
+                </div>
+                <div class="tl-title">
+                  تمّ خصم <strong><span class="latin">١٢٠ دك</span></strong> من بطاقتك بنجاح — الإيصال متاح للتحميل.
+                </div>
+              </div>
+              <button class="tl-cta">تحميل الإيصال</button>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot photo">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <div class="tl-body">
+                <div class="tl-meta">
+                  <span class="who">أحمد محمد</span>
+                  <span class="dot" aria-hidden="true"></span>
+                  <span>الأسبوع الماضي</span>
+                </div>
+                <div class="tl-title">
+                  ٣ صور جديدة معتمدة — من المدرسة وعيد ميلاده الحادي عشر.
+                </div>
+              </div>
+              <button class="tl-cta">المعرض</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ─── SIDE ─── -->
+    <aside class="side">
+
+      <!-- Next payment -->
+      <div class="next-payment">
+        <div class="next-payment-eyebrow">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          الدفعة القادمة
+        </div>
+        <div class="next-payment-amount">
+          <span class="latin">120</span>
+          <span class="unit">دك</span>
+        </div>
+        <div class="next-payment-when">
+          الخميس ٢ ذو القعدة · بعد <span class="latin">٨ أيام</span>
+        </div>
+
+        <div class="next-payment-method">
+          <div class="next-payment-method-icon" aria-hidden="true">VISA</div>
+          <div class="next-payment-method-text">
+            <strong>بطاقة فيزا</strong>
+            <span>•••• <span class="latin">4827</span></span>
+          </div>
+        </div>
+
+        <div class="next-payment-actions">
+          <button class="btn-primary">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            ادفع الآن
+          </button>
+          <button class="btn-secondary" aria-label="إعدادات الكفالة">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Monthly chart -->
+      <div class="side-card">
+        <div class="side-card-head">
+          <div class="side-card-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            تبرّعاتك الشهرية
+          </div>
+          <span class="side-card-meta">آخر <span class="latin">١٢</span> شهراً</span>
+        </div>
+        <div class="side-card-body">
+
+          <div class="chart-summary">
+            <div class="chart-summary-amount">
+              <span class="latin">1,440</span>
+              <span class="unit">دك</span>
+            </div>
+            <div class="chart-summary-trend">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              <span><span class="latin">+22%</span> سنوياً</span>
+            </div>
+          </div>
+
+          <div class="chart" aria-hidden="true">
+            <div class="chart-bar" style="height: 38%;"></div>
+            <div class="chart-bar" style="height: 42%;"></div>
+            <div class="chart-bar" style="height: 50%;"></div>
+            <div class="chart-bar" style="height: 46%;"></div>
+            <div class="chart-bar" style="height: 60%;"></div>
+            <div class="chart-bar" style="height: 58%;"></div>
+            <div class="chart-bar" style="height: 64%;"></div>
+            <div class="chart-bar" style="height: 70%;"></div>
+            <div class="chart-bar" style="height: 68%;"></div>
+            <div class="chart-bar" style="height: 78%;"></div>
+            <div class="chart-bar" style="height: 82%;"></div>
+            <div class="chart-bar current" style="height: 92%;"></div>
+          </div>
+          <div class="chart-labels">
+            <span>ذو</span><span>محرّم</span><span>صفر</span><span>ربيع١</span><span>ربيع٢</span><span>جمادى١</span><span>جمادى٢</span><span>رجب</span><span>شعبان</span><span>رمضان</span><span>شوّال</span><span class="cur">ذو</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Countries -->
+      <div class="side-card">
+        <div class="side-card-head">
+          <div class="side-card-title">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            بلدان أيتامك
+          </div>
+          <span class="side-card-meta">٣ دول</span>
+        </div>
+        <div class="side-card-body">
+          <div class="countries-list">
+
+            <div class="country-row">
+              <div class="country-flag" title="فلسطين">🇵🇸</div>
+              <div>
+                <div class="country-name">فلسطين</div>
+                <div class="country-orphans">يوسف خليل</div>
+              </div>
+              <div class="country-bar-wrap">
+                <div class="country-bar"><div class="country-bar-fill" style="width: 90%;"></div></div>
+                <span class="country-count">١</span>
+              </div>
+            </div>
+
+            <div class="country-row">
+              <div class="country-flag" title="الأردن">🇯🇴</div>
+              <div>
+                <div class="country-name">الأردن</div>
+                <div class="country-orphans">ليلى عبدالرحمن</div>
+              </div>
+              <div class="country-bar-wrap">
+                <div class="country-bar"><div class="country-bar-fill" style="width: 65%;"></div></div>
+                <span class="country-count">١</span>
+              </div>
+            </div>
+
+            <div class="country-row">
+              <div class="country-flag" title="الكويت">🇰🇼</div>
+              <div>
+                <div class="country-name">الكويت</div>
+                <div class="country-orphans">أحمد محمد</div>
+              </div>
+              <div class="country-bar-wrap">
+                <div class="country-bar"><div class="country-bar-fill" style="width: 50%;"></div></div>
+                <span class="country-count">١</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+</main>
+
+<script>
+/* Hover state for chart bars showing values */
+document.querySelectorAll('.chart-bar').forEach((bar, i) => {
+  bar.addEventListener('mouseenter', () => {
+    // simple no-op; visual hover is via CSS
+  });
+});
+
+/* Nav tabs (visual only) */
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

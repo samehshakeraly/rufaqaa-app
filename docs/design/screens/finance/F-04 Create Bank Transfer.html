@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — إنشاء تحويل بنكي · المالية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --fin-50: #ECFDF5; --fin-100: #D1FAE5; --fin-200: #A7F3D0; --fin-300: #6EE7B7;
+  --fin-500: #10B981; --fin-600: #059669; --fin-700: #047857; --fin-800: #065F46; --fin-900: #064E3B;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(16,185,129,.22);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: linear-gradient(135deg, var(--fin-50), white); border: 1px solid var(--fin-100); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--fin-700), var(--fin-900)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--fin-50); color: var(--fin-700); border: 1px solid var(--fin-100); border-radius: var(--radius-full); font-weight: 600; }
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--fin-50); color: var(--fin-700); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--fin-700); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+.nav-item-badge.fin { background: var(--fin-700); color: white; }
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--fin-50); color: var(--fin-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--fin-700); font-weight: 500; }
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title .crumbs { font-size: 11.5px; color: var(--gray-500); font-weight: 500; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.topbar-title .crumbs svg { width: 10px; height: 10px; color: var(--gray-400); }
+.topbar-title .crumbs a { color: var(--gray-500); }
+.topbar-title .crumbs a:hover { color: var(--gray-800); }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 9px 16px; background: var(--fin-700); color: white; border: 1px solid var(--fin-700); border-radius: var(--radius-md); font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: var(--fin-800); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--fin-200); color: var(--fin-700); }
+.btn-ghost { padding: 8px 14px; background: transparent; color: var(--gray-700); border: 1px solid transparent; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+/* Page layout: two columns */
+.page { padding: 22px 28px 56px; max-width: 1320px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 360px; gap: 18px; }
+@media (max-width: 1100px) { .page { grid-template-columns: 1fr; } .summary-rail { position: static; } }
+
+/* Wizard stepper */
+.stepper-bar { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 14px 18px; display: flex; align-items: center; gap: 0; margin-bottom: 18px; grid-column: 1 / -1; }
+.step { display: flex; align-items: center; gap: 10px; padding: 4px 0; flex: 1; min-width: 0; }
+.step .num { width: 26px; height: 26px; border-radius: 50%; background: var(--gray-100); color: var(--gray-500); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Sans', sans-serif; flex-shrink: 0; }
+.step.done .num { background: var(--fin-500); color: white; }
+.step.done .num svg { width: 12px; height: 12px; stroke-width: 3; }
+.step.active .num { background: var(--fin-700); color: white; box-shadow: 0 0 0 4px var(--fin-100); }
+.step .lbl { display: flex; flex-direction: column; min-width: 0; }
+.step .lbl .l1 { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+.step .lbl .l2 { font-size: 13px; color: var(--gray-900); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.step.pending .lbl .l2 { color: var(--gray-500); font-weight: 500; }
+.step-line { height: 2px; background: var(--gray-100); flex: 1; margin: 0 12px; min-width: 12px; align-self: center; }
+.step-line.done { background: var(--fin-500); }
+
+/* Main column */
+.wcol { display: flex; flex-direction: column; gap: 16px; }
+.card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.card-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-100); }
+.card-head h3 { font-size: 15px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.card-head h3 svg { width: 16px; height: 16px; color: var(--fin-600); }
+.card-head p { font-size: 12.5px; color: var(--gray-500); margin-top: 4px; line-height: 1.55; max-width: 640px; }
+.card-body { padding: 18px 22px; }
+
+/* Step 1: Partner picker */
+.partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .partner-grid { grid-template-columns: 1fr; } }
+.partner { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-lg); background: white; cursor: pointer; transition: all var(--transition-fast); text-align: right; position: relative; }
+.partner:hover { border-color: var(--fin-200); }
+.partner.selected { border-color: var(--fin-500); background: var(--fin-50); }
+.partner.selected::after { content: ""; position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; border-radius: 50%; background: var(--fin-500); }
+.partner.selected::before { content: ""; position: absolute; top: 14px; left: 14px; width: 10px; height: 5px; border: 1.5px solid white; border-top: none; border-right: none; transform: rotate(-45deg); z-index: 1; }
+.p-logo { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: white; font-weight: 700; font-size: 15px; }
+.p-logo.n { background: linear-gradient(135deg, #5B85B8, #2D5683); }
+.p-logo.o { background: linear-gradient(135deg, #0F766E, #047857); }
+.p-logo.t { background: linear-gradient(135deg, #B45309, #855E08); }
+.p-logo.i { background: linear-gradient(135deg, #6D28D9, #4C1D95); }
+.p-logo.r { background: linear-gradient(135deg, #0F766E, var(--fin-700)); }
+.p-logo.m { background: linear-gradient(135deg, #1D4ED8, #1E40AF); }
+.p-info { flex: 1; min-width: 0; }
+.p-info .pn { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.p-info .pm { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.p-info .pm .dot { color: var(--gray-300); }
+.p-info .pm .bal { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; color: var(--fin-700); }
+
+/* Step 2: Period */
+.period-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 12.5px; font-weight: 600; color: var(--gray-800); }
+.form-label .opt { color: var(--gray-500); font-weight: 400; font-size: 11.5px; margin-inline-start: 4px; }
+.form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-size: 13.5px; color: var(--gray-900); }
+.form-input:focus { outline: none; border-color: var(--fin-200); box-shadow: var(--shadow-focus); }
+.form-help { font-size: 11.5px; color: var(--gray-500); }
+.quick-period { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.quick-period button { padding: 5px 10px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 11.5px; color: var(--gray-700); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.quick-period button:hover { border-color: var(--fin-200); color: var(--fin-700); }
+.quick-period button.selected { background: var(--fin-50); border-color: var(--fin-500); color: var(--fin-700); font-weight: 600; }
+
+/* Step 3: Itemized table */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--gray-100); border-radius: var(--radius-md); }
+table.items { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+table.items thead th { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .04em; text-transform: uppercase; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); padding: 9px 12px; text-align: right; }
+table.items thead th.num-h { text-align: left; padding-inline-end: 12px; }
+table.items tbody td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); }
+table.items tbody tr:last-child td { border-bottom: none; }
+table.items tbody tr:hover { background: var(--gray-50); }
+table.items tfoot td { padding: 10px 12px; background: var(--fin-50); border-top: 2px solid var(--fin-200); font-weight: 700; font-size: 13.5px; }
+.orph-c { display: flex; align-items: center; gap: 8px; }
+.orph-c .av { width: 24px; height: 24px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: white; font-weight: 700; font-size: 10px; }
+.orph-c .av.a1 { background: linear-gradient(135deg, #25D366, #128C7E); }
+.orph-c .av.a2 { background: linear-gradient(135deg, #5B85B8, #2D5683); }
+.orph-c .av.a3 { background: linear-gradient(135deg, #B45309, #855E08); }
+.orph-c .av.a4 { background: linear-gradient(135deg, #6D28D9, #4C1D95); }
+.orph-c .av.a5 { background: linear-gradient(135deg, #0F766E, var(--fin-700)); }
+.orph-c .info .nm { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.orph-c .info .id { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--gray-500); }
+.amt { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; text-align: left; direction: ltr; }
+.amt .u { font-size: 10.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 3px; }
+
+/* FX banner */
+.fx-banner { background: var(--info-50); border: 1px solid var(--info-100); border-radius: var(--radius-md); padding: 10px 14px; display: flex; align-items: center; gap: 14px; margin-top: 14px; font-size: 12px; color: var(--info-700); }
+.fx-banner svg { width: 16px; height: 16px; flex-shrink: 0; }
+.fx-banner .rate { font-family: 'IBM Plex Sans', sans-serif; font-weight: 700; font-feature-settings: "tnum" 1; padding: 2px 8px; background: white; border-radius: var(--radius-full); }
+.fx-banner .ts { margin-inline-start: auto; font-size: 11px; opacity: .8; }
+
+/* Notes */
+.notes-area { width: 100%; padding: 12px 14px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-family: inherit; font-size: 13.5px; color: var(--gray-900); resize: vertical; min-height: 100px; line-height: 1.6; }
+.notes-area:focus { outline: none; border-color: var(--fin-200); box-shadow: var(--shadow-focus); }
+
+/* Right rail — running summary */
+.summary-rail { position: sticky; top: 92px; align-self: start; max-height: calc(100vh - 110px); overflow-y: auto; }
+.summary-card { background: linear-gradient(180deg, var(--fin-50), white) padding-box, white border-box; border: 1px solid var(--fin-100); border-radius: var(--radius-xl); padding: 22px 22px 18px; }
+.sm-h { font-size: 11.5px; color: var(--gray-500); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
+.sm-big { font-size: 34px; font-weight: 700; line-height: 1.05; font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; letter-spacing: -.02em; color: var(--gray-900); }
+.sm-big .u { font-size: 16px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 6px; }
+.sm-sub { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
+.sm-sub strong { color: var(--gray-800); font-weight: 600; }
+
+.sm-divider { height: 1px; background: var(--gray-200); margin: 18px 0; }
+.sm-list { display: flex; flex-direction: column; gap: 8px; }
+.sm-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; color: var(--gray-700); }
+.sm-row .k { color: var(--gray-500); }
+.sm-row .v { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-weight: 600; color: var(--gray-900); }
+.sm-row .v.pending { color: var(--gray-400); font-style: italic; font-weight: 500; }
+
+.bank-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 12px 14px; margin-top: 12px; }
+.bank-card .bh { display: flex; align-items: center; gap: 8px; }
+.bank-card .bh .bl { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--info-50); color: var(--info-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bank-card .bh .bl svg { width: 14px; height: 14px; }
+.bank-card .bh .bn { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.bank-card .bh .verified { display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; background: var(--fin-50); color: var(--fin-700); border-radius: var(--radius-full); font-size: 10px; font-weight: 600; }
+.bank-card .bh .verified svg { width: 9px; height: 9px; }
+.bank-card .ac { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--gray-700); margin-top: 8px; letter-spacing: .04em; word-break: break-all; }
+
+/* Approval rail */
+.approval { background: white; border: 1px solid var(--warning-100); border-radius: var(--radius-md); padding: 12px 14px; margin-top: 12px; font-size: 12px; color: var(--warning-700); display: flex; align-items: flex-start; gap: 10px; line-height: 1.55; }
+.approval svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+.approval strong { color: var(--gray-900); font-weight: 600; }
+
+/* Footer nav */
+.foot-nav { grid-column: 1 / -1; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.foot-nav .saved { font-size: 11.5px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 5px; }
+.foot-nav .saved svg { width: 12px; height: 12px; color: var(--fin-500); }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>المالية</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير ماليّة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="F-01 Finance Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير المالية
+    </a>
+
+    <div class="nav-section">المدفوعات</div>
+    <a class="nav-item" href="F-02 Incoming Payments.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      المدفوعات الواردة
+      <span class="nav-item-badge fin"><span class="latin">82</span></span>
+    </a>
+    <a class="nav-item" href="F-03 Overdue Donors.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      المتأخّرون
+      <span class="nav-item-badge warn"><span class="latin">42</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      استيراد كشف بنك
+    </a>
+
+    <div class="nav-section">التحويلات</div>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      إنشاء تحويل
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      التحويلات المعلّقة
+      <span class="nav-item-badge"><span class="latin">5</span></span>
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      المراجعات
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">خ.م</div>
+      <div class="user-info">
+        <div class="user-name">د. خالد المطيري</div>
+        <div class="user-role">مدير المالية</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <div class="crumbs">
+          <a href="F-01 Finance Dashboard.html">المالية</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <a href="#">التحويلات</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span style="color: var(--gray-800); font-weight: 600;">تحويل جديد</span>
+        </div>
+        <h2>إنشاء تحويل بنكي لجهة شريكة</h2>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-ghost">حفظ كمسوّدة</button>
+        <button class="btn-secondary">إلغاء</button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Stepper -->
+      <div class="stepper-bar">
+        <div class="step done">
+          <span class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="lbl"><span class="l1">الخطوة <span class="latin">1</span></span><span class="l2">الجهة</span></span>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step done">
+          <span class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="lbl"><span class="l1">الخطوة <span class="latin">2</span></span><span class="l2">الفترة</span></span>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step active">
+          <span class="num"><span class="latin">3</span></span>
+          <span class="lbl"><span class="l1">الخطوة <span class="latin">3</span></span><span class="l2">التفصيل</span></span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step pending">
+          <span class="num"><span class="latin">4</span></span>
+          <span class="lbl"><span class="l1">الخطوة <span class="latin">4</span></span><span class="l2">الملاحظات</span></span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step pending">
+          <span class="num"><span class="latin">5</span></span>
+          <span class="lbl"><span class="l1">الخطوة <span class="latin">5</span></span><span class="l2">المراجعة</span></span>
+        </div>
+      </div>
+
+      <!-- Main column -->
+      <div class="wcol">
+
+        <!-- Step 1 (collapsed/done summary) -->
+        <section class="card">
+          <header class="card-head" style="padding-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+              الجهة الشريكة
+            </h3>
+            <button class="btn-ghost" style="font-size: 12px; padding: 4px 8px;">تعديل</button>
+          </header>
+          <div class="card-body" style="padding-top: 0;">
+            <div class="partner-grid">
+              <button class="partner selected">
+                <div class="p-logo o">أ</div>
+                <div class="p-info">
+                  <div class="pn">جمعية الأورمان</div>
+                  <div class="pm"><span>🇪🇬 مصر</span><span class="dot">·</span><span>ORM-002</span><span class="dot">·</span><span class="bal">رصيد <span class="latin">394</span> ألف دك</span></div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 2 (collapsed/done summary) -->
+        <section class="card">
+          <header class="card-head" style="padding-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              الفترة
+            </h3>
+            <button class="btn-ghost" style="font-size: 12px; padding: 4px 8px;">تعديل</button>
+          </header>
+          <div class="card-body" style="padding-top: 0;">
+            <div class="period-grid">
+              <div class="form-group">
+                <label class="form-label">من تاريخ</label>
+                <input class="form-input" value="١ ذو القعدة ١٤٤٦" readonly style="background: var(--gray-50);">
+              </div>
+              <div class="form-group">
+                <label class="form-label">إلى تاريخ</label>
+                <input class="form-input" value="٢٩ ذو القعدة ١٤٤٦" readonly style="background: var(--gray-50);">
+              </div>
+            </div>
+            <div class="quick-period">
+              <button>الشهر السابق</button>
+              <button class="selected">الشهر الحالي</button>
+              <button>الربع</button>
+              <button>مخصّص</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 3 — active -->
+        <section class="card" style="border-color: var(--fin-200); box-shadow: 0 0 0 2px var(--fin-50);">
+          <header class="card-head">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              تفصيل المبلغ <span style="font-size: 11px; padding: 2px 8px; background: var(--fin-100); color: var(--fin-700); border-radius: var(--radius-full); font-weight: 600;">يُحسب آلياً</span>
+            </h3>
+            <p>كلّ يتيم من أيتام الأورمان لديه رصيد متراكم من كفلائه خلال الفترة المختارة. التحويل سيغطّيه بالكامل.</p>
+          </header>
+          <div class="card-body">
+            <div class="tbl-wrap">
+              <table class="items">
+                <thead>
+                  <tr>
+                    <th>اليتيم</th>
+                    <th>كفلاء نشطون</th>
+                    <th>عدد الدفعات</th>
+                    <th class="num-h">الرصيد المستحقّ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="orph-c">
+                        <span class="av a1">ي</span>
+                        <div class="info"><div class="nm">يوسف م.ع</div><div class="id">ORM-12842</div></div>
+                      </div>
+                    </td>
+                    <td><span class="latin" style="font-family: 'IBM Plex Sans'; font-feature-settings: 'tnum' 1;">14</span></td>
+                    <td><span class="latin" style="font-family: 'IBM Plex Sans'; font-feature-settings: 'tnum' 1;">14</span></td>
+                    <td class="amt"><span class="latin" style="font-weight: 700;">1,344</span><span class="u">دك</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="orph-c">
+                        <span class="av a2">م</span>
+                        <div class="info"><div class="nm">مريم أ.ك</div><div class="id">ORM-13441</div></div>
+                      </div>
+                    </td>
+                    <td><span class="latin">8</span></td>
+                    <td><span class="latin">8</span></td>
+                    <td class="amt"><span class="latin" style="font-weight: 700;">768</span><span class="u">دك</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="orph-c">
+                        <span class="av a3">س</span>
+                        <div class="info"><div class="nm">سلمى ر.م</div><div class="id">ORM-08229</div></div>
+                      </div>
+                    </td>
+                    <td><span class="latin">6</span></td>
+                    <td><span class="latin">6</span></td>
+                    <td class="amt"><span class="latin" style="font-weight: 700;">576</span><span class="u">دك</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="orph-c">
+                        <span class="av a4">ع</span>
+                        <div class="info"><div class="nm">عمر ج.ك</div><div class="id">ORM-09124</div></div>
+                      </div>
+                    </td>
+                    <td><span class="latin">11</span></td>
+                    <td><span class="latin">11</span></td>
+                    <td class="amt"><span class="latin" style="font-weight: 700;">1,056</span><span class="u">دك</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="orph-c">
+                        <span class="av a5">آ</span>
+                        <div class="info"><div class="nm">آدم ح.م</div><div class="id">ORM-11038</div></div>
+                      </div>
+                    </td>
+                    <td><span class="latin">9</span></td>
+                    <td><span class="latin">9</span></td>
+                    <td class="amt"><span class="latin" style="font-weight: 700;">864</span><span class="u">دك</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color: var(--gray-600);">+ <strong class="latin" style="font-family: 'IBM Plex Sans'; color: var(--gray-800);">1,175</strong> يتيماً آخرين</td>
+                    <td><span class="latin">1,180</span></td>
+                    <td><span class="latin" style="font-family: 'IBM Plex Sans'; font-feature-settings: 'tnum' 1;">2,842</span></td>
+                    <td class="amt"><span class="latin" style="font-weight: 700;">181,810</span><span class="u">دك</span></td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3">المجموع · <span style="color: var(--gray-600); font-weight: 500; font-size: 12px;">١,١٨٠ يتيماً</span></td>
+                    <td class="amt"><span class="latin" style="font-size: 18px;">186,418</span><span class="u" style="font-size: 13px; color: var(--fin-700);">دك</span></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="fx-banner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+              <span>سيُحوَّل المبلغ بعملة الجهة (جنيه مصري) بسعر الصرف اليومي</span>
+              <span class="rate"><span class="latin">1 KWD = 158.92 EGP</span></span>
+              <span style="font-family: 'IBM Plex Sans'; font-weight: 700; font-feature-settings: 'tnum' 1; color: var(--info-700);">~<span class="latin">29.6</span>م ج.م</span>
+              <span class="ts">سعر <span class="latin">11:42</span> اليوم</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 4 — preview / pending -->
+        <section class="card" style="opacity: .7;">
+          <header class="card-head">
+            <h3 style="color: var(--gray-500);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--gray-400);"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              ملاحظات للجهة <span style="font-size: 11px; padding: 2px 8px; background: var(--gray-100); color: var(--gray-600); border-radius: var(--radius-full); font-weight: 500;">اختياري</span>
+            </h3>
+          </header>
+          <div class="card-body">
+            <textarea class="notes-area" placeholder="ملاحظات إضافية ستظهر في ملف التحويل · مثلاً: «الرجاء توزيع المبلغ على الأيتام خلال أسبوع من الاستلام، وإرسال إيصال الاستلام موقّعاً»"></textarea>
+            <div style="font-size: 11.5px; color: var(--gray-500); margin-top: 6px;">ستُرفَق نسخة الإيصال PDF تلقائياً مع الملاحظات في رسالة البريد للجهة</div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Right summary rail -->
+      <aside class="summary-rail">
+        <div class="summary-card">
+          <div class="sm-h">إجمالي التحويل</div>
+          <div class="sm-big"><span class="latin">186,418</span><span class="u">دك</span></div>
+          <div class="sm-sub">~<strong><span class="latin">29.6</span> مليون</strong> جنيه مصري</div>
+
+          <div class="sm-divider"></div>
+
+          <div class="sm-h">ملخّص</div>
+          <div class="sm-list">
+            <div class="sm-row"><span class="k">الجهة</span><span class="v">الأورمان</span></div>
+            <div class="sm-row"><span class="k">الفترة</span><span class="v">ذو القعدة <span class="latin">1446</span></span></div>
+            <div class="sm-row"><span class="k">عدد الأيتام</span><span class="v"><span class="latin">1,180</span></span></div>
+            <div class="sm-row"><span class="k">عدد الكفلاء</span><span class="v"><span class="latin">2,842</span></span></div>
+            <div class="sm-row"><span class="k">رسوم البنك</span><span class="v"><span class="latin">~12</span> دك</span></div>
+            <div class="sm-row"><span class="k">تكلفة الصرف</span><span class="v"><span class="latin">~0.42</span>%</span></div>
+          </div>
+
+          <div class="sm-divider"></div>
+
+          <div class="sm-h">الحساب المستلِم</div>
+          <div class="bank-card">
+            <div class="bh">
+              <span class="bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></span>
+              <span class="bn">البنك الأهلي المصري</span>
+              <span class="verified">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                موثّق
+              </span>
+            </div>
+            <div class="ac">EG21 0007 0001 0024 5678 9012 345</div>
+            <div style="font-size: 11.5px; color: var(--gray-500); margin-top: 6px;">المستفيد · جمعية الأورمان</div>
+          </div>
+
+          <div class="approval">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+              <strong>اعتماد مزدوج مطلوب:</strong> بعد إنشائك للمسوّدة، يحتاج التحويل اعتماداً من <strong>سامح عبدالعزيز</strong> قبل التنفيذ.
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Footer nav -->
+      <div class="foot-nav">
+        <span class="saved">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          حُفظ كمسوّدة قبل <span class="latin">12</span> ثانية
+        </span>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            السابق
+          </button>
+          <button class="btn-primary">
+            التالي
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  // Quick period select
+  document.querySelectorAll('.quick-period').forEach(g => {
+    g.querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => {
+        g.querySelectorAll('button').forEach(o => o.classList.remove('selected'));
+        b.classList.add('selected');
+      });
+    });
+  });
+
+  // Partner select
+  document.querySelectorAll('.partner').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('.partner').forEach(o => o.classList.remove('selected'));
+      p.classList.add('selected');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

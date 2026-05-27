@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — تقارير القناة · مدير تسويق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F;
+  --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-300: #93C5FD; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* App shell */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.channel-switcher { display: flex; align-items: center; gap: 8px; padding: 9px 10px; background: linear-gradient(135deg, var(--info-50), white); border: 1px solid var(--info-100); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.channel-switcher .ch-logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.channel-switcher .ch-logo svg { width: 15px; height: 15px; stroke-width: 2; }
+.channel-switcher .ch-text { flex: 1; min-width: 0; text-align: right; }
+.channel-switcher .ch-text .nm { font-size: 12.5px; font-weight: 600; color: var(--gray-900); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.channel-switcher .ch-text .role { font-size: 10px; color: var(--info-700); font-weight: 500; }
+.channel-switcher .chev { color: var(--gray-400); }
+
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--info-50); color: var(--info-700); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--info-700); }
+.nav-item-badge { margin-inline-start: auto; background: var(--info-700); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--info-50); color: var(--info-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--info-700); font-weight: 500; }
+
+/* Main */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.btn-primary { padding: 8px 14px; background: var(--info-700); color: white; border: 1px solid var(--info-700); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary:hover { background: #1A40A8; }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-secondary:hover { border-color: var(--info-100); color: var(--info-700); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.page { padding: 22px 28px 56px; max-width: 1480px; margin: 0 auto; width: 100%; }
+
+/* Period bar */
+.period-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.period-pills { display: flex; gap: 4px; background: white; border: 1px solid var(--gray-200); padding: 4px; border-radius: var(--radius-md); }
+.period-pill { padding: 6px 12px; font-size: 12.5px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-radius: var(--radius-sm); }
+.period-pill:hover { color: var(--gray-900); }
+.period-pill.active { background: var(--info-50); color: var(--info-700); font-weight: 600; }
+.period-bar .now { font-size: 12px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 6px; }
+.period-bar .now svg { width: 12px; height: 12px; color: var(--gray-400); }
+.period-bar .now strong { color: var(--gray-800); font-weight: 600; }
+.period-bar .compare { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700); }
+.period-bar .compare:hover { border-color: var(--info-300); color: var(--info-700); }
+.period-bar .compare svg { color: var(--gray-400); }
+
+/* Executive summary card */
+.exec-card { background: linear-gradient(135deg, var(--info-700) 0%, var(--trust-800) 100%); color: white; border-radius: var(--radius-2xl); padding: 22px 26px; position: relative; overflow: hidden; margin-bottom: 18px; }
+.exec-card::after { content: ""; position: absolute; right: -50px; top: -60px; width: 240px; height: 240px; border-radius: 50%; background: rgba(255,255,255,.06); }
+.exec-card::before { content: ""; position: absolute; left: -80px; bottom: -90px; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.05); }
+.exec-card .hdr { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; position: relative; z-index: 1; }
+.exec-card .hdr .ic { width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(255,255,255,.14); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.exec-card .hdr .ic svg { width: 22px; height: 22px; }
+.exec-card .hdr .text { flex: 1; }
+.exec-card .hdr h3 { font-size: 16px; font-weight: 600; line-height: 1.3; }
+.exec-card .hdr p { font-size: 13px; opacity: .85; margin-top: 4px; max-width: 660px; line-height: 1.6; }
+
+.exec-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; position: relative; z-index: 1; }
+@media (max-width: 800px) { .exec-stats { grid-template-columns: repeat(2, 1fr); } }
+.exec-stat { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: var(--radius-md); padding: 12px 14px; }
+.exec-stat .lbl { font-size: 11px; opacity: .8; font-weight: 500; }
+.exec-stat .val { font-size: 22px; font-weight: 600; font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; letter-spacing: -.01em; line-height: 1.2; margin-top: 4px; }
+.exec-stat .val .unit { font-size: 12px; opacity: .8; font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 4px; }
+.exec-stat .delta { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: var(--radius-full); margin-inline-start: 4px; background: rgba(255,255,255,.16); }
+.exec-stat .delta.up { color: #6EE7B7; }
+.exec-stat .delta.down { color: #FCA5A5; }
+.exec-stat .sub { font-size: 11px; opacity: .75; margin-top: 4px; }
+
+/* Section heading */
+.section-h { display: flex; align-items: baseline; justify-content: space-between; margin: 26px 0 12px; flex-wrap: wrap; gap: 10px; }
+.section-h .ttl { font-size: 15px; font-weight: 600; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
+.section-h .ttl svg { width: 16px; height: 16px; color: var(--gray-500); }
+.section-h .desc { font-size: 12.5px; color: var(--gray-500); }
+.section-h .toolbar { display: flex; gap: 4px; background: white; border: 1px solid var(--gray-200); padding: 3px; border-radius: var(--radius-md); }
+.section-h .toolbar button { padding: 4px 10px; font-size: 12px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-radius: var(--radius-sm); }
+.section-h .toolbar button.active { background: var(--info-50); color: var(--info-700); font-weight: 600; }
+
+/* Card */
+.card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.card-head { padding: 16px 20px 14px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.card-head h3 { font-size: 14.5px; font-weight: 600; color: var(--gray-900); }
+.card-head p { font-size: 12px; color: var(--gray-500); margin-top: 3px; max-width: 520px; line-height: 1.55; }
+
+.card-body { padding: 18px 22px; }
+
+/* Trend chart */
+.trend-chart { padding: 18px 22px; }
+.trend-svg { width: 100%; height: 220px; }
+.trend-legend { display: flex; gap: 16px; justify-content: center; font-size: 11.5px; color: var(--gray-600); padding-top: 10px; }
+.trend-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-inline-end: 5px; vertical-align: 1px; }
+.trend-legend .dash { display: inline-block; width: 16px; height: 2px; margin-inline-end: 5px; vertical-align: 4px; }
+
+/* Two-up grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+@media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* Compare list */
+.cmp-list { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px; }
+.cmp-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding: 10px 12px; background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-md); }
+.cmp-row.you { background: var(--info-50); border-color: var(--info-100); }
+.cmp-row .ch { display: flex; align-items: center; gap: 10px; }
+.cmp-row .ch-logo { width: 32px; height: 32px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: white; }
+.cmp-row .ch-logo svg { width: 16px; height: 16px; }
+.cmp-row .ch-logo.you { background: linear-gradient(135deg, #25D366, #128C7E); }
+.cmp-row .ch-logo.email { background: linear-gradient(135deg, var(--info-500), var(--info-700)); }
+.cmp-row .ch-logo.ig { background: linear-gradient(135deg, var(--rose-700), #7C2D5C); }
+.cmp-row .ch-logo.tv { background: linear-gradient(135deg, var(--rose-700), #881337); }
+.cmp-row .ch-logo.partners { background: linear-gradient(135deg, var(--purple-700), #4C1D95); }
+.cmp-row .ch-logo.events { background: linear-gradient(135deg, var(--teal-700), var(--success-700)); }
+.cmp-row .ch-logo.referral { background: linear-gradient(135deg, var(--gold-700), #92400E); }
+.cmp-row .ch-logo.search { background: linear-gradient(135deg, #F97316, #C2410C); }
+.cmp-row .ch-info .nm { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.cmp-row.you .ch-info .nm::after { content: " · أنتِ"; color: var(--info-700); font-weight: 500; }
+.cmp-row .ch-info .meta { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.cmp-row .bar { width: 200px; height: 8px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-full); overflow: hidden; }
+.cmp-row .fill { height: 100%; background: var(--gray-400); border-radius: var(--radius-full); }
+.cmp-row.you .fill { background: linear-gradient(90deg, #25D366, var(--success-700)); }
+.cmp-row .num { font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-900); font-feature-settings: "tnum" 1; min-width: 60px; text-align: left; direction: ltr; }
+.cmp-row .num .u { font-size: 10.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.cmp-row.you .num { color: var(--info-700); }
+.cmp-row .rank { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--gray-200); color: var(--gray-700); font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; font-weight: 700; }
+.cmp-row.you .rank { background: var(--gold-700); color: white; }
+
+/* Insights cards */
+.insights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+@media (max-width: 980px) { .insights { grid-template-columns: 1fr; } }
+.ins { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.ins-h { display: flex; align-items: center; gap: 10px; }
+.ins-ic { width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ins-ic svg { width: 16px; height: 16px; stroke-width: 1.8; }
+.ins-ic.good { background: var(--success-50); color: var(--success-700); }
+.ins-ic.warn { background: var(--gold-50); color: var(--gold-700); }
+.ins-ic.tip { background: var(--purple-50); color: var(--purple-700); }
+.ins-tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: var(--radius-full); letter-spacing: .04em; }
+.ins-tag.good { background: var(--success-50); color: var(--success-700); }
+.ins-tag.warn { background: var(--gold-50); color: var(--gold-700); }
+.ins-tag.tip { background: var(--purple-50); color: var(--purple-700); }
+.ins-ttl { font-size: 13.5px; font-weight: 600; color: var(--gray-900); }
+.ins-bd { font-size: 12.5px; color: var(--gray-600); line-height: 1.6; }
+.ins-bd strong { color: var(--gray-900); font-weight: 600; }
+.ins-bd .num { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.ins-foot { display: flex; justify-content: flex-end; padding-top: 4px; border-top: 1px solid var(--gray-100); }
+.ins-foot a { font-size: 12px; font-weight: 600; color: var(--info-700); display: inline-flex; align-items: center; gap: 4px; }
+.ins-foot a svg { width: 12px; height: 12px; }
+
+/* Saved reports list */
+.saved-list { display: flex; flex-direction: column; gap: 8px; }
+.saved-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: border-color var(--transition-fast); }
+.saved-row:hover { border-color: var(--info-300); }
+.saved-ic { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10.5px; letter-spacing: .04em; flex-shrink: 0; }
+.saved-ic.pdf { background: var(--rose-50); color: var(--rose-700); }
+.saved-ic.xls { background: var(--success-50); color: var(--success-700); }
+.saved-ic.csv { background: var(--info-50); color: var(--info-700); }
+.saved-info { flex: 1; min-width: 0; }
+.saved-info .nm { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.saved-info .meta { font-size: 11.5px; color: var(--gray-500); margin-top: 2px; display: flex; gap: 12px; flex-wrap: wrap; }
+.saved-size { font-family: 'IBM Plex Sans', sans-serif; font-size: 11.5px; color: var(--gray-600); }
+.saved-actions { display: flex; gap: 6px; }
+.saved-actions a { padding: 6px 10px; font-size: 12px; font-weight: 600; color: var(--info-700); background: transparent; border: 1px solid transparent; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 5px; }
+.saved-actions a:hover { background: var(--info-50); }
+.saved-actions a svg { width: 12px; height: 12px; }
+
+/* Schedule banner */
+.schedule { background: linear-gradient(135deg, var(--gold-50), white); border: 1px solid var(--gold-100); border-radius: var(--radius-xl); padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-top: 20px; }
+.schedule .ic { width: 42px; height: 42px; border-radius: var(--radius-md); background: var(--gold-100); color: var(--gold-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.schedule .ic svg { width: 20px; height: 20px; }
+.schedule .txt { flex: 1; min-width: 0; }
+.schedule .ttl { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.schedule .ds { font-size: 12.5px; color: var(--gray-600); margin-top: 4px; line-height: 1.55; }
+.schedule .ds strong { color: var(--gray-900); font-weight: 600; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>قناة تسويق</p>
+      </div>
+    </div>
+
+    <button class="channel-switcher">
+      <div class="ch-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <div class="ch-text">
+        <div class="nm">واتساب — الخليج</div>
+        <div class="role">قناتي · مدير</div>
+      </div>
+      <svg class="icon icon-sm chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <div class="nav-section">قناتي</div>
+    <a class="nav-item" href="MM-01 Channel Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة الرئيسيّة
+    </a>
+    <a class="nav-item" href="MM-02 Annual Goals.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="12 6 14 11 19 12 14 13 12 18 10 13 5 12 10 11 12 6"/></svg>
+      الأهداف السنويّة
+    </a>
+    <a class="nav-item" href="MM-05 Campaigns.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      الحملات
+      <span class="nav-item-badge"><span class="latin">3</span></span>
+    </a>
+
+    <div class="nav-section">العمليّات</div>
+    <a class="nav-item" href="MM-03 Assigned Orphans.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg>
+      الأيتام المخصّصة
+      <span class="nav-item-badge muted"><span class="latin">340</span></span>
+    </a>
+    <a class="nav-item" href="MM-04 Acquired Donors.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23z"/></svg>
+      الكفلاء المكتسبون
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      تقارير القناة
+    </a>
+
+    <div class="nav-section">مكتبة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/></svg>
+      أصول تسويقيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+      روابط UTM
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+      قوالب الرسائل
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">ل.م</div>
+      <div class="user-info">
+        <div class="user-name">ليلى المنصور</div>
+        <div class="user-role">مدير قناة</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>تقارير القناة</h2>
+        <p>تقارير شاملة لأداء قناتك — مقارنات وتحليلات قابلة للتصدير</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          جدولة تقرير
+        </button>
+        <button class="btn-primary">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          تصدير الكلّ
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Period bar -->
+      <div class="period-bar">
+        <div class="period-pills">
+          <button class="period-pill">الأسبوع</button>
+          <button class="period-pill active">الشهر</button>
+          <button class="period-pill">الربع</button>
+          <button class="period-pill">العام</button>
+          <button class="period-pill">مخصّص</button>
+        </div>
+        <div class="now">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>
+          <strong>ذو القعدة <span class="latin">1446</span></strong>
+        </div>
+        <button class="compare">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          مقارنة بـ: شوّال <span class="latin">1446</span>
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+
+      <!-- Executive summary -->
+      <section class="exec-card">
+        <div class="hdr">
+          <div class="ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="text">
+            <h3>قناة واتساب الخليج تتفوّق على الجميع هذا الشهر</h3>
+            <p>أكبر قناة في المنصّة من حيث الكفلاء الجدد ومعدّل التحويل. حملة رمضان معاً <span class="latin">1446</span> تجاوزت هدفها بـ<strong>‍<span class="latin">42</span>%</strong>، ومجموعات الأمّهات لا تزال أعلى مصدر بقيمة الكفيل.</p>
+          </div>
+        </div>
+        <div class="exec-stats">
+          <div class="exec-stat">
+            <div class="lbl">كفلاء جدد · الشهر</div>
+            <div class="val"><span class="latin">82</span><span class="unit">كفيل</span><span class="delta up">+<span class="latin">14</span>%</span></div>
+            <div class="sub">vs شوّال <span class="latin">72</span></div>
+          </div>
+          <div class="exec-stat">
+            <div class="lbl">تبرّعات · الشهر</div>
+            <div class="val"><span class="latin">142</span><span class="unit">ك دك</span><span class="delta up">+<span class="latin">21</span>%</span></div>
+            <div class="sub">معدّل <span class="latin">1,820</span> دك/كفيل</div>
+          </div>
+          <div class="exec-stat">
+            <div class="lbl">معدّل التحويل</div>
+            <div class="val"><span class="latin">22.4</span><span class="unit">%</span><span class="delta up">+<span class="latin">3.1</span>%</span></div>
+            <div class="sub">الأعلى في المنصّة</div>
+          </div>
+          <div class="exec-stat">
+            <div class="lbl">احتفاظ · سنوي</div>
+            <div class="val"><span class="latin">89</span><span class="unit">%</span><span class="delta up">+<span class="latin">4</span>%</span></div>
+            <div class="sub">قطاع الخير: <span class="latin">72</span>%</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trend chart -->
+      <section class="card" style="margin-bottom: 18px;">
+        <header class="card-head">
+          <div>
+            <h3>منحنى الأداء</h3>
+            <p>الكفلاء الجدد والتبرّعات يوم بيوم — مقارنة بالشهر السابق</p>
+          </div>
+          <div style="display: flex; gap: 4px; background: var(--gray-100); padding: 3px; border-radius: var(--radius-md);">
+            <button class="period-pill active" style="font-size: 11.5px;">كفلاء</button>
+            <button class="period-pill" style="font-size: 11.5px;">تبرّعات</button>
+            <button class="period-pill" style="font-size: 11.5px;">كلاهما</button>
+          </div>
+        </header>
+        <div class="trend-chart">
+          <svg class="trend-svg" viewBox="0 0 800 220" preserveAspectRatio="none" aria-label="منحنى الأداء">
+            <defs>
+              <linearGradient id="gradNow" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#10B981" stop-opacity="0.28"/>
+                <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid lines -->
+            <line x1="40" y1="20" x2="790" y2="20" stroke="#F4F6F8"/>
+            <line x1="40" y1="65" x2="790" y2="65" stroke="#F4F6F8"/>
+            <line x1="40" y1="110" x2="790" y2="110" stroke="#F4F6F8"/>
+            <line x1="40" y1="155" x2="790" y2="155" stroke="#F4F6F8"/>
+            <line x1="40" y1="200" x2="790" y2="200" stroke="#E7EBEF"/>
+            <!-- Y labels -->
+            <text x="32" y="24" font-family="IBM Plex Sans" font-size="9" fill="#A8B2BC" text-anchor="end"><tspan>5</tspan></text>
+            <text x="32" y="69" font-family="IBM Plex Sans" font-size="9" fill="#A8B2BC" text-anchor="end"><tspan>4</tspan></text>
+            <text x="32" y="114" font-family="IBM Plex Sans" font-size="9" fill="#A8B2BC" text-anchor="end"><tspan>3</tspan></text>
+            <text x="32" y="159" font-family="IBM Plex Sans" font-size="9" fill="#A8B2BC" text-anchor="end"><tspan>2</tspan></text>
+            <text x="32" y="204" font-family="IBM Plex Sans" font-size="9" fill="#A8B2BC" text-anchor="end"><tspan>0</tspan></text>
+
+            <!-- Previous month dashed -->
+            <polyline points="40,180 65,170 90,178 115,162 140,168 165,155 190,148 215,160 240,150 265,142 290,135 315,150 340,138 365,125 390,132 415,118 440,128 465,115 490,108 515,118 540,105 565,98 590,108 615,90 640,98 665,85 690,92 715,78 740,82 765,72 790,68"
+              fill="none" stroke="#A8B2BC" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- Current month -->
+            <path d="M 40,170 L 65,158 L 90,162 L 115,148 L 140,150 L 165,135 L 190,128 L 215,138 L 240,125 L 265,118 L 290,108 L 315,118 L 340,108 L 365,95 L 390,98 L 415,85 L 440,92 L 465,80 L 490,72 L 515,82 L 540,68 L 565,58 L 590,68 L 615,52 L 640,58 L 665,42 L 690,50 L 715,35 L 740,40 L 765,28 L 790,22 L 790,200 L 40,200 Z"
+              fill="url(#gradNow)"/>
+            <polyline points="40,170 65,158 90,162 115,148 140,150 165,135 190,128 215,138 240,125 265,118 290,108 315,118 340,108 365,95 390,98 415,85 440,92 465,80 490,72 515,82 540,68 565,58 590,68 615,52 640,58 665,42 690,50 715,35 740,40 765,28 790,22"
+              fill="none" stroke="#047857" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- End dot -->
+            <circle cx="790" cy="22" r="5" fill="#047857" stroke="white" stroke-width="2"/>
+
+            <!-- X labels -->
+            <text x="40" y="216" font-family="IBM Plex Sans" font-size="9" fill="#7A8590" text-anchor="middle"><tspan>1</tspan></text>
+            <text x="190" y="216" font-family="IBM Plex Sans" font-size="9" fill="#7A8590" text-anchor="middle"><tspan>6</tspan></text>
+            <text x="340" y="216" font-family="IBM Plex Sans" font-size="9" fill="#7A8590" text-anchor="middle"><tspan>11</tspan></text>
+            <text x="490" y="216" font-family="IBM Plex Sans" font-size="9" fill="#7A8590" text-anchor="middle"><tspan>16</tspan></text>
+            <text x="640" y="216" font-family="IBM Plex Sans" font-size="9" fill="#7A8590" text-anchor="middle"><tspan>21</tspan></text>
+            <text x="790" y="216" font-family="IBM Plex Sans" font-size="9" fill="#7A8590" text-anchor="middle"><tspan>26</tspan></text>
+          </svg>
+          <div class="trend-legend">
+            <span><span class="dot" style="background: var(--success-700);"></span>هذا الشهر</span>
+            <span><span class="dash" style="background: var(--gray-400);"></span>الشهر السابق</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Channel comparison + Source attribution -->
+      <section class="grid-2">
+        <div class="card">
+          <header class="card-head">
+            <div>
+              <h3>مقارنة بقنوات المنصّة الأخرى</h3>
+              <p>كفلاء جدد · الشهر الحالي</p>
+            </div>
+          </header>
+          <div class="cmp-list">
+
+            <div class="cmp-row you">
+              <div class="ch">
+                <span class="rank"><span class="latin">1</span></span>
+                <div class="ch-logo you"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">واتساب — الخليج</div>
+                  <div class="meta">ليلى المنصور · أنتِ</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 100%"></span></span>
+              <span class="num"><span class="latin">82</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">2</span></span>
+                <div class="ch-logo ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">إنستغرام — قصص الأيتام</div>
+                  <div class="meta">سلمى المرواني</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 68%"></span></span>
+              <span class="num"><span class="latin">56</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">3</span></span>
+                <div class="ch-logo tv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">حملة رمضان — تلفزيون</div>
+                  <div class="meta">فهد الصباح</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 54%"></span></span>
+              <span class="num"><span class="latin">44</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">4</span></span>
+                <div class="ch-logo email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">نشرة البريد الإلكتروني</div>
+                  <div class="meta">أحمد الخالدي</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 44%"></span></span>
+              <span class="num"><span class="latin">36</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">5</span></span>
+                <div class="ch-logo partners"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">إحالات الجمعيات الشريكة</div>
+                  <div class="meta">عبدالله الرشيد</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 38%"></span></span>
+              <span class="num"><span class="latin">31</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">6</span></span>
+                <div class="ch-logo events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">فعاليات المساجد</div>
+                  <div class="meta">نوّاف العجمي</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 30%"></span></span>
+              <span class="num"><span class="latin">24</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">7</span></span>
+                <div class="ch-logo referral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 11 12 21 8 17 4 21 4 13 12 5 22 11"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">صديق رفقاء</div>
+                  <div class="meta">دانة الأنصاري</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 26%"></span></span>
+              <span class="num"><span class="latin">21</span><span class="u">كفيل</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">8</span></span>
+                <div class="ch-logo search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">جوجل إعلانات</div>
+                  <div class="meta">رهام المطيري</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 16%"></span></span>
+              <span class="num"><span class="latin">13</span><span class="u">كفيل</span></span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card">
+          <header class="card-head">
+            <div>
+              <h3>أداء الحملات داخل قناتك</h3>
+              <p>الكفلاء المكتسبون لكلّ حملة هذا الشهر</p>
+            </div>
+          </header>
+          <div class="cmp-list">
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">1</span></span>
+                <div class="ch-logo" style="background: linear-gradient(135deg, #25D366, #128C7E);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">رمضان معاً <span class="latin">1446</span></div>
+                  <div class="meta"><span class="latin">142</span>% من الهدف</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 100%; background: linear-gradient(90deg, #25D366, #047857);"></span></span>
+              <span class="num" style="color: var(--success-700);"><span class="latin">312</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">2</span></span>
+                <div class="ch-logo" style="background: linear-gradient(135deg, var(--rose-500), var(--rose-700));"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v1"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">مجموعات الأمّهات</div>
+                  <div class="meta">دائمة · أعلى LTV</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 62%; background: var(--rose-700);"></span></span>
+              <span class="num"><span class="latin">198</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">3</span></span>
+                <div class="ch-logo" style="background: linear-gradient(135deg, #F59E0B, #D97706);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">عيد الفطر <span class="latin">1446</span></div>
+                  <div class="meta">انتهت · <span class="latin">112</span>% من الهدف</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 48%; background: #D97706;"></span></span>
+              <span class="num"><span class="latin">148</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">4</span></span>
+                <div class="ch-logo" style="background: linear-gradient(135deg, var(--teal-700), var(--success-700));"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">دعوات يوم الجمعة</div>
+                  <div class="meta">أسبوعيّة</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 22%; background: var(--teal-700);"></span></span>
+              <span class="num"><span class="latin">68</span></span>
+            </div>
+
+            <div class="cmp-row">
+              <div class="ch">
+                <span class="rank"><span class="latin">5</span></span>
+                <div class="ch-logo" style="background: linear-gradient(135deg, var(--purple-500, #8B5CF6), var(--purple-700));"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23z"/></svg></div>
+                <div class="ch-info">
+                  <div class="nm">شعبان الخير</div>
+                  <div class="meta">قيد الاعتماد</div>
+                </div>
+              </div>
+              <span class="bar"><span class="fill" style="width: 4%; background: var(--gray-300);"></span></span>
+              <span class="num" style="color: var(--gray-500);">—</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Insights -->
+      <div class="section-h">
+        <div class="ttl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 0v20m-10-10h20"/></svg>
+          استنتاجات وتوصيات
+          <span style="font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); background: var(--purple-50); color: var(--purple-700); margin-inline-start: 4px;">AI</span>
+        </div>
+        <span class="desc">مبنيّة على بيانات آخر <span class="latin">90</span> يوماً</span>
+      </div>
+
+      <section class="insights">
+        <div class="ins">
+          <div class="ins-h">
+            <div class="ins-ic good">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            </div>
+            <span class="ins-tag good">نقطة قوّة</span>
+          </div>
+          <div class="ins-ttl">رسائل الجمعة قبل الفجر بأداء استثنائي</div>
+          <div class="ins-bd">
+            معدّل فتح <strong class="num"><span class="latin">82</span>%</strong> صباح الجمعة قبل الساعة <strong class="num"><span class="latin">8</span></strong> — أعلى من متوسّط الأسبوع بـ<strong class="num"><span class="latin">+24</span></strong> نقطة. اعتمدي هذا الوقت كنقطة إرسال رئيسيّة.
+          </div>
+          <div class="ins-foot"><a href="#">عرض التحليل التفصيلي <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a></div>
+        </div>
+
+        <div class="ins">
+          <div class="ins-h">
+            <div class="ins-ic warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="ins-tag warn">يحتاج تحسيناً</span>
+          </div>
+          <div class="ins-ttl">معدّل الانسحاب في الشهر الثالث</div>
+          <div class="ins-bd">
+            <strong class="num"><span class="latin">4</span>%</strong> من الكفلاء الجدد ينسحبون بعد الدفعة الثانية — جرّبي إرسال تقرير شخصي قبل الشهر الثالث لزيادة الاحتفاظ. متوسّط المنصّة <strong class="num"><span class="latin">2.1</span>%</strong>.
+          </div>
+          <div class="ins-foot"><a href="#">اقتراح خطّة <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a></div>
+        </div>
+
+        <div class="ins">
+          <div class="ins-h">
+            <div class="ins-ic tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.74V18h8v-3.26A7 7 0 0 0 12 2z"/></svg>
+            </div>
+            <span class="ins-tag tip">فرصة</span>
+          </div>
+          <div class="ins-ttl">عُمان وقطر بنموّ <span class="num latin">+86</span>%</div>
+          <div class="ins-bd">
+            كفلاؤك في عُمان وقطر تضاعفوا في الأشهر الـ<strong class="num"><span class="latin">3</span></strong> الماضية رغم محدوديّة التركيز. مجموعة أمّهات مخصّصة لكلّ بلد قد تضيف <strong class="num"><span class="latin">~40</span> كفيلاً</strong> شهرياً.
+          </div>
+          <div class="ins-foot"><a href="#">إنشاء حملة مخصّصة <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a></div>
+        </div>
+      </section>
+
+      <!-- Saved reports -->
+      <div class="section-h">
+        <div class="ttl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          تقارير محفوظة
+        </div>
+        <a href="#" style="font-size: 12.5px; color: var(--info-700); font-weight: 500;">عرض المكتبة كاملة ←</a>
+      </div>
+
+      <div class="saved-list">
+        <div class="saved-row">
+          <div class="saved-ic pdf">PDF</div>
+          <div class="saved-info">
+            <div class="nm">تقرير قناة واتساب الخليج · شوّال <span class="latin">1446</span></div>
+            <div class="meta">
+              <span>أُنشئ قبل <span class="latin">9</span> أيّام</span>
+              <span><span class="latin">14</span> صفحة</span>
+              <span>أُرسل إلى <span class="latin">5</span> مستلمين</span>
+            </div>
+          </div>
+          <div class="saved-size"><span class="latin">1.8</span> MB</div>
+          <div class="saved-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/></svg>مشاركة</a>
+          </div>
+        </div>
+
+        <div class="saved-row">
+          <div class="saved-ic xls">XLSX</div>
+          <div class="saved-info">
+            <div class="nm">تحليل cohort الكفلاء · <span class="latin">12</span> شهراً</div>
+            <div class="meta">
+              <span>قبل <span class="latin">15</span> يوماً</span>
+              <span><span class="latin">8</span> أوراق</span>
+              <span>تصدير ذاتي</span>
+            </div>
+          </div>
+          <div class="saved-size"><span class="latin">340</span> KB</div>
+          <div class="saved-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/></svg>مشاركة</a>
+          </div>
+        </div>
+
+        <div class="saved-row">
+          <div class="saved-ic pdf">PDF</div>
+          <div class="saved-info">
+            <div class="nm">تقرير ختامي · حملة عيد الفطر <span class="latin">1446</span></div>
+            <div class="meta">
+              <span>قبل <span class="latin">24</span> يوماً</span>
+              <span>تقرير حملة</span>
+              <span>ROI <span class="latin">14×</span></span>
+            </div>
+          </div>
+          <div class="saved-size"><span class="latin">2.2</span> MB</div>
+          <div class="saved-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/></svg>مشاركة</a>
+          </div>
+        </div>
+
+        <div class="saved-row">
+          <div class="saved-ic csv">CSV</div>
+          <div class="saved-info">
+            <div class="nm">قائمة الكفلاء — رمضان <span class="latin">1446</span></div>
+            <div class="meta">
+              <span>قبل شهرين</span>
+              <span><span class="latin">312</span> صفّاً</span>
+              <span>مخصّص</span>
+            </div>
+          </div>
+          <div class="saved-size"><span class="latin">84</span> KB</div>
+          <div class="saved-actions">
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>تحميل</a>
+            <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/></svg>مشاركة</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule banner -->
+      <div class="schedule">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="txt">
+          <div class="ttl">جدولة تقرير شهري لقناتك</div>
+          <div class="ds">يُولَّد تلقائياً أوّل كلّ شهر ويُرسَل إلى مدير المؤسسة. <strong>التقرير القادم: <span class="latin">1</span> ذو الحجّة <span class="latin">1446</span></strong> — خلال <span class="latin">8</span> أيّام.</div>
+        </div>
+        <button class="btn-secondary" style="border-color: var(--gold-100); color: var(--gold-700);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82"/></svg>
+          إعدادات الجدولة
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('.period-pill').forEach(p => {
+    p.addEventListener('click', () => {
+      const group = p.parentElement;
+      group.querySelectorAll('.period-pill').forEach(o => o.classList.remove('active'));
+      p.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.section-h .toolbar').forEach(g => {
+    g.querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => {
+        g.querySelectorAll('button').forEach(o => o.classList.remove('active'));
+        b.classList.add('active');
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

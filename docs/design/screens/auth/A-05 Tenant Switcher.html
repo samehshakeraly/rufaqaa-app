@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — اختر المؤسسة</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+  color: var(--gray-900);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(214,230,242,.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 90%, rgba(214,230,242,.3) 0%, transparent 50%),
+    var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; }
+input { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Page */
+.page-wrap { width: 100%; max-width: 560px; }
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.brand {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.brand-mark {
+  width: 44px; height: 44px;
+  background: var(--trust-300);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 22px;
+}
+
+.brand-info h1 { font-size: 17px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 12.5px; color: var(--gray-500); }
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  color: var(--gray-700);
+}
+
+.user-chip-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600;
+}
+
+.user-chip-logout {
+  margin-inline-start: 6px;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+  color: var(--gray-500);
+  border-radius: 4px;
+  transition: var(--transition-fast);
+}
+.user-chip-logout:hover { background: var(--gray-100); color: var(--danger-600); }
+
+/* Card */
+.card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  padding: 32px 30px;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 480px) {
+  .card { padding: 24px 18px; }
+}
+
+.head { text-align: center; margin-bottom: 22px; }
+
+.head-icon {
+  width: 64px; height: 64px;
+  border-radius: 16px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  border: 1px solid var(--sky-200);
+}
+
+.head-icon svg { width: 30px; height: 30px; stroke-width: 1.75; }
+
+.head h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.head p {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* Search */
+.tenant-search {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.tenant-search input {
+  width: 100%;
+  padding: 11px 40px 11px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.tenant-search input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.tenant-search svg {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  width: 16px; height: 16px;
+  pointer-events: none;
+}
+
+/* Tenant cards */
+.tenants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tenant-card {
+  display: grid;
+  grid-template-columns: 52px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  text-align: right;
+  font-family: inherit;
+  color: inherit;
+  width: 100%;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tenant-card:hover {
+  border-color: var(--sky-300);
+  background: var(--snow-100);
+  transform: translateX(-2px);
+}
+
+.tenant-card.selected {
+  border-color: var(--trust-400);
+  background: var(--tranquil-100);
+}
+
+.tenant-logo {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+}
+
+.tenant-logo.t-fajr  { background: linear-gradient(135deg, var(--trust-500), var(--trust-700)); }
+.tenant-logo.t-amal  { background: linear-gradient(135deg, #10B981, #047857); }
+.tenant-logo.t-karam { background: linear-gradient(135deg, #D4A017, #855E08); }
+.tenant-logo.t-ihsan { background: linear-gradient(135deg, #6366f1, #4338ca); }
+
+.tenant-info { min-width: 0; }
+
+.tenant-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tenant-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.tenant-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tenant-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-400); }
+
+.tenant-role {
+  font-size: 11px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tenant-role.admin { background: var(--info-50); color: var(--info-700); border: 1px solid var(--info-100); }
+.tenant-role.staff { background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); }
+.tenant-role.finance { background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); }
+
+.tenant-chev {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+  color: var(--gray-500);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--gray-200);
+  transition: var(--transition-fast);
+}
+
+.tenant-card:hover .tenant-chev {
+  background: var(--trust-400);
+  color: white;
+  border-color: var(--trust-400);
+}
+
+/* Section label */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin: 18px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+/* Remember */
+.remember-row {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--gray-800);
+  cursor: pointer;
+  width: 100%;
+}
+
+.remember-check {
+  width: 18px; height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.remember-row.checked .remember-check {
+  background: var(--trust-400); border-color: var(--trust-400);
+}
+.remember-row.checked .remember-check::after {
+  content: '';
+  width: 10px; height: 5px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.remember-row .label { flex: 1; text-align: right; }
+.remember-row .sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+/* Help row */
+.help-row {
+  margin-top: 18px;
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  color: var(--info-700);
+  line-height: 1.55;
+}
+
+.help-row svg { flex-shrink: 0; margin-top: 2px; }
+.help-row a { color: var(--info-700); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="brand-row">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>اختر المؤسسة للمتابعة</p>
+      </div>
+    </div>
+
+    <div class="user-chip">
+      <span class="user-chip-avatar" aria-hidden="true">س.ع</span>
+      <span class="latin">sara.ali@example.com</span>
+      <button class="user-chip-logout" aria-label="تسجيل خروج">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="head">
+      <div class="head-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      </div>
+      <h2>أيّ مؤسّسة تودّ الدخول إليها؟</h2>
+      <p>حسابك مرتبط بـ <span class="latin" style="color: var(--gray-900); font-weight: 600;">4</span> مؤسّسات. اختر واحدة لمتابعة العمل، أو فعّل الاختيار التلقائي.</p>
+    </div>
+
+    <div class="tenant-search">
+      <input type="search" placeholder="ابحث عن مؤسّسة…" aria-label="بحث">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+
+    <div class="section-label">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      آخر مؤسّسة استخدمتها
+    </div>
+
+    <div class="tenants-list">
+
+      <button class="tenant-card">
+        <div class="tenant-logo t-fajr" aria-hidden="true">فجر</div>
+        <div class="tenant-info">
+          <div class="tenant-name">
+            جمعية الفجر الخيرية
+            <span class="tenant-verified">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              موثّقة
+            </span>
+          </div>
+          <div class="tenant-meta">
+            <span>فلسطين — غزّة</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="latin">1,240</span> يتيماً</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>آخر دخول قبل ساعتين</span>
+          </div>
+        </div>
+        <span class="tenant-role admin">مديرة فرع</span>
+        <div class="tenant-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+      </button>
+
+    </div>
+
+    <div class="section-label">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      مؤسّسات أخرى لديك حساب فيها
+    </div>
+
+    <div class="tenants-list">
+
+      <button class="tenant-card">
+        <div class="tenant-logo t-amal" aria-hidden="true">أمل</div>
+        <div class="tenant-info">
+          <div class="tenant-name">
+            جمعية الأمل الخيرية
+            <span class="tenant-verified">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              موثّقة
+            </span>
+          </div>
+          <div class="tenant-meta">
+            <span>فلسطين — رام الله</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="latin">920</span> يتيماً</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>آخر دخول قبل <span class="latin">5</span> أيام</span>
+          </div>
+        </div>
+        <span class="tenant-role staff">موظّفة شؤون</span>
+        <div class="tenant-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+      </button>
+
+      <button class="tenant-card">
+        <div class="tenant-logo t-karam" aria-hidden="true">كرم</div>
+        <div class="tenant-info">
+          <div class="tenant-name">
+            جمعية الكرم الإنسانيّة
+            <span class="tenant-verified">
+              <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              موثّقة
+            </span>
+          </div>
+          <div class="tenant-meta">
+            <span>الأردن — عمّان</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="latin">2,180</span> يتيماً</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>آخر دخول قبل أسبوع</span>
+          </div>
+        </div>
+        <span class="tenant-role finance">مسؤولة مالية</span>
+        <div class="tenant-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+      </button>
+
+      <button class="tenant-card">
+        <div class="tenant-logo t-ihsan" aria-hidden="true">إحس</div>
+        <div class="tenant-info">
+          <div class="tenant-name">
+            مؤسّسة إحسان للأيتام
+          </div>
+          <div class="tenant-meta">
+            <span>اليمن — صنعاء</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span><span class="latin">640</span> يتيماً</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>دعوة قيد الانتظار</span>
+          </div>
+        </div>
+        <span class="tenant-role">مدعوّة</span>
+        <div class="tenant-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+      </button>
+
+    </div>
+
+    <button type="button" class="remember-row" id="remember-btn">
+      <span class="remember-check" aria-hidden="true"></span>
+      <span class="label">
+        تذكّر اختياري وادخل تلقائياً المرّة القادمة
+        <span class="sub">سيمكنك تغيير المؤسسة من قائمة المستخدم في أيّ وقت.</span>
+      </span>
+    </button>
+
+    <div class="help-row">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>
+        لا ترى مؤسّستك؟ تأكّد أنّ مديرها أرسل لك دعوة على <span class="latin" style="color: var(--gray-900); font-weight: 600;">sara.ali@example.com</span> — أو
+        <a href="#">اتّصل بالدعم</a>.
+      </span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tenant-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.tenant-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    setTimeout(() => {
+      // Pretend redirect — go to a tenant home (donor dashboard as placeholder)
+      location.href = 'D-01 Donor Dashboard.html';
+    }, 280);
+  });
+});
+
+document.getElementById('remember-btn').addEventListener('click', e => {
+  e.currentTarget.classList.toggle('checked');
+});
+</script>
+
+</body>
+</html>

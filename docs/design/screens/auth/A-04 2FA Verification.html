@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — التحقّق الثنائي</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-600: #DC2626;
+
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.30);
+
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px; line-height: 1.6;
+  color: var(--gray-900);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(214,230,242,.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 90%, rgba(214,230,242,.3) 0%, transparent 50%),
+    var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; }
+input { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Page */
+.page-wrap { width: 100%; max-width: 480px; }
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.brand-mark {
+  width: 44px; height: 44px;
+  background: var(--trust-300);
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 22px;
+}
+
+.brand-info h1 { font-size: 17px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.brand-info p { font-size: 12.5px; color: var(--gray-500); }
+
+/* Card */
+.card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  padding: 32px 30px;
+  box-shadow: var(--shadow-md);
+}
+
+.head { text-align: center; margin-bottom: 24px; }
+
+.head-icon {
+  width: 68px; height: 68px;
+  border-radius: 18px;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  border: 1px solid var(--sky-200);
+  position: relative;
+}
+
+.head-icon::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 22px;
+  border: 2px solid var(--tranquil-100);
+  animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: .6; transform: scale(1); }
+  50% { opacity: 0; transform: scale(1.08); }
+}
+
+.head-icon svg { width: 32px; height: 32px; stroke-width: 1.75; }
+
+.head h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.head p {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.user-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 5px 12px 5px 5px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--gray-700);
+}
+
+.user-tag-avatar {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 600;
+}
+
+/* OTP */
+.otp-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin: 24px 0 8px;
+  direction: ltr;
+}
+
+.otp-box {
+  aspect-ratio: 1;
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--trust-700);
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: var(--transition);
+}
+
+.otp-box:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-400);
+  box-shadow: var(--shadow-focus);
+}
+
+.otp-box.filled {
+  background: white;
+  border-color: var(--trust-400);
+}
+
+.otp-box.error {
+  border-color: var(--danger-600);
+  background: var(--danger-50);
+  animation: shake 320ms;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.otp-error-msg {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--danger-600);
+  margin-top: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.otp-error-msg.show { display: inline-flex; }
+
+.otp-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-100);
+  font-size: 12.5px;
+  color: var(--gray-600);
+}
+
+.timer-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-display svg { color: var(--gray-400); }
+.timer-display .latin { color: var(--gray-900); font-weight: 600; }
+
+/* Method switch */
+.method-switch {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--gray-200);
+}
+
+.method-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.method-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.method-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--gray-800);
+  font-family: inherit;
+  text-align: right;
+  width: 100%;
+  transition: var(--transition-fast);
+}
+
+.method-btn:hover { border-color: var(--sky-300); background: var(--snow-200); }
+
+.method-btn.current {
+  background: var(--tranquil-100);
+  border-color: var(--sky-200);
+  color: var(--trust-700);
+}
+
+.method-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--gray-50);
+  color: var(--trust-500);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--gray-200);
+}
+
+.method-btn.current .method-icon {
+  background: white;
+  border-color: var(--sky-300);
+}
+
+.method-text { flex: 1; min-width: 0; }
+.method-name { font-weight: 600; line-height: 1.3; }
+.method-sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+.method-current-tag {
+  font-size: 10.5px;
+  color: var(--success-700);
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* Trust device toggle */
+.trust-row {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--gray-800);
+}
+
+.trust-check {
+  width: 18px; height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.trust-row.checked .trust-check {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+}
+.trust-row.checked .trust-check::after {
+  content: '';
+  width: 10px; height: 5px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.trust-row .label { flex: 1; }
+.trust-row .sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+/* Back */
+.center-link {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--gray-600);
+  text-decoration: none;
+  font-weight: 500;
+}
+.back-link:hover { color: var(--trust-600); }
+
+.btn-primary {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px 20px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.btn-primary:hover:not([aria-disabled="true"]) { background: var(--trust-500); border-color: var(--trust-500); box-shadow: var(--shadow-sm); }
+.btn-primary[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="brand-row">
+    <div class="brand-mark" aria-hidden="true">ر</div>
+    <div class="brand-info">
+      <h1>رفقاء</h1>
+      <p>طبقة حماية إضافيّة لحسابك</p>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="head">
+      <div class="head-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+      </div>
+      <h2>التحقّق الثنائي</h2>
+      <p>افتح تطبيق المصادقة لديك وأدخل الرمز المؤلَّف من <span class="latin">6</span> أرقام.</p>
+      <span class="user-tag">
+        <span class="user-tag-avatar" aria-hidden="true">أ.ع</span>
+        <span class="latin">abdullah.alsalem@example.com</span>
+      </span>
+    </div>
+
+    <div class="otp-row" role="group" aria-label="رمز التحقّق">
+      <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*" autofocus>
+      <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*">
+      <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*">
+      <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*">
+      <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*">
+      <input type="text" maxlength="1" class="otp-box latin" inputmode="numeric" pattern="\d*">
+    </div>
+
+    <div class="otp-error-msg" id="error-msg">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      الرمز غير صحيح. تأكّد من الوقت في جهازك وحاول مجدّداً.
+    </div>
+
+    <button class="btn-primary" id="verify-btn" aria-disabled="true">
+      تحقّق ومتابعة
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <div class="otp-meta">
+      <span class="timer-display">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        الرمز يتجدّد بعد <span class="timer"><span class="latin" id="timer">22</span> ث</span>
+      </span>
+      <button class="back-link" type="button" style="background: none; border: none; padding: 0;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+        تحديث
+      </button>
+    </div>
+
+    <div class="method-switch">
+      <div class="method-label">طرق التحقّق الأخرى</div>
+      <div class="method-options">
+
+        <button class="method-btn current">
+          <div class="method-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div class="method-text">
+            <div class="method-name">تطبيق المصادقة <span class="latin">Authenticator</span></div>
+            <div class="method-sub">Google / Microsoft / 1Password</div>
+          </div>
+          <span class="method-current-tag">المستخدم الآن</span>
+        </button>
+
+        <button class="method-btn">
+          <div class="method-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="method-text">
+            <div class="method-name">رسالة قصيرة <span class="latin">SMS</span></div>
+            <div class="method-sub">إلى <span class="latin">+965 ••• •432</span></div>
+          </div>
+        </button>
+
+        <button class="method-btn">
+          <div class="method-icon">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="method-text">
+            <div class="method-name">استخدام رمز احتياطيّ</div>
+            <div class="method-sub">إن لم يكن جهازك معك. <span class="latin">10</span> رموز متاحة.</div>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+    <button class="trust-row" id="trust-btn" type="button" style="border: 1px solid var(--gray-200); width: 100%; text-align: right;">
+      <span class="trust-check" aria-hidden="true"></span>
+      <span>
+        <span class="label">ثق بهذا الجهاز لمدّة <span class="latin">30</span> يوماً</span>
+        <span class="sub">لن نطلب الرمز مجدّداً من نفس المتصفّح خلال هذه المدّة.</span>
+      </span>
+    </button>
+
+    <div class="center-link">
+      <a href="A-01 Shared Login.html" class="back-link">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        تسجيل خروج
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const boxes = document.querySelectorAll('.otp-box');
+const verifyBtn = document.getElementById('verify-btn');
+const errorMsg = document.getElementById('error-msg');
+
+function checkAllFilled() {
+  const all = [...boxes].every(b => b.value);
+  verifyBtn.setAttribute('aria-disabled', all ? 'false' : 'true');
+  return all;
+}
+
+boxes.forEach((box, i) => {
+  box.addEventListener('input', e => {
+    const v = e.target.value.replace(/\D/g, '');
+    e.target.value = v.slice(-1);
+    e.target.classList.toggle('filled', !!e.target.value);
+    e.target.classList.remove('error');
+    errorMsg.classList.remove('show');
+    if (e.target.value && i < boxes.length - 1) boxes[i+1].focus();
+    checkAllFilled();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i-1].focus();
+  });
+  box.addEventListener('paste', e => {
+    e.preventDefault();
+    const data = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+    [...data].forEach((d, di) => {
+      if (boxes[di]) {
+        boxes[di].value = d;
+        boxes[di].classList.add('filled');
+      }
+    });
+    if (data.length === 6) boxes[5].focus();
+    else boxes[Math.min(data.length, 5)].focus();
+    checkAllFilled();
+  });
+});
+
+verifyBtn.addEventListener('click', () => {
+  if (verifyBtn.getAttribute('aria-disabled') === 'true') return;
+  const code = [...boxes].map(b => b.value).join('');
+  if (code === '123456') {
+    location.href = 'D-01 Donor Dashboard.html';
+  } else {
+    // Show error
+    boxes.forEach(b => b.classList.add('error'));
+    errorMsg.classList.add('show');
+    setTimeout(() => {
+      boxes.forEach(b => { b.value = ''; b.classList.remove('error', 'filled'); });
+      boxes[0].focus();
+      verifyBtn.setAttribute('aria-disabled', 'true');
+    }, 1200);
+  }
+});
+
+/* Timer */
+let secs = 22;
+const tEl = document.getElementById('timer');
+setInterval(() => {
+  secs--;
+  if (secs <= 0) secs = 30;
+  tEl.textContent = secs;
+}, 1000);
+
+/* Trust toggle */
+document.getElementById('trust-btn').addEventListener('click', e => {
+  e.currentTarget.classList.toggle('checked');
+});
+</script>
+
+</body>
+</html>

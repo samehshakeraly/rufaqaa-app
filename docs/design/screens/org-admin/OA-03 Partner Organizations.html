@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — الجهات الشريكة · إدارة المؤسسة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-50: #FDFEFE; --snow-100: #F7FBFC; --snow-200: #EEF5F8;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-100: #C9DDED; --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-100: #B8CFE3; --trust-200: #97B7D6; --trust-300: #769FCD;
+  --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683;
+  --trust-700: #1E4068; --trust-800: #142E4D; --trust-900: #0B1E33;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF; --gray-400: #A8B2BC; --gray-500: #7A8590;
+  --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-600: #059669; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-500: #F59E0B; --warning-600: #D97706; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626; --danger-700: #B91C1C;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-500: #3B82F6; --info-700: #1D4ED8;
+  --purple-50: #F5F3FF; --purple-100: #EDE9FE; --purple-700: #6D28D9;
+  --gold-50: #FFFBEB; --gold-100: #FEF3C7; --gold-700: #855E08;
+  --teal-50: #F0FDFA; --teal-100: #CCFBF1; --teal-500: #14B8A6; --teal-700: #0F766E;
+  --rose-50: #FFF1F2; --rose-100: #FFE4E6; --rose-700: #BE123C;
+
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+  --sidebar-w: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.55; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-md); }
+
+/* ───────────── App shell ───────────── */
+.app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+.sidebar { background: white; border-inline-start: 1px solid var(--gray-200); display: flex; flex-direction: column; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 8px 10px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--gray-100); }
+.sidebar-brand-mark { width: 32px; height: 32px; background: var(--trust-300); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; }
+.sidebar-brand-text h1 { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.sidebar-brand-text p { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+
+.tenant-switcher { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 14px; font-size: 12px; width: 100%; }
+.tenant-switcher .tenant-logo { width: 24px; height: 24px; border-radius: 6px; background: linear-gradient(135deg, var(--trust-600), var(--trust-800)); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: 'IBM Plex Sans', sans-serif; }
+.tenant-switcher .name { flex: 1; text-align: right; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-badge { font-size: 10px; padding: 1px 6px; background: var(--purple-50); color: var(--purple-700); border: 1px solid var(--purple-100); border-radius: var(--radius-full); font-weight: 600; }
+
+.nav-section { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .06em; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--gray-700); width: 100%; border: none; background: transparent; text-align: right; transition: background var(--transition-fast); }
+.nav-item:hover { background: var(--gray-50); color: var(--gray-900); }
+.nav-item.active { background: var(--tranquil-100); color: var(--trust-600); font-weight: 600; }
+.nav-item svg { color: var(--gray-400); flex-shrink: 0; }
+.nav-item.active svg { color: var(--trust-500); }
+.nav-item-badge { margin-inline-start: auto; background: var(--danger-600); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: var(--radius-full); min-width: 18px; text-align: center; font-family: 'IBM Plex Sans', sans-serif; }
+.nav-item-badge.muted { background: var(--gray-200); color: var(--gray-700); }
+.nav-item-badge.warn { background: var(--warning-700); color: white; }
+
+.sidebar-foot { margin-top: auto; padding: 10px; display: flex; align-items: center; gap: 10px; background: var(--gray-50); border-radius: var(--radius-md); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-700); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12.5px; font-weight: 600; color: var(--gray-900); }
+.user-role { font-size: 10.5px; color: var(--purple-700); font-weight: 500; }
+
+/* ───────────── Main ───────────── */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 10; }
+.topbar-title h2 { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn-primary { padding: 8px 14px; background: var(--trust-400); color: white; border: 1px solid var(--trust-400); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background var(--transition-fast); }
+.btn-primary:hover { background: var(--trust-500); }
+.btn-secondary { padding: 8px 14px; background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: border-color var(--transition-fast); }
+.btn-secondary:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.btn-ghost { padding: 6px 10px; background: transparent; color: var(--gray-600); border: none; border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+.btn-danger { padding: 8px 14px; background: white; color: var(--danger-600); border: 1px solid var(--danger-100); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.btn-danger:hover { background: var(--danger-50); }
+.icon-btn { position: relative; width: 36px; height: 36px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; color: var(--gray-600); }
+.icon-btn:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.icon-btn .dot { position: absolute; top: 6px; left: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--danger-600); border: 2px solid white; }
+
+.page { padding: 22px 28px 48px; max-width: 1480px; margin: 0 auto; width: 100%; }
+
+/* ───────────── Stat strip ───────────── */
+.stat-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+@media (max-width: 1100px) { .stat-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
+.stat { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+.stat-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--tranquil-100); color: var(--trust-500); }
+.stat-icon.purple { background: var(--purple-50); color: var(--purple-700); }
+.stat-icon.green { background: var(--success-50); color: var(--success-700); }
+.stat-icon.warn { background: var(--warning-50); color: var(--warning-700); }
+.stat-icon.gold { background: var(--gold-50); color: var(--gold-700); }
+.stat-icon.teal { background: var(--teal-50); color: var(--teal-700); }
+.stat-text .lbl { font-size: 11px; color: var(--gray-500); font-weight: 500; }
+.stat-text .val { font-size: 18px; font-weight: 600; color: var(--gray-900); font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; letter-spacing: -.01em; line-height: 1.2; }
+.stat-text .val .unit { font-size: 11.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.stat-text .val .delta { font-size: 11px; font-weight: 600; padding: 1px 5px; border-radius: var(--radius-full); margin-inline-start: 4px; font-family: 'IBM Plex Sans', sans-serif; }
+.stat-text .val .delta.up { background: var(--success-50); color: var(--success-700); }
+.stat-text .val .delta.down { background: var(--danger-50); color: var(--danger-600); }
+
+/* ───────────── View toggle + Filter ───────────── */
+.toolbar { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.search-input { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); height: 36px; }
+.search-input:focus-within { border-color: var(--sky-300); background: white; box-shadow: var(--shadow-focus); }
+.search-input svg { color: var(--gray-400); }
+.search-input input { flex: 1; border: none; background: transparent; outline: none; font-size: 13px; color: var(--gray-900); }
+.search-input kbd { font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: white; border: 1px solid var(--gray-200); border-bottom-width: 2px; padding: 1px 5px; border-radius: 3px; color: var(--gray-500); }
+
+.view-toggle { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: var(--radius-md); }
+.view-btn { padding: 6px 10px; font-size: 12.5px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 5px; transition: all var(--transition-fast); }
+.view-btn:hover { color: var(--gray-900); }
+.view-btn.active { background: white; color: var(--trust-600); font-weight: 600; box-shadow: var(--shadow-xs); }
+
+.filter-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500; color: var(--gray-700); }
+.filter-pill:hover { border-color: var(--sky-300); }
+.filter-pill svg { color: var(--gray-400); }
+
+/* ───────────── Status tabs ───────────── */
+.status-tabs { display: flex; gap: 0; margin-bottom: 14px; border-bottom: 1px solid var(--gray-200); }
+.status-tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 8px; transition: color var(--transition-fast); }
+.status-tab:hover { color: var(--gray-900); }
+.status-tab.active { color: var(--trust-600); border-bottom-color: var(--trust-400); font-weight: 600; }
+.status-tab .count-pill { font-family: 'IBM Plex Sans', sans-serif; font-size: 10.5px; padding: 1px 6px; border-radius: var(--radius-full); background: var(--gray-200); color: var(--gray-600); font-weight: 600; }
+.status-tab.active .count-pill { background: var(--tranquil-200); color: var(--trust-600); }
+.status-tab .count-pill.warn { background: var(--warning-100); color: var(--warning-700); }
+
+/* ───────────── Partner cards grid ───────────── */
+.partner-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+.partner-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: all var(--transition-fast); }
+.partner-card:hover { border-color: var(--sky-300); box-shadow: var(--shadow-sm); }
+.partner-card.pending { background: var(--gold-50); border-color: var(--gold-100); }
+.partner-card.suspended { opacity: .82; background: var(--gray-50); }
+
+.partner-head { display: flex; align-items: flex-start; gap: 12px; }
+.partner-logo { width: 52px; height: 52px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 18px; color: white; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+.partner-logo.c1 { background: linear-gradient(135deg, #5B85B8, #2D5683); }
+.partner-logo.c2 { background: linear-gradient(135deg, #0F766E, #047857); }
+.partner-logo.c3 { background: linear-gradient(135deg, #B45309, #855E08); }
+.partner-logo.c4 { background: linear-gradient(135deg, #6D28D9, #4C1D95); }
+.partner-logo.c5 { background: linear-gradient(135deg, #BE123C, #881337); }
+.partner-logo.c6 { background: linear-gradient(135deg, #1D4ED8, #1E40AF); }
+.partner-info { flex: 1; min-width: 0; }
+.partner-name { font-size: 15px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.partner-name .verified { display: inline-flex; align-items: center; vertical-align: middle; margin-inline-start: 4px; }
+.partner-name .verified svg { width: 14px; height: 14px; color: var(--trust-400); }
+.partner-meta { font-size: 12px; color: var(--gray-500); margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.partner-meta .flag { font-size: 14px; }
+.partner-meta .dot-sep { color: var(--gray-300); }
+
+.status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); border: 1px solid; white-space: nowrap; }
+.status-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; }
+.status-chip.active { background: var(--success-50); color: var(--success-700); border-color: var(--success-100); }
+.status-chip.active::before { background: var(--success-500); }
+.status-chip.pending { background: var(--gold-50); color: var(--gold-700); border-color: var(--gold-100); }
+.status-chip.pending::before { background: var(--warning-500); animation: pulse 2s ease-in-out infinite; }
+.status-chip.suspended { background: var(--gray-100); color: var(--gray-600); border-color: var(--gray-200); }
+.status-chip.suspended::before { background: var(--gray-400); }
+.status-chip.review { background: var(--info-50); color: var(--info-700); border-color: var(--info-100); }
+.status-chip.review::before { background: var(--info-500); }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+.partner-kebab { width: 30px; height: 30px; border-radius: var(--radius-md); border: none; background: transparent; color: var(--gray-500); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.partner-kebab:hover { background: var(--gray-100); color: var(--gray-800); }
+
+.partner-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--gray-100); border-radius: var(--radius-md); overflow: hidden; }
+.partner-stat { padding: 10px 12px; background: var(--gray-50); display: flex; flex-direction: column; gap: 2px; border-inline-end: 1px solid var(--gray-100); }
+.partner-stat:last-child { border-inline-end: none; }
+.partner-stat .pl { font-size: 10px; color: var(--gray-500); font-weight: 500; }
+.partner-stat .pv { font-size: 15px; font-weight: 600; color: var(--gray-900); font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; line-height: 1.2; }
+.partner-stat .pv .pu { font-size: 11px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; margin-inline-start: 2px; }
+
+.partner-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 1px solid var(--gray-100); }
+.partner-foot .health { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--gray-600); }
+.health-bar { display: flex; height: 6px; flex: 1; min-width: 80px; background: var(--gray-100); border-radius: var(--radius-full); overflow: hidden; }
+.health-bar-fill { background: var(--success-500); height: 100%; }
+.health-bar-fill.warn { background: var(--warning-500); }
+.health-bar-fill.danger { background: var(--danger-500); }
+.partner-foot .open-btn { font-size: 12px; font-weight: 600; color: var(--trust-500); display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: var(--radius-md); transition: background var(--transition-fast); }
+.partner-foot .open-btn:hover { background: var(--tranquil-100); }
+.partner-foot .open-btn svg { width: 12px; height: 12px; }
+
+.partner-alerts { display: flex; gap: 6px; flex-wrap: wrap; }
+.alert-pip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; font-size: 11px; font-weight: 500; border-radius: var(--radius-full); border: 1px solid; }
+.alert-pip.warn { background: var(--warning-50); color: var(--warning-700); border-color: var(--warning-100); }
+.alert-pip.info { background: var(--info-50); color: var(--info-700); border-color: var(--info-100); }
+.alert-pip.danger { background: var(--danger-50); color: var(--danger-600); border-color: var(--danger-100); }
+.alert-pip svg { width: 10px; height: 10px; stroke-width: 2.4; }
+
+/* ───────────── Drawer (partner detail) ───────────── */
+.drawer-scrim { position: fixed; inset: 0; background: rgba(11,30,51,.40); z-index: 110; display: none; }
+.drawer-scrim.show { display: block; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 560px; max-width: 100vw; background: white; box-shadow: var(--shadow-lg); z-index: 120; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 300ms ease; }
+.drawer.show { transform: translateX(0); }
+.drawer-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start; gap: 12px; }
+.drawer-head .partner-logo { width: 50px; height: 50px; font-size: 17px; }
+.drawer-head .h-text { flex: 1; min-width: 0; }
+.drawer-head .h-text .nm { font-size: 17px; font-weight: 600; color: var(--gray-900); }
+.drawer-head .h-text .sub { font-size: 12px; color: var(--gray-500); margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.drawer-close { width: 30px; height: 30px; background: transparent; border: none; color: var(--gray-500); border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; }
+.drawer-close:hover { background: var(--gray-100); }
+
+.drawer-tabs { display: flex; padding: 0 22px; border-bottom: 1px solid var(--gray-100); gap: 4px; overflow-x: auto; }
+.drawer-tab { padding: 10px 12px; font-size: 12.5px; font-weight: 500; color: var(--gray-600); background: transparent; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.drawer-tab:hover { color: var(--gray-900); }
+.drawer-tab.active { color: var(--trust-600); border-bottom-color: var(--trust-400); font-weight: 600; }
+.drawer-tab .badge { font-size: 10px; padding: 1px 5px; border-radius: var(--radius-full); background: var(--gray-200); color: var(--gray-700); font-family: 'IBM Plex Sans', sans-serif; }
+.drawer-tab.active .badge { background: var(--tranquil-200); color: var(--trust-600); }
+
+.drawer-body { flex: 1; overflow-y: auto; padding: 18px 22px; }
+
+.section-title { font-size: 11px; font-weight: 600; color: var(--gray-500); letter-spacing: .05em; text-transform: uppercase; margin: 18px 0 8px; }
+.section-title:first-child { margin-top: 0; }
+.kv-block { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-lg); overflow: hidden; }
+.kv-row { display: grid; grid-template-columns: 130px 1fr; gap: 10px; padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--gray-100); }
+.kv-row:last-child { border-bottom: none; }
+.kv-row .k { color: var(--gray-500); font-size: 12px; }
+.kv-row .v { color: var(--gray-900); font-weight: 500; word-break: break-word; }
+.kv-row .v.mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+.kv-row .v .copy-ic { color: var(--gray-400); margin-inline-start: 6px; cursor: pointer; vertical-align: middle; }
+
+.bank-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 16px; display: flex; align-items: flex-start; gap: 14px; }
+.bank-icon { width: 42px; height: 42px; border-radius: var(--radius-md); background: var(--info-50); color: var(--info-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.bank-info { flex: 1; min-width: 0; }
+.bank-info .nm { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.bank-info .ac { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--gray-700); margin-top: 4px; letter-spacing: .04em; }
+.bank-info .meta { font-size: 11.5px; color: var(--gray-500); margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap; }
+.bank-info .meta .dot-sep { color: var(--gray-300); }
+.bank-info .verified-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--success-700); font-weight: 600; }
+.bank-info .verified-tag svg { width: 12px; height: 12px; }
+
+.mini-bars { display: flex; align-items: flex-end; gap: 4px; height: 36px; }
+.mini-bar { flex: 1; background: var(--tranquil-200); border-radius: 2px 2px 0 0; min-height: 4px; }
+.mini-bar.now { background: var(--trust-400); }
+
+.drawer-foot { padding: 14px 22px; border-top: 1px solid var(--gray-100); background: var(--gray-50); display: flex; gap: 8px; justify-content: space-between; }
+
+/* ───────────── Add partner modal (wizard preview) ───────────── */
+.scrim { position: fixed; inset: 0; background: rgba(11,30,51,.45); backdrop-filter: blur(2px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+.scrim.show { display: flex; }
+.modal { background: white; border-radius: var(--radius-xl); width: 620px; max-width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+.modal-head { padding: 16px 22px; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: flex-start; }
+.modal-head h3 { font-size: 16px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; }
+.modal-head h3 svg { color: var(--trust-400); }
+.modal-head p { font-size: 12.5px; color: var(--gray-500); margin-top: 3px; }
+.modal-close { width: 30px; height: 30px; background: transparent; border: none; color: var(--gray-500); border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: var(--gray-100); }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+.modal-foot { padding: 14px 22px; background: var(--gray-50); border-top: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+.stepper { display: flex; align-items: center; gap: 0; margin-bottom: 18px; }
+.step { display: flex; align-items: center; gap: 8px; padding: 4px 0; flex: 1; }
+.step .num { width: 22px; height: 22px; border-radius: 50%; background: var(--gray-100); color: var(--gray-500); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Sans', sans-serif; flex-shrink: 0; }
+.step.done .num { background: var(--success-500); color: white; }
+.step.active .num { background: var(--trust-400); color: white; }
+.step .lbl { font-size: 12px; color: var(--gray-500); }
+.step.done .lbl, .step.active .lbl { color: var(--gray-900); font-weight: 600; }
+.step-line { height: 2px; background: var(--gray-100); flex: 1; margin: 0 8px; min-width: 12px; }
+.step-line.done { background: var(--success-500); }
+
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; }
+.form-label .opt { color: var(--gray-500); font-weight: 400; }
+.form-input { width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: white; font-size: 13.5px; color: var(--gray-900); }
+.form-input:focus { outline: none; border-color: var(--sky-300); box-shadow: var(--shadow-focus); }
+.form-help { font-size: 11.5px; color: var(--gray-500); margin-top: 5px; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.country-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.country-card { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); background: white; cursor: pointer; transition: all var(--transition-fast); font-size: 13px; font-weight: 500; color: var(--gray-700); }
+.country-card:hover { border-color: var(--sky-300); }
+.country-card.selected { border-color: var(--trust-400); background: var(--tranquil-100); color: var(--trust-700); }
+.country-card .flag { font-size: 18px; }
+
+/* Icons */
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; stroke-width: 2; }
+.icon-md { width: 18px; height: 18px; }
+
+/* Empty state for inactive tabs */
+.empty-state { text-align: center; padding: 60px 20px; background: white; border: 1px dashed var(--gray-200); border-radius: var(--radius-xl); }
+.empty-state .e-icon { width: 64px; height: 64px; margin: 0 auto 14px; background: var(--tranquil-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--trust-400); }
+.empty-state .e-icon svg { width: 28px; height: 28px; }
+.empty-state h4 { font-size: 16px; font-weight: 600; color: var(--gray-900); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; color: var(--gray-500); max-width: 400px; margin: 0 auto; line-height: 1.55; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-mark">ر</div>
+      <div class="sidebar-brand-text">
+        <h1>رفقاء</h1>
+        <p>إدارة المؤسسة</p>
+      </div>
+    </div>
+    <button class="tenant-switcher">
+      <span class="tenant-logo">أو</span>
+      <span class="name">أوقاف سامح عبدالعزيز</span>
+      <span class="role-badge">مدير المؤسسة</span>
+    </button>
+
+    <div class="nav-section">عام</div>
+    <a class="nav-item" href="OA-01 Executive Dashboard.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      اللوحة التنفيذيّة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      التقارير الشاملة
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18"/></svg>
+      شاشة الشفافيّة
+    </a>
+
+    <div class="nav-section">الإدارة</div>
+    <a class="nav-item" href="OA-02 Users Management.html">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      المستخدمون
+    </a>
+    <a class="nav-item active" aria-current="page">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+      الجهات الشريكة
+      <span class="nav-item-badge muted"><span class="latin">12</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V21h14V9.5"/><circle cx="12" cy="14" r="2"/></svg>
+      قنوات التسويق
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      قواعد العمل
+    </a>
+
+    <div class="nav-section">الرقابة</div>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      مركز الاعتمادات
+      <span class="nav-item-badge"><span class="latin">8</span></span>
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      سجلّ التدقيق
+    </a>
+    <a class="nav-item">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      الإشعارات
+      <span class="nav-item-badge warn"><span class="latin">3</span></span>
+    </a>
+
+    <div class="sidebar-foot">
+      <div class="user-avatar">س.ع</div>
+      <div class="user-info">
+        <div class="user-name">سامح عبدالعزيز</div>
+        <div class="user-role">مدير عام</div>
+      </div>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </aside>
+
+  <main class="main" role="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>الجهات الشريكة</h2>
+        <p>إدارة الجمعيات والمؤسسات المحلية التي تعمل مع رفقاء</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-secondary" aria-label="تصدير CSV">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          تصدير
+        </button>
+        <button class="btn-primary" id="openAdd">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إضافة جهة شريكة
+        </button>
+      </div>
+    </header>
+
+    <div class="page">
+
+      <!-- Stat strip -->
+      <section class="stat-strip" aria-label="ملخّص الجهات الشريكة">
+        <div class="stat">
+          <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></div>
+          <div class="stat-text">
+            <div class="lbl">إجمالي الجهات</div>
+            <div class="val"><span class="latin">12</span> <span class="delta up">+<span class="latin">2</span></span></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon green"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="stat-text">
+            <div class="lbl">نشطة</div>
+            <div class="val"><span class="latin">9</span></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon gold"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-text">
+            <div class="lbl">قيد المراجعة</div>
+            <div class="val"><span class="latin">2</span></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon teal"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg></div>
+          <div class="stat-text">
+            <div class="lbl">أيتام تحت رعايتهم</div>
+            <div class="val"><span class="latin">3,847</span></div>
+          </div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon purple"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3.6 9h16.8M11.5 3a17 17 0 0 0 0 18"/></svg></div>
+          <div class="stat-text">
+            <div class="lbl">دول</div>
+            <div class="val"><span class="latin">7</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status tabs -->
+      <div class="status-tabs" role="tablist">
+        <button class="status-tab active" role="tab" aria-selected="true">
+          الكل <span class="count-pill"><span class="latin">12</span></span>
+        </button>
+        <button class="status-tab" role="tab">
+          نشطة <span class="count-pill"><span class="latin">9</span></span>
+        </button>
+        <button class="status-tab" role="tab">
+          قيد المراجعة <span class="count-pill warn"><span class="latin">2</span></span>
+        </button>
+        <button class="status-tab" role="tab">
+          معلّقة <span class="count-pill"><span class="latin">1</span></span>
+        </button>
+        <button class="status-tab" role="tab">
+          غير موثّقة <span class="count-pill"><span class="latin">0</span></span>
+        </button>
+      </div>
+
+      <!-- Toolbar -->
+      <section class="toolbar" aria-label="أدوات البحث والفرز">
+        <div class="search-input">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="ابحث باسم الجهة أو الدولة أو رقم التسجيل…">
+          <kbd>⌘K</kbd>
+        </div>
+        <button class="filter-pill" aria-label="فلترة حسب الدولة">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          الدولة: الكل
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="filter-pill">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          الترتيب: عدد الأيتام
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="view-toggle" role="tablist" aria-label="طريقة العرض">
+          <button class="view-btn active" aria-label="عرض كبطاقات">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            بطاقات
+          </button>
+          <button class="view-btn" aria-label="عرض كجدول">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            جدول
+          </button>
+          <button class="view-btn" aria-label="عرض على الخريطة">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            خريطة
+          </button>
+        </div>
+      </section>
+
+      <!-- Partner grid -->
+      <section class="partner-grid" aria-label="قائمة الجهات الشريكة">
+
+        <!-- 1. Al-Najat Kuwait -->
+        <article class="partner-card" tabindex="0" data-id="najat">
+          <header class="partner-head">
+            <div class="partner-logo c1">ن</div>
+            <div class="partner-info">
+              <div class="partner-name">
+                جمعية النجاة الخيريّة
+                <span class="verified" title="جهة موثّقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+                </span>
+              </div>
+              <div class="partner-meta">
+                <span class="flag">🇰🇼</span>
+                <span>الكويت — العاصمة</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">NJT-001</span>
+              </div>
+            </div>
+            <span class="status-chip active">نشطة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">842</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">714</span> <span class="pu">/ <span class="latin">842</span></span></div></div>
+            <div class="partner-stat"><div class="pl">موظفون</div><div class="pv"><span class="latin">11</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              تحويل مستحقّ يوم <span class="latin">٢٨</span>
+            </span>
+            <span class="alert-pip warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span class="latin">3</span> تقارير متأخّرة
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill" style="width: 92%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--success-700);">92%</span>
+            </div>
+            <button class="open-btn" type="button" data-open="najat">
+              فتح
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 2. Orman Egypt -->
+        <article class="partner-card" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c2">أ</div>
+            <div class="partner-info">
+              <div class="partner-name">
+                جمعية الأورمان
+                <span class="verified" title="جهة موثّقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+                </span>
+              </div>
+              <div class="partner-meta">
+                <span class="flag">🇪🇬</span>
+                <span>مصر — القاهرة الكبرى</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">ORM-002</span>
+              </div>
+            </div>
+            <span class="status-chip active">نشطة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">1,420</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">1,180</span> <span class="pu">/ <span class="latin">1,420</span></span></div></div>
+            <div class="partner-stat"><div class="pl">موظفون</div><div class="pv"><span class="latin">18</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+              التقرير الشهري سُلّم
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill" style="width: 96%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--success-700);">96%</span>
+            </div>
+            <button class="open-btn" type="button">
+              فتح
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 3. Takaful Saudi -->
+        <article class="partner-card" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c3">ت</div>
+            <div class="partner-info">
+              <div class="partner-name">
+                جمعية تكافل
+                <span class="verified" title="جهة موثّقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+                </span>
+              </div>
+              <div class="partner-meta">
+                <span class="flag">🇸🇦</span>
+                <span>السعوديّة — الرياض</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">TKF-003</span>
+              </div>
+            </div>
+            <span class="status-chip active">نشطة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">680</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">512</span> <span class="pu">/ <span class="latin">680</span></span></div></div>
+            <div class="partner-stat"><div class="pl">موظفون</div><div class="pv"><span class="latin">9</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span class="latin">7</span> أيتام بانتظار الاعتماد
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill" style="width: 85%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--success-700);">85%</span>
+            </div>
+            <button class="open-btn" type="button">
+              فتح
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 4. Ihsan UAE -->
+        <article class="partner-card" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c4">إ</div>
+            <div class="partner-info">
+              <div class="partner-name">
+                مؤسسة الإحسان
+                <span class="verified" title="جهة موثّقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+                </span>
+              </div>
+              <div class="partner-meta">
+                <span class="flag">🇦🇪</span>
+                <span>الإمارات — أبوظبي</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">IHS-004</span>
+              </div>
+            </div>
+            <span class="status-chip active">نشطة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">395</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">320</span> <span class="pu">/ <span class="latin">395</span></span></div></div>
+            <div class="partner-stat"><div class="pl">موظفون</div><div class="pv"><span class="latin">7</span></div></div>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill" style="width: 89%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--success-700);">89%</span>
+            </div>
+            <button class="open-btn" type="button">
+              فتح
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 5. Dar Al-Waleed Sudan — Pending -->
+        <article class="partner-card pending" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c5">و</div>
+            <div class="partner-info">
+              <div class="partner-name">دار الوليد</div>
+              <div class="partner-meta">
+                <span class="flag">🇸🇩</span>
+                <span>السودان — الخرطوم</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">WLD-005</span>
+              </div>
+            </div>
+            <span class="status-chip pending">قيد المراجعة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام محتملون</div><div class="pv"><span class="latin">~210</span></div></div>
+            <div class="partner-stat"><div class="pl">المستندات</div><div class="pv"><span class="latin">4</span> <span class="pu">/ <span class="latin">6</span></span></div></div>
+            <div class="partner-stat"><div class="pl">المراجعون</div><div class="pv"><span class="latin">2</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              ينقص: شهادة تسجيل رسميّة
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>اكتمال الملف</span>
+              <span class="health-bar"><span class="health-bar-fill warn" style="width: 66%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--warning-700);">66%</span>
+            </div>
+            <button class="open-btn" type="button">
+              مراجعة
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 6. Future of Children — Jordan -->
+        <article class="partner-card" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c6">م</div>
+            <div class="partner-info">
+              <div class="partner-name">
+                مستقبل الأطفال
+                <span class="verified" title="جهة موثّقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+                </span>
+              </div>
+              <div class="partner-meta">
+                <span class="flag">🇯🇴</span>
+                <span>الأردن — عمّان</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">MST-006</span>
+              </div>
+            </div>
+            <span class="status-chip active">نشطة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">218</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">196</span> <span class="pu">/ <span class="latin">218</span></span></div></div>
+            <div class="partner-stat"><div class="pl">موظفون</div><div class="pv"><span class="latin">5</span></div></div>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill" style="width: 94%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--success-700);">94%</span>
+            </div>
+            <button class="open-btn" type="button">
+              فتح
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 7. Al-Rahma Yemen -->
+        <article class="partner-card" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c2">ر</div>
+            <div class="partner-info">
+              <div class="partner-name">
+                جمعية الرحمة للأيتام
+                <span class="verified" title="جهة موثّقة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+                </span>
+              </div>
+              <div class="partner-meta">
+                <span class="flag">🇾🇪</span>
+                <span>اليمن — صنعاء</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">RHM-007</span>
+              </div>
+            </div>
+            <span class="status-chip active">نشطة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">512</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">389</span> <span class="pu">/ <span class="latin">512</span></span></div></div>
+            <div class="partner-stat"><div class="pl">موظفون</div><div class="pv"><span class="latin">8</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              تأخّر تقرير شهرين
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill warn" style="width: 72%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--warning-700);">72%</span>
+            </div>
+            <button class="open-btn" type="button">
+              فتح
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 8. New Org Maghreb — under review -->
+        <article class="partner-card pending" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c3">ك</div>
+            <div class="partner-info">
+              <div class="partner-name">جمعية كفالة المغرب</div>
+              <div class="partner-meta">
+                <span class="flag">🇲🇦</span>
+                <span>المغرب — الرباط</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">MGR-008</span>
+              </div>
+            </div>
+            <span class="status-chip pending">قيد المراجعة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام محتملون</div><div class="pv"><span class="latin">~140</span></div></div>
+            <div class="partner-stat"><div class="pl">المستندات</div><div class="pv"><span class="latin">6</span> <span class="pu">/ <span class="latin">6</span></span></div></div>
+            <div class="partner-stat"><div class="pl">المراجعون</div><div class="pv"><span class="latin">3</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              مراجعة قانونيّة مكتملة — في انتظار التوقيع
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>اكتمال الملف</span>
+              <span class="health-bar"><span class="health-bar-fill" style="width: 96%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--success-700);">96%</span>
+            </div>
+            <button class="open-btn" type="button">
+              مراجعة
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+        <!-- 9. Suspended -->
+        <article class="partner-card suspended" tabindex="0">
+          <header class="partner-head">
+            <div class="partner-logo c4">ث</div>
+            <div class="partner-info">
+              <div class="partner-name">جمعية الثبات الخيريّة</div>
+              <div class="partner-meta">
+                <span class="flag">🇱🇧</span>
+                <span>لبنان — بيروت</span>
+                <span class="dot-sep">·</span>
+                <span class="latin">THB-009</span>
+              </div>
+            </div>
+            <span class="status-chip suspended">معلّقة</span>
+            <button class="partner-kebab" aria-label="مزيد من الخيارات">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+          </header>
+          <div class="partner-stats">
+            <div class="partner-stat"><div class="pl">أيتام</div><div class="pv"><span class="latin">86</span></div></div>
+            <div class="partner-stat"><div class="pl">مكفولون</div><div class="pv"><span class="latin">62</span> <span class="pu">/ <span class="latin">86</span></span></div></div>
+            <div class="partner-stat"><div class="pl">معلّقة منذ</div><div class="pv"><span class="latin">14</span> <span class="pu">يوم</span></div></div>
+          </div>
+          <div class="partner-alerts">
+            <span class="alert-pip danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              تعليق مؤقّت — مخالفة قواعد التحقّق
+            </span>
+          </div>
+          <footer class="partner-foot">
+            <div class="health">
+              <span>الالتزام</span>
+              <span class="health-bar"><span class="health-bar-fill danger" style="width: 38%"></span></span>
+              <span class="latin" style="font-weight: 600; color: var(--danger-600);">38%</span>
+            </div>
+            <button class="open-btn" type="button">
+              مراجعة
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+          </footer>
+        </article>
+
+      </section>
+
+      <!-- Pagination strip -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; font-size: 12.5px; color: var(--gray-600);">
+        <span>عرض <span class="latin" style="color: var(--gray-900); font-weight: 600;">1–9</span> من <span class="latin" style="color: var(--gray-900); font-weight: 600;">12</span> جهة</span>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-secondary" disabled style="opacity:.5; cursor:not-allowed;">السابق</button>
+          <button class="btn-secondary">التالي</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ───────────── Drawer: partner detail ───────────── -->
+<div class="drawer-scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerName">
+  <header class="drawer-head">
+    <div class="partner-logo c1">ن</div>
+    <div class="h-text">
+      <div class="nm" id="drawerName">جمعية النجاة الخيريّة
+        <span class="verified" title="جهة موثّقة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.51.91-5.32L4.27 7.62l5.34-.78z"/></svg>
+        </span>
+      </div>
+      <div class="sub">
+        <span class="status-chip active">نشطة</span>
+        <span><span class="flag">🇰🇼</span> الكويت — العاصمة</span>
+        <span class="dot-sep">·</span>
+        <span class="latin">NJT-001</span>
+      </div>
+    </div>
+    <button class="drawer-close" id="drawerClose" aria-label="إغلاق">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+
+  <nav class="drawer-tabs" role="tablist" aria-label="تبويبات الجهة">
+    <button class="drawer-tab active" role="tab">نظرة عامّة</button>
+    <button class="drawer-tab" role="tab">الفريق <span class="badge"><span class="latin">11</span></span></button>
+    <button class="drawer-tab" role="tab">الأداء</button>
+    <button class="drawer-tab" role="tab">المالية</button>
+    <button class="drawer-tab" role="tab">المستندات <span class="badge"><span class="latin">6</span></span></button>
+    <button class="drawer-tab" role="tab">السجلّ</button>
+  </nav>
+
+  <div class="drawer-body">
+
+    <h4 class="section-title">معلومات الجهة</h4>
+    <div class="kv-block">
+      <div class="kv-row"><div class="k">الاسم الرسمي</div><div class="v">جمعية النجاة الخيريّة</div></div>
+      <div class="kv-row"><div class="k">الاسم بالإنجليزيّة</div><div class="v latin" style="font-family: 'IBM Plex Sans', sans-serif;">Al-Najat Charity Society</div></div>
+      <div class="kv-row"><div class="k">رقم التسجيل</div><div class="v mono">KW-CHR-1995-0241
+        <svg class="icon icon-sm copy-ic" viewBox="0 0 24 24" aria-label="نسخ"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </div></div>
+      <div class="kv-row"><div class="k">سنة التأسيس</div><div class="v"><span class="latin">1995</span> <span style="color: var(--gray-500); font-size: 11.5px;">— ٣٠ سنة عمل خيري</span></div></div>
+      <div class="kv-row"><div class="k">النطاق الجغرافي</div><div class="v">الكويت — جميع المحافظات</div></div>
+      <div class="kv-row"><div class="k">شريك في رفقاء منذ</div><div class="v">جمادى الأولى <span class="latin">1446</span> — <span style="color: var(--gray-500);">٦ أشهر</span></div></div>
+    </div>
+
+    <h4 class="section-title">جهة الاتصال الرئيسيّة</h4>
+    <div class="kv-block">
+      <div class="kv-row"><div class="k">الاسم</div><div class="v">د. خالد المطيري</div></div>
+      <div class="kv-row"><div class="k">المنصب</div><div class="v">المدير التنفيذي</div></div>
+      <div class="kv-row"><div class="k">البريد</div><div class="v latin" style="font-family: 'IBM Plex Sans', sans-serif;">k.mutairi@najat.org.kw</div></div>
+      <div class="kv-row"><div class="k">الهاتف</div><div class="v mono">+965 2245 6700</div></div>
+    </div>
+
+    <h4 class="section-title">الحساب البنكي للتحويلات</h4>
+    <div class="bank-card">
+      <div class="bank-icon">
+        <svg class="icon" viewBox="0 0 24 24" stroke-width="1.75"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h2"/></svg>
+      </div>
+      <div class="bank-info">
+        <div class="nm">بنك الكويت الوطني — KFH</div>
+        <div class="ac">KW81 NBOK 0000 0000 0000 0024 5670</div>
+        <div class="meta">
+          <span>KWD</span>
+          <span class="dot-sep">·</span>
+          <span>المستفيد: جمعية النجاة الخيريّة</span>
+        </div>
+        <div class="meta">
+          <span class="verified-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            موثّق
+          </span>
+          <span class="dot-sep">·</span>
+          <span>وُثِّق في <span class="latin">12 شوال 1446</span></span>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="section-title">أداء آخر ١٢ شهراً (تحويلات شهريّة)</h4>
+    <div style="background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 14px 16px;">
+      <div class="mini-bars" aria-label="مخطط التحويلات الشهرية">
+        <span class="mini-bar" style="height: 32%"></span>
+        <span class="mini-bar" style="height: 48%"></span>
+        <span class="mini-bar" style="height: 55%"></span>
+        <span class="mini-bar" style="height: 50%"></span>
+        <span class="mini-bar" style="height: 64%"></span>
+        <span class="mini-bar" style="height: 71%"></span>
+        <span class="mini-bar" style="height: 68%"></span>
+        <span class="mini-bar" style="height: 76%"></span>
+        <span class="mini-bar" style="height: 82%"></span>
+        <span class="mini-bar" style="height: 79%"></span>
+        <span class="mini-bar" style="height: 88%"></span>
+        <span class="mini-bar now" style="height: 92%"></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: var(--gray-500); font-family: 'IBM Plex Sans', sans-serif;">
+        <span>محرّم 1446</span>
+        <span style="font-weight: 600; color: var(--gray-700);">ذو القعدة 1446 — أحدث</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="drawer-foot">
+    <button class="btn-danger">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      تعليق الجهة
+    </button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-secondary">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        تحرير
+      </button>
+      <button class="btn-primary">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+        فتح الملف الكامل
+      </button>
+    </div>
+  </footer>
+</aside>
+
+<!-- ───────────── Add partner modal ───────────── -->
+<div class="scrim" id="addScrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+    <header class="modal-head">
+      <div>
+        <h3 id="addTitle">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+          إضافة جهة شريكة جديدة
+        </h3>
+        <p>سيمرّ ملفّ الجهة بمراجعة قانونيّة قبل التفعيل النهائي</p>
+      </div>
+      <button class="modal-close" id="addClose" aria-label="إغلاق">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="modal-body">
+
+      <div class="stepper" aria-label="خطوات التسجيل">
+        <div class="step active">
+          <span class="num">1</span>
+          <span class="lbl">المعلومات الأساسيّة</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="num">2</span>
+          <span class="lbl">جهة الاتصال</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="num">3</span>
+          <span class="lbl">المستندات</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <span class="num">4</span>
+          <span class="lbl">المراجعة</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">اسم الجهة بالعربيّة</label>
+        <input type="text" class="form-input" placeholder="مثلاً: جمعية الإغاثة الإسلامية">
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">الاسم بالإنجليزيّة <span class="opt">(اختياري)</span></label>
+          <input type="text" class="form-input latin" placeholder="Islamic Relief Society" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label class="form-label">سنة التأسيس</label>
+          <input type="text" class="form-input latin" placeholder="1995" dir="ltr">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">الدولة</label>
+        <div class="country-grid">
+          <button class="country-card selected" type="button"><span class="flag">🇰🇼</span> الكويت</button>
+          <button class="country-card" type="button"><span class="flag">🇸🇦</span> السعوديّة</button>
+          <button class="country-card" type="button"><span class="flag">🇪🇬</span> مصر</button>
+          <button class="country-card" type="button"><span class="flag">🇦🇪</span> الإمارات</button>
+          <button class="country-card" type="button"><span class="flag">🇯🇴</span> الأردن</button>
+          <button class="country-card" type="button"><span class="flag">🇸🇩</span> السودان</button>
+          <button class="country-card" type="button"><span class="flag">🇾🇪</span> اليمن</button>
+          <button class="country-card" type="button"><span class="flag">🇲🇦</span> المغرب</button>
+          <button class="country-card" type="button"><span class="flag">🇹🇷</span> تركيا</button>
+        </div>
+        <div class="form-help">دولة المقرّ القانوني للجهة</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">رقم التسجيل الرسمي</label>
+        <input type="text" class="form-input mono" placeholder="مثلاً: KW-CHR-1995-0241" dir="ltr">
+        <div class="form-help">سيُتحقّق منه آلياً من سجلّ الجهات الخيريّة بالدولة المختارة</div>
+      </div>
+
+    </div>
+    <footer class="modal-foot">
+      <button class="btn-ghost" id="addCancel">إلغاء</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-secondary" disabled style="opacity:.5; cursor:not-allowed;">السابق</button>
+        <button class="btn-primary">
+          التالي
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Open drawer
+  const drawer = document.getElementById('drawer');
+  const drawerScrim = document.getElementById('drawerScrim');
+  function showDrawer() {
+    drawer.classList.add('show');
+    drawerScrim.classList.add('show');
+  }
+  function hideDrawer() {
+    drawer.classList.remove('show');
+    drawerScrim.classList.remove('show');
+  }
+  document.querySelectorAll('.open-btn').forEach(b => b.addEventListener('click', showDrawer));
+  document.getElementById('drawerClose').addEventListener('click', hideDrawer);
+  drawerScrim.addEventListener('click', hideDrawer);
+
+  // Drawer tabs
+  document.querySelectorAll('.drawer-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.drawer-tab').forEach(o => o.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+
+  // Status tabs
+  document.querySelectorAll('.status-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.status-tab').forEach(o => { o.classList.remove('active'); o.setAttribute('aria-selected', 'false'); });
+      t.classList.add('active');
+      t.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // View toggle
+  document.querySelectorAll('.view-btn').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.view-btn').forEach(o => o.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+
+  // Country picker
+  document.querySelectorAll('.country-card').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.country-card').forEach(o => o.classList.remove('selected'));
+      c.classList.add('selected');
+    });
+  });
+
+  // Add modal
+  const addScrim = document.getElementById('addScrim');
+  document.getElementById('openAdd').addEventListener('click', () => addScrim.classList.add('show'));
+  document.getElementById('addClose').addEventListener('click', () => addScrim.classList.remove('show'));
+  document.getElementById('addCancel').addEventListener('click', () => addScrim.classList.remove('show'));
+  addScrim.addEventListener('click', (e) => { if (e.target === addScrim) addScrim.classList.remove('show'); });
+
+  // Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { hideDrawer(); addScrim.classList.remove('show'); }
+  });
+})();
+</script>
+
+</body>
+</html>

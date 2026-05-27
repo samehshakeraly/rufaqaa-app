@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفقاء — صفحة أحمد · بوابة ولي الأمر</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — مطابقة لنظام تصميم رفقاء v0.1
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-50: #FDFEFE;
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --sky-100: #C9DDED;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --trust-100: #B8CFE3;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+  --trust-800: #142E4D;
+  --trust-900: #0B1E33;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-600: #059669;
+  --success-700: #047857;
+
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --warning-700: #B45309;
+
+  --danger-50: #FEF2F2;
+  --danger-100: #FEE2E2;
+  --danger-600: #DC2626;
+
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --info-700: #1D4ED8;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mono, .num { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+/* ═══════════════════════════════════════════════════════════════
+   APP HEADER — مطابق لـ G-02
+   ═══════════════════════════════════════════════════════════════ */
+.app-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+
+.brand-info h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+}
+
+.brand-info p {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: var(--transition);
+  color: var(--gray-600);
+}
+
+.icon-btn:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-500);
+}
+
+.icon-btn-badge {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background: var(--danger-600);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid white;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.user-chip:hover { background: white; border-color: var(--sky-300); }
+
+.user-chip-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.user-chip-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGE LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 32px 64px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-bottom: 20px;
+}
+
+.breadcrumb a {
+  color: var(--gray-600);
+  transition: var(--transition-fast);
+}
+
+.breadcrumb a:hover { color: var(--trust-500); }
+.breadcrumb-sep { color: var(--gray-300); display: inline-flex; }
+.breadcrumb-current { color: var(--gray-900); font-weight: 500; }
+
+/* Two-col grid: main on right (RTL first), sidebar on left */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO — معلومات اليتيم
+   ═══════════════════════════════════════════════════════════════ */
+.hero {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.hero-top {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(118,159,205,.10) 0%, transparent 50%),
+    linear-gradient(135deg, var(--tranquil-100) 0%, var(--snow-200) 100%);
+  padding: 28px 28px 24px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  position: relative;
+}
+
+.hero-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 500;
+  flex-shrink: 0;
+  letter-spacing: -.02em;
+  box-shadow: var(--shadow-sm);
+  border: 3px solid white;
+}
+
+.hero-identity { flex: 1; min-width: 0; }
+
+.hero-name {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.hero-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.hero-sub-dot {
+  width: 3px;
+  height: 3px;
+  background: var(--gray-400);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  line-height: 1.5;
+}
+
+.badge-success {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+}
+
+.badge-trust {
+  background: white;
+  color: var(--trust-600);
+  border: 1px solid var(--sky-200);
+}
+
+.badge-warning {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-100);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.hero-bottom {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--gray-200);
+}
+
+@media (max-width: 720px) {
+  .hero-bottom { grid-template-columns: 1fr; }
+}
+
+.kpi {
+  padding: 20px 24px;
+  border-left: 1px solid var(--gray-200);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.kpi:last-child { border-left: none; }
+@media (max-width: 720px) {
+  .kpi { border-left: none; border-bottom: 1px solid var(--gray-200); }
+  .kpi:last-child { border-bottom: none; }
+}
+
+.kpi-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-body { flex: 1; min-width: 0; }
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 500;
+  margin-bottom: 4px;
+  letter-spacing: .02em;
+}
+
+.kpi-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.kpi-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════════ */
+.tabs-wrap {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 8px;
+  background: var(--gray-50);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-500);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--transition-fast);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  position: relative;
+}
+
+.tab:hover { color: var(--gray-800); }
+
+.tab.active {
+  color: var(--trust-600);
+  border-bottom-color: var(--trust-300);
+  background: white;
+}
+
+.tab-count {
+  background: var(--gray-200);
+  color: var(--gray-600);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  transition: var(--transition-fast);
+}
+
+.tab.active .tab-count {
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+}
+
+.tab-content {
+  padding: 24px;
+  display: none;
+}
+
+.tab-content.active { display: block; }
+
+.tab-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tab-section-title .meta {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+/* ─── Overview tab ─── */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 720px) {
+  .overview-grid { grid-template-columns: 1fr; }
+}
+
+.info-block {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  background: var(--gray-50);
+}
+
+.info-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-500);
+  margin-bottom: 12px;
+  letter-spacing: .02em;
+}
+
+.info-block-title svg { color: var(--trust-400); }
+
+.info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+  gap: 12px;
+}
+
+.info-row-label { color: var(--gray-600); }
+.info-row-value { color: var(--gray-900); font-weight: 500; text-align: left; }
+
+.placeholder-text {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.7;
+  background: var(--tranquil-100);
+  border: 1px dashed var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  position: relative;
+}
+
+.placeholder-text::before {
+  content: '“';
+  position: absolute;
+  top: 0;
+  right: 16px;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--sky-300);
+  font-family: serif;
+}
+
+.placeholder-text p { padding-right: 28px; }
+
+/* ─── Reports tab ─── */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  transition: var(--transition);
+}
+
+.report-card:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.report-month {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.report-month-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--trust-700);
+  line-height: 1;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.report-month-name {
+  font-size: 11px;
+  color: var(--trust-500);
+  margin-top: 2px;
+}
+
+.report-info { min-width: 0; }
+.report-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-summary {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.report-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--gray-500);
+  align-items: center;
+}
+
+.report-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.report-action {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.report-action:hover {
+  background: var(--trust-300);
+  color: white;
+  border-color: var(--trust-300);
+}
+
+/* ─── Photos tab ─── */
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.photo-tile {
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      var(--snow-200) 0,
+      var(--snow-200) 8px,
+      var(--tranquil-100) 8px,
+      var(--tranquil-100) 16px
+    );
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-400);
+  transition: var(--transition);
+}
+
+.photo-tile:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
+
+.photo-tile.placeholder { color: var(--gray-400); }
+
+.photo-tile-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(11,30,51,.72);
+  color: white;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+.photo-tile-meta {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  background: linear-gradient(0deg, rgba(11,30,51,.65) 0%, transparent 100%);
+  color: white;
+  padding: 14px 10px 8px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.photo-tile-add {
+  border-style: dashed;
+  background: var(--snow-200);
+  color: var(--trust-500);
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.photo-tile-add:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+
+/* ─── Messages tab ─── */
+.message-bubble {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+
+.message-bubble.from-self { flex-direction: row-reverse; }
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.message-bubble.from-self .message-avatar {
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+
+.message-body { max-width: 78%; }
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+
+.message-from-name { font-weight: 600; color: var(--gray-800); }
+
+.message-text {
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: 14px 14px 14px 4px;
+  padding: 12px 16px;
+  font-size: 14.5px;
+  color: var(--gray-800);
+  line-height: 1.6;
+}
+
+.message-bubble.from-self .message-text {
+  background: var(--gray-50);
+  border-color: var(--gray-200);
+  border-radius: 14px 14px 4px 14px;
+}
+
+.review-notice {
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  color: var(--info-700);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.review-notice svg { flex-shrink: 0; }
+
+.message-empty-cta {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--gray-500);
+  font-size: 14px;
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR (يسار في RTL — العمود الثاني)
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+.side-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.side-card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--gray-50);
+}
+
+.side-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.side-card-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.side-card-body { padding: 14px; }
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: var(--radius-md);
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: right;
+  color: var(--gray-800);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition);
+  margin-bottom: 4px;
+}
+
+.quick-action:last-child { margin-bottom: 0; }
+
+.quick-action:hover {
+  background: var(--snow-200);
+  border-color: var(--sky-200);
+}
+
+.quick-action.primary {
+  background: var(--trust-300);
+  color: white;
+  border-color: var(--trust-300);
+}
+
+.quick-action.primary:hover { background: var(--trust-400); border-color: var(--trust-400); }
+
+.quick-action-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quick-action.primary .quick-action-icon {
+  background: rgba(255,255,255,.15);
+  color: white;
+}
+
+.quick-action-text { flex: 1; min-width: 0; }
+.quick-action-title { display: block; line-height: 1.3; }
+.quick-action-sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.quick-action.primary .quick-action-sub { color: rgba(255,255,255,.85); }
+
+.quick-action-chev { color: var(--gray-400); flex-shrink: 0; }
+.quick-action.primary .quick-action-chev { color: rgba(255,255,255,.7); }
+
+/* Sponsor card */
+.sponsor-card {
+  background: linear-gradient(180deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  text-align: center;
+}
+
+.sponsor-orbit {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  box-shadow: var(--shadow-sm);
+  color: var(--trust-500);
+}
+
+.sponsor-label {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+
+.sponsor-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--trust-700);
+  margin-bottom: 4px;
+}
+
+.sponsor-tag {
+  font-size: 12.5px;
+  color: var(--gray-600);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.sponsor-action {
+  width: 100%;
+  padding: 10px 14px;
+  background: white;
+  border: 1px solid var(--sky-300);
+  color: var(--trust-600);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.sponsor-action:hover {
+  background: var(--trust-300);
+  color: white;
+  border-color: var(--trust-300);
+}
+
+/* Reminders */
+.reminder {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  margin-bottom: 8px;
+}
+
+.reminder:last-child { margin-bottom: 0; }
+
+.reminder.info {
+  background: var(--snow-200);
+  border-color: var(--sky-200);
+}
+
+.reminder-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: white;
+  color: var(--warning-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reminder.info .reminder-icon { color: var(--trust-500); }
+
+.reminder-text { flex: 1; min-width: 0; }
+.reminder-title { font-size: 13px; font-weight: 600; color: var(--gray-900); line-height: 1.3; }
+.reminder-sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; line-height: 1.4; }
+.reminder-cta {
+  background: white;
+  border: 1px solid var(--warning-600);
+  color: var(--warning-700);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+.reminder-cta:hover { background: var(--warning-600); color: white; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TIMELINE (تحت الـ Hero)
+   ═══════════════════════════════════════════════════════════════ */
+.timeline-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  margin-top: 20px;
+}
+
+.timeline-head {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.timeline-head h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-filter {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--gray-100);
+  border-radius: var(--radius-md);
+}
+
+.timeline-filter button {
+  padding: 5px 12px;
+  font-size: 12.5px;
+  background: transparent;
+  border: none;
+  color: var(--gray-600);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.timeline-filter button.active {
+  background: white;
+  color: var(--trust-600);
+  box-shadow: var(--shadow-xs);
+}
+
+.timeline {
+  padding: 20px 24px 24px;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  bottom: 28px;
+  right: 36px;
+  width: 1px;
+  background: var(--gray-200);
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 16px;
+  padding-bottom: 18px;
+  position: relative;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--sky-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-500);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.timeline-dot.success { border-color: var(--success-500); color: var(--success-600); }
+.timeline-dot.warning { border-color: var(--warning-500); color: var(--warning-600); }
+.timeline-dot.info    { border-color: var(--trust-300);   color: var(--trust-500); }
+
+.timeline-body {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+}
+
+.timeline-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.timeline-time {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 400;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.timeline-text {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ICON
+   ═══════════════════════════════════════════════════════════════ */
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 28px; height: 28px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .app-header { padding: 12px 16px; }
+  .page { padding: 16px 16px 48px; }
+  .hero-top { flex-direction: column; text-align: center; padding: 24px 20px; }
+  .hero-avatar { width: 80px; height: 80px; font-size: 30px; }
+  .hero-name { font-size: 24px; }
+  .hero-sub { justify-content: center; }
+  .hero-badges { justify-content: center; }
+  .timeline::before { right: 32px; }
+}
+
+@media (max-width: 480px) {
+  .brand-info p { display: none; }
+  .user-chip-name { display: none; }
+  .user-chip { padding: 6px; }
+  .photos-grid { grid-template-columns: repeat(2, 1fr); }
+  .report-card { grid-template-columns: auto 1fr; }
+  .report-action { grid-column: 2; justify-self: start; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     APP HEADER
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="app-header" role="banner">
+  <div class="app-header-inner">
+
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">ر</div>
+      <div class="brand-info">
+        <h1>رفقاء</h1>
+        <p>بوابة ولي الأمر</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="الرسائل">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span class="icon-btn-badge">2</span>
+      </button>
+      <button class="icon-btn" aria-label="التنبيهات">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="icon-btn-badge">3</span>
+      </button>
+      <button class="user-chip" aria-label="حساب أم أحمد">
+        <span class="user-chip-avatar" aria-hidden="true">أم</span>
+        <span class="user-chip-name">أم أحمد</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--gray-400);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE
+     ═══════════════════════════════════════════════════════════════ -->
+<main class="page" role="main">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="مسار التنقّل">
+    <a href="#">الرئيسية</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <a href="#">أيتامك</a>
+    <span class="breadcrumb-sep" aria-hidden="true">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </span>
+    <span class="breadcrumb-current" aria-current="page">أحمد محمد</span>
+  </nav>
+
+  <div class="layout">
+
+    <!-- ═══ MAIN COLUMN ═══ -->
+    <div>
+
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="orphan-name">
+        <div class="hero-top">
+          <div class="hero-avatar" aria-hidden="true">أ</div>
+          <div class="hero-identity">
+            <h2 class="hero-name" id="orphan-name">أحمد محمد</h2>
+            <div class="hero-sub">
+              <span>عمره ١٠ سنوات</span>
+              <span class="hero-sub-dot" aria-hidden="true"></span>
+              <span>الصف الخامس الابتدائي</span>
+              <span class="hero-sub-dot" aria-hidden="true"></span>
+              <span>محافظة الجهراء</span>
+            </div>
+            <div class="hero-badges">
+              <span class="badge badge-success">
+                <span class="badge-dot" aria-hidden="true"></span>
+                كفالة نشطة
+              </span>
+              <span class="badge badge-trust">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21.02 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                رفيق ولي الأمر منذ ٣ أشهر
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-bottom">
+          <div class="kpi">
+            <div class="kpi-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">آخر تقرير شهري</div>
+              <div class="kpi-value">قبل ١٢ يوماً</div>
+              <div class="kpi-meta">معتمد · شوّال</div>
+            </div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">آخر صورة مرفوعة</div>
+              <div class="kpi-value">قبل أسبوع</div>
+              <div class="kpi-meta">٨ صور هذا الشهر</div>
+            </div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">آخر رسالة من الكفيل</div>
+              <div class="kpi-value">قبل ٣ أيام</div>
+              <div class="kpi-meta">رسالتان لم تُقرأ</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <section class="tabs-wrap" aria-label="معلومات اليتيم">
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" aria-selected="true" data-tab="overview">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            نظرة عامة
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="reports">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            التقارير
+            <span class="tab-count">٦</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="photos">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            الصور
+            <span class="tab-count">١٢</span>
+          </button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="messages">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            رسائل الكفيل
+            <span class="tab-count">٤</span>
+          </button>
+        </div>
+
+        <!-- Tab: Overview -->
+        <div class="tab-content active" role="tabpanel" data-tab="overview">
+          <div class="tab-section-title">
+            معلومات أحمد
+            <span class="meta">تُحدّث من قِبل الجهة المسؤولة</span>
+          </div>
+
+          <div class="overview-grid">
+
+            <div class="info-block">
+              <div class="info-block-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                المعلومات الأساسية
+              </div>
+              <div class="info-rows">
+                <div class="info-row">
+                  <span class="info-row-label">العمر</span>
+                  <span class="info-row-value">١٠ سنوات</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">تاريخ الميلاد</span>
+                  <span class="info-row-value">١٤ مارس ٢٠١٥</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">الجنس</span>
+                  <span class="info-row-value">ذكر</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">الجنسية</span>
+                  <span class="info-row-value">كويتي</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-block-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                المعلومات الدراسية
+              </div>
+              <div class="info-rows">
+                <div class="info-row">
+                  <span class="info-row-label">المرحلة</span>
+                  <span class="info-row-value">الصف الخامس الابتدائي</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">المدرسة</span>
+                  <span class="info-row-value">عبدالله المبارك الابتدائية</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">المستوى</span>
+                  <span class="info-row-value" style="color: var(--success-700);">جيد جدّاً</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">المادّة المفضّلة</span>
+                  <span class="info-row-value">العلوم</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-block-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                الحالة الصحّية
+              </div>
+              <div class="info-rows">
+                <div class="info-row">
+                  <span class="info-row-label">الوضع العام</span>
+                  <span class="info-row-value" style="color: var(--success-700);">بصحّة جيّدة</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">آخر فحص</span>
+                  <span class="info-row-value">قبل شهرين</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">ملاحظات</span>
+                  <span class="info-row-value">لا توجد</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-block-title">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                المهام المستحقّة
+              </div>
+              <div class="info-rows">
+                <div class="info-row">
+                  <span class="info-row-label">تقرير الشهر الحالي</span>
+                  <span class="info-row-value" style="color: var(--warning-700);">بعد ٨ أيام</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">شهادة المدرسة</span>
+                  <span class="info-row-value" style="color: var(--success-700);">مُستلمة</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-row-label">صورة شهرية</span>
+                  <span class="info-row-value" style="color: var(--success-700);">مُكتملة</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tab-section-title">عن أحمد بكلماتك</div>
+          <div class="placeholder-text">
+            <p>طفل هادئ يحب الرسم وكرة القدم، يدرس في المرحلة الابتدائية ويتميّز في مادّة العلوم. يساعد إخوته في الدراسة، ويحب قراءة قصص الأنبياء قبل النوم.</p>
+          </div>
+
+        </div>
+
+        <!-- Tab: Reports -->
+        <div class="tab-content" role="tabpanel" data-tab="reports" hidden>
+          <div class="tab-section-title">
+            التقارير الشهرية السابقة
+            <span class="meta">المعتمدة فقط · مرتّبة من الأحدث</span>
+          </div>
+
+          <div class="report-list">
+
+            <article class="report-card">
+              <div class="report-month" aria-hidden="true">
+                <span class="report-month-num">10</span>
+                <span class="report-month-name">شوّال</span>
+              </div>
+              <div class="report-info">
+                <div class="report-title">
+                  تقرير شهر شوّال
+                  <span class="badge badge-success">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    معتمد
+                  </span>
+                </div>
+                <p class="report-summary">الحمد لله أحمد بخير، انتهى من اختبارات منتصف الفصل بدرجات جيّدة جدّاً، وبدأ نشاطاً جديداً في حفظ القرآن.</p>
+                <div class="report-meta">
+                  <span class="report-meta-item">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    قبل ١٢ يوماً
+                  </span>
+                  <span class="report-meta-item">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+                    صحّة: ممتازة
+                  </span>
+                  <span class="report-meta-item">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                    دراسة: ٥/٥
+                  </span>
+                </div>
+              </div>
+              <button class="report-action" aria-label="عرض التقرير الكامل">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+            <article class="report-card">
+              <div class="report-month" aria-hidden="true">
+                <span class="report-month-num">09</span>
+                <span class="report-month-name">رمضان</span>
+              </div>
+              <div class="report-info">
+                <div class="report-title">
+                  تقرير شهر رمضان
+                  <span class="badge badge-success">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    معتمد
+                  </span>
+                </div>
+                <p class="report-summary">شهر رمضان مرّ بسلام والحمد لله، أحمد صام أوّل ١٠ أيّام كاملة، وحفظ سورة الملك.</p>
+                <div class="report-meta">
+                  <span class="report-meta-item">قبل ٤٢ يوماً</span>
+                  <span class="report-meta-item">صحّة: جيّدة</span>
+                  <span class="report-meta-item">دراسة: ٤/٥</span>
+                </div>
+              </div>
+              <button class="report-action" aria-label="عرض التقرير الكامل">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+            <article class="report-card">
+              <div class="report-month" aria-hidden="true">
+                <span class="report-month-num">08</span>
+                <span class="report-month-name">شعبان</span>
+              </div>
+              <div class="report-info">
+                <div class="report-title">
+                  تقرير شهر شعبان
+                  <span class="badge badge-success">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    معتمد
+                  </span>
+                </div>
+                <p class="report-summary">أحمد عاد للدراسة بعد إجازة قصيرة، ويظهر تحسّناً واضحاً في مادّة الرياضيات بعد المتابعة معه يوميّاً.</p>
+                <div class="report-meta">
+                  <span class="report-meta-item">قبل ٧٥ يوماً</span>
+                  <span class="report-meta-item">صحّة: جيّدة</span>
+                  <span class="report-meta-item">دراسة: ٤/٥</span>
+                </div>
+              </div>
+              <button class="report-action" aria-label="عرض التقرير الكامل">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+            <article class="report-card">
+              <div class="report-month" aria-hidden="true">
+                <span class="report-month-num">07</span>
+                <span class="report-month-name">رجب</span>
+              </div>
+              <div class="report-info">
+                <div class="report-title">
+                  تقرير شهر رجب
+                  <span class="badge badge-success">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    معتمد
+                  </span>
+                </div>
+                <p class="report-summary">أحمد يحضر دروس تقوية مرّتين أسبوعيّاً، وانضمّ لفريق كرة القدم في المدرسة، يبدو سعيداً جدّاً.</p>
+                <div class="report-meta">
+                  <span class="report-meta-item">قبل ١٠٥ أيّام</span>
+                  <span class="report-meta-item">صحّة: ممتازة</span>
+                  <span class="report-meta-item">دراسة: ٤/٥</span>
+                </div>
+              </div>
+              <button class="report-action" aria-label="عرض التقرير الكامل">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- Tab: Photos -->
+        <div class="tab-content" role="tabpanel" data-tab="photos" hidden>
+          <div class="tab-section-title">
+            الصور التي رفعتها
+            <span class="meta">١٢ صورة · المعتمدة فقط تظهر للكفيل</span>
+          </div>
+
+          <div class="photos-grid">
+
+            <button class="photo-tile photo-tile-add" aria-label="رفع صورة جديدة">
+              <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>رفع صورة</span>
+            </button>
+
+            <div class="photo-tile" aria-label="صورة من المدرسة">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div class="photo-tile-meta"><span>المدرسة</span><span class="latin">قبل ٣ أيام</span></div>
+            </div>
+
+            <div class="photo-tile" aria-label="صورة شخصية">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="photo-tile-tag">جديدة</span>
+              <div class="photo-tile-meta"><span>عيد ميلاد</span><span class="latin">قبل أسبوع</span></div>
+            </div>
+
+            <div class="photo-tile" aria-label="صورة من حفل المدرسة">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div class="photo-tile-meta"><span>حفل تكريم</span><span class="latin">قبل ١٥ يوماً</span></div>
+            </div>
+
+            <div class="photo-tile" aria-label="صورة من رمضان">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div class="photo-tile-meta"><span>رمضان</span><span class="latin">قبل شهر</span></div>
+            </div>
+
+            <div class="photo-tile" aria-label="صورة عائلية">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div class="photo-tile-meta"><span>عائلة</span><span class="latin">قبل شهرين</span></div>
+            </div>
+
+            <div class="photo-tile" aria-label="صورة من رحلة">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.5;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div class="photo-tile-meta"><span>رحلة</span><span class="latin">قبل شهرين</span></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab: Messages from sponsor -->
+        <div class="tab-content" role="tabpanel" data-tab="messages" hidden>
+
+          <div class="review-notice" role="status">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            كل رسالة من الكفيل تمرّ بمراجعة الجهة المسؤولة قبل أن تصلك.
+          </div>
+
+          <div class="message-bubble">
+            <div class="message-avatar" aria-hidden="true">ك</div>
+            <div class="message-body">
+              <div class="message-meta">
+                <span class="message-from-name">كفيل أحمد</span>
+                <span>·</span>
+                <span>قبل ٣ أيّام</span>
+                <span class="badge badge-success" style="padding: 2px 8px; font-size: 11px;">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  معتمدة
+                </span>
+              </div>
+              <div class="message-text">
+                السلام عليكم ورحمة الله. اطمأنت قلوبنا على أحمد بعد قراءة تقرير الشهر، نسأل الله أن يحفظه ويبارك له في تعليمه. أوصلي له تحيّاتنا، وقولي له أنّ هناك من يدعو له كلّ ليلة.
+              </div>
+            </div>
+          </div>
+
+          <div class="message-bubble from-self">
+            <div class="message-avatar" aria-hidden="true">أم</div>
+            <div class="message-body">
+              <div class="message-meta">
+                <span>أنتِ</span>
+                <span>·</span>
+                <span>قبل يومين</span>
+                <span class="badge badge-success" style="padding: 2px 8px; font-size: 11px;">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  وصلت الكفيل
+                </span>
+              </div>
+              <div class="message-text">
+                وعليكم السلام ورحمة الله وبركاته. جزاكم الله خيراً على دعائكم الطيّب، أوصلت رسالتكم لأحمد وفرح جدّاً. هو يدعو لكم كذلك بظهر الغيب.
+              </div>
+            </div>
+          </div>
+
+          <div class="message-bubble">
+            <div class="message-avatar" aria-hidden="true">ك</div>
+            <div class="message-body">
+              <div class="message-meta">
+                <span class="message-from-name">كفيل أحمد</span>
+                <span>·</span>
+                <span>قبل أسبوع</span>
+                <span class="badge badge-success" style="padding: 2px 8px; font-size: 11px;">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  معتمدة
+                </span>
+              </div>
+              <div class="message-text">
+                تهانينا الحارّة على نتائج أحمد في الاختبارات، الحمد لله الذي وفّقه. شكراً لكم على المتابعة الدائمة، ونسأل الله أن يجعل بيتكم عامراً بالخير.
+              </div>
+            </div>
+          </div>
+
+          <div class="message-empty-cta">
+            لعرض المحادثة الكاملة أو الردّ على رسائل الكفيل، افتح صفحة الرسائل.
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- Timeline -->
+      <section class="timeline-card" aria-labelledby="timeline-title">
+        <div class="timeline-head">
+          <h3 id="timeline-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            آخر النشاطات على أحمد
+          </h3>
+          <div class="timeline-filter" role="tablist" aria-label="فلتر النشاطات">
+            <button class="active" type="button">الكل</button>
+            <button type="button">التقارير</button>
+            <button type="button">الصور</button>
+            <button type="button">الرسائل</button>
+          </div>
+        </div>
+
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-dot success" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="timeline-body">
+              <div class="timeline-title">
+                <span>اعتُمد تقرير شهر شوّال</span>
+                <span class="timeline-time">قبل ١٢ يوماً</span>
+              </div>
+              <p class="timeline-text">راجعت الجهة المسؤولة التقرير وأعتمدته، وأصبح متاحاً لكفيل أحمد.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot info" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="timeline-body">
+              <div class="timeline-title">
+                <span>رسالة جديدة من كفيل أحمد</span>
+                <span class="timeline-time">قبل ٣ أيّام</span>
+              </div>
+              <p class="timeline-text">«اطمأنت قلوبنا على أحمد بعد قراءة تقرير الشهر…»</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="timeline-body">
+              <div class="timeline-title">
+                <span>صورة جديدة من المدرسة</span>
+                <span class="timeline-time">قبل أسبوع</span>
+              </div>
+              <p class="timeline-text">رفعتِ صورة لأحمد في حفل تكريم المتفوّقين، في انتظار اعتماد الجهة.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot warning" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="timeline-body">
+              <div class="timeline-title">
+                <span>تذكير: تقرير الشهر الجديد</span>
+                <span class="timeline-time">قبل ٩ أيّام</span>
+              </div>
+              <p class="timeline-text">حان وقت رفع تقرير ذي القعدة، يمكنك إنجازه في أقلّ من دقيقة.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot success" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="timeline-body">
+              <div class="timeline-title">
+                <span>تحديث الشهادة الدراسية</span>
+                <span class="timeline-time">قبل ١٦ يوماً</span>
+              </div>
+              <p class="timeline-text">رفعتِ شهادة الفصل الدراسي الأوّل، واعتمدتها الجهة المسؤولة.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" aria-label="إجراءات سريعة">
+
+      <!-- Quick Actions -->
+      <div class="side-card">
+        <div class="side-card-head">
+          <span class="side-card-title">إجراءات سريعة</span>
+        </div>
+        <div class="side-card-body">
+
+          <button class="quick-action primary">
+            <span class="quick-action-icon">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="quick-action-text">
+              <span class="quick-action-title">رفع تقرير جديد</span>
+              <span class="quick-action-sub">يستغرق أقلّ من دقيقة</span>
+            </span>
+            <svg class="icon icon-sm quick-action-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          <button class="quick-action">
+            <span class="quick-action-icon">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </span>
+            <span class="quick-action-text">
+              <span class="quick-action-title">إضافة صورة</span>
+              <span class="quick-action-sub">من الكاميرا أو المعرض</span>
+            </span>
+            <svg class="icon icon-sm quick-action-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          <button class="quick-action">
+            <span class="quick-action-icon">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </span>
+            <span class="quick-action-text">
+              <span class="quick-action-title">مراسلة الكفيل</span>
+              <span class="quick-action-sub">رسالة جديدة عبر المؤسسة</span>
+            </span>
+            <svg class="icon icon-sm quick-action-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          <button class="quick-action">
+            <span class="quick-action-icon">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </span>
+            <span class="quick-action-text">
+              <span class="quick-action-title">تحديث المستندات</span>
+              <span class="quick-action-sub">شهادة المدرسة، الميلاد…</span>
+            </span>
+            <svg class="icon icon-sm quick-action-chev" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Sponsor card -->
+      <div class="sponsor-card">
+        <div class="sponsor-orbit" aria-hidden="true">
+          <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="sponsor-label">يكفل أحمد</div>
+        <div class="sponsor-name">كفيل أحمد</div>
+        <p class="sponsor-tag">رفيق دائم، يدعو لأحمد بظهر الغيب ويتابع أخباره شهرياً.</p>
+        <button class="sponsor-action">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          أرسل له رسالة شكر
+        </button>
+      </div>
+
+      <!-- Reminders -->
+      <div class="side-card">
+        <div class="side-card-head">
+          <span class="side-card-title">تذكيرات</span>
+          <span class="side-card-meta">٢ مهمّتان</span>
+        </div>
+        <div class="side-card-body">
+
+          <div class="reminder">
+            <div class="reminder-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="reminder-text">
+              <div class="reminder-title">تقرير الشهر الجديد</div>
+              <div class="reminder-sub">باقي ٨ أيّام لإغلاق شهر ذي القعدة</div>
+              <button class="reminder-cta">
+                ابدأ الآن
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="reminder info">
+            <div class="reminder-icon" aria-hidden="true">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="reminder-text">
+              <div class="reminder-title">جديد: ميزة التسجيل الصوتي</div>
+              <div class="reminder-sub">يمكنك الآن رفع تقرير صوتيّ بدل الكتابة.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+</main>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+
+      tabs.forEach(t => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+
+      panels.forEach(p => {
+        const isActive = p.dataset.tab === target;
+        p.classList.toggle('active', isActive);
+        if (isActive) p.removeAttribute('hidden');
+        else p.setAttribute('hidden', '');
+      });
+    });
+  });
+
+  // Timeline filter (UI-only)
+  document.querySelectorAll('.timeline-filter button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    });
+  });
+</script>
+
+</body>
+</html>
