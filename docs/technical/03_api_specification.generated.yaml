@@ -870,6 +870,65 @@ components:
           type: array
       title: HTTPValidationError
       type: object
+    InboundWebhookLogRead:
+      properties:
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        id:
+          format: uuid
+          title: Id
+          type: string
+        payload:
+          additionalProperties: true
+          title: Payload
+          type: object
+        received_at:
+          format: date-time
+          title: Received At
+          type: string
+        replayed_count:
+          title: Replayed Count
+          type: integer
+        replayed_from:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Replayed From
+        response_body:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Response Body
+        response_status:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Response Status
+        signature:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Signature
+        source:
+          title: Source
+          type: string
+      required:
+      - id
+      - source
+      - payload
+      - signature
+      - response_status
+      - response_body
+      - error
+      - received_at
+      - replayed_from
+      - replayed_count
+      title: InboundWebhookLogRead
+      type: object
     LoginRequest:
       properties:
         email:
@@ -1625,6 +1684,29 @@ components:
       - limit
       - offset
       title: Page[GuardianRead]
+      type: object
+    Page_InboundWebhookLogRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/InboundWebhookLogRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[InboundWebhookLogRead]
       type: object
     Page_MarketingChannelRead_:
       properties:
@@ -5725,25 +5807,108 @@ paths:
       summary: Suspend User
       tags:
       - users
+  /api/v1/webhooks/log:
+    get:
+      operationId: list_inbound_webhook_log_api_v1_webhooks_log_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 200
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: source
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source
+      - in: query
+        name: only_failed
+        required: false
+        schema:
+          default: false
+          title: Only Failed
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_InboundWebhookLogRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Inbound Webhook Log
+      tags:
+      - webhooks
+  /api/v1/webhooks/log/{log_id}/replay:
+    post:
+      description: 'Re-feed a logged payload through the original handler. A new log
+
+        row is created with replayed_from pointing at the original. The
+
+        payment-side dedupe (gateway_transaction_id UNIQUE) keeps successful
+
+        replays idempotent — they''ll come back as `duplicate`.'
+      operationId: replay_inbound_webhook_api_v1_webhooks_log__log_id__replay_post
+      parameters:
+      - in: path
+        name: log_id
+        required: true
+        schema:
+          format: uuid
+          title: Log Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                title: Response Replay Inbound Webhook Api V1 Webhooks Log  Log Id  Replay Post
+                type: object
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Replay Inbound Webhook
+      tags:
+      - webhooks
   /api/v1/webhooks/myfatoorah:
     post:
       description: 'Receive payment status updates from MyFatoorah.
 
 
-        Authentication: when `MYFATOORAH_WEBHOOK_SECRET` is configured the
+        Every delivery is logged into `inbound_webhook_log` before the
 
-        caller must include `X-MyFatoorah-Signature` set to the hex
+        handler returns — successful, validation-failure, or processing
 
-        HMAC-SHA256 of the raw request body keyed by the shared secret. A
-
-        raw equality with the secret is also accepted for backward
-
-        compatibility with the original sandbox configuration.
-
-
-        The handler is idempotent: a webhook delivered twice for the same
-
-        `gateway_transaction_id` only inserts the payment row once.'
+        error — so operators can replay it later from /webhooks/log.'
       operationId: myfatoorah_webhook_api_v1_webhooks_myfatoorah_post
       parameters:
       - in: header
