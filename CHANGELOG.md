@@ -8,6 +8,41 @@ This project adheres to [Semantic Versioning](https://semver.org/) and [Keep a C
 
 ## [Unreleased]
 
+### System-level design alignment (PR #8)
+
+This is a foundation PR — no specific pages were rewritten. It fixes
+the three system-wide drifts the gap analysis (`docs/design/GAP_ANALYSIS.md`
+§0) called out, so every existing page renders closer to its mockup
+without per-page work.
+
+#### Changed
+- **Fonts** — `frontend/index.html` now loads **IBM Plex Sans Arabic**,
+  **IBM Plex Sans**, and **IBM Plex Mono** (weights 300/400/500/600/700
+  + mono 400/500), matching every mockup's font stack. `tailwind.config.js`
+  leads `fontFamily.sans` with the new Arabic + Latin Plex families and
+  adds a `fontFamily.mono` stack so `font-mono` utility resolves to
+  IBM Plex Mono. Replaces `Noto Sans Arabic` + `Inter`, which had no
+  basis in the design system.
+- **Color tokens** — `tailwind.config.js` now exposes the full ramps
+  from `docs/design/screens/rufaqaa-design-system-v0.1.html`:
+  `snow` 50–300, `tranquil` 100–400, `sky` 100–400, `trust` 100–900,
+  `gray` 50–900, plus full `success` / `warning` / `danger` / `info`
+  palettes. Each brand scale has a `DEFAULT` key pinned to the
+  mockups' canonical step (snow=100, tranquil=200, sky=200, trust=300),
+  so existing classes like `bg-trust`, `border-sky`, `bg-tranquil`,
+  `bg-snow` resolve to the same hex they did before — verified via the
+  built CSS. New code can now reach `bg-trust-400`, `text-gray-700`,
+  `bg-success-100`, etc. without inline hex strings.
+
+#### Removed
+- `MyPortalPage` (`/admin/me`) — flagged in GAP_ANALYSIS §4 as the
+  clearest deletion candidate. It was a hybrid donor-preview / staff
+  impersonation screen with no mockup; donors reach the same content
+  via `DonorDashboardPage` + `DonorSponsorshipsPage`, staff via the
+  audit log + sponsorships table. The orphaned `lib/donorPortal.ts`
+  (its only caller) and the `nav.portal` + `portal.*` i18n blocks
+  were deleted in the same commit.
+
 ### Polish & gap-filling (PR #7)
 
 #### Added

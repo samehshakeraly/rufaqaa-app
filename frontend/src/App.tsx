@@ -21,7 +21,6 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
-import { MyPortalPage } from "./pages/MyPortalPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { PartnerDetailPage } from "./pages/PartnerDetailPage";
@@ -141,7 +140,6 @@ export function App() {
             </AdminRoute>
           }
         />
-        <Route path="me" element={<MyPortalPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
 

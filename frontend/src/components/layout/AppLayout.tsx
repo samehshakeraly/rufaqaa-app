@@ -78,9 +78,6 @@ export function AppLayout() {
                 {t("nav.audit")}
               </NavLink>
             )}
-            <NavLink to="/admin/me" className={navItemClass}>
-              {t("nav.portal")}
-            </NavLink>
             <NavLink to="/admin/settings" className={navItemClass}>
               {t("nav.settings")}
             </NavLink>
