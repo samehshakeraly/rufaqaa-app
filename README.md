@@ -57,7 +57,7 @@
 | **Frontend** | React 18 · TypeScript · Vite · TanStack Query |
 | **Mobile** | React Native · Expo |
 | **AI Integration** | MCP (Model Context Protocol) — Python SDK من Anthropic |
-| **Payments** | MyFatoorah (K-Net · Cards · Apple Pay · STC Pay) |
+| **Payments** | MyFatoorah (K-Net · Cards · Apple Pay · STC Pay) — setup at [`docs/integrations/myfatoorah.md`](docs/integrations/myfatoorah.md) |
 | **DevOps** | Docker · GitHub Actions · Kubernetes (للإنتاج) |
 
 ---

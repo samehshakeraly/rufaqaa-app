@@ -107,40 +107,63 @@ async def _process_myfatoorah_payload(db, payload: dict[str, Any]) -> dict[str, 
         {"v": str(donor.organization_id)},
     )
 
-    existing = await db.scalar(
-        select(Payment).where(Payment.gateway_transaction_id == gateway_txn_id)
-    )
-    if existing is not None:
-        return {"status": "duplicate", "payment_id": str(existing.id)}
-
     amount_str = str(data.get("InvoiceValue") or data.get("Amount") or "0")
     amount = Decimal(amount_str)
     currency = str(data.get("InvoiceDisplayValue", "")[-3:] or data.get("Currency") or "KWD")
 
     now = datetime.now(UTC)
-    payment = Payment(
-        organization_id=donor.organization_id,
-        code=generate_code("PAY"),
-        donor_id=donor.id,
-        sponsorship_id=sponsorship.id if sponsorship is not None else None,
-        orphan_id=sponsorship.orphan_id if sponsorship is not None else None,
-        amount=amount,
-        currency=currency,
-        payment_method="knet",
-        payment_gateway="myfatoorah",
-        gateway_transaction_id=gateway_txn_id,
-        status=our_status,
-        completed_at=now if our_status == "completed" else None,
-        payment_metadata=data,
+
+    existing = await db.scalar(
+        select(Payment).where(Payment.gateway_transaction_id == gateway_txn_id)
     )
-
-    if our_status == "completed" and sponsorship is not None:
-        sponsorship.total_paid = (sponsorship.total_paid or 0) + amount
-        sponsorship.payments_count = (sponsorship.payments_count or 0) + 1
-        sponsorship.last_payment_date = now.date()
-        sponsorship.last_payment_amount = amount
-
-    db.add(payment)
+    if existing is not None:
+        # A SendPayment flow already created the row in `pending`. The
+        # gateway is now telling us how it ended — flip it. If the row
+        # was already in a terminal state, treat as a duplicate delivery.
+        if existing.status in ("pending", "processing"):
+            existing.status = our_status
+            if our_status == "completed":
+                existing.completed_at = now
+                if sponsorship is not None:
+                    sponsorship.total_paid = (sponsorship.total_paid or 0) + amount
+                    sponsorship.payments_count = (sponsorship.payments_count or 0) + 1
+                    sponsorship.last_payment_date = now.date()
+                    sponsorship.last_payment_amount = amount
+                    if sponsorship.status == "pending":
+                        sponsorship.status = "active"
+            payment = existing
+        else:
+            return {
+                "status": "duplicate",
+                "payment_id": str(existing.id),
+                "payment_status": existing.status,
+            }
+    else:
+        # Legacy / gateway-driven path: webhook arrives with no
+        # corresponding /initiate row. Insert one.
+        payment = Payment(
+            organization_id=donor.organization_id,
+            code=generate_code("PAY"),
+            donor_id=donor.id,
+            sponsorship_id=sponsorship.id if sponsorship is not None else None,
+            orphan_id=sponsorship.orphan_id if sponsorship is not None else None,
+            amount=amount,
+            currency=currency,
+            payment_method="knet",
+            payment_gateway="myfatoorah",
+            gateway_transaction_id=gateway_txn_id,
+            status=our_status,
+            completed_at=now if our_status == "completed" else None,
+            payment_metadata=data,
+        )
+        if our_status == "completed" and sponsorship is not None:
+            sponsorship.total_paid = (sponsorship.total_paid or 0) + amount
+            sponsorship.payments_count = (sponsorship.payments_count or 0) + 1
+            sponsorship.last_payment_date = now.date()
+            sponsorship.last_payment_amount = amount
+            if sponsorship.status == "pending":
+                sponsorship.status = "active"
+        db.add(payment)
     await db.flush()
 
     record_audit(
