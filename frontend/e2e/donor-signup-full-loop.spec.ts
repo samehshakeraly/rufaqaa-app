@@ -33,10 +33,12 @@ test("anon donor can sign up, verify, and land on the dashboard", async ({
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: /(sign up|إنشاء الحساب)/i }).click();
 
-  // 3. Verify-email — debug token is auto-used
-  await expect(page).toHaveURL(/\/verify-email/);
-
-  // 4. Lands on the donor dashboard
+  // 3. Lands on the donor dashboard. We don't separately assert the
+  // intermediate /verify-email URL: the page auto-verifies on mount
+  // via the sessionStorage debug token, and the resulting transition
+  // is fast enough to race the toHaveURL poll. Reaching the dashboard
+  // implies the verify ran (DonorRoute would have bounced an
+  // unverified user to /login otherwise).
   await expect(page).toHaveURL(/\/donor\/dashboard$/, { timeout: 10_000 });
   await expect(
     page.getByRole("heading", { name: /(welcome back|أهلاً بعودتك)/i }),

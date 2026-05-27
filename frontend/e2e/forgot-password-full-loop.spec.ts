@@ -44,7 +44,11 @@ test("forgot → reset → login with new password", async ({ page, context }) =
           user: {
             id: "u1",
             email,
-            role: "admin",
+            // The frontend's useRole maps super_admin / org_admin
+            // to admin / staff. Plain "admin" doesn't match either
+            // bucket so the landing-page auto-redirect doesn't fire
+            // — use the canonical org_admin role.
+            role: "org_admin",
             organization_id: "org",
           },
         }),
@@ -55,6 +59,22 @@ test("forgot → reset → login with new password", async ({ page, context }) =
       status: 401,
       contentType: "application/json",
       body: JSON.stringify({ detail: "bad credentials" }),
+    });
+  });
+  // The landing page calls /auth/me to discover the role for its
+  // redirect. The real backend would reject our fake "tok"; stub it
+  // so the redirect fires.
+  await context.route("**/api/v1/auth/me", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: "u1",
+        email,
+        role: "org_admin",
+        organization_id: "org",
+        email_verified_at: new Date().toISOString(),
+      }),
     });
   });
 
