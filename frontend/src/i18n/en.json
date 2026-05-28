@@ -109,6 +109,19 @@
       "totalPaid": "Total paid",
       "status": "Status",
       "pay": "Pay"
+    },
+    "orphanDetail": {
+      "progress": "Sponsorship progress",
+      "monthlyAmount": "Monthly amount",
+      "totalPaid": "Total paid",
+      "startedOn": "Started on",
+      "status": "Status",
+      "reports": "Monthly reports",
+      "reportsDescription": "Published monthly reports from the partner caring for this child.",
+      "reportsTodo": "Report history will appear here once the backend exposes a donor-scoped endpoint.",
+      "payments": "Your payments for this sponsorship",
+      "paymentsDescription": "Only payments tied to this sponsorship are listed.",
+      "paymentsTodo": "Per-sponsorship payment filtering needs a backend extension to /donor/me/payments."
     }
   },
   "checkout": {

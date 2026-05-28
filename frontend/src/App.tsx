@@ -12,6 +12,7 @@ import { AuditPage } from "./pages/AuditPage";
 import { BankTransfersPage } from "./pages/BankTransfersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorDashboardPage } from "./pages/DonorDashboardPage";
+import { DonorOrphanDetailPage } from "./pages/DonorOrphanDetailPage";
 import { DonorProfilePage } from "./pages/DonorProfilePage";
 import { DonorSponsorshipsPage } from "./pages/DonorSponsorshipsPage";
 import { DonorsPage } from "./pages/DonorsPage";
@@ -72,6 +73,10 @@ export function App() {
         <Route path="/donor/dashboard" element={<DonorDashboardPage />} />
         <Route path="/donor/profile" element={<DonorProfilePage />} />
         <Route path="/donor/sponsorships" element={<DonorSponsorshipsPage />} />
+        <Route
+          path="/donor/orphans/:code"
+          element={<DonorOrphanDetailPage />}
+        />
         <Route path="/sponsor/:code/checkout" element={<SponsorCheckoutPage />} />
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/failure" element={<PaymentFailurePage />} />

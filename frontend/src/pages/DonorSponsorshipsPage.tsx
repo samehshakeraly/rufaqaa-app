@@ -14,14 +14,14 @@ export function DonorSponsorshipsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
         {t("donor.sponsorships.title")}
       </h1>
 
       {q.isLoading && <Skeleton className="h-40 w-full" />}
 
       {q.data?.length === 0 && (
-        <div className="card text-center text-slate-500">
+        <div className="card text-center text-gray-500">
           <p>{t("donor.sponsorships.none")}</p>
           <Link to="/orphans" className="btn-primary mt-3 inline-block">
             {t("public.orphans.title")}
@@ -32,7 +32,7 @@ export function DonorSponsorshipsPage() {
       {q.data && q.data.length > 0 && (
         <div className="card overflow-x-auto p-0">
           <table className="min-w-full text-start text-sm">
-            <thead className="border-b border-sky bg-tranquil/40 text-slate-700">
+            <thead className="border-b border-sky-200 bg-tranquil-100 text-gray-700">
               <tr>
                 <th className="px-4 py-3 font-medium">
                   {t("donor.sponsorships.code")}
@@ -52,22 +52,33 @@ export function DonorSponsorshipsPage() {
                 <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-sky/40">
+            <tbody className="divide-y divide-sky-200/60">
               {q.data.map((s) => (
                 <tr key={s.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">{s.code}</td>
+                  <td className="px-4 py-3 font-mono text-xs tabular-nums">
+                    {s.code}
+                  </td>
                   <td className="px-4 py-3">
-                    {s.orphan_first_name ?? "—"}{" "}
-                    {s.orphan_code && (
-                      <span className="font-mono text-xs text-slate-500">
-                        ({s.orphan_code})
+                    {s.orphan_code ? (
+                      <Link
+                        to={`/donor/orphans/${s.orphan_code}`}
+                        className="text-trust-700 hover:underline"
+                      >
+                        {s.orphan_first_name ?? s.orphan_code}{" "}
+                        <span className="font-mono text-xs text-gray-500">
+                          ({s.orphan_code})
+                        </span>
+                      </Link>
+                    ) : (
+                      <span className="text-gray-500">
+                        {s.orphan_first_name ?? "—"}
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 tabular-nums">
                     {s.monthly_amount} {s.currency}
                   </td>
-                  <td className="px-4 py-3">{s.total_paid}</td>
+                  <td className="px-4 py-3 tabular-nums">{s.total_paid}</td>
                   <td className="px-4 py-3">
                     {t(`sponsorships.statuses.${s.status}`, s.status)}
                   </td>
@@ -75,7 +86,7 @@ export function DonorSponsorshipsPage() {
                     {s.status === "pending" && s.orphan_code && (
                       <Link
                         to={`/sponsor/${s.orphan_code}/checkout`}
-                        className="rounded-lg border border-trust bg-trust px-2 py-1 text-xs text-white hover:bg-trust/90"
+                        className="rounded-lg bg-trust-500 px-2 py-1 text-xs text-white hover:bg-trust-600"
                       >
                         {t("donor.sponsorships.pay")}
                       </Link>

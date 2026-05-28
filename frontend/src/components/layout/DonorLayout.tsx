@@ -9,8 +9,8 @@ import { useAuthStore } from "@/store/auth";
 const navItemClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition ${
     isActive
-      ? "bg-trust text-white"
-      : "text-slate-700 hover:bg-tranquil dark:text-slate-200 dark:hover:bg-slate-700"
+      ? "bg-trust-500 text-white"
+      : "text-gray-700 hover:bg-tranquil-100 dark:text-gray-200 dark:hover:bg-gray-700"
   }`;
 
 /** Chrome for the authenticated donor area (post-signup, verified). */
@@ -26,10 +26,13 @@ export function DonorLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-snow dark:bg-slate-900">
-      <header className="border-b border-sky bg-white dark:border-slate-700 dark:bg-slate-800">
+    <div className="min-h-screen bg-snow dark:bg-gray-900">
+      <header className="border-b border-sky-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link to="/donor/dashboard" className="text-xl font-bold text-trust">
+          <Link
+            to="/donor/dashboard"
+            className="text-xl font-bold text-trust-700"
+          >
             {t("app.name")}
           </Link>
           <nav className="flex gap-2">
@@ -48,7 +51,7 @@ export function DonorLayout() {
           </nav>
           <div className="flex items-center gap-3">
             {me && (
-              <span className="hidden text-sm text-slate-600 dark:text-slate-300 sm:inline">
+              <span className="hidden text-sm text-gray-600 dark:text-gray-300 sm:inline">
                 {me.first_name}
               </span>
             )}
@@ -57,7 +60,7 @@ export function DonorLayout() {
             <button
               type="button"
               onClick={logout}
-              className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="rounded-lg border border-sky-200 px-3 py-1 text-sm text-gray-700 hover:bg-tranquil-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
             >
               {t("nav.logout")}
             </button>
