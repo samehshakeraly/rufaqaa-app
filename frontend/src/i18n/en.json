@@ -138,7 +138,11 @@
     "audit": "Audit log",
     "settings": "Settings",
     "logout": "Sign out",
-    "language": "English"
+    "language": "English",
+    "approvals": "Approvals",
+    "mediaReview": "Media review",
+    "partnerStaff": "Partner staff",
+    "registerOrphan": "Register orphan"
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -176,6 +180,11 @@
     "loadError": "Could not load data",
     "createError": "Could not save",
     "required": "This field is required"
+  },
+  "pagination": {
+    "page": "Page {{page}} of {{total}}",
+    "prev": "Previous",
+    "next": "Next"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -222,6 +231,28 @@
     "bulkArchiveConfirm": "Archive {{count}} orphans? This soft-deletes them.",
     "bulkArchiveDone": "Archived {{ok}} orphans.",
     "bulkArchivePartial": "Archived {{ok}}; {{fail}} failed.",
+    "subtitle": {
+      "approvals": "Cases awaiting your approval"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "release": "Release",
+      "approveConfirm": "Approve this case?",
+      "releaseConfirm": "Release this case back to the pool?",
+      "rejectReason": "Why are you rejecting this case?",
+      "rejectReasonPlaceholder": "Provide a brief reason for rejection",
+      "rejectSubmit": "Reject case",
+      "approved": "Orphan approved",
+      "rejected": "Orphan rejected",
+      "released": "Orphan released"
+    },
+    "register": {
+      "title": "Register a new orphan",
+      "duplicate": "Possible duplicate — this case looks similar to an existing record",
+      "viewExisting": "View existing record",
+      "back": "← Back to orphans"
+    },
     "photo": {
       "title": "Photos",
       "uploaded": "Photo uploaded.",
@@ -350,7 +381,11 @@
       "approve-partner": "Approve (partner)",
       "approve-org": "Approve (org)",
       "publish": "Publish",
-      "reject": "Reject"
+      "reject": "Reject",
+      "rejectReason": "Why are you rejecting this report?",
+      "rejectSubmit": "Reject report",
+      "rejected": "Report rejected",
+      "success": "Report updated"
     }
   },
   "settings": {
@@ -425,7 +460,23 @@
     "suspend": "Suspend",
     "reactivate": "Reactivate",
     "suspended": "User suspended",
-    "reactivated": "User reactivated"
+    "reactivated": "User reactivated",
+    "roles": {
+      "super_admin": "Super admin",
+      "org_admin": "Organisation admin",
+      "partner_manager": "Partner manager",
+      "partner_staff": "Partner staff",
+      "marketing_manager": "Marketing manager",
+      "finance": "Finance",
+      "donor": "Donor",
+      "guardian": "Guardian",
+      "viewer": "Viewer"
+    },
+    "staff": {
+      "title": "Partner staff",
+      "invite": "Invite user",
+      "invitePartnerStaff": "Invitation sent"
+    }
   },
   "marketingChannels": {
     "title": "Marketing channels",
@@ -515,6 +566,23 @@
       "completed": "Completed",
       "failed": "Failed",
       "cancelled": "Cancelled"
+    }
+  },
+  "media": {
+    "moderate": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "approved": "Media approved",
+      "rejected": "Media rejected",
+      "notesLabel": "Reason for rejecting",
+      "notesPlaceholder": "Brief reason (visible to staff only)"
+    },
+    "review": {
+      "title": "Media review",
+      "description": "Review and moderate photos uploaded by partner staff before they appear on donor-facing pages.",
+      "todoBackend": "Pending media moderation requires a backend list endpoint (TODO). Until it lands, use the per-photo controls on the orphan detail page.",
+      "thumbnailAlt": "Pending media thumbnail {{id}}",
+      "workaround": "Open orphans pending review"
     }
   },
   "documents": {

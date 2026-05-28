@@ -32,3 +32,19 @@ export async function reactivateUser(id: string): Promise<AdminUser> {
   const { data } = await api.post<AdminUser>(`/users/${id}/reactivate`);
   return data;
 }
+
+export interface UserInviteResult {
+  user: { id: string; email: string; role: string; status: string };
+  invite_token: string;
+  expires_in_days: number;
+}
+
+export async function inviteUser(payload: {
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+}): Promise<UserInviteResult> {
+  const { data } = await api.post<UserInviteResult>("/users/invite", payload);
+  return data;
+}
