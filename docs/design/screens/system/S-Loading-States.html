@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حالات التحميل — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-700: #B45309;
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 8px; }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+
+.showcase-head { background: white; border-bottom: 1px solid var(--sky-200); padding: 32px; }
+.showcase-head-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.showcase-title h1 { font-size: 22px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+.showcase-title p { font-size: 13.5px; color: var(--gray-500); }
+.brand-mini { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-600); }
+.brand-mini-mark { width: 28px; height: 28px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+.scope-pill { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 4px 10px; background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); border-radius: var(--radius-full); }
+
+.showcase { max-width: 1200px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 860px) { .showcase { grid-template-columns: 1fr; padding: 20px; } }
+
+.case-frame { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+.case-label { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--snow-100); border-bottom: 1px solid var(--gray-200); }
+.case-label-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.case-label-code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--trust-600); background: var(--tranquil-100); padding: 3px 9px; border-radius: var(--radius-full); font-weight: 600; border: 1px solid var(--sky-200); }
+.case-desc { padding: 14px 16px; background: white; border-bottom: 1px solid var(--gray-200); font-size: 12.5px; color: var(--gray-600); line-height: 1.65; }
+.case-desc strong { color: var(--gray-800); }
+.case-body { padding: 24px; min-height: 280px; display: flex; flex-direction: column; gap: 14px; }
+.usage { padding: 12px 16px; background: var(--snow-100); border-top: 1px solid var(--gray-200); font-size: 11.5px; color: var(--gray-600); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.usage code { font-family: 'IBM Plex Mono', monospace; background: var(--tranquil-100); color: var(--trust-600); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+
+/* ═══ SKELETON ═══ */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skel { background: linear-gradient(90deg, var(--gray-100) 0%, #F0F4F7 50%, var(--gray-100) 100%); background-size: 800px 100%; border-radius: 6px; animation: shimmer 1.5s infinite linear; }
+.skel-line { height: 12px; margin-bottom: 8px; }
+.skel-line.short { width: 50%; }
+.skel-line.med { width: 75%; }
+.skel-line.long { width: 90%; }
+.skel-line.thick { height: 18px; }
+.skel-circle { width: 48px; height: 48px; border-radius: 50%; }
+.skel-block { height: 80px; border-radius: 10px; }
+
+.skel-row { display: grid; grid-template-columns: 48px 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px dashed var(--gray-200); }
+.skel-row:last-child { border-bottom: none; padding-bottom: 0; }
+.skel-row-body { min-width: 0; }
+.skel-pill { width: 64px; height: 22px; border-radius: 999px; }
+
+/* ═══ SPINNERS ═══ */
+.spinner-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: center; }
+
+.spin-card { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 12px; background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); }
+.spin-card-name { font-size: 12px; color: var(--gray-600); font-weight: 500; }
+.spin-card-code { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--gray-500); }
+
+/* Ring spinner */
+.spinner-ring { width: 36px; height: 36px; border: 3px solid var(--gray-200); border-top-color: var(--trust-500); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Dots */
+.spinner-dots { display: inline-flex; gap: 6px; }
+.spinner-dots span { width: 9px; height: 9px; border-radius: 50%; background: var(--trust-500); animation: dotpulse 1.4s infinite ease-in-out both; }
+.spinner-dots span:nth-child(1) { animation-delay: -.32s; }
+.spinner-dots span:nth-child(2) { animation-delay: -.16s; }
+@keyframes dotpulse { 0%, 80%, 100% { transform: scale(0.55); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+
+/* Bars */
+.spinner-bars { display: inline-flex; gap: 4px; align-items: flex-end; height: 30px; }
+.spinner-bars span { width: 5px; background: var(--trust-500); border-radius: 2px; animation: barwave 1.2s infinite ease-in-out; }
+.spinner-bars span:nth-child(1) { animation-delay: -1.1s; }
+.spinner-bars span:nth-child(2) { animation-delay: -.9s; }
+.spinner-bars span:nth-child(3) { animation-delay: -.7s; }
+.spinner-bars span:nth-child(4) { animation-delay: -.5s; }
+@keyframes barwave { 0%, 40%, 100% { height: 10px; } 20% { height: 30px; } }
+
+/* ═══ PROGRESSIVE LOADING ═══ */
+.progressive-card { background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 18px; }
+.progressive-step { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 8px 0; }
+.progressive-step + .progressive-step { border-top: 1px dashed var(--gray-200); padding-top: 12px; margin-top: 4px; }
+.progressive-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.progressive-icon.done { background: var(--success-500); color: white; }
+.progressive-icon.loading { background: white; border: 2px solid var(--trust-300); color: var(--trust-500); position: relative; }
+.progressive-icon.loading::after { content: ''; position: absolute; inset: -2px; border: 2px solid transparent; border-top-color: var(--trust-500); border-radius: 50%; animation: spin 1s linear infinite; }
+.progressive-icon.pending { background: var(--gray-100); color: var(--gray-400); border: 2px solid var(--gray-200); }
+.progressive-text { font-size: 13px; color: var(--gray-800); font-weight: 500; }
+.progressive-text small { display: block; font-size: 11px; color: var(--gray-500); font-weight: 400; margin-top: 1px; }
+.progressive-time { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; color: var(--gray-500); }
+
+.progress-bar { width: 100%; height: 6px; background: var(--gray-100); border-radius: 999px; overflow: hidden; margin-top: 14px; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--trust-400), var(--trust-500)); border-radius: 999px; transition: width var(--transition); }
+.progress-meta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--gray-500); margin-top: 6px; }
+.progress-meta .latin { color: var(--trust-600); font-weight: 600; }
+
+/* ═══ OPTIMISTIC UI ═══ */
+.opt-list { display: flex; flex-direction: column; gap: 8px; }
+.opt-item { display: grid; grid-template-columns: 32px 1fr auto; gap: 12px; padding: 12px 14px; border-radius: var(--radius-lg); align-items: center; transition: var(--transition); }
+.opt-item.confirmed { background: var(--success-50); border: 1px solid #D1FAE5; }
+.opt-item.pending { background: var(--tranquil-100); border: 1px dashed var(--sky-300); opacity: .85; }
+.opt-item.failed { background: #FEF2F2; border: 1px solid #FEE2E2; }
+
+.opt-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.opt-item.confirmed .opt-icon { background: var(--success-500); color: white; }
+.opt-item.pending .opt-icon { background: white; border: 2px solid var(--trust-300); color: var(--trust-500); position: relative; }
+.opt-item.pending .opt-icon::after { content: ''; position: absolute; inset: -2px; border: 2px solid transparent; border-top-color: var(--trust-500); border-radius: 50%; animation: spin 1s linear infinite; }
+.opt-item.failed .opt-icon { background: #DC2626; color: white; }
+.opt-text { font-size: 13px; color: var(--gray-800); }
+.opt-text small { display: block; font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+.opt-action { font-size: 11.5px; color: var(--trust-500); font-weight: 500; }
+.opt-item.failed .opt-action { color: #DC2626; }
+
+</style>
+</head>
+<body>
+
+<div class="showcase-head">
+  <div class="showcase-head-inner">
+    <div class="showcase-title">
+      <h1>حالات التحميل — Loading States</h1>
+      <p>أربعة أنماط لإظهار «أنّ شيئاً يحدث» · مرجع تصميم</p>
+    </div>
+    <div class="brand-mini">
+      <span class="brand-mini-mark">ر</span>
+      <span>رفقاء — نظام التصميم</span>
+      <span class="scope-pill">S-Loading</span>
+    </div>
+  </div>
+</div>
+
+<div class="showcase">
+
+  <!-- 1. SKELETONS -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">١ · Skeleton — هيكل عظمي</span>
+      <span class="case-label-code">Skeleton</span>
+    </div>
+    <div class="case-desc">للقوائم والبطاقات. <strong>يحافظ على الترتيب البصري</strong> أثناء الانتظار، ويقلّل الشعور بالتأخير. استخدمه حين تعرف هيكل المحتوى مسبقاً.</div>
+    <div class="case-body">
+
+      <div class="skel-row">
+        <div class="skel skel-circle"></div>
+        <div class="skel-row-body">
+          <div class="skel skel-line thick long"></div>
+          <div class="skel skel-line med"></div>
+          <div class="skel skel-line short" style="margin-bottom: 0;"></div>
+        </div>
+        <div class="skel skel-pill"></div>
+      </div>
+
+      <div class="skel-row">
+        <div class="skel skel-circle"></div>
+        <div class="skel-row-body">
+          <div class="skel skel-line thick med"></div>
+          <div class="skel skel-line short"></div>
+          <div class="skel skel-line long" style="margin-bottom: 0;"></div>
+        </div>
+        <div class="skel skel-pill"></div>
+      </div>
+
+      <div class="skel-row">
+        <div class="skel skel-circle"></div>
+        <div class="skel-row-body">
+          <div class="skel skel-line thick long"></div>
+          <div class="skel skel-line med" style="margin-bottom: 0;"></div>
+        </div>
+        <div class="skel skel-pill"></div>
+      </div>
+
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>useSWR()</code> أو <code>isLoading</code> · أوّل ٢–٤ ثوان من تحميل قائمة الأيتام/الكفالات</div>
+  </div>
+
+  <!-- 2. SPINNERS -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">٢ · Spinners — مدوّرات</span>
+      <span class="case-label-code">Spinner</span>
+    </div>
+    <div class="case-desc">للأزرار والعمليّات القصيرة (أقلّ من ٣ ثوان). ثلاثة أنماط: <strong>دائري لعمليّات قصيرة، نقاط للنصوص، أعمدة للموسيقى/الميديا</strong>.</div>
+    <div class="case-body" style="justify-content: center;">
+
+      <div class="spinner-row">
+        <div class="spin-card">
+          <div class="spinner-ring" aria-hidden="true"></div>
+          <div class="spin-card-name">دائري</div>
+          <div class="spin-card-code">ring</div>
+        </div>
+
+        <div class="spin-card">
+          <div class="spinner-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="spin-card-name">نقاط</div>
+          <div class="spin-card-code">dots</div>
+        </div>
+
+        <div class="spin-card">
+          <div class="spinner-bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <div class="spin-card-name">أعمدة</div>
+          <div class="spin-card-code">bars</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 8px; padding: 12px 14px; background: var(--snow-100); border-radius: var(--radius-lg); display: flex; gap: 10px; align-items: center; font-size: 12.5px; color: var(--gray-700);">
+        <div class="spinner-ring" style="width: 16px; height: 16px; border-width: 2px;" aria-hidden="true"></div>
+        <span><strong>جارٍ معالجة الدفعة...</strong> لا تغلق الصفحة.</span>
+      </div>
+
+      <button style="padding: 10px 20px; background: var(--trust-500); color: white; border-radius: var(--radius-md); font-family: inherit; font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; align-self: center;">
+        <div class="spinner-ring" style="width: 14px; height: 14px; border-width: 2px; border-color: rgba(255,255,255,.3); border-top-color: white;" aria-hidden="true"></div>
+        جارٍ الإرسال...
+      </button>
+
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>button:disabled</code> أثناء submit · أو <code>fetch()</code> قصير</div>
+  </div>
+
+  <!-- 3. PROGRESSIVE LOADING -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">٣ · Progressive — تدريجي</span>
+      <span class="case-label-code">Progressive</span>
+    </div>
+    <div class="case-desc">للعمليّات الطويلة متعدّدة الخطوات. <strong>يُري المستخدم أين هو من الرحلة</strong>. مناسب لرفع المستندات، معالجة الدفعات، استيراد البيانات.</div>
+    <div class="case-body">
+
+      <div class="progressive-card">
+
+        <div class="progressive-step">
+          <div class="progressive-icon done"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="progressive-text">رفع المستندات<small>تمّ رفع ٤ ملفّات · ١٢ MB</small></div>
+          <span class="progressive-time">٤ ث</span>
+        </div>
+
+        <div class="progressive-step">
+          <div class="progressive-icon done"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="progressive-text">التحقّق من صحّة البيانات<small>تمّت مراجعة كلّ الحقول الإلزاميّة</small></div>
+          <span class="progressive-time">٢ ث</span>
+        </div>
+
+        <div class="progressive-step">
+          <div class="progressive-icon loading"></div>
+          <div class="progressive-text">حفظ في قاعدة البيانات<small>جارٍ تخزين ملفّ اليتيم بأمان...</small></div>
+          <span class="progressive-time">~ <span class="latin">٣</span> ث</span>
+        </div>
+
+        <div class="progressive-step">
+          <div class="progressive-icon pending"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="progressive-text" style="color: var(--gray-500);">إرسال إشعار للمدير<small>في انتظار اكتمال الخطوة السابقة</small></div>
+          <span class="progressive-time" style="color: var(--gray-400);">~ <span class="latin">١</span> ث</span>
+        </div>
+
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 62%;"></div></div>
+        <div class="progress-meta">
+          <span>الخطوة <span class="latin">٣</span> من <span class="latin">٤</span></span>
+          <span class="latin">62%</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="usage"><span>الاستخدام:</span> رفع تقرير شهري <code>/partner/reports/new</code> · استيراد كشف بنكي</div>
+  </div>
+
+  <!-- 4. OPTIMISTIC UI -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">٤ · Optimistic UI — متفائل</span>
+      <span class="case-label-code">Optimistic</span>
+    </div>
+    <div class="case-desc">يظهر النتيجة <strong>قبل تأكيد الخادم</strong>، ثمّ يثبّتها أو يتراجع. مثالي للرسائل، الإعجابات، تغيير الإعدادات الصغيرة.</div>
+    <div class="case-body">
+
+      <div class="opt-list">
+
+        <div class="opt-item confirmed">
+          <div class="opt-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="opt-text">رسالة شكر لكفيلك<small>وصلت إلى المراجعة بنجاح</small></div>
+          <span class="opt-action">مؤكَّد ✓</span>
+        </div>
+
+        <div class="opt-item pending">
+          <div class="opt-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="opt-text">تحديث صورة الملف الشخصي<small>يظهر فوراً، جارٍ التأكيد في الخلفية...</small></div>
+          <span class="opt-action">جارٍ المزامنة</span>
+        </div>
+
+        <div class="opt-item failed">
+          <div class="opt-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          <div class="opt-text">تعديل رقم الهاتف<small>فشل الحفظ ـ تراجع تلقائياً للقيمة السابقة</small></div>
+          <button class="opt-action" style="background: transparent; border: none; cursor: pointer; padding: 0; font-family: inherit; font-weight: 500; text-decoration: underline;">إعادة المحاولة</button>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 8px; padding: 12px 14px; background: var(--warning-50); border: 1px solid #FEF3C7; border-radius: var(--radius-lg); font-size: 12px; color: var(--gray-700); line-height: 1.65;">
+        <strong style="color: var(--warning-700);">قاعدة الاستخدام:</strong> لا تستخدم Optimistic UI للعمليّات المالية أو التي لا يمكن التراجع عنها بسهولة. مناسب فقط لما يقبل التراجع البصري.
+      </div>
+
+    </div>
+    <div class="usage"><span>الاستخدام:</span> رسائل، تعليقات، toggle settings · <code>mutate()</code> في SWR</div>
+  </div>
+
+</div>
+
+</body>
+</html>

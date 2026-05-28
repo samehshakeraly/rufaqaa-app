@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كيف نعمل — رفقاء</title>
+<meta name="description" content="رفقاء من الداخل: كيف تكفل، كيف يُسجَّل اليتيم، كيف ينضمّ الشريك، وأين يذهب كلّ ريال. شرح خطوة بخطوة بدون مصطلحات.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKENS — نظام تصميم رفقاء v0.1
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --snow-50: #FDFEFE;
+  --snow-100: #F7FBFC;
+  --snow-200: #EEF5F8;
+  --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7;
+  --tranquil-200: #D6E6F2;
+  --tranquil-300: #C2D8EC;
+  --tranquil-400: #ADCBE5;
+  --sky-100: #C9DDED;
+  --sky-200: #B9D7EA;
+  --sky-300: #9CC3DE;
+  --sky-400: #7FAFD1;
+  --trust-100: #B8CFE3;
+  --trust-200: #97B7D6;
+  --trust-300: #769FCD;
+  --trust-400: #5B85B8;
+  --trust-500: #426D9F;
+  --trust-600: #2D5683;
+  --trust-700: #1E4068;
+  --trust-800: #142E4D;
+  --trust-900: #0B1E33;
+
+  --gray-50: #FAFBFC;
+  --gray-100: #F4F6F8;
+  --gray-200: #E7EBEF;
+  --gray-300: #D2D8DF;
+  --gray-400: #A8B2BC;
+  --gray-500: #7A8590;
+  --gray-600: #5A636E;
+  --gray-700: #3F4750;
+  --gray-800: #2A3038;
+  --gray-900: #161A1F;
+
+  --success-50: #ECFDF5;
+  --success-100: #D1FAE5;
+  --success-500: #10B981;
+  --success-700: #047857;
+
+  --warning-50: #FFFBEB;
+  --warning-100: #FEF3C7;
+  --warning-700: #B45309;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11,30,51,.04);
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--gray-900);
+  background: var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.latin, .num { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; font-feature-settings: "tnum" 1; }
+
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--trust-600);
+  font-weight: 500;
+  padding: 5px 14px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-full);
+}
+
+.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success-500); }
+
+.section-title {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.25;
+}
+
+.section-lede {
+  font-size: 16px;
+  color: var(--gray-600);
+  line-height: 1.85;
+  max-width: 720px;
+}
+
+.section-head-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+}
+
+.section-head-center .section-lede { margin-inline: auto; }
+
+.icon {
+  width: 20px; height: 20px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 28px; height: 28px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV
+   ═══════════════════════════════════════════════════════════════ */
+.nav {
+  background: rgba(247, 251, 252, 0.88);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--sky-200);
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+
+.brand-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+  box-shadow: 0 2px 6px rgba(66, 109, 159, .25);
+}
+
+.brand-text h1 { font-size: 17px; font-weight: 600; color: var(--gray-900); line-height: 1.15; letter-spacing: -.01em; }
+.brand-text p { font-size: 11.5px; color: var(--gray-500); font-weight: 500; letter-spacing: .02em; }
+
+.nav-links { display: flex; align-items: center; gap: 4px; }
+
+.nav-link {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+}
+
+.nav-link:hover { background: var(--tranquil-100); color: var(--trust-600); }
+.nav-link.active { background: var(--tranquil-100); color: var(--trust-600); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.btn-ghost { color: var(--gray-700); }
+.btn-ghost:hover { background: var(--tranquil-100); color: var(--trust-600); }
+
+.btn-secondary { background: white; color: var(--trust-600); border-color: var(--sky-300); }
+.btn-secondary:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  color: white;
+  border-color: var(--trust-500);
+  box-shadow: 0 2px 6px rgba(66, 109, 159, .18);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  box-shadow: 0 4px 10px rgba(66, 109, 159, .28);
+  transform: translateY(-1px);
+}
+
+.btn-lg { padding: 14px 26px; font-size: 15.5px; border-radius: var(--radius-lg); }
+.btn-xl { padding: 16px 32px; font-size: 16px; border-radius: var(--radius-lg); }
+
+@media (max-width: 900px) { .nav-links { display: none; } }
+@media (max-width: 540px) {
+  .brand-text p { display: none; }
+  .nav { padding: 12px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 72px 0 56px;
+  background:
+    radial-gradient(circle at 88% 0%, rgba(118,159,205,.16) 0%, transparent 45%),
+    radial-gradient(circle at 0% 95%, rgba(185,215,234,.22) 0%, transparent 50%),
+    linear-gradient(180deg, var(--snow-100) 0%, var(--snow-200) 100%);
+  border-bottom: 1px solid var(--sky-200);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(118,159,205,.10) 1px, transparent 0);
+  background-size: 22px 22px;
+  opacity: .55;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%);
+}
+
+.hero-inner {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 50px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.025em;
+  line-height: 1.2;
+}
+
+.hero-title .accent {
+  background: linear-gradient(180deg, transparent 62%, var(--tranquil-200) 62%, var(--tranquil-200) 92%, transparent 92%);
+  padding: 0 6px;
+  color: var(--trust-700);
+}
+
+.hero-sub {
+  font-size: 17.5px;
+  color: var(--gray-600);
+  line-height: 1.85;
+  max-width: 640px;
+}
+
+/* Role pills - jump nav */
+.role-jump {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 8px;
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.role-pill:hover {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+}
+
+.role-pill svg { color: var(--trust-400); }
+.role-pill:hover svg { color: var(--trust-600); }
+
+@media (max-width: 760px) {
+  .hero { padding: 56px 0 44px; }
+  .hero-title { font-size: 36px; }
+  .role-jump { flex-direction: column; border-radius: var(--radius-xl); }
+  .role-pill { justify-content: center; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AUDIENCE SECTION
+   ═══════════════════════════════════════════════════════════════ */
+.audience {
+  padding: 88px 0;
+  background: var(--snow-100);
+  position: relative;
+}
+
+.audience-alt {
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.audience-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: flex-end;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+@media (max-width: 760px) {
+  .audience-head { grid-template-columns: 1fr; gap: 14px; }
+}
+
+.audience-mark {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--tranquil-200) 0%, var(--sky-200) 100%);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.audience-mark.donor { background: linear-gradient(135deg, var(--tranquil-200) 0%, var(--sky-200) 100%); color: var(--trust-700); }
+.audience-mark.orphan { background: linear-gradient(135deg, var(--success-50) 0%, var(--success-100) 100%); color: var(--success-700); }
+.audience-mark.partner { background: linear-gradient(135deg, var(--snow-300) 0%, var(--tranquil-300) 100%); color: var(--trust-700); }
+
+.audience-info { min-width: 0; }
+
+.audience-eyebrow {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--trust-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.audience-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.audience-sub {
+  font-size: 15px;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+.audience-meta {
+  font-size: 13px;
+  color: var(--gray-500);
+  text-align: end;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (max-width: 760px) { .audience-meta { text-align: start; } }
+
+.audience-meta strong {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: block;
+}
+
+/* ─── Timeline ─── */
+.tl {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-inline-end: 24px;
+}
+
+.tl::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  inset-inline-end: 32px;
+  width: 2px;
+  background-image: linear-gradient(to bottom, var(--sky-300) 50%, transparent 0%);
+  background-size: 2px 8px;
+  background-repeat: repeat-y;
+}
+
+.tl-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.tl-step-num {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--trust-600);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(118,159,205,.12);
+}
+
+.audience-orphan .tl-step-num { border-color: var(--success-100); color: var(--success-700); }
+.audience-partner .tl-step-num { border-color: var(--tranquil-300); color: var(--trust-700); }
+
+.tl-step-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+  transition: var(--transition);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: center;
+}
+
+.tl-step:hover .tl-step-card {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateX(-4px);
+}
+
+.audience-alt .tl-step-card { background: var(--snow-100); }
+
+.tl-step-body { min-width: 0; }
+
+.tl-step-title {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tl-step-title .micro-chip {
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  border: 1px solid var(--sky-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.tl-step-title .micro-chip.duration {
+  background: var(--success-50);
+  color: var(--success-700);
+  border-color: var(--success-100);
+}
+
+.tl-step-title .micro-chip.optional {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border-color: var(--warning-100);
+}
+
+.tl-step-desc {
+  font-size: 14.5px;
+  color: var(--gray-600);
+  line-height: 1.8;
+}
+
+.tl-step-desc strong { color: var(--gray-900); font-weight: 600; }
+
+.tl-step-aside {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  flex-shrink: 0;
+}
+
+.audience-orphan .tl-step-aside { background: var(--success-50); color: var(--success-700); }
+.audience-partner .tl-step-aside { background: var(--snow-300); color: var(--trust-700); }
+
+@media (max-width: 600px) {
+  .tl { padding-inline-end: 0; }
+  .tl::before { inset-inline-end: 24px; }
+  .tl-step { grid-template-columns: 48px 1fr; gap: 12px; }
+  .tl-step-num { width: 48px; height: 48px; font-size: 18px; }
+  .tl-step-card { grid-template-columns: 1fr; }
+  .tl-step-aside { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MONEY FLOW DIAGRAM
+   ═══════════════════════════════════════════════════════════════ */
+.flow {
+  padding: 96px 0;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(118,159,205,.10) 0%, transparent 50%),
+    linear-gradient(180deg, var(--snow-100) 0%, var(--snow-200) 100%);
+}
+
+.flow-diagram {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 40px 32px 32px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.flow-row {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 980px) {
+  .flow-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.flow-node {
+  grid-column: span 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.flow-node-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(160deg, var(--tranquil-100) 0%, white 100%);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-600);
+  position: relative;
+  z-index: 1;
+}
+
+.flow-node.center .flow-node-icon {
+  width: 96px;
+  height: 96px;
+  background: linear-gradient(160deg, var(--trust-400) 0%, var(--trust-600) 100%);
+  border-color: var(--trust-500);
+  color: white;
+  box-shadow: 0 8px 20px rgba(66, 109, 159, .25);
+}
+
+.flow-node.orphan-node .flow-node-icon {
+  background: linear-gradient(160deg, var(--success-50) 0%, white 100%);
+  border-color: var(--success-100);
+  color: var(--success-700);
+}
+
+.flow-node-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-top: 4px;
+}
+
+.flow-node-sub {
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+.flow-arrow {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--trust-400);
+  position: relative;
+}
+
+.flow-arrow-line {
+  width: 100%;
+  height: 2px;
+  background-image: linear-gradient(to left, var(--trust-300) 50%, transparent 0%);
+  background-size: 8px 2px;
+  position: relative;
+}
+
+.flow-arrow-line::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-inline-start: 2px solid var(--trust-400);
+  border-bottom: 2px solid var(--trust-400);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.flow-arrow-label {
+  font-size: 11px;
+  color: var(--trust-500);
+  background: white;
+  border: 1px solid var(--sky-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+@media (max-width: 980px) {
+  .flow-arrow {
+    flex-direction: row;
+    justify-content: center;
+    transform: rotate(90deg);
+    width: 100px;
+    margin: 0 auto;
+  }
+  .flow-arrow-line { width: 60px; }
+}
+
+/* Flow notes (bottom strip) */
+.flow-notes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--gray-300);
+  margin-top: 12px;
+}
+
+@media (max-width: 860px) { .flow-notes { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .flow-notes { grid-template-columns: 1fr; } }
+
+.flow-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.65;
+}
+
+.flow-note-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.flow-note strong {
+  display: block;
+  color: var(--gray-900);
+  font-weight: 600;
+  font-size: 13.5px;
+  margin-bottom: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECURITY STRIP
+   ═══════════════════════════════════════════════════════════════ */
+.security {
+  padding: 88px 0;
+  background: white;
+}
+
+.sec-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 980px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .sec-grid { grid-template-columns: 1fr; } }
+
+.sec-card {
+  background: var(--snow-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: var(--transition);
+}
+
+.sec-card:hover {
+  border-color: var(--sky-300);
+  background: white;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.sec-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sec-card:nth-child(1) .sec-icon { background: var(--tranquil-200); color: var(--trust-600); }
+.sec-card:nth-child(2) .sec-icon { background: var(--success-50); color: var(--success-700); }
+.sec-card:nth-child(3) .sec-icon { background: var(--warning-50); color: var(--warning-700); }
+.sec-card:nth-child(4) .sec-icon { background: var(--snow-300); color: var(--trust-700); }
+
+.sec-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.sec-card-desc {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-top: -4px;
+}
+
+.sec-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.sec-card:nth-child(1) .sec-card-chip { background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); }
+.sec-card:nth-child(2) .sec-card-chip { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.sec-card:nth-child(3) .sec-card-chip { background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); }
+.sec-card:nth-child(4) .sec-card-chip { background: var(--snow-200); color: var(--trust-700); border: 1px solid var(--sky-200); }
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA
+   ═══════════════════════════════════════════════════════════════ */
+.cta {
+  padding: 96px 0;
+  background: linear-gradient(135deg, var(--trust-600) 0%, var(--trust-800) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.08) 1px, transparent 0);
+  background-size: 28px 28px;
+  opacity: .5;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 70%);
+}
+
+.cta::after {
+  content: '';
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(150,183,214,.25) 0%, transparent 70%);
+  top: -180px;
+  inset-inline-end: -120px;
+  pointer-events: none;
+}
+
+.cta-inner {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cta-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--tranquil-200);
+  font-weight: 500;
+  padding: 6px 14px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--radius-full);
+}
+
+.cta-title {
+  font-size: 38px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -.025em;
+  line-height: 1.3;
+}
+
+.cta-title .soft { color: var(--tranquil-200); }
+
+.cta-lede {
+  font-size: 16.5px;
+  color: rgba(255,255,255,.78);
+  line-height: 1.85;
+  max-width: 580px;
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.btn-light { background: white; color: var(--trust-700); border: 1px solid white; }
+.btn-light:hover { background: var(--tranquil-100); border-color: var(--tranquil-100); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+.btn-outline-light { background: rgba(255,255,255,.08); color: white; border: 1px solid rgba(255,255,255,.35); }
+.btn-outline-light:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.55); }
+
+@media (max-width: 540px) {
+  .cta { padding: 64px 0; }
+  .cta-title { font-size: 28px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+.footer {
+  background: var(--gray-900);
+  color: var(--gray-300);
+  padding: 64px 0 28px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+@media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
+
+.footer-brand { display: flex; flex-direction: column; gap: 14px; }
+.footer-brand-row { display: flex; align-items: center; gap: 12px; }
+
+.footer-brand-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 20px;
+}
+
+.footer-brand-name { font-size: 17px; font-weight: 600; color: white; }
+.footer-brand-desc { font-size: 13.5px; color: var(--gray-400); line-height: 1.75; max-width: 320px; }
+
+.footer-social { display: flex; gap: 8px; margin-top: 8px; }
+
+.footer-social a {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gray-300);
+  transition: var(--transition);
+}
+
+.footer-social a:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-400);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.footer-col h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+.footer-col a {
+  font-size: 13.5px;
+  color: var(--gray-400);
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-col a:hover { color: white; }
+
+.footer-col .badge {
+  font-size: 10px;
+  background: var(--success-500);
+  color: white;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-family: 'IBM Plex Sans', sans-serif;
+  margin-inline-start: 4px;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+
+.footer-bottom .license { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.footer-bottom .license code {
+  background: rgba(255,255,255,.06);
+  color: var(--gray-300);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+}
+
+.footer-bottom .made-with { color: var(--gray-400); }
+.footer-bottom .made-with .heart { color: var(--trust-300); }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NAV
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="nav" role="banner">
+  <div class="nav-inner">
+
+    <a class="brand" href="#" aria-label="رفقاء — الصفحة الرئيسية">
+      <span class="brand-mark" aria-hidden="true">ر</span>
+      <div class="brand-text">
+        <h1>رفقاء</h1>
+        <p>وقف إلكتروني عالمي</p>
+      </div>
+    </a>
+
+    <nav class="nav-links" aria-label="التنقّل الرئيسي">
+      <a class="nav-link" href="#">الرئيسية</a>
+      <a class="nav-link active" href="#" aria-current="page">كيف نعمل</a>
+      <a class="nav-link" href="#">الشفافية</a>
+      <a class="nav-link" href="#">الشركاء</a>
+      <a class="nav-link" href="#">عن رفقاء</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a class="btn btn-ghost" href="#">دخول</a>
+      <a class="btn btn-primary" href="#">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        كن كفيلاً
+      </a>
+    </div>
+
+  </div>
+</header>
+
+<main role="main">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero-inner">
+
+      <span class="eyebrow">
+        <span class="dot" aria-hidden="true"></span>
+        كيف نعمل · شرح مفصّل
+      </span>
+
+      <h1 class="hero-title" id="hero-title">
+        رفقاء <span class="accent">من الداخل</span>
+      </h1>
+
+      <p class="hero-sub">
+        منصّة بسيطة من الخارج، ودقيقة في عملها. هنا نشرح خطوة بخطوة كيف تصل كفالتك إلى يتيمك ـ وكيف تتأكّد المنصّة من كلّ ريال وكلّ تقرير.
+      </p>
+
+      <div class="role-jump" role="navigation" aria-label="التنقّل بحسب الدور">
+        <a class="role-pill" href="#for-donors">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          للكفلاء
+        </a>
+        <a class="role-pill" href="#for-orphans">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/></svg>
+          للأيتام والأهل
+        </a>
+        <a class="role-pill" href="#for-partners">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg>
+          للجهات الشريكة
+        </a>
+        <a class="role-pill" href="#flow">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          إلى أين يذهب المال
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOR DONORS
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="audience audience-donor" id="for-donors" aria-labelledby="donor-title">
+    <div class="container">
+
+      <div class="audience-head">
+        <div class="audience-mark donor" aria-hidden="true">
+          <svg class="icon icon-xl" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="audience-info">
+          <div class="audience-eyebrow">المسار ١ من ٣</div>
+          <h2 class="audience-title" id="donor-title">للكفلاء — كيف تكفل يتيماً؟</h2>
+          <p class="audience-sub">
+            خمس خطوات تفصلك عن أن تكون رفيقاً ليتيم. أوّل ثلاث منها تأخذ دقائق، والباقي يستمرّ معك ما شاء الله.
+          </p>
+        </div>
+        <div class="audience-meta">
+          <strong><span class="latin">٥–١٠</span> دقائق</strong>
+          <span>للتسجيل والدفع الأوّل</span>
+        </div>
+      </div>
+
+      <div class="tl">
+
+        <div class="tl-step">
+          <div class="tl-step-num">١</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                تصفّح الأيتام المتاحين
+                <span class="micro-chip">بدون حساب</span>
+              </div>
+              <div class="tl-step-desc">
+                لا تحتاج تسجيلاً ولا بريداً ـ افتح صفحة <strong>«تصفّح الأيتام»</strong> وستجد ملفّات الأيتام المتاحين للكفالة الآن، مع <strong>عمر، بلد، حالة دراسيّة</strong>، ومبلغ الكفالة الشهري المقترح.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٢</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                اختر يتيماً يلامس قلبك
+                <span class="micro-chip duration">دقيقتان</span>
+              </div>
+              <div class="tl-step-desc">
+                لكلّ يتيم ملفّ يحوي قصّته ـ بدون صور شخصيّة ـ ليساعدك على اختيار من تربطك به قرابة قلبيّة. يمكنك أن تكفل يتيماً <strong>أو يتيمين أو أكثر</strong>، وفي بلدان مختلفة.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٣</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                ادفع بأمان عبر MyFatoorah
+                <span class="micro-chip">آلي · مؤمَّن</span>
+              </div>
+              <div class="tl-step-desc">
+                خيارات الدفع: <strong>بطاقة فيزا/ماستركارد، Apple Pay، K-NET، أو تحويل بنكي.</strong> كلّ معاملة مشفّرة من طرف إلى طرف، ويصلك إيصال PDF فوراً. الكفالة شهريّة تلقائية، ويمكنك إلغاؤها متى أردت.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٤</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                استلم تقارير شهرية موثَّقة
+                <span class="micro-chip">كلّ <span class="latin">٣٠</span> يوماً</span>
+              </div>
+              <div class="tl-step-desc">
+                كلّ شهر، يصلك تقرير معتمَد من الجهة الشريكة: <strong>الحالة الصحّية، الدراسة، أنشطة اليتيم</strong> ـ مع صور آمنة (وجوه ملطّخة) ووثائق رسميّة. يُراجَع التقرير قبل وصوله إليك.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٥</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                تواصل مع وليّ الأمر إن أردت
+                <span class="micro-chip optional">اختياري</span>
+              </div>
+              <div class="tl-step-desc">
+                يمكنك إرسال رسائل لوليّ أمر اليتيم عبر المنصّة ـ وكلّ رسالة <strong>تمرّ بمراجعة بشريّة</strong> قبل التسليم، لحماية الطرفين. لا يحصل وليّ الأمر على بياناتك، ولا أنت على بياناته الكاملة.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOR ORPHANS & GUARDIANS
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="audience audience-alt audience-orphan" id="for-orphans" aria-labelledby="orphan-title">
+    <div class="container">
+
+      <div class="audience-head">
+        <div class="audience-mark orphan" aria-hidden="true">
+          <svg class="icon icon-xl" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/></svg>
+        </div>
+        <div class="audience-info">
+          <div class="audience-eyebrow">المسار ٢ من ٣</div>
+          <h2 class="audience-title" id="orphan-title">للأيتام وأوليائهم — كيف يصل الدعم؟</h2>
+          <p class="audience-sub">
+            أنت أو يتيمك لا تتعامل مع المنصّة مباشرةً ـ كلّ شيء يمرّ عبر <strong>الجهة الخيريّة المعتمَدة</strong> في بلدك. هي وجهك إلينا.
+          </p>
+        </div>
+        <div class="audience-meta">
+          <strong><span class="latin">٧–١٤</span> يوماً</strong>
+          <span>من التسجيل حتى الكفالة</span>
+        </div>
+      </div>
+
+      <div class="tl">
+
+        <div class="tl-step">
+          <div class="tl-step-num">١</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                الجهة الشريكة تسجّل اليتيم
+                <span class="micro-chip">في بلده</span>
+              </div>
+              <div class="tl-step-desc">
+                توجّه نفسك أو وليّ الأمر إلى <strong>أقرب جهة شريكة معتمَدة</strong> ـ هي جمعيّة خيريّة مرخّصة محلّياً. يفتحون ملفّاً يحوي <strong>شهادة الميلاد، شهادة وفاة الأب، وثيقة المدرسة، وتقريراً اجتماعياً</strong>.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٢</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                يتمّ التحقّق من المستندات
+                <span class="micro-chip duration"><span class="latin">٢–٥</span> أيّام</span>
+              </div>
+              <div class="tl-step-desc">
+                يراجع <strong>مدير الجهة الشريكة</strong> الملفّ، ثمّ يعرضه على إدارة رفقاء للاعتماد. لا يُعرَض ملفّ اليتيم على الكفلاء قبل اكتمال التحقّق من المستندات والنظر في الحاجة الفعليّة.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٣</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                ربط اليتيم بكفيل عبر القنوات
+                <span class="micro-chip">آلي عند اختيار الكفيل</span>
+              </div>
+              <div class="tl-step-desc">
+                يظهر ملفّ اليتيم لكفيل محتمل ـ سواء عبر تصفّح مباشر أو حملة من <strong>قناة التسويق</strong>. حين يختاره الكفيل، يحدث الربط فوراً، ويبدأ عدّاد الكفالة.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="6" cy="12" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٤</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                استلام شهري من حساب الجهة الشريكة
+                <span class="micro-chip">شهري · يد بيد</span>
+              </div>
+              <div class="tl-step-desc">
+                تحوِّل رفقاء مجموع الكفالات إلى <strong>حساب الجهة الشريكة</strong> دفعةً واحدة كلّ شهر. ثمّ تسلّم الجهة لوليّ الأمر <strong>نقداً أو تحويلاً محلّياً</strong> بحسب لائحتها، ويوقَّع على إيصال.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٥</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                رفع تقارير دوريّة على المنصّة
+                <span class="micro-chip duration">كلّ شهر</span>
+              </div>
+              <div class="tl-step-desc">
+                يرفع <strong>موظّف الجهة الشريكة</strong> تقريراً شهرياً عن حالة اليتيم: حالة صحّية، دراسة، احتياجات استثنائيّة، صور (بضوابط خصوصيّة). تمرّ التقارير على المراجعة قبل وصولها للكفيل.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOR PARTNER ORGANIZATIONS
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="audience audience-partner" id="for-partners" aria-labelledby="partner-title">
+    <div class="container">
+
+      <div class="audience-head">
+        <div class="audience-mark partner" aria-hidden="true">
+          <svg class="icon icon-xl" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg>
+        </div>
+        <div class="audience-info">
+          <div class="audience-eyebrow">المسار ٣ من ٣</div>
+          <h2 class="audience-title" id="partner-title">للجهات الشريكة — كيف تنضمّ؟</h2>
+          <p class="audience-sub">
+            رفقاء لا تستطيع العمل بدونكم. الجهة الشريكة هي العين المحلّيّة، واليد التي تصل لليتيم. لكنّنا حذرون في الاختيار.
+          </p>
+        </div>
+        <div class="audience-meta">
+          <strong><span class="latin">٧–١٤</span> يوماً</strong>
+          <span>للمراجعة والاعتماد</span>
+        </div>
+      </div>
+
+      <div class="tl">
+
+        <div class="tl-step">
+          <div class="tl-step-num">١</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                تسجيل المؤسّسة
+                <span class="micro-chip">عبر النموذج</span>
+              </div>
+              <div class="tl-step-desc">
+                تملأ المؤسّسة نموذج طلب الشراكة، يحتوي على <strong>الاسم، البلد، الترخيص، عدد الأيتام المتوقّع، حسابات بنكيّة</strong>. تحميل نسخ المستندات إلكترونياً.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٢</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                اعتماد من إدارة رفقاء
+                <span class="micro-chip duration"><span class="latin">٧–١٤</span> يوماً</span>
+              </div>
+              <div class="tl-step-desc">
+                تراجع إدارة المنصّة المستندات بالتعاون مع <strong>جهة تدقيق مستقلّة في بلد المؤسّسة</strong>. تشمل المراجعة: صحّة الترخيص، تاريخ النشاط، ميزانيات السنوات الثلاث الأخيرة، وسمعة المؤسّسة في مجتمعها.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٣</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                تسجيل الأيتام في المنصّة
+                <span class="micro-chip">بحساب الموظّف</span>
+              </div>
+              <div class="tl-step-desc">
+                تحصل المؤسّسة على <strong>حسابات لمدير وموظّفين</strong>. يبدأ الموظّفون بتسجيل الأيتام عبر شاشة «تسجيل يتيم جديد»: ملفّ كامل + مستندات. يُرفع لاعتماد المدير ثمّ لإدراج اليتيم على لائحة الكفالة.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٤</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                استلام التحويلات الشهريّة
+                <span class="micro-chip">دفعة واحدة شهرياً</span>
+              </div>
+              <div class="tl-step-desc">
+                تستلم المؤسّسة <strong>تحويلاً بنكياً موحّداً</strong> لجميع الأيتام المكفولين عندها في الشهر السابق. مرفق بالتحويل: <strong>كشف Excel</strong> يحوي اسم اليتيم، مبلغه، والكفيل (بدون بيانات اتّصال).
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-step-num">٥</div>
+          <div class="tl-step-card">
+            <div class="tl-step-body">
+              <div class="tl-step-title">
+                توزيع المبالغ على الأيتام
+                <span class="micro-chip duration">خلال ١٠ أيام</span>
+              </div>
+              <div class="tl-step-desc">
+                توزّع المؤسّسة المبالغ على أولياء الأمور حسب لائحتها، وتحصل على <strong>توقيع استلام موثّق</strong>. ثمّ يرفع الموظّف على المنصّة: <strong>إيصال الاستلام + تقرير شهري عن حالة كلّ يتيم</strong>.
+              </div>
+            </div>
+            <div class="tl-step-aside" aria-hidden="true">
+              <svg class="icon icon-lg" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MONEY FLOW DIAGRAM
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="flow" id="flow" aria-labelledby="flow-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">المسار المالي</span>
+        <h2 class="section-title" id="flow-title">إلى أين يذهب <span style="color: var(--trust-500);">كلّ ريال؟</span></h2>
+        <p class="section-lede">
+          خمس محطّات بين بطاقتك ويد يتيمك. كلّ محطّة موثّقة برقم تسلسلي، ومدقَّقة من جهة محايدة سنوياً.
+        </p>
+      </div>
+
+      <div class="flow-diagram">
+
+        <div class="flow-row">
+
+          <div class="flow-node">
+            <div class="flow-node-icon">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="flow-node-label">الكفيل</div>
+            <div class="flow-node-sub">يدفع شهرياً</div>
+          </div>
+
+          <div class="flow-arrow">
+            <div class="flow-arrow-label">١. خصم آمن</div>
+            <div class="flow-arrow-line"></div>
+          </div>
+
+          <div class="flow-node">
+            <div class="flow-node-icon">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div class="flow-node-label latin">MyFatoorah</div>
+            <div class="flow-node-sub">بوّابة دفع مرخّصة</div>
+          </div>
+
+          <div class="flow-arrow">
+            <div class="flow-arrow-label">٢. تجميع</div>
+            <div class="flow-arrow-line"></div>
+          </div>
+
+          <div class="flow-node center">
+            <div class="flow-node-icon">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 1.5;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="flow-node-label">رفقاء</div>
+            <div class="flow-node-sub">حساب وقف · يمرّ</div>
+          </div>
+
+          <div class="flow-arrow">
+            <div class="flow-arrow-label">٣. تحويل بنكي</div>
+            <div class="flow-arrow-line"></div>
+          </div>
+
+          <div class="flow-node">
+            <div class="flow-node-icon">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg>
+            </div>
+            <div class="flow-node-label">الجهة الشريكة</div>
+            <div class="flow-node-sub">مرخّصة محلّياً</div>
+          </div>
+
+          <div class="flow-arrow">
+            <div class="flow-arrow-label">٤. تسليم</div>
+            <div class="flow-arrow-line"></div>
+          </div>
+
+          <div class="flow-node orphan-node">
+            <div class="flow-node-icon">
+              <svg class="icon icon-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/></svg>
+            </div>
+            <div class="flow-node-label">اليتيم وأهله</div>
+            <div class="flow-node-sub">إيصال موقَّع</div>
+          </div>
+
+        </div>
+
+        <div class="flow-notes">
+
+          <div class="flow-note">
+            <div class="flow-note-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div>
+              <strong>تشفير TLS 1.3</strong>
+              لكلّ معاملة دفع، ولا تُخزَّن بيانات البطاقة عندنا أبداً.
+            </div>
+          </div>
+
+          <div class="flow-note">
+            <div class="flow-note-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <strong>مدّة العبور</strong>
+              <span class="latin">٢٤–٤٨</span> ساعة من الدفع حتى وصول المبلغ لحساب الجهة الشريكة شهرياً.
+            </div>
+          </div>
+
+          <div class="flow-note">
+            <div class="flow-note-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div>
+              <strong>مراجعة سنويّة</strong>
+              من مكتب محاسبة قانوني مستقلّ، تُنشر نتائجها على صفحة الشفافية.
+            </div>
+          </div>
+
+          <div class="flow-note">
+            <div class="flow-note-icon">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+            </div>
+            <div>
+              <strong>نسبة الوصول</strong>
+              <span class="latin">٩٥٪</span> من المبلغ يصل لليتيم مباشرة، <span class="latin">٣٪</span> تشغيل، <span class="latin">٢٪</span> احتياطي.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECURITY & TRUST
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="security" aria-labelledby="security-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">الأمان والثقة</span>
+        <h2 class="section-title" id="security-title">كيف نحمي <span style="color: var(--trust-500);">البيانات والأطفال؟</span></h2>
+        <p class="section-lede">
+          ليست مجرّد بنية تحتيّة آمنة ـ بل نهج كامل في تصميم المنصّة يضع كرامة الطفل قبل أيّ ميزة تسويقيّة.
+        </p>
+      </div>
+
+      <div class="sec-grid">
+
+        <article class="sec-card">
+          <div class="sec-icon">
+            <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="sec-card-title">تشفير كامل</h3>
+          <p class="sec-card-desc">
+            بيانات الدفع مشفّرة بـ <span class="latin mono">TLS 1.3</span>، وبيانات الأيتام مشفّرة في قاعدة البيانات بمفاتيح مدارة عبر <span class="latin mono">AWS KMS</span>.
+          </p>
+          <span class="sec-card-chip">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            معايير <span class="latin">PCI-DSS</span>
+          </span>
+        </article>
+
+        <article class="sec-card">
+          <div class="sec-icon">
+            <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 class="sec-card-title">حماية بيانات الأطفال</h3>
+          <p class="sec-card-desc">
+            لا أسماء عائلات كاملة، لا صور وجوه واضحة، ولا بيانات اتّصال خاصّة باليتيم متاحة للكفيل. مبدأ <strong>«أقلّ ما يلزم»</strong>.
+          </p>
+          <span class="sec-card-chip">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="latin">COPPA</span> + لائحة محلّيّة
+          </span>
+        </article>
+
+        <article class="sec-card">
+          <div class="sec-icon">
+            <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+          </div>
+          <h3 class="sec-card-title">مراجعة سنويّة</h3>
+          <p class="sec-card-desc">
+            مكتب محاسبة قانوني مستقلّ يدقّق الحسابات والعمليّات كلّ <span class="latin">١٢</span> شهراً، وتُنشر النتائج على صفحة <strong>الشفافية</strong> علناً.
+          </p>
+          <span class="sec-card-chip">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            تقرير <span class="latin">٢٠٢٥</span> منشور
+          </span>
+        </article>
+
+        <article class="sec-card">
+          <div class="sec-icon">
+            <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3 class="sec-card-title">فتح المصدر</h3>
+          <p class="sec-card-desc">
+            الكود كلّه على <span class="latin mono">GitHub</span> برخصة <span class="latin mono">MIT</span>. أيّ خبير أمن يستطيع مراجعة طريقة التشفير، التخزين، والتعامل مع البيانات بنفسه.
+          </p>
+          <span class="sec-card-chip">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            رخصة <span class="latin">MIT</span>
+          </span>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       CTA
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-inner">
+
+        <span class="cta-eyebrow">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          الآن وقد فهمت كيف نعمل
+        </span>
+
+        <h2 class="cta-title" id="cta-title">
+          خطوتك الأولى <span class="soft">على بعد دقيقتين.</span>
+        </h2>
+
+        <p class="cta-lede">
+          تصفّح ملفّات الأيتام المتاحين الآن، أو راسلنا إن كنت تمثّل جهةً تريد أن تنضمّ شريكاً.
+        </p>
+
+        <div class="cta-actions">
+          <a class="btn btn-light btn-xl" href="#">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            تصفّح الأيتام المتاحين
+          </a>
+          <a class="btn btn-outline-light btn-xl" href="#">
+            أنا جهة شريكة — نموذج الانضمام
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+
+    <div class="footer-grid">
+
+      <div class="footer-brand">
+        <div class="footer-brand-row">
+          <span class="footer-brand-mark" aria-hidden="true">ر</span>
+          <span class="footer-brand-name">رفقاء</span>
+        </div>
+        <p class="footer-brand-desc">
+          منصّة وقف إلكتروني عالمي، مفتوحة المصدر، تربط الكفلاء بالأيتام بشفافية كاملة وكرامة محفوظة.
+        </p>
+        <div class="footer-social">
+          <a href="https://github.com/samehshakeraly/rufaqaa-app" aria-label="GitHub" rel="noopener" target="_blank">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+          </a>
+          <a href="#" aria-label="WhatsApp">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a href="#" aria-label="X (Twitter)">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="mailto:hello@rufaqaa.app" aria-label="البريد الإلكتروني">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>المنصّة</h3>
+        <ul>
+          <li><a href="#">تصفّح الأيتام</a></li>
+          <li><a href="#">كن كفيلاً</a></li>
+          <li><a href="#">كيف نعمل</a></li>
+          <li><a href="#">للمؤسّسات</a></li>
+          <li><a href="#">سجّل الدخول</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>الثقة والشفافية</h3>
+        <ul>
+          <li><a href="#">الشفافية المالية</a></li>
+          <li><a href="#">التقارير السنوية</a></li>
+          <li><a href="#">الجهات الشريكة</a></li>
+          <li><a href="#">سياسة الخصوصية</a></li>
+          <li><a href="#">شروط الاستخدام</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3>المجتمع والكود</h3>
+        <ul>
+          <li>
+            <a href="https://github.com/samehshakeraly/rufaqaa-app" rel="noopener" target="_blank">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+              المستودع على GitHub
+              <span class="badge">مفتوح</span>
+            </a>
+          </li>
+          <li><a href="#">دليل المساهمة</a></li>
+          <li><a href="#">خارطة الطريق</a></li>
+          <li><a href="#">دفتر الإصدارات</a></li>
+          <li><a href="#">اتّصل بنا</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="license">
+        <span>© <span class="latin">٢٠٢٥</span> رفقاء — مرخّصة برخصة</span>
+        <code>MIT License</code>
+        <span>· يُسمح بالاستخدام والنسخ والتعديل بحرّية.</span>
+      </div>
+      <div class="made-with">
+        أحد مشاريع أوقاف <strong style="color: var(--gray-300); font-weight: 500;">سامح عبدالعزيز</strong> الإلكترونية
+        <span class="heart" aria-hidden="true">♥</span>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>

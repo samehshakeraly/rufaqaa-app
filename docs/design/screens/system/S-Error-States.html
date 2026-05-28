@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حالات الأخطاء — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-700: #B91C1C;
+  --info-50: #EFF6FF; --info-100: #DBEAFE; --info-700: #1D4ED8;
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 8px; }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+
+.showcase-head { background: white; border-bottom: 1px solid var(--sky-200); padding: 32px; }
+.showcase-head-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.showcase-title h1 { font-size: 22px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+.showcase-title p { font-size: 13.5px; color: var(--gray-500); }
+.brand-mini { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-600); }
+.brand-mini-mark { width: 28px; height: 28px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+.scope-pill { font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 4px 10px; background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); border-radius: var(--radius-full); }
+
+.showcase { max-width: 1200px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 860px) { .showcase { grid-template-columns: 1fr; padding: 20px; } }
+
+.case-frame { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm); }
+.case-label { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--snow-100); border-bottom: 1px solid var(--gray-200); }
+.case-label-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.case-label-code { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--trust-600); background: var(--tranquil-100); padding: 3px 9px; border-radius: var(--radius-full); font-weight: 600; border: 1px solid var(--sky-200); }
+
+.error { padding: 48px 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; min-height: 440px; justify-content: center; position: relative; overflow: hidden; }
+.error::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(118,159,205,.10) 1px, transparent 0); background-size: 22px 22px; opacity: .5; mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%); pointer-events: none; }
+
+.error-code { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 96px; font-weight: 700; line-height: 1; letter-spacing: -.04em; background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-800) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--trust-700); position: relative; margin-bottom: -4px; }
+.error.danger .error-code { background: linear-gradient(135deg, var(--warning-700) 0%, var(--danger-700) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.error.offline .error-code { background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-800) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+.error-art { width: 110px; height: 110px; margin-bottom: 6px; opacity: .9; }
+.error-art svg { width: 100%; height: 100%; }
+.error-title { font-size: 22px; font-weight: 600; color: var(--gray-900); letter-spacing: -.01em; position: relative; }
+.error-desc { font-size: 14.5px; color: var(--gray-600); line-height: 1.85; max-width: 400px; position: relative; }
+.error-desc strong { color: var(--gray-800); }
+.error-id { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--gray-500); background: var(--snow-100); border: 1px solid var(--gray-200); padding: 4px 10px; border-radius: var(--radius-full); position: relative; }
+
+.error-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; position: relative; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13.5px; font-weight: 500; padding: 10px 18px; border-radius: var(--radius-md); transition: var(--transition); border: 1px solid transparent; }
+.btn-primary { background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%); color: white; border-color: var(--trust-500); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%); transform: translateY(-1px); }
+.btn-secondary { background: white; color: var(--trust-600); border-color: var(--sky-300); }
+.btn-secondary:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+.btn-ghost { background: transparent; color: var(--gray-600); }
+.btn-ghost:hover { background: var(--gray-100); color: var(--gray-900); }
+
+.usage { padding: 14px 16px; background: var(--snow-100); border-top: 1px solid var(--gray-200); font-size: 11.5px; color: var(--gray-600); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.usage code { font-family: 'IBM Plex Mono', monospace; background: var(--tranquil-100); color: var(--trust-600); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+
+</style>
+</head>
+<body>
+
+<div class="showcase-head">
+  <div class="showcase-head-inner">
+    <div class="showcase-title">
+      <h1>حالات الأخطاء — Error States</h1>
+      <p>أربع شاشات نراها حين يسوء شيء · مرجع تصميم</p>
+    </div>
+    <div class="brand-mini">
+      <span class="brand-mini-mark">ر</span>
+      <span>رفقاء — نظام التصميم</span>
+      <span class="scope-pill">S-05 → S-08</span>
+    </div>
+  </div>
+</div>
+
+<div class="showcase">
+
+  <!-- S-05 — 404 -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-05 · الصفحة غير موجودة</span>
+      <span class="case-label-code">HTTP 404</span>
+    </div>
+    <div class="error">
+      <div class="error-code latin">404</div>
+      <div class="error-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g04" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D6E6F2"/><stop offset="100%" stop-color="#B9D7EA"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="60" fill="url(#g04)" opacity=".5"/>
+          <circle cx="85" cy="92" r="22" fill="none" stroke="#769FCD" stroke-width="3"/>
+          <line x1="103" y1="108" x2="120" y2="125" stroke="#769FCD" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 75 90 Q 85 80, 95 90" fill="none" stroke="#769FCD" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="error-title">الصفحة التي تبحث عنها غير موجودة</h2>
+      <p class="error-desc">قد يكون الرابط <strong>قديماً</strong> أو فيه خطأ. لا تقلق ـ كلّ ما تحتاجه ما زال في مكانه على رفقاء.</p>
+      <span class="error-id">المسار المطلوب: <span class="latin">/donor/orphan/UNKNOWN-CODE</span></span>
+      <div class="error-actions">
+        <a class="btn btn-primary" href="#"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> الذهاب للرئيسية</a>
+        <a class="btn btn-secondary" href="#"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> رجوع</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>404 Not Found</code> · ملاذ آمن من الأخطاء التوجيهية</div>
+  </div>
+
+  <!-- S-06 — 403 -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-06 · ممنوع الوصول</span>
+      <span class="case-label-code">HTTP 403</span>
+    </div>
+    <div class="error danger">
+      <div class="error-code latin">403</div>
+      <div class="error-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g03" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FEF3C7"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="60" fill="url(#g03)" opacity=".4"/>
+          <rect x="70" y="92" width="60" height="50" rx="6" fill="white" stroke="#B45309" stroke-width="2.5"/>
+          <path d="M 78 92 L 78 78 Q 78 64, 100 64 Q 122 64, 122 78 L 122 92" fill="none" stroke="#B45309" stroke-width="2.5"/>
+          <circle cx="100" cy="115" r="5" fill="#B45309"/>
+          <line x1="100" y1="120" x2="100" y2="130" stroke="#B45309" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="error-title">ليس لديك صلاحية الوصول لهذه الصفحة</h2>
+      <p class="error-desc">حسابك يعمل بشكل سليم، لكن هذه الصفحة <strong>مخصّصة لدور آخر</strong>. لو تعتقد أنّ هذا خطأ ـ راسل مدير مؤسّستك.</p>
+      <span class="error-id">دورك الحالي: <span class="latin">DonorRole</span> · المطلوب: <span class="latin">OrgAdmin</span></span>
+      <div class="error-actions">
+        <a class="btn btn-primary" href="#">رجوع للوحتي</a>
+        <a class="btn btn-ghost" href="#">راسل المدير</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>403 Forbidden</code> · حين الدور لا يملك صلاحية الـ resource</div>
+  </div>
+
+  <!-- S-07 — 500 -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-07 · خطأ غير متوقّع</span>
+      <span class="case-label-code">HTTP 500</span>
+    </div>
+    <div class="error danger">
+      <div class="error-code latin">500</div>
+      <div class="error-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="g05" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FEE2E2"/><stop offset="100%" stop-color="#FCA5A5"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="62" fill="url(#g05)" opacity=".5"/>
+          <path d="M 100 60 L 145 130 L 55 130 Z" fill="white" stroke="#B91C1C" stroke-width="2.5" stroke-linejoin="round"/>
+          <line x1="100" y1="85" x2="100" y2="108" stroke="#B91C1C" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="100" cy="120" r="2.5" fill="#B91C1C"/>
+        </svg>
+      </div>
+      <h2 class="error-title">حدث خطأ غير متوقّع من جانبنا</h2>
+      <p class="error-desc">سُجّل الخطأ تلقائياً عندنا، وفريقنا يعمل عليه. <strong>لم يخسر شيء من بياناتك</strong> ـ غالباً يحتاج فقط تحديث الصفحة.</p>
+      <span class="error-id">مرجع الخطأ: <span class="latin mono">ERR-X3F7-2B91-A4E2</span></span>
+      <div class="error-actions">
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> تحديث الصفحة</button>
+        <a class="btn btn-secondary" href="#">الرئيسية</a>
+        <a class="btn btn-ghost" href="#">أبلغ عن المشكلة</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>500 Internal Server Error</code> · يظهر رقم مرجعي لتسهيل الدعم</div>
+  </div>
+
+  <!-- S-08 — Connection Lost -->
+  <div class="case-frame">
+    <div class="case-label">
+      <span class="case-label-name">S-08 · انقطاع الاتّصال</span>
+      <span class="case-label-code">Network Offline</span>
+    </div>
+    <div class="error offline">
+      <div class="error-code latin" style="font-size: 56px;">⚡</div>
+      <div class="error-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="60" fill="#F4F6F8"/>
+          <path d="M 100 70 C 90 70, 80 75, 75 85" stroke="#7A8590" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 6"/>
+          <path d="M 100 70 C 110 70, 120 75, 125 85" stroke="#7A8590" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 6"/>
+          <path d="M 100 85 C 92 85, 86 88, 84 95" stroke="#7A8590" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 6"/>
+          <path d="M 100 85 C 108 85, 114 88, 116 95" stroke="#7A8590" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 6"/>
+          <circle cx="100" cy="110" r="6" fill="#5A636E"/>
+          <line x1="65" y1="65" x2="135" y2="135" stroke="#B91C1C" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="error-title">انقطع الاتّصال بالإنترنت</h2>
+      <p class="error-desc">تحقّق من اتّصالك ـ <strong>WiFi، الإنترنت من المحمول، أو الكابل</strong>. سنحاول الاتّصال تلقائياً.</p>
+      <span class="error-id" style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--gray-400); animation: blink 1.5s infinite;"></span>جارٍ إعادة المحاولة كلّ <span class="latin">٥</span> ثوانٍ...</span>
+      <div class="error-actions">
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> أعد المحاولة الآن</button>
+        <a class="btn btn-ghost" href="#">العمل بدون اتّصال</a>
+      </div>
+    </div>
+    <div class="usage"><span>الاستخدام:</span> <code>navigator.onLine === false</code> · حالة Service Worker</div>
+  </div>
+
+</div>
+
+<style>
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رسالة شكر لكفيلي — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06); --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 4px rgba(118,159,205,.30);
+  --transition: 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 17px; line-height: 1.7; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 12px; }
+.icon { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 16px; height: 16px; }
+.icon-lg { width: 28px; height: 28px; }
+
+/* HEADER */
+.header { background: white; border-bottom: 2px solid var(--sky-200); padding: 16px 32px; position: sticky; top: 0; z-index: 50; }
+.header-inner { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
+.back-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--gray-100); color: var(--gray-700); border: 2px solid var(--gray-200); border-radius: 12px; font-size: 15px; font-weight: 600; transition: var(--transition); }
+.back-btn:hover { background: var(--snow-200); border-color: var(--sky-300); color: var(--trust-600); }
+.header-title { font-size: 18px; font-weight: 600; color: var(--gray-900); flex: 1; text-align: center; }
+.header-spacer { width: 96px; }
+@media (max-width: 540px) { .header { padding: 14px 16px; } .header-spacer { display: none; } .back-btn span { display: none; } .back-btn { padding: 10px; width: 44px; height: 44px; justify-content: center; } }
+
+/* PAGE */
+.page { max-width: 760px; margin: 0 auto; padding: 32px 32px 64px; }
+@media (max-width: 540px) { .page { padding: 24px 16px 48px; } }
+
+/* INTRO */
+.intro { display: flex; align-items: center; gap: 18px; margin-bottom: 24px; }
+.intro-emoji { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, var(--tranquil-200) 0%, var(--sky-200) 100%); display: flex; align-items: center; justify-content: center; font-size: 38px; flex-shrink: 0; }
+.intro-text h1 { font-size: 28px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; margin-bottom: 4px; }
+.intro-text p { font-size: 15.5px; color: var(--gray-600); }
+@media (max-width: 540px) {
+  .intro-emoji { width: 60px; height: 60px; font-size: 30px; border-radius: 16px; }
+  .intro-text h1 { font-size: 22px; }
+}
+
+/* COMPOSE CARD */
+.compose-card { background: white; border: 1.5px solid var(--sky-200); border-radius: 20px; padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+.compose-label { font-size: 17px; font-weight: 600; color: var(--gray-900); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.compose-counter { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: var(--gray-500); font-weight: 500; background: var(--gray-100); padding: 4px 10px; border-radius: 999px; }
+.compose-counter.warn { background: var(--warning-50); color: var(--warning-700); }
+.compose-textarea { width: 100%; min-height: 220px; background: var(--snow-100); border: 2px solid var(--gray-200); border-radius: 16px; padding: 20px 22px; font-family: inherit; font-size: 17px; line-height: 1.85; color: var(--gray-900); resize: vertical; transition: var(--transition); }
+.compose-textarea:focus { outline: none; border-color: var(--trust-400); background: white; box-shadow: var(--shadow-focus); }
+.compose-textarea::placeholder { color: var(--gray-400); }
+
+.compose-tools { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.tool-btn { width: 44px; height: 44px; background: var(--snow-200); border: 1.5px solid var(--gray-200); border-radius: 12px; color: var(--gray-700); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+.tool-btn:hover { background: white; border-color: var(--trust-300); color: var(--trust-600); transform: translateY(-1px); }
+.tool-btn.active { background: var(--tranquil-100); border-color: var(--trust-300); color: var(--trust-600); }
+
+/* SUGGESTIONS */
+.suggestions { background: var(--tranquil-100); border: 1.5px solid var(--sky-200); border-radius: 20px; padding: 22px 24px; margin-bottom: 24px; }
+.sug-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 16px; font-weight: 600; color: var(--trust-700); }
+.sug-head svg { color: var(--trust-500); }
+.sug-list { display: flex; flex-direction: column; gap: 10px; }
+.sug-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: white; border: 1.5px solid var(--sky-200); border-radius: 14px; cursor: pointer; transition: var(--transition); text-align: start; font-size: 16px; color: var(--gray-800); line-height: 1.65; width: 100%; }
+.sug-item:hover { border-color: var(--trust-300); background: var(--snow-100); transform: translateX(-3px); }
+.sug-bullet { color: var(--trust-500); font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+
+/* WARNING */
+.warning { background: var(--warning-50); border: 1.5px solid var(--warning-100); border-radius: 16px; padding: 18px 20px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 14px; }
+.warning-icon { width: 40px; height: 40px; border-radius: 50%; background: white; color: var(--warning-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.warning-text { font-size: 15px; color: var(--gray-800); line-height: 1.7; }
+.warning-text strong { color: var(--warning-700); font-weight: 600; display: block; margin-bottom: 2px; }
+
+/* ACTIONS */
+.actions { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+@media (max-width: 480px) { .actions { grid-template-columns: 1fr; } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit; font-size: 17px; font-weight: 600; padding: 18px 28px; border-radius: 14px; transition: var(--transition); border: 2px solid transparent; cursor: pointer; height: 64px; }
+.btn-primary { background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%); color: white; border-color: var(--trust-500); box-shadow: 0 4px 12px rgba(66,109,159,.25); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(66,109,159,.35); }
+.btn-secondary { background: white; color: var(--gray-700); border-color: var(--gray-200); }
+.btn-secondary:hover { background: var(--gray-100); border-color: var(--gray-300); }
+
+/* DO/DONT TIPS */
+.tips { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+@media (max-width: 540px) { .tips { grid-template-columns: 1fr; } }
+.tip { background: white; border: 1.5px solid var(--gray-200); border-radius: 14px; padding: 16px 18px; }
+.tip-head { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.tip.do .tip-head { color: var(--success-700); }
+.tip.dont .tip-head { color: var(--warning-700); }
+.tip.do .tip-head-icon { background: var(--success-50); color: var(--success-700); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.tip.dont .tip-head-icon { background: var(--warning-50); color: var(--warning-700); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.tip-list { font-size: 13.5px; color: var(--gray-600); line-height: 1.85; }
+.tip-list li { padding: 3px 0; list-style: none; padding-inline-start: 16px; position: relative; }
+.tip-list li::before { content: ''; position: absolute; right: 0; top: 11px; width: 5px; height: 5px; border-radius: 50%; background: var(--gray-400); }
+
+</style>
+</head>
+<body>
+
+<header class="header" role="banner">
+  <div class="header-inner">
+    <a class="back-btn" href="#">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <span>رجوع</span>
+    </a>
+    <h1 class="header-title">رسالة شكر لكفيلي 💌</h1>
+    <div class="header-spacer"></div>
+  </div>
+</header>
+
+<main class="page" role="main">
+
+  <div class="intro">
+    <div class="intro-emoji" aria-hidden="true">💌</div>
+    <div class="intro-text">
+      <h1>اكتب من قلبك</h1>
+      <p>أيّ شيء تريد قوله لكفيلك ـ شكراً، دعاءً، إنجازاً جديداً، أو حتى سؤالاً.</p>
+    </div>
+  </div>
+
+  <form>
+
+    <!-- COMPOSE -->
+    <div class="compose-card">
+      <div class="compose-label">
+        <span>ماذا تريد أن تقول؟</span>
+        <span class="compose-counter"><span class="latin">128</span> / <span class="latin">500</span></span>
+      </div>
+
+      <textarea class="compose-textarea" placeholder="مثال: شكراً لك على كلّ شيء، أدعو الله أن يجزيك خير الجزاء، وأن يحفظك ويبارك في عمرك...">السلام عليكم،
+
+شكراً لك على دعمك المستمرّ. أنا الآن أحفظ سورة آل عمران، وحصلت على المركز الأوّل في مسابقة القرآن بالمدرسة.
+
+أدعو الله أن يبارك فيك ويسعدك.</textarea>
+
+      <div class="compose-tools">
+        <button class="tool-btn" type="button" aria-label="إضافة قلب"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="tool-btn" type="button" aria-label="إضافة نجمة"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></button>
+        <button class="tool-btn active" type="button" aria-label="إضافة إيموجي">😊</button>
+        <button class="tool-btn" type="button" aria-label="رسم"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></button>
+      </div>
+    </div>
+
+    <!-- SUGGESTIONS -->
+    <div class="suggestions">
+      <div class="sug-head">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        لا تعرف ماذا تكتب؟ جرّب إحدى هذه:
+      </div>
+      <div class="sug-list">
+        <button class="sug-item" type="button">
+          <span class="sug-bullet" aria-hidden="true">•</span>
+          <span>شكراً لك على دعمك ـ أنا ممتنّ لكلّ ما تفعله.</span>
+        </button>
+        <button class="sug-item" type="button">
+          <span class="sug-bullet" aria-hidden="true">•</span>
+          <span>أدعو الله أن يبارك فيك وفي أهلك وأن يطيل عمرك.</span>
+        </button>
+        <button class="sug-item" type="button">
+          <span class="sug-bullet" aria-hidden="true">•</span>
+          <span>أشاركك إنجازي الجديد ـ حفظت سورة كاملة من القرآن الكريم.</span>
+        </button>
+        <button class="sug-item" type="button">
+          <span class="sug-bullet" aria-hidden="true">•</span>
+          <span>أحبّك في الله ـ ولا أنسى دعاءك في صلواتي.</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- WARNING / GUIDANCE -->
+    <div class="warning">
+      <div class="warning-icon">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+      </div>
+      <div class="warning-text">
+        <strong>قبل الإرسال ـ مهمّ تعرف:</strong>
+        ستراجع رسالتك من المنصّة أوّلاً (لحمايتك)، ثمّ تصل إلى كفيلك. قد يأخذ هذا <strong>يوماً واحداً</strong>.
+      </div>
+    </div>
+
+    <!-- DO / DONT TIPS -->
+    <div class="tips">
+      <div class="tip do">
+        <div class="tip-head">
+          <span class="tip-head-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          يمكنك أن تكتب
+        </div>
+        <ul class="tip-list">
+          <li>شكر، دعاء، آيات</li>
+          <li>إنجازاتك الدراسيّة</li>
+          <li>ما تتعلّمه من القرآن</li>
+          <li>أسئلة عامّة وعاطفيّة</li>
+        </ul>
+      </div>
+
+      <div class="tip dont">
+        <div class="tip-head">
+          <span class="tip-head-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+          تجنّب أن تكتب
+        </div>
+        <ul class="tip-list">
+          <li>رقم هاتفك أو عنوانك</li>
+          <li>أيّ معلومة شخصيّة</li>
+          <li>طلبات ماليّة مباشرة</li>
+          <li>روابط خارجية</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="btn btn-primary" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        إرسال الرسالة 📤
+      </button>
+      <button class="btn btn-secondary" type="button">إلغاء</button>
+    </div>
+
+  </form>
+
+</main>
+
+</body>
+</html>

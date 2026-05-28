@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إعدادات المنصّة — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068; --trust-900: #0B1E33;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-500: #EF4444; --danger-600: #DC2626; --danger-700: #B91C1C;
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06); --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 14.5px; line-height: 1.6; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* SHELL */
+.shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+@media (max-width: 980px) { .shell { grid-template-columns: 1fr; } }
+.sidebar { background: var(--trust-900); color: var(--gray-300); padding: 20px 16px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+@media (max-width: 980px) { .sidebar { position: relative; height: auto; padding: 16px; flex-direction: row; align-items: center; overflow-x: auto; } }
+.sb-brand { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin-bottom: 24px; }
+@media (max-width: 980px) { .sb-brand { margin-bottom: 0; margin-inline-end: 16px; flex-shrink: 0; } }
+.sb-brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+.sb-brand-text h1 { font-size: 15px; font-weight: 600; color: white; line-height: 1.2; }
+.sb-brand-text small { font-size: 10.5px; color: var(--trust-300); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.sb-section-label { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .08em; text-transform: uppercase; padding: 0 12px; margin-top: 20px; margin-bottom: 8px; }
+@media (max-width: 980px) { .sb-section-label { display: none; } }
+.sb-nav { display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 980px) { .sb-nav { flex-direction: row; gap: 6px; } }
+.sb-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--gray-300); transition: var(--transition-fast); white-space: nowrap; }
+.sb-link:hover { background: rgba(255,255,255,.06); color: white; }
+.sb-link.active { background: var(--trust-500); color: white; }
+.sb-link .sb-link-count { margin-inline-start: auto; font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; padding: 1px 7px; background: rgba(255,255,255,.10); border-radius: var(--radius-full); font-weight: 600; }
+.sb-footer { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.10); display: flex; align-items: center; gap: 10px; }
+@media (max-width: 980px) { .sb-footer { display: none; } }
+.sb-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--trust-500); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+.sb-user-name { font-size: 13.5px; color: white; font-weight: 500; }
+.sb-user-role { font-size: 11px; color: var(--trust-300); }
+
+.main { padding: 0; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.topbar-title h2 { font-size: 20px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12.5px; color: var(--gray-500); margin-top: 2px; }
+.topbar-actions { display: flex; gap: 8px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13.5px; font-weight: 500; padding: 9px 14px; border-radius: var(--radius-md); transition: var(--transition); border: 1px solid transparent; white-space: nowrap; }
+.btn-secondary { background: white; color: var(--gray-700); border-color: var(--gray-200); }
+.btn-secondary:hover { background: var(--snow-100); border-color: var(--sky-300); color: var(--trust-600); }
+.btn-primary { background: var(--trust-500); color: white; border-color: var(--trust-500); }
+.btn-primary:hover { background: var(--trust-600); border-color: var(--trust-600); }
+.btn-danger { background: white; color: var(--danger-700); border-color: var(--danger-100); }
+.btn-danger:hover { background: var(--danger-50); border-color: var(--danger-700); }
+
+.content { padding: 24px 32px 48px; display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+@media (max-width: 980px) { .content { grid-template-columns: 1fr; padding: 20px 16px 32px; gap: 16px; } .topbar { padding: 14px 16px; } }
+
+/* SETTINGS NAV (inner sidebar) */
+.set-nav { position: sticky; top: 80px; align-self: start; display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 980px) { .set-nav { position: relative; top: 0; flex-direction: row; overflow-x: auto; padding-bottom: 6px; } }
+.set-nav-link { padding: 10px 14px; border-radius: var(--radius-md); font-size: 13.5px; font-weight: 500; color: var(--gray-600); transition: var(--transition-fast); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+.set-nav-link:hover { background: var(--tranquil-100); color: var(--trust-600); }
+.set-nav-link.active { background: var(--tranquil-200); color: var(--trust-700); font-weight: 600; }
+.set-nav-link svg { color: var(--trust-400); }
+.set-nav-link.active svg { color: var(--trust-600); }
+
+/* SETTINGS CARDS */
+.settings-list { display: flex; flex-direction: column; gap: 16px; }
+
+.card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.card-head { padding: 18px 22px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--gray-900); }
+.card-title svg { color: var(--trust-500); }
+.card-status { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: 5px; }
+.card-status.ok { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.card-status.warn { background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); }
+.card-status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.card-body { padding: 20px 22px; }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+.row.full { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 13px; font-weight: 500; color: var(--gray-700); display: flex; justify-content: space-between; align-items: baseline; }
+.label .help { font-size: 11px; color: var(--gray-500); font-weight: 400; }
+.input, .select { background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 10px 12px; font-family: inherit; font-size: 13.5px; color: var(--gray-900); transition: var(--transition); width: 100%; }
+.input.mono { font-family: 'IBM Plex Mono', monospace; font-size: 13px; direction: ltr; text-align: right; }
+.input:focus, .select:focus { outline: none; border-color: var(--trust-400); background: white; box-shadow: var(--shadow-focus); }
+.select { appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A8590' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: left 12px center; background-size: 14px; padding-inline-start: 32px; }
+.field-help { font-size: 11.5px; color: var(--gray-500); line-height: 1.65; margin-top: 2px; }
+
+/* Toggle row */
+.toggle-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; padding: 14px 0; border-bottom: 1px dashed var(--gray-200); align-items: center; }
+.toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+.toggle-row:first-child { padding-top: 0; }
+.toggle-row-body strong { display: block; font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
+.toggle-row-body p { font-size: 12.5px; color: var(--gray-600); line-height: 1.6; }
+.toggle { position: relative; width: 44px; height: 24px; background: var(--gray-300); border-radius: 999px; cursor: pointer; transition: var(--transition); flex-shrink: 0; }
+.toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: var(--transition); box-shadow: var(--shadow-sm); }
+.toggle.on { background: var(--trust-500); }
+.toggle.on::after { right: calc(100% - 22px); }
+
+.card-actions { padding: 14px 22px; background: var(--snow-100); border-top: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.card-actions-meta { font-size: 11.5px; color: var(--gray-500); }
+.card-actions-buttons { display: flex; gap: 8px; }
+
+/* MAINTENANCE MODE BANNER */
+.maintenance-banner { background: var(--warning-50); border: 1.5px solid var(--warning-100); border-radius: var(--radius-xl); padding: 18px 22px; display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; margin-bottom: 16px; }
+.maintenance-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--warning-700); color: white; display: flex; align-items: center; justify-content: center; }
+.maintenance-text strong { display: block; color: var(--warning-700); font-weight: 600; margin-bottom: 2px; }
+.maintenance-text p { font-size: 13px; color: var(--gray-700); }
+
+/* DANGER ZONE */
+.danger-zone { background: var(--danger-50); border: 1.5px solid var(--danger-100); border-radius: var(--radius-xl); padding: 22px; margin-top: 16px; }
+.danger-title { font-size: 15px; font-weight: 600; color: var(--danger-700); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.danger-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; padding: 14px 0; border-top: 1px dashed var(--danger-100); align-items: center; }
+.danger-row:first-of-type { border-top: none; }
+.danger-row strong { display: block; font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
+.danger-row p { font-size: 12.5px; color: var(--gray-600); }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <span class="sb-brand-mark">ر</span>
+      <div class="sb-brand-text"><h1>رفقاء</h1><small>مشرف المنصّة</small></div>
+    </div>
+    <div class="sb-section-label">عامّ</div>
+    <nav class="sb-nav">
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> لوحة عامّة</a>
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg> المؤسّسات <span class="sb-link-count latin">12</span></a>
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> تحليلات المنصّة</a>
+      <a class="sb-link active" href="#"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> الإعدادات</a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-avatar">س.ع</div>
+      <div><div class="sb-user-name">سامح ع.</div><div class="sb-user-role">Super Admin</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-title">
+        <h2>إعدادات المنصّة</h2>
+        <p>تغييرات تؤثّر على كلّ مستخدم على رفقاء</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary">إلغاء التغييرات</button>
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> حفظ الكلّ</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- INNER NAV -->
+      <aside class="set-nav" aria-label="فئات الإعدادات">
+        <a class="set-nav-link active" href="#payment"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> الدفع</a>
+        <a class="set-nav-link" href="#smtp"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> البريد SMTP</a>
+        <a class="set-nav-link" href="#storage"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> التخزين S3</a>
+        <a class="set-nav-link" href="#encryption"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> التشفير</a>
+        <a class="set-nav-link" href="#api"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> صلاحيات API</a>
+        <a class="set-nav-link" href="#maintenance"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> الصيانة</a>
+      </aside>
+
+      <!-- SETTINGS CONTENT -->
+      <div class="settings-list">
+
+        <!-- PAYMENT -->
+        <section class="card" id="payment">
+          <div class="card-head">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              إعدادات MyFatoorah
+            </div>
+            <span class="card-status ok"><span class="dot"></span>متّصل</span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="field">
+                <label class="label">بيئة العمل <span class="help">Live / Test</span></label>
+                <select class="select"><option>Live (الإنتاج)</option><option>Test (تجريبي)</option></select>
+              </div>
+              <div class="field">
+                <label class="label">العملة الأساسية</label>
+                <select class="select"><option>د.ك — الدينار الكويتي</option><option>$ — دولار أمريكي</option><option>ر.س — ريال سعودي</option></select>
+              </div>
+            </div>
+            <div class="row full">
+              <div class="field">
+                <label class="label">API Token <span class="help">يُخزَّن مشفَّراً</span></label>
+                <input class="input mono" type="password" value="••••••••••••••••••••••••••••••••MzU=" readonly>
+                <span class="field-help">آخر تحديث: <span class="latin">١٥ يناير ٢٠٢٦</span> · <a href="#" style="color: var(--trust-500); font-weight: 500;">إعادة توليد</a></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label class="label">Webhook URL</label>
+                <input class="input mono" value="https://api.rufaqaa.app/webhooks/myfatoorah" readonly>
+              </div>
+              <div class="field">
+                <label class="label">مهلة انتهاء الجلسة</label>
+                <input class="input latin" value="30 دقيقة">
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="card-actions-meta">آخر اختبار: قبل ٤ ساعات · ✓ نجح</span>
+            <div class="card-actions-buttons">
+              <button class="btn btn-secondary"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> اختبار الاتّصال</button>
+              <button class="btn btn-primary">حفظ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SMTP -->
+        <section class="card" id="smtp">
+          <div class="card-head">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              إعدادات SMTP — إرسال البريد
+            </div>
+            <span class="card-status ok"><span class="dot"></span>يعمل</span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="field">
+                <label class="label">المضيف (Host)</label>
+                <input class="input mono" value="smtp.sendgrid.net">
+              </div>
+              <div class="field">
+                <label class="label">المنفذ (Port)</label>
+                <input class="input latin" value="587">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label class="label">اسم المستخدم</label>
+                <input class="input mono" value="apikey">
+              </div>
+              <div class="field">
+                <label class="label">كلمة السرّ</label>
+                <input class="input mono" type="password" value="••••••••••••••••" readonly>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label class="label">عنوان المرسِل</label>
+                <input class="input mono" value="hello@rufaqaa.app">
+              </div>
+              <div class="field">
+                <label class="label">اسم المرسِل المعروض</label>
+                <input class="input" value="رفقاء — رسائل النظام">
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="card-actions-meta latin">1,420 رسالة مُرسَلة · 2 ارتدّت · معدّل النجاح 99.8%</span>
+            <div class="card-actions-buttons">
+              <button class="btn btn-secondary">إرسال بريد تجريبي</button>
+              <button class="btn btn-primary">حفظ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- STORAGE -->
+        <section class="card" id="storage">
+          <div class="card-head">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              التخزين — S3 / MinIO
+            </div>
+            <span class="card-status warn"><span class="dot"></span><span class="latin">67%</span> ممتلئ</span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="field">
+                <label class="label">المزوّد</label>
+                <select class="select"><option>MinIO (داخلي)</option><option>AWS S3</option><option>DigitalOcean Spaces</option></select>
+              </div>
+              <div class="field">
+                <label class="label">المنطقة</label>
+                <input class="input mono" value="me-south-1 (البحرين)">
+              </div>
+            </div>
+            <div class="row full">
+              <div class="field">
+                <label class="label">Endpoint URL</label>
+                <input class="input mono" value="https://s3.rufaqaa.app">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label class="label">Access Key ID</label>
+                <input class="input mono" type="password" value="AKIA••••••••EXAMPLE" readonly>
+              </div>
+              <div class="field">
+                <label class="label">Secret Key</label>
+                <input class="input mono" type="password" value="••••••••••••••••••••••••" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="card-actions-meta latin">Used 482 GB / 720 GB · cleanup recommended for files older than 1y</span>
+            <div class="card-actions-buttons">
+              <button class="btn btn-secondary">تنظيف الملفّات القديمة</button>
+              <button class="btn btn-primary">حفظ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ENCRYPTION -->
+        <section class="card" id="encryption">
+          <div class="card-head">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              إعدادات التشفير
+            </div>
+            <span class="card-status ok"><span class="dot"></span>كلّ شيء مفعَّل</span>
+          </div>
+          <div class="card-body">
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>TLS 1.3 لجميع الطلبات</strong>
+                <p>كلّ معاملة بين العميل والخادم مشفّرة عبر <span class="latin mono">TLS 1.3</span>. لا يُسمح بطلبات HTTP عادية.</p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>تشفير الحقول الحسّاسة في قاعدة البيانات</strong>
+                <p>أسماء الأطفال، التواريخ الميلادية، والمستندات تُشفَّر داخل القاعدة بـ <span class="latin mono">AES-256</span> عبر AWS KMS.</p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>تشفير نسخ الاحتياط</strong>
+                <p>النسخ الاحتياطية اليومية مشفّرة قبل رفعها إلى S3 ـ ولا يستطيع أحدٌ فكّها بدون مفتاح KMS.</p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>الفرض الإجباري لـ HSTS</strong>
+                <p>ترسل المتصفّحات إلى المنصّة عبر HTTPS فقط ـ حتى لو كتبوا <span class="latin mono">http://</span>.</p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+          </div>
+          <div class="card-actions">
+            <span class="card-actions-meta">آخر تدقيق أمني: <span class="latin">١٢ يناير ٢٠٢٦</span> · بدون ملاحظات</span>
+            <div class="card-actions-buttons">
+              <button class="btn btn-primary">حفظ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- API -->
+        <section class="card" id="api">
+          <div class="card-head">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              صلاحيات API
+            </div>
+            <span class="card-status ok"><span class="dot"></span><span class="latin">3</span> مفاتيح نشطة</span>
+          </div>
+          <div class="card-body">
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>السماح للقراءة العامّة (Public Read)</strong>
+                <p>الإحصاءات اللحظيّة وصفحة الشفافية متاحة بدون مفتاح ـ <strong>للقراءة فقط</strong>.</p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>تحديد عدد الطلبات (Rate Limit)</strong>
+                <p>الحدّ الأقصى: <span class="latin mono">100 req/min</span> لكلّ مفتاح. الطلبات الزائدة تُرفض بـ <span class="latin mono">429</span>.</p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>تسجيل كلّ طلبات الـ API</strong>
+                <p>كلّ طلب يُسجَّل مع مفتاح API، عنوان IP، والمسار. <span style="color: var(--gray-500);">ملاحظة: قد يؤثّر على الأداء عند الحجم العالي.</span></p>
+              </div>
+              <div class="toggle on" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+
+          </div>
+          <div class="card-actions">
+            <span class="card-actions-meta latin">Active: 3 keys · 42K requests today</span>
+            <div class="card-actions-buttons">
+              <button class="btn btn-secondary">إدارة المفاتيح</button>
+              <button class="btn btn-primary">حفظ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- MAINTENANCE -->
+        <section class="card" id="maintenance">
+          <div class="card-head">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              وضع الصيانة
+            </div>
+            <span class="card-status ok"><span class="dot"></span>غير مفعَّل</span>
+          </div>
+          <div class="card-body">
+
+            <div class="toggle-row">
+              <div class="toggle-row-body">
+                <strong>تفعيل وضع الصيانة</strong>
+                <p>عند التفعيل، يرى الزوّار صفحة «المنصّة في الصيانة، نعود قريباً». يبقى وصول مشرف المنصّة (أنت) مفتوحاً.</p>
+              </div>
+              <div class="toggle" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+
+            <div class="row" style="margin-top: 18px;">
+              <div class="field">
+                <label class="label">المدّة المتوقّعة (اختياري)</label>
+                <input class="input" placeholder="مثال: ١٥ دقيقة">
+              </div>
+              <div class="field">
+                <label class="label">رسالة للمستخدمين</label>
+                <input class="input" value="نُجري تحديثاً تقنياً سريعاً ـ شكراً لصبرك.">
+              </div>
+            </div>
+
+          </div>
+          <div class="card-actions">
+            <span class="card-actions-meta">آخر صيانة: <span class="latin">٢٠ ديسمبر ٢٠٢٥</span> · ١٢ دقيقة</span>
+            <div class="card-actions-buttons">
+              <button class="btn btn-primary">حفظ</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- DANGER ZONE -->
+        <div class="danger-zone">
+          <h3 class="danger-title">
+            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            منطقة العمليّات الحسّاسة
+          </h3>
+
+          <div class="danger-row">
+            <div>
+              <strong>تنفيذ نسخة احتياطية يدوية كاملة</strong>
+              <p>إنشاء نسخة كاملة لقاعدة البيانات + S3 ورفعها إلى مخزن النسخ الاحتياطية البعيد.</p>
+            </div>
+            <button class="btn btn-secondary">تنفيذ الآن</button>
+          </div>
+
+          <div class="danger-row">
+            <div>
+              <strong>إعادة بناء فهارس البحث (Reindex)</strong>
+              <p>يستغرق ٥–٢٠ دقيقة. خلال هذه المدّة قد يكون البحث بطيئاً جزئياً.</p>
+            </div>
+            <button class="btn btn-secondary">بدء الفهرسة</button>
+          </div>
+
+          <div class="danger-row">
+            <div>
+              <strong>إعادة تشغيل خادم API</strong>
+              <p>إيقاف مؤقّت قد يستغرق ٣٠ ثانية. كلّ الطلبات الجارية ستُلغى.</p>
+            </div>
+            <button class="btn btn-danger">إعادة تشغيل</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+</body>
+</html>

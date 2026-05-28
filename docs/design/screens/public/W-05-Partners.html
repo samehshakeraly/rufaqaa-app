@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الجهات الشريكة — رفقاء</title>
+<meta name="description" content="شركاء رفقاء حول العالم — جمعيّات خيريّة موثّقة في 8 دول، يستلمون الكفالات ويصلون بها لليتيم. وكيف تنضمّ كشريك جديد.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-50: #FDFEFE; --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC; --tranquil-400: #ADCBE5;
+  --sky-100: #C9DDED; --sky-200: #B9D7EA; --sky-300: #9CC3DE; --sky-400: #7FAFD1;
+  --trust-100: #B8CFE3; --trust-200: #97B7D6; --trust-300: #769FCD; --trust-400: #5B85B8;
+  --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D; --trust-900: #0B1E33;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06), 0 1px 2px rgba(11,30,51,.04);
+  --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08), 0 2px 4px -1px rgba(11,30,51,.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08), 0 4px 6px -2px rgba(11,30,51,.04);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 16px; line-height: 1.7; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin, .num { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--trust-600); font-weight: 500; padding: 5px 14px; background: var(--tranquil-100); border: 1px solid var(--sky-200); border-radius: var(--radius-full); }
+.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success-500); }
+.section-title { font-size: 30px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; line-height: 1.25; }
+.section-lede { font-size: 16px; color: var(--gray-600); line-height: 1.85; max-width: 720px; }
+.section-head-center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 48px; }
+.section-head-center .section-lede { margin-inline: auto; }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 28px; height: 28px; }
+
+/* NAV */
+.nav { background: rgba(247,251,252,.88); backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid var(--sky-200); padding: 14px 32px; position: sticky; top: 0; z-index: 50; }
+.nav-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 40px; height: 40px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 20px; box-shadow: 0 2px 6px rgba(66,109,159,.25); }
+.brand-text h1 { font-size: 17px; font-weight: 600; color: var(--gray-900); line-height: 1.15; letter-spacing: -.01em; }
+.brand-text p { font-size: 11.5px; color: var(--gray-500); font-weight: 500; }
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link { padding: 8px 14px; border-radius: var(--radius-md); font-size: 14.5px; font-weight: 500; color: var(--gray-700); transition: var(--transition-fast); }
+.nav-link:hover, .nav-link.active { background: var(--tranquil-100); color: var(--trust-600); }
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; font-size: 14.5px; font-weight: 500; padding: 10px 18px; border-radius: var(--radius-md); transition: var(--transition); border: 1px solid transparent; white-space: nowrap; }
+.btn-ghost { color: var(--gray-700); }
+.btn-ghost:hover { background: var(--tranquil-100); color: var(--trust-600); }
+.btn-secondary { background: white; color: var(--trust-600); border-color: var(--sky-300); }
+.btn-secondary:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+.btn-primary { background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%); color: white; border-color: var(--trust-500); box-shadow: 0 2px 6px rgba(66,109,159,.18); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%); box-shadow: 0 4px 10px rgba(66,109,159,.28); transform: translateY(-1px); }
+.btn-lg { padding: 14px 26px; font-size: 15.5px; border-radius: var(--radius-lg); }
+.btn-xl { padding: 16px 32px; font-size: 16px; border-radius: var(--radius-lg); }
+@media (max-width: 900px) { .nav-links { display: none; } }
+@media (max-width: 540px) { .brand-text p { display: none; } .nav { padding: 12px 16px; } }
+
+/* HERO */
+.hero { position: relative; overflow: hidden; padding: 72px 0 56px; background: radial-gradient(circle at 88% 0%, rgba(118,159,205,.16) 0%, transparent 45%), radial-gradient(circle at 0% 95%, rgba(185,215,234,.22) 0%, transparent 50%), linear-gradient(180deg, var(--snow-100) 0%, var(--snow-200) 100%); border-bottom: 1px solid var(--sky-200); }
+.hero::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(118,159,205,.10) 1px, transparent 0); background-size: 22px 22px; opacity: .55; pointer-events: none; mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 75%); }
+.hero-inner { position: relative; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; max-width: 820px; margin: 0 auto; }
+.hero-title { font-size: 46px; font-weight: 600; color: var(--gray-900); letter-spacing: -.025em; line-height: 1.2; }
+.hero-title .accent { background: linear-gradient(180deg, transparent 62%, var(--tranquil-200) 62%, var(--tranquil-200) 92%, transparent 92%); padding: 0 6px; color: var(--trust-700); }
+.hero-sub { font-size: 17px; color: var(--gray-600); line-height: 1.85; max-width: 640px; }
+.hero-stats-row { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0; margin-top: 14px; background: white; border: 1px solid var(--sky-200); border-radius: var(--radius-xl); padding: 8px; box-shadow: var(--shadow-sm); }
+.hero-stat { padding: 8px 22px; text-align: center; border-inline-start: 1px solid var(--gray-200); }
+.hero-stat:first-child { border-inline-start: none; }
+.hero-stat-value { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 24px; font-weight: 600; color: var(--trust-700); line-height: 1; }
+.hero-stat-label { font-size: 11.5px; color: var(--gray-500); margin-top: 4px; }
+@media (max-width: 760px) { .hero { padding: 56px 0 44px; } .hero-title { font-size: 34px; } .hero-stat { padding: 8px 14px; } .hero-stat-value { font-size: 20px; } }
+
+/* MAP — geographic representation */
+.map-section { padding: 64px 0; background: var(--snow-100); }
+.map-card { background: white; border: 1px solid var(--sky-200); border-radius: var(--radius-2xl); padding: 32px; box-shadow: var(--shadow-sm); overflow: hidden; position: relative; }
+.map-card::before { content: ''; position: absolute; top: -80px; inset-inline-end: -80px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(118,159,205,.10) 0%, transparent 70%); pointer-events: none; }
+.map-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.map-title { font-size: 18px; font-weight: 600; color: var(--gray-900); display: inline-flex; align-items: center; gap: 10px; }
+.map-title svg { color: var(--trust-400); }
+.map-legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--gray-600); flex-wrap: wrap; }
+.map-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.map-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.map-legend-dot.lg { background: var(--trust-500); }
+.map-legend-dot.md { background: var(--trust-300); }
+.map-legend-dot.sm { background: var(--sky-300); }
+
+.world-map { display: grid; grid-template-columns: 1fr; gap: 0; position: relative; }
+.map-canvas { position: relative; width: 100%; min-height: 340px; background: linear-gradient(160deg, var(--snow-100) 0%, var(--tranquil-100) 100%); border: 1px dashed var(--sky-200); border-radius: var(--radius-xl); padding: 32px; overflow: hidden; }
+.map-canvas::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(118,159,205,.10) 1px, transparent 0); background-size: 18px 18px; opacity: .65; pointer-events: none; }
+.map-pin { position: absolute; width: 40px; height: 40px; transform: translate(50%, -50%); cursor: pointer; transition: var(--transition); }
+.map-pin:hover { transform: translate(50%, -50%) scale(1.15); z-index: 5; }
+.map-pin-dot { width: 100%; height: 100%; border-radius: 50%; background: var(--trust-500); border: 3px solid white; box-shadow: 0 2px 8px rgba(11,30,51,.18); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.map-pin.md .map-pin-dot { width: 32px; height: 32px; background: var(--trust-300); font-size: 14px; }
+.map-pin.sm .map-pin-dot { width: 26px; height: 26px; background: var(--sky-300); font-size: 12px; }
+.map-pin-label { position: absolute; top: calc(100% + 4px); right: 50%; transform: translateX(50%); background: white; border: 1px solid var(--sky-200); padding: 3px 10px; border-radius: var(--radius-full); font-size: 11px; color: var(--gray-700); white-space: nowrap; font-weight: 500; box-shadow: var(--shadow-sm); }
+.map-pin-label .count { font-family: 'IBM Plex Sans', sans-serif; color: var(--trust-600); font-weight: 600; margin-inline-start: 4px; }
+
+/* Position pins */
+.pin-kw { top: 38%; right: 52%; }
+.pin-eg { top: 55%; right: 60%; }
+.pin-ps { top: 33%; right: 56%; }
+.pin-sd { top: 70%; right: 62%; }
+.pin-ye { top: 60%; right: 50%; }
+.pin-jo { top: 40%; right: 58%; }
+.pin-sa { top: 50%; right: 54%; }
+.pin-so { top: 78%; right: 56%; }
+
+@media (max-width: 760px) {
+  .map-canvas { min-height: 280px; padding: 20px; }
+  .map-pin { width: 32px; height: 32px; }
+  .map-pin-label { font-size: 10px; padding: 2px 8px; }
+}
+
+/* PARTNERS GRID */
+.partners-list { padding: 88px 0; background: white; border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); }
+.partners-filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 36px; }
+.filter-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-full); font-size: 13.5px; font-weight: 500; color: var(--gray-700); transition: var(--transition); }
+.filter-pill:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.filter-pill.active { background: var(--trust-500); color: white; border-color: var(--trust-500); }
+.filter-pill .count { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; padding: 1px 6px; background: var(--gray-100); color: var(--gray-600); border-radius: var(--radius-full); font-weight: 600; }
+.filter-pill.active .count { background: rgba(255,255,255,.20); color: white; }
+
+.partner-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 980px) { .partner-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .partner-grid { grid-template-columns: 1fr; } }
+
+.partner-card { background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 22px; transition: var(--transition); display: flex; flex-direction: column; gap: 14px; }
+.partner-card:hover { border-color: var(--trust-300); background: white; box-shadow: var(--shadow-md); transform: translateY(-3px); }
+
+.partner-card-head { display: flex; gap: 14px; align-items: flex-start; }
+.partner-logo { width: 64px; height: 64px; border-radius: var(--radius-lg); background: white; border: 1px solid var(--sky-200); display: flex; align-items: center; justify-content: center; color: var(--trust-600); font-size: 22px; font-weight: 700; flex-shrink: 0; position: relative; overflow: hidden; }
+.partner-logo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 0%, rgba(118,159,205,.08) 100%); }
+.partner-card.green .partner-logo { background: linear-gradient(135deg, var(--success-50) 0%, white 100%); color: var(--success-700); }
+.partner-card.warm .partner-logo { background: linear-gradient(135deg, var(--warning-50) 0%, white 100%); color: var(--warning-700); }
+.partner-card.cool .partner-logo { background: linear-gradient(135deg, var(--tranquil-100) 0%, white 100%); color: var(--trust-600); }
+.partner-card.deep .partner-logo { background: linear-gradient(135deg, var(--snow-300) 0%, white 100%); color: var(--trust-700); }
+
+.partner-card-id { flex: 1; min-width: 0; }
+.partner-name { font-size: 15.5px; font-weight: 600; color: var(--gray-900); line-height: 1.3; margin-bottom: 4px; }
+.partner-country { font-size: 12.5px; color: var(--gray-500); display: inline-flex; align-items: center; gap: 5px; }
+.partner-status { font-size: 11px; padding: 3px 10px; border-radius: var(--radius-full); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+.partner-status.verified { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+
+.partner-figures { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); }
+.partner-figure-label { font-size: 11px; color: var(--gray-500); margin-bottom: 2px; }
+.partner-figure-value { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-size: 16px; font-weight: 600; color: var(--gray-900); }
+.partner-figure-value .unit { font-size: 11.5px; color: var(--gray-500); font-weight: 500; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+
+.partner-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gray-500); margin-top: auto; padding-top: 6px; }
+.partner-meta-item { display: inline-flex; align-items: center; gap: 4px; }
+.partner-meta-item svg { color: var(--trust-400); }
+.partner-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--trust-500); font-weight: 500; margin-inline-start: auto; }
+.partner-link:hover { color: var(--trust-700); }
+
+/* JOIN PROCESS */
+.join { padding: 88px 0; background: var(--snow-100); }
+.join-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: center; }
+@media (max-width: 960px) { .join-grid { grid-template-columns: 1fr; gap: 40px; } }
+
+.join-copy { display: flex; flex-direction: column; gap: 16px; }
+.join-steps { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; counter-reset: jstep; }
+.join-step { display: grid; grid-template-columns: 36px 1fr auto; gap: 14px; padding: 14px 16px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); transition: var(--transition); align-items: center; }
+.join-step:hover { border-color: var(--sky-300); box-shadow: var(--shadow-sm); }
+.join-step-num { counter-increment: jstep; width: 36px; height: 36px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 15px; flex-shrink: 0; }
+.join-step-num::before { content: counter(jstep); }
+.join-step-body { min-width: 0; }
+.join-step-title { font-size: 14.5px; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
+.join-step-desc { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+.join-step-dur { font-size: 11px; color: var(--gray-500); white-space: nowrap; background: var(--snow-100); padding: 3px 9px; border-radius: var(--radius-full); border: 1px solid var(--gray-200); }
+
+/* Benefits visual */
+.benefits { background: white; border: 1px solid var(--sky-200); border-radius: var(--radius-2xl); padding: 32px 28px; box-shadow: var(--shadow-sm); }
+.benefits-title { font-size: 17px; font-weight: 600; color: var(--gray-900); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+.benefits-title svg { color: var(--trust-400); }
+.benefits-list { display: flex; flex-direction: column; gap: 14px; }
+.benefit { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px dashed var(--gray-200); }
+.benefit:last-child { border-bottom: none; padding-bottom: 0; }
+.benefit-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--tranquil-100); color: var(--trust-600); display: flex; align-items: center; justify-content: center; }
+.benefit:nth-child(2) .benefit-icon { background: var(--success-50); color: var(--success-700); }
+.benefit:nth-child(3) .benefit-icon { background: var(--warning-50); color: var(--warning-700); }
+.benefit:nth-child(4) .benefit-icon { background: var(--snow-300); color: var(--trust-700); }
+.benefit-title { font-size: 14.5px; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
+.benefit-desc { font-size: 13px; color: var(--gray-600); line-height: 1.7; }
+
+/* CTA */
+.cta { padding: 96px 0; background: linear-gradient(135deg, var(--trust-600) 0%, var(--trust-800) 100%); position: relative; overflow: hidden; }
+.cta::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.08) 1px, transparent 0); background-size: 28px 28px; opacity: .5; mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 0%, transparent 70%); }
+.cta-inner { position: relative; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; max-width: 720px; margin: 0 auto; }
+.cta-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--tranquil-200); font-weight: 500; padding: 6px 14px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.18); border-radius: var(--radius-full); }
+.cta-title { font-size: 38px; font-weight: 600; color: white; letter-spacing: -.025em; line-height: 1.3; }
+.cta-title .soft { color: var(--tranquil-200); }
+.cta-lede { font-size: 16.5px; color: rgba(255,255,255,.78); line-height: 1.85; max-width: 580px; }
+.cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 14px; }
+.btn-light { background: white; color: var(--trust-700); border: 1px solid white; }
+.btn-light:hover { background: var(--tranquil-100); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-outline-light { background: rgba(255,255,255,.08); color: white; border: 1px solid rgba(255,255,255,.35); }
+.btn-outline-light:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.55); }
+@media (max-width: 540px) { .cta { padding: 64px 0; } .cta-title { font-size: 28px; } }
+
+/* FOOTER */
+.footer { background: var(--gray-900); color: var(--gray-300); padding: 64px 0 28px; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+@media (max-width: 860px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
+.footer-brand { display: flex; flex-direction: column; gap: 14px; }
+.footer-brand-row { display: flex; align-items: center; gap: 12px; }
+.footer-brand-mark { width: 40px; height: 40px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 20px; }
+.footer-brand-name { font-size: 17px; font-weight: 600; color: white; }
+.footer-brand-desc { font-size: 13.5px; color: var(--gray-400); line-height: 1.75; max-width: 320px; }
+.footer-social { display: flex; gap: 8px; margin-top: 8px; }
+.footer-social a { width: 38px; height: 38px; border-radius: var(--radius-md); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.10); display: flex; align-items: center; justify-content: center; color: var(--gray-300); transition: var(--transition); }
+.footer-social a:hover { background: var(--trust-500); border-color: var(--trust-400); color: white; transform: translateY(-2px); }
+.footer-col h3 { font-size: 13px; font-weight: 600; color: white; margin-bottom: 16px; letter-spacing: .04em; text-transform: uppercase; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col a { font-size: 13.5px; color: var(--gray-400); transition: var(--transition-fast); display: inline-flex; align-items: center; gap: 6px; }
+.footer-col a:hover { color: white; }
+.footer-col .badge { font-size: 10px; background: var(--success-500); color: white; padding: 1px 6px; border-radius: var(--radius-full); font-weight: 600; font-family: 'IBM Plex Sans', sans-serif; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.10); font-size: 12.5px; color: var(--gray-500); }
+.footer-bottom .license { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.footer-bottom .license code { background: rgba(255,255,255,.06); color: var(--gray-300); padding: 2px 6px; border-radius: var(--radius-sm); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+.footer-bottom .made-with .heart { color: var(--trust-300); }
+
+</style>
+</head>
+<body>
+
+<header class="nav" role="banner">
+  <div class="nav-inner">
+    <a class="brand" href="#" aria-label="رفقاء"><span class="brand-mark" aria-hidden="true">ر</span><div class="brand-text"><h1>رفقاء</h1><p>وقف إلكتروني عالمي</p></div></a>
+    <nav class="nav-links" aria-label="التنقّل الرئيسي">
+      <a class="nav-link" href="#">الرئيسية</a>
+      <a class="nav-link" href="#">كيف نعمل</a>
+      <a class="nav-link" href="#">الشفافية</a>
+      <a class="nav-link active" href="#" aria-current="page">الشركاء</a>
+      <a class="nav-link" href="#">عن رفقاء</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-ghost" href="#">دخول</a>
+      <a class="btn btn-primary" href="#"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> كن كفيلاً</a>
+    </div>
+  </div>
+</header>
+
+<main role="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero-inner">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>الجهات الشريكة</span>
+      <h1 class="hero-title" id="hero-title">شركاؤنا <span class="accent">حول العالم</span></h1>
+      <p class="hero-sub">رفقاء لا تستلم الكفالات نيابةً عن أحد ـ نحن جسرٌ بين الكفلاء وبين جمعيّات خيريّة مرخّصة تعمل في بلد اليتيم. هؤلاء شركاؤنا.</p>
+      <div class="hero-stats-row">
+        <div class="hero-stat"><div class="hero-stat-value latin">21</div><div class="hero-stat-label">جهة شريكة</div></div>
+        <div class="hero-stat"><div class="hero-stat-value latin">8</div><div class="hero-stat-label">دول</div></div>
+        <div class="hero-stat"><div class="hero-stat-value latin">1,247</div><div class="hero-stat-label">يتيماً</div></div>
+        <div class="hero-stat"><div class="hero-stat-value latin">100%</div><div class="hero-stat-label">موثَّقة</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section class="map-section" aria-labelledby="map-title">
+    <div class="container">
+      <div class="map-card">
+        <div class="map-head">
+          <div class="map-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <h2 id="map-title" style="font-size: inherit; font-weight: inherit;">انتشار جغرافي تخطيطي</h2>
+          </div>
+          <div class="map-legend">
+            <span class="map-legend-item"><span class="map-legend-dot lg"></span>أكثر من ٤ جهات</span>
+            <span class="map-legend-item"><span class="map-legend-dot md"></span>٢–٤ جهات</span>
+            <span class="map-legend-item"><span class="map-legend-dot sm"></span>جهة واحدة</span>
+          </div>
+        </div>
+
+        <div class="map-canvas" aria-hidden="true">
+          <div class="map-pin pin-kw"><div class="map-pin-dot">🇰🇼</div><span class="map-pin-label">الكويت<span class="count latin">4</span></span></div>
+          <div class="map-pin md pin-eg"><div class="map-pin-dot">🇪🇬</div><span class="map-pin-label">مصر<span class="count latin">3</span></span></div>
+          <div class="map-pin md pin-ps"><div class="map-pin-dot">🇵🇸</div><span class="map-pin-label">فلسطين<span class="count latin">3</span></span></div>
+          <div class="map-pin md pin-sd"><div class="map-pin-dot">🇸🇩</div><span class="map-pin-label">السودان<span class="count latin">3</span></span></div>
+          <div class="map-pin sm pin-ye"><div class="map-pin-dot">🇾🇪</div><span class="map-pin-label">اليمن<span class="count latin">2</span></span></div>
+          <div class="map-pin sm pin-jo"><div class="map-pin-dot">🇯🇴</div><span class="map-pin-label">الأردن<span class="count latin">2</span></span></div>
+          <div class="map-pin sm pin-sa"><div class="map-pin-dot">🇸🇦</div><span class="map-pin-label">السعودية<span class="count latin">2</span></span></div>
+          <div class="map-pin sm pin-so"><div class="map-pin-dot">🇸🇴</div><span class="map-pin-label">الصومال<span class="count latin">2</span></span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS LIST -->
+  <section class="partners-list" aria-labelledby="list-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">الشركاء الموثَّقون</span>
+        <h2 class="section-title" id="list-title"><span class="latin">٢١</span> جهة <span style="color: var(--trust-500);">في خدمة الأيتام</span></h2>
+        <p class="section-lede">كلّ جهة هنا اجتازت تدقيقاً مستقلاً + مراجعة وثائق + تقييماً ميدانياً. لا نوصي إلّا بمن نثق به.</p>
+      </div>
+
+      <div class="partners-filters">
+        <button class="filter-pill active">الكلّ <span class="count latin">21</span></button>
+        <button class="filter-pill">🇰🇼 الكويت <span class="count latin">4</span></button>
+        <button class="filter-pill">🇪🇬 مصر <span class="count latin">3</span></button>
+        <button class="filter-pill">🇵🇸 فلسطين <span class="count latin">3</span></button>
+        <button class="filter-pill">🇸🇩 السودان <span class="count latin">3</span></button>
+        <button class="filter-pill">🇾🇪 اليمن <span class="count latin">2</span></button>
+        <button class="filter-pill">🇯🇴 الأردن <span class="count latin">2</span></button>
+        <button class="filter-pill">🇸🇦 السعودية <span class="count latin">2</span></button>
+        <button class="filter-pill">🇸🇴 الصومال <span class="count latin">2</span></button>
+      </div>
+
+      <div class="partner-grid">
+
+        <article class="partner-card cool">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">نجاة</div>
+            <div class="partner-card-id">
+              <div class="partner-name">جمعية النجاة الخيرية</div>
+              <div class="partner-country">🇰🇼 الكويت — حولّي</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">450</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2024</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>ترخيص <span class="latin">رقم 247</span></span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card green">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">أ.و</div>
+            <div class="partner-card-id">
+              <div class="partner-name">مؤسّسة الأورمان</div>
+              <div class="partner-country">🇪🇬 مصر — القاهرة</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">320</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2024</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>وزارة التضامن</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card warm">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">ت.ك</div>
+            <div class="partner-card-id">
+              <div class="partner-name">جمعية تكافل</div>
+              <div class="partner-country">🇵🇸 فلسطين — رام الله</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">284</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2024</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>مرخّصة من السلطة</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card deep">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">إ.س</div>
+            <div class="partner-card-id">
+              <div class="partner-name">جمعية الإحسان</div>
+              <div class="partner-country">🇸🇩 السودان — الخرطوم</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">193</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2024</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>وزارة الرعاية</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card cool">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">ع.م</div>
+            <div class="partner-card-id">
+              <div class="partner-name">جمعية العون المباشر</div>
+              <div class="partner-country">🇰🇼 الكويت — الجهراء</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">178</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2024</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>الشؤون الاجتماعية</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card green">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">ر.خ</div>
+            <div class="partner-card-id">
+              <div class="partner-name">مؤسّسة الرحمة الخيرية</div>
+              <div class="partner-country">🇾🇪 اليمن — صنعاء</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">156</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2025</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>وزارة الشؤون</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card warm">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">ك.ا</div>
+            <div class="partner-card-id">
+              <div class="partner-name">جمعية كفالة الأيتام</div>
+              <div class="partner-country">🇯🇴 الأردن — عمّان</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">142</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2025</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>وزارة التنمية</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card deep">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">ب.ر</div>
+            <div class="partner-card-id">
+              <div class="partner-name">مؤسّسة البرّ والتقوى</div>
+              <div class="partner-country">🇸🇦 السعودية — جدّة</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">128</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2025</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>الموارد البشرية</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+        <article class="partner-card cool">
+          <div class="partner-card-head">
+            <div class="partner-logo" aria-hidden="true">أم</div>
+            <div class="partner-card-id">
+              <div class="partner-name">جمعية الأمل الإنساني</div>
+              <div class="partner-country">🇸🇴 الصومال — مقديشو</div>
+            </div>
+            <span class="partner-status verified"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> موثّقة</span>
+          </div>
+          <div class="partner-figures">
+            <div><div class="partner-figure-label">أيتام مكفولون</div><div class="partner-figure-value latin">98</div></div>
+            <div><div class="partner-figure-label">شراكة منذ</div><div class="partner-figure-value latin">2025</div></div>
+          </div>
+          <div class="partner-meta">
+            <span class="partner-meta-item"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>الشؤون الإسلامية</span>
+            <a class="partner-link" href="#">زيارة الموقع <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
+          </div>
+        </article>
+
+      </div>
+
+      <div style="text-align: center; margin-top: 32px;">
+        <a class="btn btn-secondary btn-lg" href="#">
+          عرض جميع <span class="latin">٢١</span> جهة
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- JOIN AS PARTNER -->
+  <section class="join" id="join" aria-labelledby="join-title">
+    <div class="container">
+
+      <div class="section-head-center">
+        <span class="eyebrow">للجهات الراغبة في الانضمام</span>
+        <h2 class="section-title" id="join-title">كيف تنضمّ <span style="color: var(--trust-500);">كشريك؟</span></h2>
+        <p class="section-lede">عمليّة محكمة لكن واضحة. هدفنا أن نختار شركاء تستحقّ أمانة كفالة الأيتام، ونرفض من لا يستحقّ ـ بصراحة.</p>
+      </div>
+
+      <div class="join-grid">
+
+        <div class="join-copy">
+          <h3 style="font-size: 20px; font-weight: 600; color: var(--gray-900);">خمس خطوات للشراكة</h3>
+
+          <div class="join-steps">
+            <div class="join-step">
+              <div class="join-step-num"></div>
+              <div class="join-step-body">
+                <div class="join-step-title">التواصل عبر النموذج</div>
+                <div class="join-step-desc">نموذج تعارف أوّلي مع معلومات أساسية عن الجهة.</div>
+              </div>
+              <span class="join-step-dur"><span class="latin">١٠</span> دقائق</span>
+            </div>
+
+            <div class="join-step">
+              <div class="join-step-num"></div>
+              <div class="join-step-body">
+                <div class="join-step-title">تقديم الترخيص والمستندات</div>
+                <div class="join-step-desc">ترخيص قانوني + ميزانيّات السنوات الثلاث الأخيرة + تقارير أنشطة.</div>
+              </div>
+              <span class="join-step-dur"><span class="latin">٢–٣</span> أيّام</span>
+            </div>
+
+            <div class="join-step">
+              <div class="join-step-num"></div>
+              <div class="join-step-body">
+                <div class="join-step-title">مراجعة فريق رفقاء + تدقيق محلّي</div>
+                <div class="join-step-desc">نتعاون مع جهة تدقيق مستقلّة في بلدك للتحقّق ميدانياً.</div>
+              </div>
+              <span class="join-step-dur"><span class="latin">٧–١٤</span> يوماً</span>
+            </div>
+
+            <div class="join-step">
+              <div class="join-step-num"></div>
+              <div class="join-step-body">
+                <div class="join-step-title">توقيع اتّفاقية الشراكة</div>
+                <div class="join-step-desc">اتّفاقية معتمَدة بنود معاييرها واضحة ـ بدون رسوم.</div>
+              </div>
+              <span class="join-step-dur"><span class="latin">يوم</span></span>
+            </div>
+
+            <div class="join-step">
+              <div class="join-step-num"></div>
+              <div class="join-step-body">
+                <div class="join-step-title">التدريب والإطلاق</div>
+                <div class="join-step-desc">جلسات تدريبية لفريقك على المنصّة + إنشاء حسابات الموظّفين.</div>
+              </div>
+              <span class="join-step-dur"><span class="latin">٣</span> أيّام</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <a class="btn btn-primary btn-lg" href="#">
+              ابدأ نموذج الانضمام
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="benefits">
+          <div class="benefits-title">
+            <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+            ماذا تحصل عليه؟
+          </div>
+          <div class="benefits-list">
+
+            <div class="benefit">
+              <div class="benefit-icon">
+                <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="benefit-title">منصّة مجانية كاملة الميزات</div>
+                <div class="benefit-desc">إدارة أيتام، تقارير شهرية، حسابات موظّفين، تحويلات بنكية موحَّدة ـ بدون رسوم اشتراك ولا عقود سنوية.</div>
+              </div>
+            </div>
+
+            <div class="benefit">
+              <div class="benefit-icon">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <div class="benefit-title">دعم تقنّي مستمرّ</div>
+                <div class="benefit-desc">قناة دعم خاصّة عبر <span class="latin">WhatsApp</span> + <span class="latin">Email</span>، ومتابعة شهرية مع فريق رفقاء.</div>
+              </div>
+            </div>
+
+            <div class="benefit">
+              <div class="benefit-icon">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <div>
+                <div class="benefit-title">شبكة عالمية من الكفلاء</div>
+                <div class="benefit-desc">وصول مباشر لكفلاء من <span class="latin">٢٠+</span> دولة، مع حملات تسويق منظَّمة عبر القنوات.</div>
+              </div>
+            </div>
+
+            <div class="benefit">
+              <div class="benefit-icon">
+                <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+              </div>
+              <div>
+                <div class="benefit-title">تقارير وتحليلات متقدّمة</div>
+                <div class="benefit-desc">لوحات قيادة، تحليلات نموّ الكفالات، نسب الإلغاء، صحّة الأيتام ـ بمعرفة بياناتية حقيقية.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-inner">
+        <span class="cta-eyebrow"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg>كن شريكاً</span>
+        <h2 class="cta-title" id="cta-title">جمعيّتك تستطيع <span class="soft">تغيير حياة يتيم.</span></h2>
+        <p class="cta-lede">إذا كنت تمثّل جمعيّة خيريّة مرخّصة وتعمل مع أيتام، نرحّب بدراسة طلبكم. نموذج التواصل لا يأخذ أكثر من <span class="latin">١٠</span> دقائق.</p>
+        <div class="cta-actions">
+          <a class="btn btn-light btn-xl" href="#join"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> نموذج الانضمام</a>
+          <a class="btn btn-outline-light btn-xl" href="#">لديّ سؤال — راسلنا</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-row"><span class="footer-brand-mark" aria-hidden="true">ر</span><span class="footer-brand-name">رفقاء</span></div>
+        <p class="footer-brand-desc">منصّة وقف إلكتروني عالمي، مفتوحة المصدر، تربط الكفلاء بالأيتام بشفافية كاملة وكرامة محفوظة.</p>
+        <div class="footer-social">
+          <a href="https://github.com/samehshakeraly/rufaqaa-app" aria-label="GitHub" rel="noopener" target="_blank"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg></a>
+          <a href="#" aria-label="WhatsApp"><svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+          <a href="#" aria-label="X"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="mailto:hello@rufaqaa.app" aria-label="البريد"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col"><h3>المنصّة</h3><ul><li><a href="#">تصفّح الأيتام</a></li><li><a href="#">كن كفيلاً</a></li><li><a href="#">كيف نعمل</a></li><li><a href="#">للمؤسّسات</a></li><li><a href="#">سجّل الدخول</a></li></ul></div>
+      <div class="footer-col"><h3>الثقة والشفافية</h3><ul><li><a href="#">الشفافية المالية</a></li><li><a href="#">التقارير السنوية</a></li><li><a href="#">الجهات الشريكة</a></li><li><a href="#">سياسة الخصوصية</a></li><li><a href="#">شروط الاستخدام</a></li></ul></div>
+      <div class="footer-col"><h3>المجتمع والكود</h3><ul><li><a href="https://github.com/samehshakeraly/rufaqaa-app" rel="noopener" target="_blank"><svg class="icon icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-1.94c-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.39.97 0 1.95.13 2.86.39 2.19-1.49 3.15-1.18 3.15-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.79.55C20.22 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg> المستودع على GitHub <span class="badge">مفتوح</span></a></li><li><a href="#">دليل المساهمة</a></li><li><a href="#">خارطة الطريق</a></li><li><a href="#">دفتر الإصدارات</a></li><li><a href="#">اتّصل بنا</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="license"><span>© <span class="latin">٢٠٢٥</span> رفقاء — مرخّصة برخصة</span><code>MIT License</code><span>· يُسمح بالاستخدام والنسخ والتعديل بحرّية.</span></div>
+      <div class="made-with">أحد مشاريع أوقاف <strong style="color: var(--gray-300); font-weight: 500;">سامح عبدالعزيز</strong> الإلكترونية <span class="heart" aria-hidden="true">♥</span></div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بوّابتي — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06); --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-lg: 0 10px 15px -3px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 4px rgba(118,159,205,.30);
+  --transition: 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 17px; line-height: 1.7; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: 12px; }
+
+.icon { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 16px; height: 16px; }
+.icon-lg { width: 28px; height: 28px; }
+.icon-xl { width: 36px; height: 36px; }
+
+/* HEADER */
+.header { background: white; border-bottom: 2px solid var(--sky-200); padding: 18px 32px; position: sticky; top: 0; z-index: 50; }
+.header-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark { width: 48px; height: 48px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 24px; box-shadow: 0 4px 10px rgba(66,109,159,.20); }
+.brand-text { font-size: 20px; font-weight: 600; color: var(--gray-900); }
+.brand-text small { display: block; font-size: 12.5px; color: var(--gray-500); font-weight: 400; margin-top: 2px; }
+
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+.help-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--warning-50); color: var(--warning-700); border: 2px solid var(--warning-100); border-radius: 12px; font-size: 15px; font-weight: 600; transition: var(--transition); }
+.help-btn:hover { background: var(--warning-100); transform: translateY(-1px); }
+
+.logout-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--gray-100); color: var(--gray-700); border: 2px solid var(--gray-200); border-radius: 12px; font-size: 15px; font-weight: 500; transition: var(--transition); }
+.logout-btn:hover { background: var(--gray-200); color: var(--gray-900); }
+
+@media (max-width: 600px) {
+  .header { padding: 14px 16px; }
+  .help-btn span, .logout-btn span { display: none; }
+  .help-btn, .logout-btn { padding: 10px; width: 44px; height: 44px; justify-content: center; }
+}
+
+/* PAGE */
+.page { max-width: 880px; margin: 0 auto; padding: 32px 32px 64px; }
+@media (max-width: 600px) { .page { padding: 24px 16px 48px; } }
+
+/* WELCOME */
+.welcome { background: linear-gradient(160deg, var(--tranquil-100) 0%, white 100%); border: 1.5px solid var(--sky-200); border-radius: 24px; padding: 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
+.welcome::before { content: ''; position: absolute; top: -50px; inset-inline-end: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(118,159,205,.20) 0%, transparent 70%); pointer-events: none; }
+.welcome-inner { position: relative; display: flex; align-items: center; gap: 20px; }
+.welcome-emoji { font-size: 56px; line-height: 1; }
+.welcome-text h1 { font-size: 30px; font-weight: 600; color: var(--gray-900); letter-spacing: -.02em; margin-bottom: 6px; }
+.welcome-text h1 .name { color: var(--trust-700); }
+.welcome-text p { font-size: 16px; color: var(--gray-600); }
+@media (max-width: 540px) {
+  .welcome { padding: 24px; }
+  .welcome-emoji { font-size: 44px; }
+  .welcome-text h1 { font-size: 24px; }
+}
+
+/* SECTION */
+.section { margin-bottom: 32px; }
+.section-title { font-size: 22px; font-weight: 600; color: var(--gray-900); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+.section-title svg { color: var(--trust-500); }
+
+/* SPONSOR CARD */
+.sponsor-card { background: white; border: 2px solid var(--sky-200); border-radius: 24px; padding: 28px; transition: var(--transition); position: relative; overflow: hidden; }
+.sponsor-card::before { content: ''; position: absolute; top: 0; right: 0; width: 200px; height: 200px; background: radial-gradient(circle at 100% 0%, rgba(118,159,205,.10) 0%, transparent 60%); pointer-events: none; }
+.sponsor-row { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; position: relative; }
+.sponsor-avatar { width: 96px; height: 96px; border-radius: 50%; background: repeating-linear-gradient(135deg, var(--tranquil-100) 0, var(--tranquil-100) 8px, var(--tranquil-200) 8px, var(--tranquil-200) 16px); border: 3px solid white; box-shadow: 0 0 0 2px var(--sky-200); display: flex; align-items: center; justify-content: center; color: var(--trust-700); flex-shrink: 0; }
+.sponsor-text h3 { font-size: 14px; font-weight: 500; color: var(--gray-500); margin-bottom: 6px; }
+.sponsor-text .quote { font-size: 19px; font-weight: 500; color: var(--gray-900); line-height: 1.65; }
+.sponsor-message-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%); color: white; border-radius: 16px; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(66,109,159,.25); transition: var(--transition); }
+.sponsor-message-btn:hover { background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(66,109,159,.35); }
+
+@media (max-width: 540px) {
+  .sponsor-card { padding: 22px; }
+  .sponsor-row { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .sponsor-avatar { width: 80px; height: 80px; }
+  .sponsor-text .quote { font-size: 17px; }
+}
+
+/* ACHIEVEMENTS */
+.achievements { background: white; border: 1.5px solid var(--gray-200); border-radius: 20px; padding: 26px; }
+.ach-list { display: flex; flex-direction: column; gap: 14px; }
+.ach-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--success-50); border: 1.5px solid var(--success-100); border-radius: 14px; }
+.ach-check { width: 36px; height: 36px; border-radius: 50%; background: var(--success-500); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ach-text { font-size: 17px; font-weight: 500; color: var(--gray-900); }
+.ach-emoji { margin-inline-start: auto; font-size: 24px; }
+.ach-more { width: 100%; padding: 14px; background: white; color: var(--trust-600); border: 2px dashed var(--sky-300); border-radius: 14px; font-size: 15px; font-weight: 600; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); }
+.ach-more:hover { background: var(--tranquil-100); border-color: var(--trust-300); }
+
+/* MESSAGES */
+.message-card { background: white; border: 1.5px solid var(--gray-200); border-radius: 20px; padding: 26px; }
+.msg-bubble { background: linear-gradient(160deg, var(--snow-200) 0%, white 100%); border: 1.5px solid var(--sky-200); border-radius: 20px; padding: 20px 22px; position: relative; }
+.msg-bubble::before { content: '”'; position: absolute; top: 8px; right: 16px; font-size: 48px; line-height: 1; color: var(--sky-300); font-family: serif; opacity: .6; }
+.msg-text { font-size: 17px; color: var(--gray-800); line-height: 1.9; position: relative; padding-top: 8px; }
+.msg-meta { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--gray-200); font-size: 14px; color: var(--gray-500); }
+.msg-from { color: var(--trust-600); font-weight: 600; }
+.msg-from-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--tranquil-200); color: var(--trust-700); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+.msg-action { width: 100%; padding: 14px; background: var(--snow-100); color: var(--gray-700); border: 1.5px solid var(--gray-200); border-radius: 14px; font-size: 15px; font-weight: 600; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); }
+.msg-action:hover { background: white; border-color: var(--trust-300); color: var(--trust-600); }
+
+/* PRIVACY NOTE */
+.privacy-note { background: var(--tranquil-100); border: 1.5px solid var(--sky-200); border-radius: 16px; padding: 16px 20px; margin-top: 24px; display: flex; gap: 12px; align-items: center; }
+.privacy-icon { width: 40px; height: 40px; border-radius: 50%; background: white; color: var(--trust-600); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.privacy-text { font-size: 14px; color: var(--gray-700); line-height: 1.65; }
+.privacy-text strong { color: var(--trust-700); font-weight: 600; }
+
+</style>
+</head>
+<body>
+
+<header class="header" role="banner">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">ر</span>
+      <div class="brand-text">
+        رفقاء
+        <small>بوّابتك الخاصّة</small>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="help-btn" aria-label="مساعدة">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>مساعدة</span>
+      </button>
+      <button class="logout-btn" aria-label="خروج">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>خروج</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="page" role="main">
+
+  <!-- WELCOME -->
+  <section class="welcome">
+    <div class="welcome-inner">
+      <div class="welcome-emoji" aria-hidden="true">🌟</div>
+      <div class="welcome-text">
+        <h1>أهلاً <span class="name">أحمد</span></h1>
+        <p>هذا ما ينتظرك اليوم في بوّابتك ـ كلّ شيء بخير، الحمد لله</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPONSOR -->
+  <section class="section" aria-labelledby="sponsor-title">
+    <h2 class="section-title" id="sponsor-title">
+      <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      كفيلي
+    </h2>
+
+    <div class="sponsor-card">
+      <div class="sponsor-row">
+        <div class="sponsor-avatar" aria-hidden="true">
+          <svg class="icon icon-xl" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="sponsor-text">
+          <h3>كفيلك يحبّك ويدعو لك</h3>
+          <p class="quote">«وأنت في قلبي كأنّك ابني ـ لا تنسني من دعائك»</p>
+        </div>
+      </div>
+      <a class="sponsor-message-btn" href="#">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        اكتب له رسالة شكر 💌
+      </a>
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="section" aria-labelledby="ach-title">
+    <h2 class="section-title" id="ach-title">
+      <svg class="icon icon-lg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+      إنجازاتي
+    </h2>
+
+    <div class="achievements">
+      <div class="ach-list">
+
+        <div class="ach-item">
+          <div class="ach-check"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="ach-text">حفظ سورة البقرة كاملةً</div>
+          <span class="ach-emoji" aria-hidden="true">🕌</span>
+        </div>
+
+        <div class="ach-item">
+          <div class="ach-check"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="ach-text">النجاح بامتياز في الصفّ السادس</div>
+          <span class="ach-emoji" aria-hidden="true">📚</span>
+        </div>
+
+        <div class="ach-item">
+          <div class="ach-check"><svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="ach-text">المشاركة في مسابقة القرآن</div>
+          <span class="ach-emoji" aria-hidden="true">🏆</span>
+        </div>
+
+      </div>
+
+      <a class="ach-more" href="#">
+        عرض جميع إنجازاتي
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- MESSAGES FROM SPONSOR -->
+  <section class="section" aria-labelledby="msg-title">
+    <h2 class="section-title" id="msg-title">
+      <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      رسائل من كفيلي
+    </h2>
+
+    <div class="message-card">
+      <div class="msg-bubble">
+        <p class="msg-text">ما شاء الله عليك يا أحمد! نتاجك في القرآن يفرحني كثيراً. استمرّ بارك الله فيك، وأنا فخور بك كأنّك ابني.</p>
+        <div class="msg-meta">
+          <span class="msg-from-avatar" aria-hidden="true">ك.ي</span>
+          <span class="msg-from">كفيلك</span>
+          <span>·</span>
+          <span>منذ يومين</span>
+        </div>
+      </div>
+
+      <a class="msg-action" href="#">
+        قراءة جميع الرسائل
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </a>
+    </div>
+
+    <div class="privacy-note">
+      <div class="privacy-icon">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div class="privacy-text">
+        <strong>كلّ رسالة من كفيلك تمرّ بالمراجعة قبل أن تصلك</strong> ـ حماية لك.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

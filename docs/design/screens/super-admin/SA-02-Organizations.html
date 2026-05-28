@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة المؤسّسات — رفقاء</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --snow-100: #F7FBFC; --snow-200: #EEF5F8; --snow-300: #E2EEF3;
+  --tranquil-100: #EAF1F7; --tranquil-200: #D6E6F2; --tranquil-300: #C2D8EC;
+  --sky-200: #B9D7EA; --sky-300: #9CC3DE;
+  --trust-300: #769FCD; --trust-400: #5B85B8; --trust-500: #426D9F; --trust-600: #2D5683; --trust-700: #1E4068; --trust-800: #142E4D; --trust-900: #0B1E33;
+  --gray-50: #FAFBFC; --gray-100: #F4F6F8; --gray-200: #E7EBEF; --gray-300: #D2D8DF; --gray-400: #A8B2BC;
+  --gray-500: #7A8590; --gray-600: #5A636E; --gray-700: #3F4750; --gray-800: #2A3038; --gray-900: #161A1F;
+  --success-50: #ECFDF5; --success-100: #D1FAE5; --success-500: #10B981; --success-700: #047857;
+  --warning-50: #FFFBEB; --warning-100: #FEF3C7; --warning-700: #B45309;
+  --danger-50: #FEF2F2; --danger-100: #FEE2E2; --danger-700: #B91C1C;
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11,30,51,.06); --shadow-md: 0 4px 6px -1px rgba(11,30,51,.08);
+  --shadow-focus: 0 0 0 3px rgba(118,159,205,.25);
+  --transition: 200ms ease; --transition-fast: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 14.5px; line-height: 1.6; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
+.latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+button { font-family: inherit; cursor: pointer; border: none; background: transparent; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.icon-sm { width: 14px; height: 14px; }
+.icon-lg { width: 24px; height: 24px; }
+
+/* SHELL (reused from SA-01) */
+.shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+@media (max-width: 980px) { .shell { grid-template-columns: 1fr; } }
+.sidebar { background: var(--trust-900); color: var(--gray-300); padding: 20px 16px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+@media (max-width: 980px) { .sidebar { position: relative; height: auto; padding: 16px; flex-direction: row; align-items: center; overflow-x: auto; } }
+.sb-brand { display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin-bottom: 24px; }
+@media (max-width: 980px) { .sb-brand { margin-bottom: 0; margin-inline-end: 16px; flex-shrink: 0; } }
+.sb-brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+.sb-brand-text h1 { font-size: 15px; font-weight: 600; color: white; line-height: 1.2; }
+.sb-brand-text small { font-size: 10.5px; color: var(--trust-300); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.sb-section-label { font-size: 10.5px; font-weight: 600; color: var(--gray-500); letter-spacing: .08em; text-transform: uppercase; padding: 0 12px; margin-top: 20px; margin-bottom: 8px; }
+@media (max-width: 980px) { .sb-section-label { display: none; } }
+.sb-nav { display: flex; flex-direction: column; gap: 2px; }
+@media (max-width: 980px) { .sb-nav { flex-direction: row; gap: 6px; } }
+.sb-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-md); font-size: 13.5px; color: var(--gray-300); transition: var(--transition-fast); white-space: nowrap; }
+.sb-link:hover { background: rgba(255,255,255,.06); color: white; }
+.sb-link.active { background: var(--trust-500); color: white; }
+.sb-link .sb-link-count { margin-inline-start: auto; font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; padding: 1px 7px; background: rgba(255,255,255,.10); border-radius: var(--radius-full); font-weight: 600; }
+.sb-link.active .sb-link-count { background: rgba(255,255,255,.20); }
+.sb-footer { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.10); display: flex; align-items: center; gap: 10px; }
+@media (max-width: 980px) { .sb-footer { display: none; } }
+.sb-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--trust-500); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+.sb-user-name { font-size: 13.5px; color: white; font-weight: 500; }
+.sb-user-role { font-size: 11px; color: var(--trust-300); }
+
+.main { padding: 0; min-width: 0; }
+.topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.topbar-title h2 { font-size: 20px; font-weight: 600; color: var(--gray-900); }
+.topbar-title p { font-size: 12.5px; color: var(--gray-500); margin-top: 2px; }
+.topbar-actions { display: flex; gap: 10px; align-items: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 13.5px; font-weight: 500; padding: 9px 14px; border-radius: var(--radius-md); transition: var(--transition); border: 1px solid transparent; white-space: nowrap; }
+.btn-secondary { background: white; color: var(--gray-700); border-color: var(--gray-200); }
+.btn-secondary:hover { background: var(--snow-100); border-color: var(--sky-300); color: var(--trust-600); }
+.btn-primary { background: var(--trust-500); color: white; border-color: var(--trust-500); }
+.btn-primary:hover { background: var(--trust-600); border-color: var(--trust-600); }
+
+.content { padding: 24px 32px 48px; }
+@media (max-width: 600px) { .content { padding: 20px 16px 32px; } .topbar { padding: 14px 16px; } }
+
+/* TOOLBAR */
+.toolbar { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 14px; margin-bottom: 18px; display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; }
+@media (max-width: 760px) { .toolbar { grid-template-columns: 1fr; } }
+.search { display: flex; align-items: center; gap: 8px; background: var(--snow-100); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 0 12px; }
+.search input { flex: 1; border: none; background: transparent; font-family: inherit; font-size: 14px; color: var(--gray-900); padding: 10px 4px; }
+.search input:focus { outline: none; }
+.search svg { color: var(--gray-400); }
+.filter-btn { padding: 10px 14px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 13.5px; color: var(--gray-700); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+.filter-btn:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.filter-btn .count { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; background: var(--trust-500); color: white; padding: 1px 6px; border-radius: var(--radius-full); font-weight: 600; }
+
+/* TAB CHIPS */
+.tabs { display: flex; gap: 6px; background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-full); padding: 4px; margin-bottom: 18px; width: fit-content; }
+.tab { padding: 7px 14px; font-size: 13px; font-weight: 500; color: var(--gray-600); border-radius: var(--radius-full); transition: var(--transition-fast); display: inline-flex; align-items: center; gap: 6px; }
+.tab:hover { background: var(--snow-100); }
+.tab.active { background: var(--trust-500); color: white; }
+.tab .count { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; padding: 1px 7px; background: var(--gray-100); color: var(--gray-700); border-radius: var(--radius-full); font-weight: 600; }
+.tab.active .count { background: rgba(255,255,255,.20); color: white; }
+
+/* TABLE */
+.table-wrap { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; }
+.table-scroll { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 900px; }
+.table th { text-align: start; padding: 14px 16px; font-size: 12px; font-weight: 600; color: var(--gray-600); background: var(--snow-100); border-bottom: 1px solid var(--gray-200); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.table th svg { display: inline; vertical-align: -2px; margin-inline-start: 2px; color: var(--gray-400); }
+.table td { padding: 14px 16px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+.table tbody tr:hover { background: var(--snow-100); }
+.table tbody tr:last-child td { border-bottom: none; }
+
+.cell-org { display: flex; align-items: center; gap: 12px; }
+.cell-org-logo { width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--tranquil-100); color: var(--trust-600); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; border: 1px solid var(--sky-200); }
+.cell-org-logo.g { background: var(--success-50); color: var(--success-700); border-color: var(--success-100); }
+.cell-org-logo.w { background: var(--warning-50); color: var(--warning-700); border-color: var(--warning-100); }
+.cell-org-logo.d { background: var(--snow-300); color: var(--trust-700); }
+.cell-org-name { font-weight: 600; color: var(--gray-900); margin-bottom: 1px; }
+.cell-org-meta { font-size: 11.5px; color: var(--gray-500); }
+
+.cell-num { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; font-weight: 600; color: var(--gray-900); }
+
+.badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: var(--radius-full); }
+.badge.tier-pro { background: var(--trust-500); color: white; }
+.badge.tier-free { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
+.badge.tier-pilot { background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); }
+.badge.status-active { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.badge.status-suspended { background: var(--warning-50); color: var(--warning-700); border: 1px solid var(--warning-100); }
+.badge.status-archived { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+.badge.status-pending { background: var(--tranquil-100); color: var(--trust-600); border: 1px solid var(--sky-200); }
+.badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.cell-last { font-family: 'IBM Plex Sans', sans-serif; font-size: 12.5px; color: var(--gray-600); }
+
+.actions-cell { display: flex; gap: 4px; justify-content: flex-end; }
+.action-btn { width: 30px; height: 30px; border-radius: var(--radius-md); background: var(--snow-100); color: var(--gray-600); display: inline-flex; align-items: center; justify-content: center; transition: var(--transition-fast); }
+.action-btn:hover { background: white; color: var(--trust-600); border: 1px solid var(--sky-300); }
+.action-btn.danger:hover { color: var(--danger-700); border-color: var(--danger-100); background: var(--danger-50); }
+
+.table-footer { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--snow-100); border-top: 1px solid var(--gray-200); flex-wrap: wrap; gap: 10px; font-size: 12.5px; color: var(--gray-600); }
+.pagination { display: flex; gap: 4px; }
+.page-btn { width: 32px; height: 32px; border-radius: var(--radius-md); background: white; color: var(--gray-700); border: 1px solid var(--gray-200); display: inline-flex; align-items: center; justify-content: center; font-family: 'IBM Plex Sans', sans-serif; font-size: 12.5px; font-weight: 500; transition: var(--transition-fast); }
+.page-btn:hover { border-color: var(--sky-300); color: var(--trust-600); }
+.page-btn.active { background: var(--trust-500); color: white; border-color: var(--trust-500); }
+.page-btn.disabled { color: var(--gray-300); cursor: not-allowed; }
+.page-btn.disabled:hover { border-color: var(--gray-200); color: var(--gray-300); }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" role="navigation">
+    <div class="sb-brand">
+      <span class="sb-brand-mark" aria-hidden="true">ر</span>
+      <div class="sb-brand-text"><h1>رفقاء</h1><small>مشرف المنصّة</small></div>
+    </div>
+    <div class="sb-section-label">عامّ</div>
+    <nav class="sb-nav">
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> لوحة عامّة</a>
+      <a class="sb-link active" href="#"><svg class="icon" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14"/></svg> المؤسّسات <span class="sb-link-count latin">12</span></a>
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> تحليلات المنصّة</a>
+      <a class="sb-link" href="#"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> الإعدادات</a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-avatar" aria-hidden="true">س.ع</div>
+      <div><div class="sb-user-name">سامح ع.</div><div class="sb-user-role">Super Admin</div></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-title">
+        <h2>إدارة المؤسّسات</h2>
+        <p><span class="latin">12</span> مؤسّسة · <span class="latin">9</span> نشطة · <span class="latin">2</span> في الانتظار · <span class="latin">1</span> معلَّقة</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> تصدير</button>
+        <button class="btn btn-primary"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> إنشاء مؤسّسة جديدة</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true">الكلّ <span class="count latin">12</span></button>
+        <button class="tab" role="tab">نشطة <span class="count latin">9</span></button>
+        <button class="tab" role="tab">في الانتظار <span class="count latin">2</span></button>
+        <button class="tab" role="tab">معلَّقة <span class="count latin">1</span></button>
+        <button class="tab" role="tab">أرشيف <span class="count latin">0</span></button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="ابحث باسم المؤسّسة، البلد، أو الترخيص...">
+        </div>
+        <button class="filter-btn">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          فلتر <span class="count latin">2</span>
+        </button>
+        <button class="filter-btn">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          الأعمدة
+        </button>
+        <button class="filter-btn">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          ترتيب
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>المؤسّسة</th>
+                <th>البلد</th>
+                <th>الاشتراك</th>
+                <th>الحالة</th>
+                <th>الأيتام</th>
+                <th>تبرّعات شهرياً</th>
+                <th>آخر نشاط</th>
+                <th style="text-align: end;">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo">نج</div>
+                    <div>
+                      <div class="cell-org-name">جمعية النجاة الخيرية</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-001</span> · ٢٠٢٤</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇰🇼 الكويت</td>
+                <td><span class="badge tier-pro">PRO</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">450</span></td>
+                <td><span class="cell-num">8,420</span> <small style="color: var(--gray-500);">د.ك</small></td>
+                <td><span class="cell-last">قبل ١٢ دقيقة</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn" aria-label="عرض"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn" aria-label="تحرير"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn" aria-label="المزيد"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo g">أو</div>
+                    <div>
+                      <div class="cell-org-name">مؤسّسة الأورمان</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-002</span> · ٢٠٢٤</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇪🇬 مصر</td>
+                <td><span class="badge tier-pro">PRO</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">320</span></td>
+                <td><span class="cell-num">22,400</span> <small style="color: var(--gray-500);">ج.م</small></td>
+                <td><span class="cell-last">قبل ٤٠ دقيقة</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo w">تك</div>
+                    <div>
+                      <div class="cell-org-name">جمعية تكافل</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-003</span> · ٢٠٢٤</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇵🇸 فلسطين</td>
+                <td><span class="badge tier-pro">PRO</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">284</span></td>
+                <td><span class="cell-num">4,260</span> <small style="color: var(--gray-500);">$</small></td>
+                <td><span class="cell-last">قبل ساعتين</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo d">إح</div>
+                    <div>
+                      <div class="cell-org-name">جمعية الإحسان</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-004</span> · ٢٠٢٤</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇸🇩 السودان</td>
+                <td><span class="badge tier-pro">PRO</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">193</span></td>
+                <td><span class="cell-num">2,890</span> <small style="color: var(--gray-500);">$</small></td>
+                <td><span class="cell-last">أمس</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo">عم</div>
+                    <div>
+                      <div class="cell-org-name">جمعية العون المباشر</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-005</span> · ٢٠٢٤</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇰🇼 الكويت</td>
+                <td><span class="badge tier-free">FREE</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">178</span></td>
+                <td><span class="cell-num">3,200</span> <small style="color: var(--gray-500);">د.ك</small></td>
+                <td><span class="cell-last">قبل ٤ ساعات</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo g">رخ</div>
+                    <div>
+                      <div class="cell-org-name">مؤسّسة الرحمة الخيرية</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-006</span> · ٢٠٢٥</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇾🇪 اليمن</td>
+                <td><span class="badge tier-pilot">تجريبي</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">156</span></td>
+                <td><span class="cell-num">1,840</span> <small style="color: var(--gray-500);">$</small></td>
+                <td><span class="cell-last">قبل ٦ ساعات</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo w">كأ</div>
+                    <div>
+                      <div class="cell-org-name">جمعية كفالة الأيتام</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-007</span> · ٢٠٢٥</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇯🇴 الأردن</td>
+                <td><span class="badge tier-free">FREE</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">142</span></td>
+                <td><span class="cell-num">1,560</span> <small style="color: var(--gray-500);">د.أ</small></td>
+                <td><span class="cell-last">قبل ٨ ساعات</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo d">بر</div>
+                    <div>
+                      <div class="cell-org-name">مؤسّسة البرّ والتقوى</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-008</span> · ٢٠٢٥</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇸🇦 السعودية</td>
+                <td><span class="badge tier-pro">PRO</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">128</span></td>
+                <td><span class="cell-num">12,800</span> <small style="color: var(--gray-500);">ر.س</small></td>
+                <td><span class="cell-last">أمس</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo">أم</div>
+                    <div>
+                      <div class="cell-org-name">جمعية الأمل الإنساني</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-009</span> · ٢٠٢٥</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇸🇴 الصومال</td>
+                <td><span class="badge tier-pilot">تجريبي</span></td>
+                <td><span class="badge status-active"><span class="dot"></span>نشطة</span></td>
+                <td><span class="cell-num">98</span></td>
+                <td><span class="cell-num">1,470</span> <small style="color: var(--gray-500);">$</small></td>
+                <td><span class="cell-last">قبل يومين</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo w">شف</div>
+                    <div>
+                      <div class="cell-org-name">جمعية الشفاء الخيرية</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-010</span> · ٢٠٢٦</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇰🇼 الكويت</td>
+                <td><span class="badge tier-free">FREE</span></td>
+                <td><span class="badge status-pending"><span class="dot"></span>في الانتظار</span></td>
+                <td><span class="cell-num" style="color: var(--gray-400);">—</span></td>
+                <td><span class="cell-num" style="color: var(--gray-400);">—</span></td>
+                <td><span class="cell-last">قدّمت قبل ٣ أيّام</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo">رش</div>
+                    <div>
+                      <div class="cell-org-name">جمعية الراشدين</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-011</span> · ٢٠٢٦</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇪🇬 مصر</td>
+                <td><span class="badge tier-pilot">تجريبي</span></td>
+                <td><span class="badge status-pending"><span class="dot"></span>في الانتظار</span></td>
+                <td><span class="cell-num" style="color: var(--gray-400);">—</span></td>
+                <td><span class="cell-num" style="color: var(--gray-400);">—</span></td>
+                <td><span class="cell-last">قدّمت قبل ٦ أيّام</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="cell-org">
+                    <div class="cell-org-logo">قب</div>
+                    <div>
+                      <div class="cell-org-name">جمعية القبس الخيريّة</div>
+                      <div class="cell-org-meta">ID: <span class="latin mono">ORG-012</span> · ٢٠٢٤</div>
+                    </div>
+                  </div>
+                </td>
+                <td>🇰🇼 الكويت</td>
+                <td><span class="badge tier-free">FREE</span></td>
+                <td><span class="badge status-suspended"><span class="dot"></span>معلَّقة</span></td>
+                <td><span class="cell-num">52</span></td>
+                <td><span class="cell-num" style="color: var(--gray-400);">معلَّق</span></td>
+                <td><span class="cell-last" style="color: var(--warning-700);">عدم رفع تقارير ٣ أشهر</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="action-btn danger"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button>
+                    <button class="action-btn"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-footer">
+          <span>عرض <span class="latin">١–١٢</span> من <span class="latin">١٢</span> مؤسّسة</span>
+          <div class="pagination">
+            <button class="page-btn disabled" aria-label="السابق"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            <button class="page-btn active">١</button>
+            <button class="page-btn disabled" aria-label="التالي"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+</body>
+</html>
