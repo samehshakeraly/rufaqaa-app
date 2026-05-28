@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, text
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import STAFF_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.config import settings
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
@@ -272,3 +272,122 @@ async def get_media_presigned_url(
     bucket, _, key = rest.partition("/")
     url = await presigned_get_url(bucket, key)
     return {"url": url}
+
+
+# ── Human moderation ───────────────────────────────────────────────────
+#
+# Uploads land with moderation_status='pending' and visibility='private'.
+# A partner_manager or org admin reviews each item and flips it to
+# approved/rejected. Approve also bumps visibility to 'donor_only' so
+# the sponsoring donor can see the photo — that's the only place in the
+# stack that a piece of media becomes viewable outside the staff org.
+
+
+# Approvers can decide on pending media; partner_staff cannot (they're
+# the typical uploader). Same separation as the orphan-case workflow.
+MEDIA_MODERATOR_ROLES: tuple[str, ...] = ("partner_manager", *ADMIN_ROLES)
+
+
+class MediaModeratePayload(BaseModel):
+    decision: Literal["approve", "reject"]
+    notes: str | None = None
+
+
+class MediaModerationRead(BaseModel):
+    id: UUID
+    moderation_status: str
+    moderation_notes: str | None
+    moderated_by: UUID | None
+    moderated_at: datetime | None
+    visibility: str
+
+
+@router.post("/{media_id}/moderate", response_model=MediaModerationRead)
+async def moderate_media(
+    media_id: UUID,
+    payload: MediaModeratePayload,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*MEDIA_MODERATOR_ROLES))],
+) -> MediaModerationRead:
+    """Approve or reject a pending media item.
+
+    Approving advances visibility from the private default to
+    `donor_only` so sponsoring donors can render the photo; rejecting
+    leaves visibility untouched so the item stays hidden.
+    """
+    row = (
+        await db.execute(
+            text(
+                """
+                SELECT id, moderation_status, visibility
+                FROM media
+                WHERE id = :id
+                """
+            ),
+            {"id": str(media_id)},
+        )
+    ).first()
+    if row is None:
+        raise NotFound("Media")
+
+    old_status = str(row[1])
+    old_visibility = str(row[2])
+
+    if old_status not in ("pending", "flagged"):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                f"Media is in moderation_status '{old_status}', "
+                "expected one of ['flagged', 'pending']"
+            ),
+        )
+
+    new_status = "approved" if payload.decision == "approve" else "rejected"
+    new_visibility = "donor_only" if payload.decision == "approve" else old_visibility
+    now = datetime.now(UTC)
+
+    await db.execute(
+        text(
+            """
+            UPDATE media
+               SET moderation_status = :status,
+                   moderation_notes  = :notes,
+                   moderated_by      = :moderator,
+                   moderated_at      = :now,
+                   visibility        = :visibility
+             WHERE id = :id
+            """
+        ),
+        {
+            "status": new_status,
+            "notes": payload.notes,
+            "moderator": str(user.id),
+            "now": now,
+            "visibility": new_visibility,
+            "id": str(media_id),
+        },
+    )
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="media.moderated",
+        entity_type="media",
+        entity_id=media_id,
+        old_values={"moderation_status": old_status, "visibility": old_visibility},
+        new_values={
+            "moderation_status": new_status,
+            "visibility": new_visibility,
+            "decision": payload.decision,
+        },
+    )
+    await db.commit()
+
+    return MediaModerationRead(
+        id=media_id,
+        moderation_status=new_status,
+        moderation_notes=payload.notes,
+        moderated_by=user.id,
+        moderated_at=now,
+        visibility=new_visibility,
+    )

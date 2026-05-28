@@ -6,8 +6,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import func, or_, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.authz import ADMIN_ROLES, require_roles
@@ -311,6 +312,142 @@ async def assign_orphan_channel(
         new_values={
             "assigned_to_channel_id": (str(payload.channel_id) if payload.channel_id else None)
         },
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return OrphanRead.model_validate(orphan)
+
+
+# ── Case-status workflow ───────────────────────────────────────────────
+#
+# Schema's CaseStatus enum: pending_review → approved → available →
+# reserved → sponsored → graduated/deceased/archived (or → rejected).
+# OrphanUpdate intentionally excludes case_status — every status change
+# flows through one of the endpoints below. partner_staff submits an
+# orphan record (which lands as pending_review); partner_manager or an
+# org admin reviews it.
+
+# Approvers can decide on a pending case. partner_staff cannot — they
+# submit, they don't approve. Mirrors the report-workflow split.
+PARTNER_APPROVER_ROLES: tuple[str, ...] = ("partner_manager", *ADMIN_ROLES)
+
+
+class OrphanRejectPayload(BaseModel):
+    reason: str = Field(min_length=1, max_length=1000)
+
+
+async def _load_orphan_or_404(db: AsyncSession, orphan_id: UUID) -> Orphan:
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+    return orphan
+
+
+def _check_case_transition(orphan: Orphan, expected_from: tuple[str, ...]) -> None:
+    if orphan.case_status not in expected_from:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                f"Orphan is in case_status '{orphan.case_status}', "
+                f"expected one of {sorted(expected_from)}"
+            ),
+        )
+
+
+@router.post("/{orphan_id}/approve", response_model=OrphanRead)
+async def approve_orphan(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*PARTNER_APPROVER_ROLES))],
+) -> OrphanRead:
+    """Mark a pending_review orphan as approved.
+
+    Only partner_manager + org admins may approve — partner_staff submits
+    but cannot self-approve, same separation the report workflow uses.
+    """
+    orphan = await _load_orphan_or_404(db, orphan_id)
+    _check_case_transition(orphan, ("pending_review",))
+
+    old_status = orphan.case_status
+    orphan.case_status = "approved"
+    orphan.approved_by_partner_at = datetime.now(UTC)
+    orphan.approved_by_partner_user_id = user.id
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.approved",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"case_status": old_status},
+        new_values={"case_status": orphan.case_status},
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return OrphanRead.model_validate(orphan)
+
+
+@router.post("/{orphan_id}/reject", response_model=OrphanRead)
+async def reject_orphan(
+    orphan_id: UUID,
+    payload: OrphanRejectPayload,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*PARTNER_APPROVER_ROLES))],
+) -> OrphanRead:
+    """Reject a pending_review orphan. Reason is required and stored on
+    the row so reviewers can see why this case didn't move forward."""
+    orphan = await _load_orphan_or_404(db, orphan_id)
+    _check_case_transition(orphan, ("pending_review",))
+
+    old_status = orphan.case_status
+    orphan.case_status = "rejected"
+    orphan.rejection_reason = payload.reason
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.rejected",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"case_status": old_status},
+        new_values={"case_status": orphan.case_status, "rejection_reason": payload.reason},
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return OrphanRead.model_validate(orphan)
+
+
+@router.post("/{orphan_id}/release", response_model=OrphanRead)
+async def release_orphan(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*PARTNER_APPROVER_ROLES))],
+) -> OrphanRead:
+    """Move an approved or reserved orphan back to the available pool —
+    clearing any marketing-channel assignment. Used when a reservation
+    lapses or a channel is reshuffled."""
+    orphan = await _load_orphan_or_404(db, orphan_id)
+    _check_case_transition(orphan, ("approved", "reserved"))
+
+    old_status = orphan.case_status
+    old_channel = orphan.assigned_to_channel_id
+    orphan.case_status = "available"
+    orphan.assigned_to_channel_id = None
+    orphan.assignment_deadline = None
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.released",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={
+            "case_status": old_status,
+            "assigned_to_channel_id": str(old_channel) if old_channel else None,
+        },
+        new_values={"case_status": orphan.case_status, "assigned_to_channel_id": None},
     )
     await db.commit()
     await db.refresh(orphan)
