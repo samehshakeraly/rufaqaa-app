@@ -4,36 +4,44 @@
 
 @layer base {
   html {
-    @apply bg-snow text-slate-900 antialiased;
+    @apply bg-snow text-gray-900 antialiased;
   }
   html.dark {
-    @apply bg-slate-900 text-slate-100;
+    @apply bg-gray-900 text-gray-100;
   }
   body {
     @apply min-h-screen font-sans;
   }
   :focus-visible {
-    @apply outline-none ring-2 ring-trust ring-offset-2 ring-offset-snow;
+    @apply outline-none ring-2 ring-trust-500 ring-offset-2 ring-offset-snow;
   }
   html.dark :focus-visible {
-    @apply ring-offset-slate-900;
+    @apply ring-offset-gray-900;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply rounded-xl bg-trust px-4 py-2 font-medium text-white shadow-sm
-      transition hover:bg-trust/90 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply rounded-xl bg-trust-500 px-4 py-2 font-medium text-white shadow-sm
+      transition hover:bg-trust-600 hover:shadow-md active:bg-trust-700
+      disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-trust-500
+      disabled:hover:shadow-sm;
   }
   .input {
-    @apply w-full rounded-xl border border-sky bg-white px-4 py-2 text-slate-900
-      placeholder:text-slate-400 focus:border-trust focus:outline-none
-      dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100
-      dark:placeholder:text-slate-500;
+    @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-gray-900
+      placeholder:text-gray-400 transition
+      hover:border-gray-400
+      focus:border-trust-500 focus:outline-none focus:ring-2 focus:ring-trust-300/30
+      dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100
+      dark:placeholder:text-gray-500;
   }
   .card {
-    @apply rounded-2xl border border-sky bg-white p-6 shadow-sm
-      dark:border-slate-700 dark:bg-slate-800;
+    @apply rounded-2xl border border-sky-200 bg-white p-6 shadow-sm
+      dark:border-gray-700 dark:bg-gray-800;
+  }
+  .panel {
+    @apply rounded-xl border border-sky-200 bg-tranquil-200 p-4
+      dark:border-gray-700 dark:bg-gray-800/60;
   }
 }
 
