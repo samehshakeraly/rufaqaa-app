@@ -26,6 +26,7 @@
   --transition: 200ms ease;
 }
 
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: var(--snow-100); -webkit-font-smoothing: antialiased; }
 .latin { font-family: 'IBM Plex Sans', sans-serif; font-feature-settings: "tnum" 1; }
