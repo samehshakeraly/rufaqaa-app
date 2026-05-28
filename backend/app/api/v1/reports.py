@@ -1,28 +1,43 @@
 """Orphan periodic reports — guardian submits → partner approves → org
 approves → published to donor.
 
-This module exposes endpoints for each transition. Authorization is kept
-permissive for the skeleton (any authenticated user in the same org can
-transition); fine-grained role checks will land with the role/permission
-work.
+Per-report endpoints enforce two separate access checks:
+
+  * **Ownership** (`_check_report_access`) — applies to GET / PATCH /
+    submit. Guardians may only touch reports tied to orphans in their
+    own family; staff/admins pass through to the org-RLS scope.
+
+  * **Workflow role** (`REPORT_REVIEWER_ROLES`) — applies to the four
+    review transitions (approve-partner / approve-org / publish /
+    reject). Mirrors `PARTNER_APPROVER_ROLES` in orphans.py so the same
+    "partner_manager + admins" set decides the same kinds of
+    transitions.
 """
 
 from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
+from app.models.family import Guardian
 from app.models.orphan import Orphan
 from app.models.report import OrphanReport
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.report import ReportCreate, ReportRead, ReportTransition, ReportUpdate
 
 router = APIRouter()
+
+
+# Reviewers can advance the report workflow. Guardians and partner_staff
+# CANNOT — same split as the orphan approval workflow.
+REPORT_REVIEWER_ROLES: tuple[str, ...] = ("partner_manager", *ADMIN_ROLES)
 
 
 # Allowed forward transitions on the approval workflow.
@@ -84,6 +99,16 @@ async def create_report(
     if orphan is None:
         raise NotFound("Orphan")
 
+    # Guardians may only create reports for orphans in their own family.
+    # Staff/admins pass through to the org-scoped RLS check.
+    if user.role == "guardian":
+        guardian = await db.scalar(select(Guardian).where(Guardian.user_id == user.id))
+        if guardian is None or orphan.family_id != guardian.family_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot create a report for an orphan outside your family",
+            )
+
     report = OrphanReport(
         organization_id=user.organization_id,
         orphan_id=payload.orphan_id,
@@ -109,11 +134,10 @@ async def create_report(
 async def get_report(
     report_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> ReportRead:
-    report = await db.scalar(select(OrphanReport).where(OrphanReport.id == report_id))
-    if report is None:
-        raise NotFound("Report")
+    report = await _load_or_404(db, report_id)
+    await _check_report_access(report, user, db)
     return ReportRead.model_validate(report)
 
 
@@ -122,10 +146,11 @@ async def update_report(
     report_id: UUID,
     payload: ReportUpdate,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> ReportRead:
     """Fill in or revise a draft report's content sections."""
     report = await _load_or_404(db, report_id)
+    await _check_report_access(report, user, db)
     if report.status != "draft":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -146,6 +171,36 @@ async def _load_or_404(db: AsyncSession, report_id: UUID) -> OrphanReport:
     return report
 
 
+async def _check_report_access(
+    report: OrphanReport, user: User, db: AsyncSession
+) -> None:
+    """Per-report ownership check.
+
+    Guardians may only touch reports tied to orphans in their own family;
+    staff/admin roles pass through (the org-scoped RLS check on the
+    underlying session is the wider safety net).
+    """
+    if user.role != "guardian":
+        return
+
+    guardian = await db.scalar(select(Guardian).where(Guardian.user_id == user.id))
+    if guardian is None:
+        # Logged in as guardian role but no Guardian row — refuse outright.
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Guardian profile not found",
+        )
+
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == report.orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None or orphan.family_id != guardian.family_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This report does not belong to your family",
+        )
+
+
 def _check_transition(report: OrphanReport, expected_from: str) -> None:
     if report.status != expected_from:
         raise HTTPException(
@@ -156,8 +211,14 @@ def _check_transition(report: OrphanReport, expected_from: str) -> None:
 
 @router.post("/{report_id}/submit", response_model=ReportRead)
 async def submit_report(report_id: UUID, db: DbSession, user: CurrentUser) -> ReportRead:
-    """Move a draft report into the partner approval queue."""
+    """Move a draft report into the partner approval queue.
+
+    Same ownership rule as PATCH — the guardian who owns the orphan can
+    submit the draft; partner/admin staff can also submit on their
+    behalf.
+    """
     report = await _load_or_404(db, report_id)
+    await _check_report_access(report, user, db)
     _check_transition(report, "draft")
     report.status = _NEXT["draft"]
     report.submitted_by = user.id
@@ -168,7 +229,11 @@ async def submit_report(report_id: UUID, db: DbSession, user: CurrentUser) -> Re
 
 
 @router.post("/{report_id}/approve-partner", response_model=ReportRead)
-async def approve_partner(report_id: UUID, db: DbSession, user: CurrentUser) -> ReportRead:
+async def approve_partner(
+    report_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
+) -> ReportRead:
     report = await _load_or_404(db, report_id)
     _check_transition(report, "pending_partner_approval")
     report.status = "pending_org_approval"
@@ -180,7 +245,11 @@ async def approve_partner(report_id: UUID, db: DbSession, user: CurrentUser) -> 
 
 
 @router.post("/{report_id}/approve-org", response_model=ReportRead)
-async def approve_org(report_id: UUID, db: DbSession, user: CurrentUser) -> ReportRead:
+async def approve_org(
+    report_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
+) -> ReportRead:
     report = await _load_or_404(db, report_id)
     _check_transition(report, "pending_org_approval")
     report.status = "org_approved"
@@ -192,7 +261,11 @@ async def approve_org(report_id: UUID, db: DbSession, user: CurrentUser) -> Repo
 
 
 @router.post("/{report_id}/publish", response_model=ReportRead)
-async def publish_report(report_id: UUID, db: DbSession, _user: CurrentUser) -> ReportRead:
+async def publish_report(
+    report_id: UUID,
+    db: DbSession,
+    _user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
+) -> ReportRead:
     report = await _load_or_404(db, report_id)
     _check_transition(report, "org_approved")
     report.status = "published_to_donor"
@@ -217,7 +290,7 @@ async def reject_report(
     report_id: UUID,
     payload: ReportTransition,
     db: DbSession,
-    _user: CurrentUser,
+    _user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
 ) -> ReportRead:
     report = await _load_or_404(db, report_id)
     if report.status in ("published_to_donor", "rejected"):
