@@ -386,6 +386,55 @@
       "whatsapp": "WhatsApp",
       "weekly_digest": "Weekly digest",
       "marketing": "Marketing & updates"
+    },
+    "tabs": {
+      "myAccount": "My account",
+      "organization": "Organization profile",
+      "businessRules": "Business rules",
+      "integrations": "Integrations",
+      "danger": "Danger zone"
+    },
+    "tagline": "Tagline",
+    "logo": "Organization logo",
+    "logoUpload": "Upload a logo",
+    "logoUploadTodo": "Logo upload needs a backend storage endpoint — TODO.",
+    "businessRulesTab": {
+      "title": "Default business rules",
+      "description": "Organisation-wide defaults that govern guardian and report behaviour.",
+      "showFinancialToGuardian": "Show financial data to guardians",
+      "showFinancialToGuardianDesc": "When off, guardians see only orphan profiles — never payment amounts or donor identity.",
+      "autoPublishReports": "Auto-publish monthly reports",
+      "autoPublishReportsDesc": "Skip the org-admin approval step once both partner staff and partner manager have signed off.",
+      "todo": "Persistence requires a backend business_rules field — not yet implemented."
+    },
+    "integrationsTab": {
+      "title": "Integrations",
+      "description": "Connect Rufaqaa to payment, mail, and storage providers. Secrets are masked.",
+      "myfatoorah": "MyFatoorah",
+      "myfatoorahDescription": "Card and K-Net payments via MyFatoorah.",
+      "smtp": "SMTP",
+      "smtpDescription": "Outbound transactional email.",
+      "s3": "Object storage (S3)",
+      "s3Description": "Where uploaded documents and media are stored.",
+      "apiKey": "API key",
+      "secret": "Secret",
+      "host": "Host",
+      "port": "Port",
+      "username": "Username",
+      "bucket": "Bucket",
+      "endpoint": "Endpoint",
+      "region": "Region",
+      "test": "Test connection",
+      "todo": "Integration endpoints are not yet on the backend — fields are placeholders."
+    },
+    "dangerTab": {
+      "title": "Danger zone",
+      "description": "Irreversible actions. Each writes to the audit log and requires explicit confirmation.",
+      "transferOwnership": "Transfer ownership",
+      "transferOwnershipDescription": "Hand the super-admin seat to another user in this organisation.",
+      "deleteOrg": "Delete organisation",
+      "deleteOrgDescription": "Permanently delete this organisation and all of its data after a 30-day grace period.",
+      "todo": "Backend endpoints are not yet implemented — buttons stay disabled until /organization/transfer-ownership and DELETE /organization land."
     }
   },
   "partners": {

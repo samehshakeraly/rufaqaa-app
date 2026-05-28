@@ -23,7 +23,6 @@ export function OrganizationSettingsCard() {
 
   const [form, setForm] = useState<OrganizationUpdateInput>({});
 
-  // Reset the local form whenever the server payload changes.
   useEffect(() => {
     if (data) {
       setForm({
@@ -58,7 +57,7 @@ export function OrganizationSettingsCard() {
     return (
       <div className="card max-w-2xl">
         <h2 className="text-lg font-semibold">{t("settings.organization")}</h2>
-        <p className="text-slate-500">{t("common.loading")}</p>
+        <p className="text-gray-500">{t("common.loading")}</p>
       </div>
     );
   }
@@ -75,7 +74,7 @@ export function OrganizationSettingsCard() {
     >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t("settings.organization")}</h2>
-        <span className="font-mono text-xs text-slate-500">{data.code}</span>
+        <span className="font-mono text-xs tabular-nums text-gray-500">{data.code}</span>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -142,7 +141,7 @@ export function OrganizationSettingsCard() {
           <div className="flex items-center gap-2">
             <input
               type="color"
-              className="h-10 w-12 cursor-pointer rounded border border-sky bg-white p-1 disabled:cursor-not-allowed"
+              className="h-10 w-12 cursor-pointer rounded border border-sky-200 bg-white p-1 disabled:cursor-not-allowed"
               value={form.primary_color ?? "#769FCD"}
               disabled={disabled}
               onChange={(e) =>
@@ -167,7 +166,7 @@ export function OrganizationSettingsCard() {
           {mut.isPending ? t("common.saving") : t("common.save")}
         </button>
       ) : (
-        <p className="text-xs text-slate-500">{t("settings.adminOnly")}</p>
+        <p className="text-xs text-gray-500">{t("settings.adminOnly")}</p>
       )}
     </form>
   );
@@ -176,7 +175,7 @@ export function OrganizationSettingsCard() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+      <span className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
         {label}
       </span>
       {children}

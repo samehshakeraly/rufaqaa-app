@@ -391,6 +391,55 @@
       "whatsapp": "واتساب",
       "weekly_digest": "ملخص أسبوعي",
       "marketing": "العروض والتحديثات"
+    },
+    "tabs": {
+      "myAccount": "حسابي",
+      "organization": "بيانات المؤسسة",
+      "businessRules": "قواعد العمل",
+      "integrations": "التكاملات",
+      "danger": "منطقة الخطر"
+    },
+    "tagline": "الشعار النصي",
+    "logo": "شعار المؤسسة",
+    "logoUpload": "رفع شعار",
+    "logoUploadTodo": "رفع الشعار يحتاج نقطة نهاية تخزين في الخادم — لاحقاً.",
+    "businessRulesTab": {
+      "title": "قواعد العمل الافتراضية",
+      "description": "القواعد العامة للمؤسسة التي تحكم سلوك واجهات أولياء الأمور والتقارير.",
+      "showFinancialToGuardian": "إظهار البيانات المالية لولي الأمر",
+      "showFinancialToGuardianDesc": "عند إيقافها لا يرى ولي الأمر مبالغ الدفع أو هوية المتبرعين، فقط ملف اليتيم.",
+      "autoPublishReports": "نشر التقارير الشهرية تلقائياً",
+      "autoPublishReportsDesc": "تخطّي خطوة اعتماد إدارة المؤسسة بعد توقيع موظف الشريك ومدير الشريك.",
+      "todo": "يتطلب الحفظ حقل business_rules في الخادم — لم يُنفَّذ بعد."
+    },
+    "integrationsTab": {
+      "title": "التكاملات",
+      "description": "اربط رفقاء بمزوّدي الدفع والبريد والتخزين. تظهر الأسرار مُقنَّعة.",
+      "myfatoorah": "ماي فاتورة",
+      "myfatoorahDescription": "مدفوعات البطاقات وكي‑نت عبر MyFatoorah.",
+      "smtp": "SMTP",
+      "smtpDescription": "إرسال البريد الإلكتروني للمعاملات.",
+      "s3": "تخزين الملفات (S3)",
+      "s3Description": "مكان تخزين الوثائق والوسائط المرفوعة.",
+      "apiKey": "مفتاح API",
+      "secret": "السر",
+      "host": "المضيف",
+      "port": "المنفذ",
+      "username": "اسم المستخدم",
+      "bucket": "الـ Bucket",
+      "endpoint": "نقطة النهاية",
+      "region": "المنطقة",
+      "test": "اختبار الاتصال",
+      "todo": "نقاط نهاية التكامل غير موجودة في الخادم بعد — الحقول مؤقّتة."
+    },
+    "dangerTab": {
+      "title": "منطقة الخطر",
+      "description": "إجراءات لا يمكن التراجع عنها. كلّ إجراء يُسجَّل في سجلّ التدقيق ويتطلّب تأكيداً صريحاً.",
+      "transferOwnership": "نقل الملكية",
+      "transferOwnershipDescription": "نقل صلاحية المدير الأعلى إلى مستخدم آخر في هذه المؤسسة.",
+      "deleteOrg": "حذف المؤسسة",
+      "deleteOrgDescription": "حذف هذه المؤسسة وكلّ بياناتها نهائياً بعد فترة سماح 30 يوماً.",
+      "todo": "نقاط النهاية في الخادم غير منفّذة بعد — الأزرار معطّلة حتى تُتاح /organization/transfer-ownership و DELETE /organization."
     }
   },
   "partners": {
