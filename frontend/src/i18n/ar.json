@@ -138,7 +138,11 @@
     "audit": "سجل التدقيق",
     "settings": "الإعدادات",
     "logout": "خروج",
-    "language": "العربية"
+    "language": "العربية",
+    "approvals": "الموافقات",
+    "mediaReview": "مراجعة الوسائط",
+    "partnerStaff": "موظفو الشريك",
+    "registerOrphan": "تسجيل يتيم"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
@@ -227,6 +231,28 @@
     "bulkArchiveConfirm": "أرشفة {{count}} يتيم؟ يتم حذفهم بشكل ناعم.",
     "bulkArchiveDone": "تمت أرشفة {{ok}} يتيم.",
     "bulkArchivePartial": "تمت أرشفة {{ok}}؛ فشل {{fail}}.",
+    "subtitle": {
+      "approvals": "حالات بانتظار موافقتك"
+    },
+    "actions": {
+      "approve": "اعتماد",
+      "reject": "رفض",
+      "release": "إطلاق",
+      "approveConfirm": "اعتماد هذه الحالة؟",
+      "releaseConfirm": "إطلاق هذه الحالة وإعادتها إلى المجموع؟",
+      "rejectReason": "ما سبب رفض هذه الحالة؟",
+      "rejectReasonPlaceholder": "اذكر سبباً مختصراً للرفض",
+      "rejectSubmit": "رفض الحالة",
+      "approved": "تم اعتماد اليتيم",
+      "rejected": "تم رفض الحالة",
+      "released": "تم إطلاق الحالة"
+    },
+    "register": {
+      "title": "تسجيل يتيم جديد",
+      "duplicate": "احتمال تكرار — يبدو أن هذه الحالة مشابهة لسجل قائم",
+      "viewExisting": "عرض السجل الحالي",
+      "back": "← العودة للأيتام"
+    },
     "photo": {
       "title": "الصور",
       "uploaded": "تم رفع الصورة.",
@@ -355,7 +381,11 @@
       "approve-partner": "اعتماد الشريك",
       "approve-org": "اعتماد المؤسسة",
       "publish": "نشر للمتبرع",
-      "reject": "رفض"
+      "reject": "رفض",
+      "rejectReason": "ما سبب رفض هذا التقرير؟",
+      "rejectSubmit": "رفض التقرير",
+      "rejected": "تم رفض التقرير",
+      "success": "تم تحديث التقرير"
     }
   },
   "settings": {
@@ -430,7 +460,23 @@
     "suspend": "تعليق",
     "reactivate": "إعادة تفعيل",
     "suspended": "تم تعليق الحساب",
-    "reactivated": "تم إعادة تفعيل الحساب"
+    "reactivated": "تم إعادة تفعيل الحساب",
+    "roles": {
+      "super_admin": "مدير عام",
+      "org_admin": "مدير المؤسسة",
+      "partner_manager": "مدير الشريك",
+      "partner_staff": "موظف الشريك",
+      "marketing_manager": "مدير التسويق",
+      "finance": "المالية",
+      "donor": "متبرع",
+      "guardian": "ولي أمر",
+      "viewer": "قارئ"
+    },
+    "staff": {
+      "title": "موظفو الشريك",
+      "invite": "دعوة مستخدم",
+      "invitePartnerStaff": "تم إرسال الدعوة"
+    }
   },
   "marketingChannels": {
     "title": "قنوات التسويق",
@@ -520,6 +566,23 @@
       "completed": "مكتمل",
       "failed": "فشل",
       "cancelled": "ملغى"
+    }
+  },
+  "media": {
+    "moderate": {
+      "approve": "اعتماد",
+      "reject": "رفض",
+      "approved": "تم اعتماد الوسائط",
+      "rejected": "تم رفض الوسائط",
+      "notesLabel": "سبب الرفض",
+      "notesPlaceholder": "سبب مختصر (للموظفين فقط)"
+    },
+    "review": {
+      "title": "مراجعة الوسائط",
+      "description": "راجع واعتمد الصور التي يرفعها موظفو الشريك قبل ظهورها للمتبرعين.",
+      "todoBackend": "مراجعة الوسائط المعلّقة تتطلّب نقطة نهاية للقائمة في الخادم (قيد التطوير). حتى ذلك الحين، استخدم أدوات الاعتماد لكل صورة من صفحة اليتيم.",
+      "thumbnailAlt": "صورة وسائط معلّقة {{id}}",
+      "workaround": "عرض الأيتام بانتظار المراجعة"
     }
   },
   "documents": {

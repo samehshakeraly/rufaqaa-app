@@ -11,7 +11,7 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition ${
     isActive
       ? "bg-trust text-white"
-      : "text-slate-700 hover:bg-tranquil dark:text-slate-200 dark:hover:bg-slate-700"
+      : "text-gray-700 hover:bg-tranquil dark:text-gray-200 dark:hover:bg-gray-700"
   }`;
 
 export function AppLayout() {
@@ -19,7 +19,7 @@ export function AppLayout() {
   const { t } = useTranslation();
   const clear = useAuthStore((s) => s.clear);
   const { data: me } = useCurrentUser();
-  const { isAdmin } = useRole();
+  const { isAdmin, isPartner, isPartnerApprover } = useRole();
 
   function logout() {
     clear();
@@ -27,8 +27,8 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-snow dark:bg-slate-900">
-      <header className="border-b border-sky bg-white dark:border-slate-700 dark:bg-slate-800">
+    <div className="min-h-screen bg-snow dark:bg-gray-900">
+      <header className="border-b border-sky bg-white dark:border-gray-700 dark:bg-gray-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <Link to="/admin/dashboard" className="text-xl font-bold text-trust">
             {t("app.name")}
@@ -40,6 +40,24 @@ export function AppLayout() {
             <NavLink to="/admin/orphans" className={navItemClass}>
               {t("nav.orphans")}
             </NavLink>
+            {(isPartner || isAdmin) && (
+              <NavLink to="/admin/orphans/new" className={navItemClass}>
+                {t("nav.registerOrphan")}
+              </NavLink>
+            )}
+            {isPartnerApprover && (
+              <NavLink
+                to="/admin/orphans?status=pending_review"
+                className={navItemClass}
+              >
+                {t("nav.approvals")}
+              </NavLink>
+            )}
+            {isPartnerApprover && (
+              <NavLink to="/admin/media-review" className={navItemClass}>
+                {t("nav.mediaReview")}
+              </NavLink>
+            )}
             <NavLink to="/admin/donors" className={navItemClass}>
               {t("nav.donors")}
             </NavLink>
@@ -69,6 +87,14 @@ export function AppLayout() {
               </NavLink>
             )}
             {isAdmin && (
+              <NavLink
+                to="/admin/users?role=partner_staff"
+                className={navItemClass}
+              >
+                {t("nav.partnerStaff")}
+              </NavLink>
+            )}
+            {isAdmin && (
               <NavLink to="/admin/marketing-channels" className={navItemClass}>
                 {t("nav.marketingChannels")}
               </NavLink>
@@ -84,7 +110,7 @@ export function AppLayout() {
           </nav>
           <div className="flex items-center gap-3">
             {me && (
-              <span className="hidden text-sm text-slate-600 dark:text-slate-300 sm:inline">
+              <span className="hidden text-sm text-gray-600 dark:text-gray-300 sm:inline">
                 {me.first_name} {me.last_name}
               </span>
             )}
@@ -93,7 +119,7 @@ export function AppLayout() {
             <button
               type="button"
               onClick={logout}
-              className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="rounded-lg border border-sky px-3 py-1 text-sm text-gray-700 hover:bg-tranquil dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
             >
               {t("nav.logout")}
             </button>

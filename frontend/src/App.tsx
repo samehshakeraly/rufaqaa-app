@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AdminRoute } from "./components/AdminRoute";
 import { DonorRoute } from "./components/DonorRoute";
+import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
@@ -21,8 +22,10 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
+import { MediaReviewPage } from "./pages/MediaReviewPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphansPage } from "./pages/OrphansPage";
+import { RegisterOrphanPage } from "./pages/RegisterOrphanPage";
 import { PartnerDetailPage } from "./pages/PartnerDetailPage";
 import { PartnersPage } from "./pages/PartnersPage";
 import { PaymentFailurePage } from "./pages/PaymentFailurePage";
@@ -89,7 +92,16 @@ export function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="orphans" element={<OrphansPage />} />
+        <Route path="orphans/new" element={<RegisterOrphanPage />} />
         <Route path="orphans/:id" element={<OrphanDetailPage />} />
+        <Route
+          path="media-review"
+          element={
+            <PartnerApproverGate>
+              <MediaReviewPage />
+            </PartnerApproverGate>
+          }
+        />
         <Route path="donors" element={<DonorsPage />} />
         <Route path="families" element={<FamiliesPage />} />
         <Route path="families/:id" element={<FamilyDetailPage />} />

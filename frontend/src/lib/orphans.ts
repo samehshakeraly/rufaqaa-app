@@ -28,6 +28,10 @@ export interface OrphanCreateInput {
   gender: "M" | "F";
   partner_organization_id: string;
   father_name?: string;
+  middle_name?: string;
+  full_name_en?: string;
+  father_death_date?: string;
+  family_id?: string;
   nationality?: string;
 }
 
@@ -82,4 +86,19 @@ export async function getOrphanTimeline(id: string): Promise<Timeline> {
 
 export async function archiveOrphan(id: string): Promise<void> {
   await api.delete(`/orphans/${id}`);
+}
+
+export async function approveOrphan(id: string): Promise<Orphan> {
+  const { data } = await api.post<Orphan>(`/orphans/${id}/approve`);
+  return data;
+}
+
+export async function rejectOrphan(id: string, reason: string): Promise<Orphan> {
+  const { data } = await api.post<Orphan>(`/orphans/${id}/reject`, { reason });
+  return data;
+}
+
+export async function releaseOrphan(id: string): Promise<Orphan> {
+  const { data } = await api.post<Orphan>(`/orphans/${id}/release`);
+  return data;
 }

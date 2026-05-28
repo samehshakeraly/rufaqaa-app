@@ -25,3 +25,26 @@ export async function uploadOrphanPhoto(
   });
   return data as OrphanPhoto;
 }
+
+export type MediaModerationDecision = "approve" | "reject";
+
+export interface MediaModerationResult {
+  id: string;
+  moderation_status: string;
+  moderation_notes: string | null;
+  moderated_by: string | null;
+  moderated_at: string | null;
+  visibility: string;
+}
+
+export async function moderateMedia(
+  id: string,
+  decision: MediaModerationDecision,
+  notes?: string,
+): Promise<MediaModerationResult> {
+  const { data } = await api.post<MediaModerationResult>(
+    `/media/${id}/moderate`,
+    { decision, notes: notes ?? null },
+  );
+  return data;
+}

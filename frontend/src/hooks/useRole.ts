@@ -10,10 +10,16 @@ export function useRole() {
   const role = data?.role;
 
   const isAdmin = role === "super_admin" || role === "org_admin";
+  const isPartnerManager = role === "partner_manager";
+  const isPartnerStaff = role === "partner_staff";
+  const isPartner = isPartnerManager || isPartnerStaff;
+  // Anyone who can approve / reject orphans + moderate media + release.
+  // Backend enforces tightening; this is the UI hint only.
+  const isPartnerApprover = isAdmin || isPartnerManager;
   const isStaff =
     isAdmin ||
-    role === "partner_manager" ||
-    role === "partner_staff" ||
+    isPartnerManager ||
+    isPartnerStaff ||
     role === "marketing_manager" ||
     role === "finance";
   const isDonor = role === "donor";
@@ -22,6 +28,10 @@ export function useRole() {
   return {
     role,
     isAdmin,
+    isPartnerManager,
+    isPartnerStaff,
+    isPartner,
+    isPartnerApprover,
     isStaff,
     isDonor,
     emailVerified,
