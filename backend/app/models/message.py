@@ -32,9 +32,7 @@ class Message(Base):
     )
     # Nullable: orphan-composed messages may have no resolvable recipient
     # yet (no provisioned guardian) — a moderator routes them manually.
-    to_user_id: Mapped[UUID | None] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("users.id")
-    )
+    to_user_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("users.id"))
     related_orphan_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("orphans.id")
     )
