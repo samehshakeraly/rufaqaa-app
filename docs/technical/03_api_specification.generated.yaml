@@ -2610,6 +2610,56 @@ components:
           title: Timezone
       title: OrganizationUpdate
       type: object
+    OrphanAchievementRead:
+      description: 'Published report, projected to the progress fields only.
+
+
+        Drops everything financial, drops `health_status` and
+
+        `psychological_status` (clinical), and drops `submitted_by` /
+
+        approver user info.'
+      properties:
+        activities:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Activities
+        educational_progress:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Educational Progress
+        id:
+          format: uuid
+          title: Id
+          type: string
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+        quran_progress:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Quran Progress
+        report_type:
+          title: Report Type
+          type: string
+      required:
+      - id
+      - report_type
+      - period_start
+      - period_end
+      title: OrphanAchievementRead
+      type: object
     OrphanCreate:
       properties:
         date_of_birth:
@@ -2680,6 +2730,122 @@ components:
       - gender
       - partner_organization_id
       title: OrphanCreate
+      type: object
+    OrphanMeRead:
+      description: 'The orphan''s own profile.
+
+
+        Deliberately omits every financial field (`current_balance`,
+
+        `is_sponsored`, `balance_currency`), partner identity
+
+        (`partner_organization_id`), and any guardian PII.'
+      properties:
+        code:
+          title: Code
+          type: string
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        family_name:
+          title: Family Name
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          title: Gender
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        profile_completion_percentage:
+          title: Profile Completion Percentage
+          type: integer
+      required:
+      - id
+      - code
+      - first_name
+      - family_name
+      - date_of_birth
+      - gender
+      - profile_completion_percentage
+      title: OrphanMeRead
+      type: object
+    OrphanMessageCreate:
+      description: 'Compose payload. The orphan never picks the recipient or the
+
+        orphan context — both are derived server-side (recipient = primary
+
+        guardian, context = self).'
+      properties:
+        content:
+          maxLength: 4000
+          minLength: 1
+          title: Content
+          type: string
+        message_type:
+          const: text
+          default: text
+          title: Message Type
+          type: string
+      required:
+      - content
+      title: OrphanMessageCreate
+      type: object
+    OrphanMessageRead:
+      description: 'Privacy-safe message projection.
+
+
+        Carries only `from_role` + `from_name` (first name) — no raw
+
+        `from_user_id` / `to_user_id`, no email, phone, or last name.'
+      properties:
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+        created_at:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Created At
+        from_name:
+          title: From Name
+          type: string
+        from_role:
+          title: From Role
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_mine:
+          title: Is Mine
+          type: boolean
+        is_read:
+          title: Is Read
+          type: boolean
+        message_type:
+          title: Message Type
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+      required:
+      - id
+      - from_role
+      - from_name
+      - message_type
+      - content
+      - moderation_status
+      - is_read
+      - is_mine
+      title: OrphanMessageRead
       type: object
     OrphanPhoto:
       properties:
@@ -2859,6 +3025,37 @@ components:
       required:
       - reason
       title: OrphanRejectPayload
+      type: object
+    OrphanSponsorView:
+      description: 'Minimal, child-safe view of the sponsorship.
+
+
+        When `has_sponsor` is False every other field is None. When True,
+
+        `display_name` is either the literal "كفيلك" or the donor''s first
+
+        name (only if the org opted in), and `since_year` is the calendar
+
+        year the sponsorship started. NEVER carries donor id/email/phone/
+
+        full name, amount, currency, or sponsorship id.'
+      properties:
+        display_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Name
+        has_sponsor:
+          title: Has Sponsor
+          type: boolean
+        since_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Since Year
+      required:
+      - has_sponsor
+      title: OrphanSponsorView
       type: object
     OrphanUpdate:
       description: 'Partial update. Every field optional — only the supplied keys are
@@ -7064,6 +7261,169 @@ paths:
       summary: Update Current Organization
       tags:
       - organization
+  /api/v1/orphan/me:
+    get:
+      description: 'Return the orphan''s own profile. No financial, partner, or
+
+        guardian fields are serialised.'
+      operationId: get_orphan_me_api_v1_orphan_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanMeRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphan Me
+      tags:
+      - orphan-self
+  /api/v1/orphan/me/achievements:
+    get:
+      description: 'List the orphan''s published reports, projected to progress fields.
+
+
+        Only `published_to_donor` reports are returned — drafts and
+
+        in-review reports stay hidden. Financial, clinical (`health_status`,
+
+        `psychological_status`) and submitter fields are dropped.'
+      operationId: list_orphan_achievements_api_v1_orphan_me_achievements_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanAchievementRead'
+                title: Response List Orphan Achievements Api V1 Orphan Me Achievements Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Achievements
+      tags:
+      - orphan-self
+  /api/v1/orphan/me/messages:
+    get:
+      description: 'List approved messages in the orphan''s own thread.
+
+
+        Scoped to `related_orphan_id == self.id` and to messages the orphan
+
+        is actually a party to (sender or recipient). Only `approved`
+
+        messages surface here.'
+      operationId: list_orphan_messages_api_v1_orphan_me_messages_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanMessageRead'
+                title: Response List Orphan Messages Api V1 Orphan Me Messages Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Messages
+      tags:
+      - orphan-self
+    post:
+      description: 'Compose a message.
+
+
+        The orphan can only ever send a message with `related_orphan_id` set
+
+        to their own id; the recipient auto-resolves to the orphan''s primary
+
+        guardian (or NULL when none has a login, in which case a moderator
+
+        routes it). Every orphan-sent message lands as `pending`.'
+      operationId: send_orphan_message_api_v1_orphan_me_messages_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanMessageCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanMessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Send Orphan Message
+      tags:
+      - orphan-self
+  /api/v1/orphan/me/sponsor:
+    get:
+      description: 'Minimal sponsor view.
+
+
+        Returns `{has_sponsor: false}` when there is no active sponsorship.
+
+        Otherwise returns a generic display name (the donor''s first name only
+
+        when the org has opted in) and the start year — never the donor''s
+
+        identity, the amount, the currency, or the sponsorship id.'
+      operationId: get_orphan_sponsor_api_v1_orphan_me_sponsor_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanSponsorView'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphan Sponsor
+      tags:
+      - orphan-self
   /api/v1/orphans:
     get:
       description: 'List orphans, optionally filtered by case_status and a search term.
