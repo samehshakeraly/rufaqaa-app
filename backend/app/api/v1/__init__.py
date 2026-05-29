@@ -19,6 +19,7 @@ from app.api.v1 import (
     orphans,
     partners,
     payments,
+    platform,
     public,
     reports,
     sponsorships,
@@ -49,6 +50,7 @@ api_router.include_router(families.router, prefix="/families", tags=["families"]
 api_router.include_router(donor_portal.router, prefix="/me", tags=["donor-portal"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(organization.router, prefix="/organization", tags=["organization"])
+api_router.include_router(platform.router, prefix="/platform", tags=["platform"])
 api_router.include_router(documents.router, tags=["documents"])
 api_router.include_router(bank_transfers.router, prefix="/bank-transfers", tags=["bank-transfers"])
 api_router.include_router(public.router, prefix="/public", tags=["public"])
