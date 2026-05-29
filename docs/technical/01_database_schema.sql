@@ -1147,7 +1147,7 @@ CREATE TABLE business_rules (
     show_sponsorship_dates_to_guardian BOOLEAN DEFAULT TRUE,
 
     -- Orphan portal visibility settings
-    show_donor_first_name_to_orphan BOOLEAN DEFAULT FALSE,
+    show_donor_first_name_to_orphan BOOLEAN NOT NULL DEFAULT FALSE,
     
     -- Custom rules (JSONB for extensibility)
     custom_rules JSONB DEFAULT '{}'::jsonb,
