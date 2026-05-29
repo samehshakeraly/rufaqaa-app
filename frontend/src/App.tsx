@@ -7,10 +7,12 @@ import { MarketingRoute } from "./components/MarketingRoute";
 import { OrphanRoute } from "./components/OrphanRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { SuperAdminRoute } from "./components/SuperAdminRoute";
 import { PublicSiteLayout } from "./components/public/PublicSiteLayout";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
 import { OrphanLayout } from "./components/layout/OrphanLayout";
+import { PlatformLayout } from "./components/layout/PlatformLayout";
 import { PublicLayout } from "./components/layout/PublicLayout";
 
 // Public marketing pages (W-02..W-06)
@@ -53,6 +55,10 @@ import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
 import { RegisterOrphanPage } from "./pages/RegisterOrphanPage";
 import { PartnerDetailPage } from "./pages/PartnerDetailPage";
 import { PartnersPage } from "./pages/PartnersPage";
+import { PlatformAnalyticsPage } from "./pages/PlatformAnalyticsPage";
+import { PlatformDashboardPage } from "./pages/PlatformDashboardPage";
+import { PlatformOrganizationsPage } from "./pages/PlatformOrganizationsPage";
+import { PlatformSettingsPage } from "./pages/PlatformSettingsPage";
 import { PaymentFailurePage } from "./pages/PaymentFailurePage";
 import { PaymentReceiptPage } from "./pages/PaymentReceiptPage";
 import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
@@ -254,6 +260,26 @@ export function App() {
           }
         />
         <Route path="settings" element={<SettingsPage />} />
+      </Route>
+
+      {/* ── Super-admin platform portal (SA-01..SA-04) ──────────────
+          Cross-org scope. Gated to role=super_admin ONLY (org_admin is
+          redirected home by SuperAdminRoute). Distinct PlatformLayout
+          chrome signals "Platform Administration" mode. */}
+      <Route
+        path="/platform"
+        element={
+          <ProtectedRoute>
+            <SuperAdminRoute>
+              <PlatformLayout />
+            </SuperAdminRoute>
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<PlatformDashboardPage />} />
+        <Route path="organizations" element={<PlatformOrganizationsPage />} />
+        <Route path="analytics" element={<PlatformAnalyticsPage />} />
+        <Route path="settings" element={<PlatformSettingsPage />} />
       </Route>
 
       {/* Catch-all → landing (anon will see landing, logged-in users

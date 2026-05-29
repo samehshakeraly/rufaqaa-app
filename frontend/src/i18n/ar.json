@@ -1447,5 +1447,147 @@
       "activities": "أنشطتي",
       "noHighlights": "لا توجد تفاصيل لهذه الفترة بعد."
     }
+  },
+  "platform": {
+    "modeBadge": "إدارة المنصّة",
+    "exitToAdmin": "العودة للوحة المؤسسة",
+    "nav": {
+      "dashboard": "لوحة عامّة",
+      "organizations": "المؤسّسات",
+      "analytics": "التحليلات",
+      "settings": "الإعدادات"
+    },
+    "dashboard": {
+      "title": "نظرة عامّة على المنصّة",
+      "manageOrgs": "إدارة المؤسّسات",
+      "paymentsChart": "المدفوعات عبر الأشهر",
+      "topOrgs": "أعلى المؤسّسات تبرّعاً",
+      "recentOrgs": "أحدث المؤسّسات",
+      "viewAll": "عرض الكلّ"
+    },
+    "summary": {
+      "totalOrgs": "إجمالي المؤسّسات",
+      "activeOrgs": "المؤسّسات النشطة",
+      "totalOrphans": "إجمالي الأيتام",
+      "totalDonors": "إجمالي المتبرّعين",
+      "totalSponsorships": "إجمالي الكفالات",
+      "totalDonated": "إجمالي التبرّعات"
+    },
+    "orgStatus": {
+      "active": "نشطة",
+      "suspended": "موقوفة",
+      "archived": "مؤرشفة",
+      "pending_approval": "بانتظار الموافقة"
+    },
+    "orgType": {
+      "standalone": "مستقلّة",
+      "external_marketer": "مُسوِّق خارجي",
+      "local_partner": "شريك محلّي",
+      "hybrid": "هجينة",
+      "federated": "اتّحاديّة"
+    },
+    "deployment": {
+      "self_hosted": "استضافة ذاتية",
+      "saas_cloud": "سحابة SaaS"
+    },
+    "orgs": {
+      "title": "إدارة المؤسّسات",
+      "add": "إضافة مؤسّسة",
+      "edit": {
+        "saved": "تمّ حفظ التغييرات",
+        "planPlaceholder": "مثال: free / pro"
+      },
+      "suspend": "إيقاف",
+      "activate": "تفعيل",
+      "filters": {
+        "status": "الحالة",
+        "allStatuses": "كلّ الحالات",
+        "country": "الدولة",
+        "search": "بحث",
+        "searchPlaceholder": "الاسم أو الرمز…"
+      },
+      "cols": {
+        "code": "الرمز",
+        "name": "الاسم",
+        "country": "الدولة",
+        "status": "الحالة",
+        "plan": "الخطّة",
+        "orphans": "الأيتام",
+        "donors": "المتبرّعون",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "إجراءات"
+      },
+      "create": {
+        "title": "إضافة مؤسّسة جديدة",
+        "code": "الرمز",
+        "country": "رمز الدولة",
+        "nameAr": "الاسم (عربي)",
+        "nameEn": "الاسم (إنجليزي)",
+        "currency": "العملة الأساسية",
+        "orgType": "نوع المؤسّسة",
+        "deployment": "نمط النشر",
+        "adminLegend": "مدير المؤسّسة الأوّل",
+        "adminEmail": "البريد الإلكتروني",
+        "adminPassword": "كلمة مرور مؤقّتة",
+        "adminFirst": "الاسم الأوّل",
+        "adminLast": "اسم العائلة",
+        "submit": "إنشاء المؤسّسة",
+        "created": "تمّ إنشاء المؤسّسة ومديرها: {{email}}"
+      },
+      "suspendDialog": {
+        "title": "إيقاف المؤسّسة",
+        "body": "أنت على وشك إيقاف «{{name}}». لن يتمكّن مستخدموها من الدخول حتى إعادة التفعيل.",
+        "reason": "سبب الإيقاف",
+        "done": "تمّ إيقاف المؤسّسة"
+      },
+      "activateDialog": {
+        "title": "تفعيل المؤسّسة",
+        "body": "إعادة تفعيل «{{name}}» وإتاحة الوصول لمستخدميها من جديد.",
+        "done": "تمّ تفعيل المؤسّسة"
+      }
+    },
+    "analytics": {
+      "title": "تحليلات المنصّة",
+      "range": "الفترة",
+      "lastMonths": "آخر {{count}} أشهر",
+      "exportCsv": "تصدير CSV",
+      "paymentsByMonth": "المدفوعات حسب الشهر",
+      "topOrgs": "أعلى المؤسّسات تبرّعاً",
+      "orgsByCountry": "المؤسّسات حسب الدولة"
+    },
+    "settings": {
+      "title": "إعدادات المنصّة",
+      "subtitle": "تغييرات تؤثّر على كلّ مستخدم على المنصّة",
+      "updatedAt": "آخر تحديث: {{date}}",
+      "general": "عامّ",
+      "advanced": "إعدادات متقدّمة",
+      "advancedHint": "قيم مركّبة للقراءة فقط من خادم المنصّة.",
+      "saved": "تمّ حفظ الإعدادات",
+      "saveAll": "حفظ الكلّ",
+      "dangerZone": "منطقة العمليّات الحسّاسة",
+      "dangerHint": "عمليّات قد تؤثّر على المنصّة بأكملها. نفّذها بحذر.",
+      "keys": {
+        "maintenance_mode": "وضع الصيانة",
+        "signups_open": "التسجيل مفتوح",
+        "default_subscription_plan": "الخطّة الافتراضية"
+      },
+      "danger": {
+        "backup": {
+          "title": "نسخة احتياطية يدوية كاملة",
+          "body": "إنشاء نسخة احتياطية فورية لقاعدة البيانات.",
+          "action": "تنفيذ الآن"
+        },
+        "reindex": {
+          "title": "إعادة بناء فهارس البحث",
+          "body": "قد تستغرق بعض الوقت حسب حجم البيانات.",
+          "action": "بدء الفهرسة"
+        },
+        "restart": {
+          "title": "إعادة تشغيل خادم API",
+          "body": "إيقاف مؤقّت قد يستغرق ٣٠ ثانية؛ ستُلغى الطلبات الجارية.",
+          "action": "إعادة تشغيل"
+        }
+      }
+    }
   }
 }

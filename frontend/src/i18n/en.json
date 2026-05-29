@@ -1447,5 +1447,147 @@
       "activities": "My activities",
       "noHighlights": "No details for this period yet."
     }
+  },
+  "platform": {
+    "modeBadge": "Platform Administration",
+    "exitToAdmin": "Back to org admin",
+    "nav": {
+      "dashboard": "Dashboard",
+      "organizations": "Organizations",
+      "analytics": "Analytics",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Platform Overview",
+      "manageOrgs": "Manage organizations",
+      "paymentsChart": "Payments over time",
+      "topOrgs": "Top organizations by donations",
+      "recentOrgs": "Recently added organizations",
+      "viewAll": "View all"
+    },
+    "summary": {
+      "totalOrgs": "Total organizations",
+      "activeOrgs": "Active organizations",
+      "totalOrphans": "Total orphans",
+      "totalDonors": "Total donors",
+      "totalSponsorships": "Total sponsorships",
+      "totalDonated": "Total donated"
+    },
+    "orgStatus": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "archived": "Archived",
+      "pending_approval": "Pending approval"
+    },
+    "orgType": {
+      "standalone": "Standalone",
+      "external_marketer": "External marketer",
+      "local_partner": "Local partner",
+      "hybrid": "Hybrid",
+      "federated": "Federated"
+    },
+    "deployment": {
+      "self_hosted": "Self-hosted",
+      "saas_cloud": "SaaS cloud"
+    },
+    "orgs": {
+      "title": "Organizations Management",
+      "add": "Add organization",
+      "edit": {
+        "saved": "Changes saved",
+        "planPlaceholder": "e.g. free / pro"
+      },
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "country": "Country",
+        "search": "Search",
+        "searchPlaceholder": "Name or code…"
+      },
+      "cols": {
+        "code": "Code",
+        "name": "Name",
+        "country": "Country",
+        "status": "Status",
+        "plan": "Plan",
+        "orphans": "Orphans",
+        "donors": "Donors",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "create": {
+        "title": "Add a new organization",
+        "code": "Code",
+        "country": "Country code",
+        "nameAr": "Name (Arabic)",
+        "nameEn": "Name (English)",
+        "currency": "Default currency",
+        "orgType": "Organization type",
+        "deployment": "Deployment mode",
+        "adminLegend": "Initial org admin",
+        "adminEmail": "Email",
+        "adminPassword": "Temporary password",
+        "adminFirst": "First name",
+        "adminLast": "Last name",
+        "submit": "Create organization",
+        "created": "Organization created with admin: {{email}}"
+      },
+      "suspendDialog": {
+        "title": "Suspend organization",
+        "body": "You are about to suspend “{{name}}”. Its users won't be able to sign in until reactivated.",
+        "reason": "Reason for suspension",
+        "done": "Organization suspended"
+      },
+      "activateDialog": {
+        "title": "Activate organization",
+        "body": "Reactivate “{{name}}” and restore access for its users.",
+        "done": "Organization activated"
+      }
+    },
+    "analytics": {
+      "title": "Platform Analytics",
+      "range": "Range",
+      "lastMonths": "Last {{count}} months",
+      "exportCsv": "Export CSV",
+      "paymentsByMonth": "Payments by month",
+      "topOrgs": "Top organizations by donations",
+      "orgsByCountry": "Organizations by country"
+    },
+    "settings": {
+      "title": "Platform Settings",
+      "subtitle": "Changes here affect every user on the platform",
+      "updatedAt": "Last updated: {{date}}",
+      "general": "General",
+      "advanced": "Advanced settings",
+      "advancedHint": "Complex values are read-only from the platform server.",
+      "saved": "Settings saved",
+      "saveAll": "Save all",
+      "dangerZone": "Danger zone",
+      "dangerHint": "Operations that can affect the whole platform. Proceed with care.",
+      "keys": {
+        "maintenance_mode": "Maintenance mode",
+        "signups_open": "Signups open",
+        "default_subscription_plan": "Default subscription plan"
+      },
+      "danger": {
+        "backup": {
+          "title": "Run full manual backup",
+          "body": "Create an immediate database backup.",
+          "action": "Run now"
+        },
+        "reindex": {
+          "title": "Rebuild search indexes",
+          "body": "May take a while depending on data size.",
+          "action": "Start reindex"
+        },
+        "restart": {
+          "title": "Restart API server",
+          "body": "Brief downtime up to 30s; in-flight requests are cancelled.",
+          "action": "Restart"
+        }
+      }
+    }
   }
 }
