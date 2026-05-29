@@ -9,6 +9,10 @@ export function useRole() {
   const { data } = useCurrentUser();
   const role = data?.role;
 
+  // Platform super-admin: manages tenants across the whole platform.
+  // STRICTLY distinct from org_admin (which is scoped to a single org).
+  // Gates the /platform/* super-admin portal — never grant to org_admin.
+  const isSuperAdmin = role === "super_admin";
   const isAdmin = role === "super_admin" || role === "org_admin";
   // Finance + marketing gates mirror the server's FINANCE_ROLES /
   // MARKETING_ROLES tuples (each includes the admin roles). Admins see
@@ -34,6 +38,7 @@ export function useRole() {
 
   return {
     role,
+    isSuperAdmin,
     isAdmin,
     isFinance,
     isMarketing,
