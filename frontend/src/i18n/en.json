@@ -849,5 +849,61 @@
       "release": "Release to available",
       "releaseDone": "Orphan released to the available pool"
     }
+  },
+  "orphanNav": {
+    "home": "Home",
+    "messages": "My Messages",
+    "achievements": "My Achievements"
+  },
+  "orphan": {
+    "layout": {
+      "greeting": "Hi {{name}}",
+      "navLabel": "Portal navigation"
+    },
+    "ageGate": {
+      "title": "See you soon 🌱",
+      "body": "You can use this app once you turn 12. Until then, your guardian keeps up with all your wonderful news."
+    },
+    "login": {
+      "title": "Welcome 🌟",
+      "subtitle": "Sign in to see your news and messages from your sponsor.",
+      "submit": "Sign in"
+    },
+    "home": {
+      "greeting": "Hi {{name}}",
+      "subtitle": "Great to see you today!",
+      "profileTitle": "My profile",
+      "age": "Age: {{age}}",
+      "completion": "Your profile is {{percent}}% complete",
+      "sponsorTitle": "My sponsor",
+      "sendMessage": "Send a message",
+      "noSponsor": "Soon, you'll have a sponsor who cares about you and prays for you.",
+      "sponsorFallback": "Your sponsor",
+      "sponsorCaring": "Your sponsor prays for you every day.",
+      "sponsorSince": "For {{years}} years"
+    },
+    "messages": {
+      "title": "My messages",
+      "subtitle": "Write a thank-you or a prayer for your sponsor.",
+      "composeTitle": "Write from the heart",
+      "placeholder": "For example: Thank you for everything. I pray God protects you and blesses your life...",
+      "send": "Send",
+      "sending": "Sending...",
+      "sent": "Your message is on its way! It will reach your sponsor after a quick review.",
+      "sendError": "Couldn't send your message. Please try again.",
+      "threadTitle": "My previous messages",
+      "empty": "Start by writing your first message to your sponsor.",
+      "you": "Me",
+      "onTheWay": "On its way..."
+    },
+    "achievements": {
+      "title": "Well done! These are your achievements",
+      "subtitle": "We're proud of you, and so is your sponsor.",
+      "empty": "Your achievements will appear here once your guardian adds them.",
+      "education": "School",
+      "quran": "Qur'an",
+      "activities": "My activities",
+      "noHighlights": "No details for this period yet."
+    }
   }
 }

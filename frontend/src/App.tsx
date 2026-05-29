@@ -4,10 +4,12 @@ import { AdminRoute } from "./components/AdminRoute";
 import { DonorRoute } from "./components/DonorRoute";
 import { FinanceRoute } from "./components/FinanceRoute";
 import { MarketingRoute } from "./components/MarketingRoute";
+import { OrphanRoute } from "./components/OrphanRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
+import { OrphanLayout } from "./components/layout/OrphanLayout";
 import { PublicLayout } from "./components/layout/PublicLayout";
 
 // Admin / staff pages (now mounted under /admin/*)
@@ -33,7 +35,11 @@ import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
 import { MediaReviewPage } from "./pages/MediaReviewPage";
+import { OrphanAchievementsPage } from "./pages/OrphanAchievementsPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
+import { OrphanHomePage } from "./pages/OrphanHomePage";
+import { OrphanLoginPage } from "./pages/OrphanLoginPage";
+import { OrphanMessagesPage } from "./pages/OrphanMessagesPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
 import { RegisterOrphanPage } from "./pages/RegisterOrphanPage";
@@ -62,6 +68,7 @@ export function App() {
     <Routes>
       {/* ── Anonymous-safe + auth pages without chrome ─────────── */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/orphan/login" element={<OrphanLoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/verify-email" element={<VerifyEmailPendingPage />} />
@@ -96,6 +103,22 @@ export function App() {
         <Route path="/sponsor/:code/checkout" element={<SponsorCheckoutPage />} />
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/failure" element={<PaymentFailurePage />} />
+      </Route>
+
+      {/* ── Orphan self-portal (12+, role=orphan) ───────────────── */}
+      <Route
+        element={
+          <OrphanRoute>
+            <OrphanLayout />
+          </OrphanRoute>
+        }
+      >
+        <Route path="/orphan" element={<OrphanHomePage />} />
+        <Route path="/orphan/messages" element={<OrphanMessagesPage />} />
+        <Route
+          path="/orphan/achievements"
+          element={<OrphanAchievementsPage />}
+        />
       </Route>
 
       {/* ── Admin / staff area ──────────────────────────────────── */}
