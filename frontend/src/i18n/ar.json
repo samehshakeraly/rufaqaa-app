@@ -82,7 +82,9 @@
     "dashboard": "الرئيسية",
     "sponsorships": "كفالاتي",
     "browseMore": "تصفّح المزيد",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "myOrphans": "أيتامي",
+    "messages": "الرسائل"
   },
   "donor": {
     "dashboard": {
@@ -109,6 +111,84 @@
       "totalPaid": "إجمالي المدفوع",
       "status": "الحالة",
       "pay": "دفع"
+    },
+    "wizard": {
+      "title": "كفالة جديدة",
+      "intro": "أكمل الخطوات لبدء كفالة هذا الطفل.",
+      "stepOrphan": "اليتيم",
+      "stepAmount": "المبلغ",
+      "stepReview": "المراجعة",
+      "orphanSummaryTitle": "ملخّص اليتيم",
+      "orphanSummaryHint": "تأكد من أنك تكفل الطفل الصحيح قبل المتابعة.",
+      "amountTitle": "مبلغ الكفالة",
+      "amountHint": "اختر المبلغ والعملة وتواتر السداد.",
+      "amount": "المبلغ الشهري",
+      "currency": "العملة",
+      "frequency": "تواتر السداد",
+      "reviewTitle": "مراجعة وتأكيد",
+      "reviewHint": "راجع التفاصيل قبل تأكيد الكفالة.",
+      "orphanLabel": "الطفل",
+      "confirm": "تأكيد الكفالة",
+      "creating": "جارٍ الإنشاء…",
+      "success": "تم إنشاء الكفالة بنجاح",
+      "duplicate": "لديك بالفعل كفالة لهذا الطفل.",
+      "error": "تعذّر إنشاء الكفالة",
+      "back": "السابق",
+      "next": "التالي",
+      "amountInvalid": "أدخل مبلغاً صحيحاً أكبر من صفر.",
+      "currencyInvalid": "أدخل رمز عملة من ٣ أحرف.",
+      "payNote": "ستتمكن من إتمام الدفع بعد إنشاء الكفالة."
+    },
+    "orphans": {
+      "title": "أيتامي",
+      "subtitle": "الأطفال الذين تكفلهم حالياً.",
+      "empty": "لم تبدأ كفالة بعد. تصفّح الأيتام المتاحين",
+      "browse": "تصفّح الأيتام المتاحين",
+      "viewDetail": "عرض التفاصيل",
+      "monthlyAmount": "شهرياً",
+      "totalPaid": "إجمالي المدفوع"
+    },
+    "orphanDetail": {
+      "back": "العودة إلى أيتامي",
+      "info": "المعلومات الأساسية",
+      "age": "العمر",
+      "ageValue": "{{age}} سنة",
+      "gender": "الجنس",
+      "male": "ذكر",
+      "female": "أنثى",
+      "country": "الدولة",
+      "sponsorshipStatus": "حالة الكفالة",
+      "monthlyAmount": "المبلغ الشهري",
+      "nextPayment": "تاريخ السداد القادم",
+      "totalPaid": "إجمالي المدفوع",
+      "notScheduled": "غير محدد",
+      "reports": "التقارير المنشورة",
+      "noReports": "لا توجد تقارير منشورة بعد.",
+      "notFound": "لم نعثر على كفالة لهذا الطفل ضمن كفالاتك."
+    },
+    "messages": {
+      "title": "الرسائل",
+      "subtitle": "محادثاتك حول الأطفال الذين تكفلهم.",
+      "empty": "لا توجد رسائل بعد.",
+      "cta": "اذهب إلى أيتامي",
+      "statusPending": "قيد المراجعة",
+      "statusRejected": "مرفوضة",
+      "pendingNote": "ستظهر للطرف الآخر بعد اعتماد المشرف.",
+      "rejectedNote": "رُفضت هذه الرسالة من قبل المشرف.",
+      "you": "أنت",
+      "about": "بخصوص",
+      "sentAt": "أُرسلت",
+      "markRead": "تحديد كمقروء",
+      "composeNote": "إرسال رسائل جديدة سيتوفر قريباً.",
+      "roles": {
+        "donor": "متبرع",
+        "guardian": "ولي الأمر",
+        "partner_manager": "مدير شريك",
+        "partner_staff": "موظف شريك",
+        "org_admin": "مدير المؤسسة",
+        "super_admin": "مدير عام",
+        "unknown": "غير معروف"
+      }
     }
   },
   "checkout": {

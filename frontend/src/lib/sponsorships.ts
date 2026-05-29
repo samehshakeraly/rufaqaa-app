@@ -44,6 +44,21 @@ export async function listSponsorships(params?: {
   return data;
 }
 
+/** Donor self-service: every sponsorship belonging to the calling
+ * donor, full `SponsorshipRead` shape (includes `orphan_id`,
+ * `next_payment_date`, `total_paid`). The backend pins the result to
+ * the donor linked to the auth token — a donor can never read another
+ * donor's rows. */
+export async function listMySponsorships(params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<Page<Sponsorship>> {
+  const { data } = await api.get<Page<Sponsorship>>("/me/sponsorships", {
+    params,
+  });
+  return data;
+}
+
 export async function createSponsorship(
   payload: SponsorshipCreateInput,
 ): Promise<Sponsorship> {

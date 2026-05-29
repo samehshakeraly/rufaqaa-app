@@ -44,6 +44,18 @@ export async function listReports(params?: {
   return data;
 }
 
+/** Donor self-service: reports for every orphan the calling donor
+ * sponsors. The backend returns only reports already published to
+ * donors (`status='published_to_donor'`) and scopes them to the
+ * donor's own sponsored orphans. */
+export async function listMyReports(params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<Page<Report>> {
+  const { data } = await api.get<Page<Report>>("/me/reports", { params });
+  return data;
+}
+
 export async function transitionReport(
   id: string,
   action: ReportAction,

@@ -82,7 +82,9 @@
     "dashboard": "Dashboard",
     "sponsorships": "My sponsorships",
     "browseMore": "Browse more",
-    "profile": "Profile"
+    "profile": "Profile",
+    "myOrphans": "My orphans",
+    "messages": "Messages"
   },
   "donor": {
     "dashboard": {
@@ -109,6 +111,84 @@
       "totalPaid": "Total paid",
       "status": "Status",
       "pay": "Pay"
+    },
+    "wizard": {
+      "title": "New sponsorship",
+      "intro": "Complete the steps to start sponsoring this child.",
+      "stepOrphan": "Orphan",
+      "stepAmount": "Amount",
+      "stepReview": "Review",
+      "orphanSummaryTitle": "Orphan summary",
+      "orphanSummaryHint": "Make sure you're sponsoring the right child before continuing.",
+      "amountTitle": "Sponsorship amount",
+      "amountHint": "Choose the amount, currency and payment frequency.",
+      "amount": "Monthly amount",
+      "currency": "Currency",
+      "frequency": "Payment frequency",
+      "reviewTitle": "Review & confirm",
+      "reviewHint": "Review the details before confirming the sponsorship.",
+      "orphanLabel": "Child",
+      "confirm": "Confirm sponsorship",
+      "creating": "Creating…",
+      "success": "Sponsorship created successfully",
+      "duplicate": "You already sponsor this child.",
+      "error": "Could not create the sponsorship",
+      "back": "Back",
+      "next": "Next",
+      "amountInvalid": "Enter a valid amount greater than zero.",
+      "currencyInvalid": "Enter a 3-letter currency code.",
+      "payNote": "You'll be able to complete payment after creating the sponsorship."
+    },
+    "orphans": {
+      "title": "My orphans",
+      "subtitle": "The children you currently sponsor.",
+      "empty": "You haven't started a sponsorship yet. Browse available orphans",
+      "browse": "Browse available orphans",
+      "viewDetail": "View details",
+      "monthlyAmount": "Monthly",
+      "totalPaid": "Total paid"
+    },
+    "orphanDetail": {
+      "back": "Back to my orphans",
+      "info": "Basic information",
+      "age": "Age",
+      "ageValue": "{{age}} years",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "country": "Country",
+      "sponsorshipStatus": "Sponsorship status",
+      "monthlyAmount": "Monthly amount",
+      "nextPayment": "Next payment date",
+      "totalPaid": "Total paid",
+      "notScheduled": "Not scheduled",
+      "reports": "Published reports",
+      "noReports": "No published reports yet.",
+      "notFound": "We couldn't find a sponsorship for this child among yours."
+    },
+    "messages": {
+      "title": "Messages",
+      "subtitle": "Your conversations about the children you sponsor.",
+      "empty": "No messages yet.",
+      "cta": "Go to my orphans",
+      "statusPending": "Under review",
+      "statusRejected": "Rejected",
+      "pendingNote": "Visible to the other party once a moderator approves.",
+      "rejectedNote": "This message was rejected by a moderator.",
+      "you": "You",
+      "about": "About",
+      "sentAt": "Sent",
+      "markRead": "Mark as read",
+      "composeNote": "Sending new messages will be available soon.",
+      "roles": {
+        "donor": "Donor",
+        "guardian": "Guardian",
+        "partner_manager": "Partner manager",
+        "partner_staff": "Partner staff",
+        "org_admin": "Organization admin",
+        "super_admin": "Super admin",
+        "unknown": "Unknown"
+      }
     }
   },
   "checkout": {
