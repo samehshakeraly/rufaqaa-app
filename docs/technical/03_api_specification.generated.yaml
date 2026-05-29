@@ -1585,6 +1585,176 @@ components:
       - relation
       title: GuardianCreate
       type: object
+    GuardianFamilyMini:
+      description: Just enough to anchor the UI — no street address, no income.
+      properties:
+        code:
+          title: Code
+          type: string
+        country_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
+        family_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Family Name
+        governorate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Governorate
+        id:
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      - code
+      - family_name
+      - country_code
+      - governorate
+      title: GuardianFamilyMini
+      type: object
+    GuardianMeRead:
+      properties:
+        email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Email
+        family:
+          anyOf:
+          - $ref: '#/components/schemas/GuardianFamilyMini'
+          - type: 'null'
+        full_name:
+          title: Full Name
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        literacy_level:
+          title: Literacy Level
+          type: string
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        preferred_communication:
+          title: Preferred Communication
+          type: string
+        relation:
+          title: Relation
+          type: string
+        status:
+          title: Status
+          type: string
+        user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: User Id
+        whatsapp:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Whatsapp
+      required:
+      - id
+      - user_id
+      - full_name
+      - relation
+      - literacy_level
+      - preferred_communication
+      - phone
+      - whatsapp
+      - email
+      - status
+      - family
+      title: GuardianMeRead
+      type: object
+    GuardianOrphanFinancials:
+      description: 'Only attached when `business_rules.show_financial_to_guardian` is
+
+        TRUE for the guardian''s org.'
+      properties:
+        balance_currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Balance Currency
+        current_balance:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Current Balance
+        is_sponsored:
+          title: Is Sponsored
+          type: boolean
+      required:
+      - current_balance
+      - balance_currency
+      - is_sponsored
+      title: GuardianOrphanFinancials
+      type: object
+    GuardianOrphanRead:
+      description: 'Guardian-safe projection of an orphan.
+
+
+        Notice the omitted fields: no `current_balance`, no `balance_currency`,
+
+        no `is_sponsored`, no partner_organization_id. Those are unlocked
+
+        explicitly via `business_rules.show_financial_to_guardian = TRUE` and
+
+        re-attached as `financials` (see below).'
+      properties:
+        case_status:
+          title: Case Status
+          type: string
+        code:
+          title: Code
+          type: string
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        family_name:
+          title: Family Name
+          type: string
+        financials:
+          anyOf:
+          - $ref: '#/components/schemas/GuardianOrphanFinancials'
+          - type: 'null'
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          title: Gender
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        profile_completion_percentage:
+          title: Profile Completion Percentage
+          type: integer
+      required:
+      - id
+      - code
+      - first_name
+      - family_name
+      - date_of_birth
+      - gender
+      - case_status
+      - profile_completion_percentage
+      title: GuardianOrphanRead
+      type: object
     GuardianRead:
       properties:
         created_at:
@@ -1908,6 +2078,61 @@ components:
           title: Status
       title: MarketingChannelUpdate
       type: object
+    MediaModeratePayload:
+      properties:
+        decision:
+          enum:
+          - approve
+          - reject
+          title: Decision
+          type: string
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+      required:
+      - decision
+      title: MediaModeratePayload
+      type: object
+    MediaModerationRead:
+      properties:
+        id:
+          format: uuid
+          title: Id
+          type: string
+        moderated_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Moderated At
+        moderated_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Moderated By
+        moderation_notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Moderation Notes
+        moderation_status:
+          title: Moderation Status
+          type: string
+        visibility:
+          title: Visibility
+          type: string
+      required:
+      - id
+      - moderation_status
+      - moderation_notes
+      - moderated_by
+      - moderated_at
+      - visibility
+      title: MediaModerationRead
+      type: object
     MediaUploadResponse:
       properties:
         created_at:
@@ -1944,6 +2169,146 @@ components:
       - moderation_status
       - created_at
       title: MediaUploadResponse
+      type: object
+    MessageCreate:
+      description: 'Send payload — recipient and orphan are required so we always have
+
+        a moderation handle and a context.'
+      properties:
+        content:
+          maxLength: 4000
+          minLength: 1
+          title: Content
+          type: string
+        message_type:
+          const: text
+          default: text
+          title: Message Type
+          type: string
+        related_orphan_id:
+          format: uuid
+          title: Related Orphan Id
+          type: string
+        related_sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Related Sponsorship Id
+        to_user_id:
+          format: uuid
+          title: To User Id
+          type: string
+      required:
+      - to_user_id
+      - related_orphan_id
+      - content
+      title: MessageCreate
+      type: object
+    MessageModerate:
+      properties:
+        decision:
+          enum:
+          - approve
+          - reject
+          title: Decision
+          type: string
+        notes:
+          anyOf:
+          - maxLength: 1000
+            type: string
+          - type: 'null'
+          title: Notes
+      required:
+      - decision
+      title: MessageModerate
+      type: object
+    MessageRead:
+      description: 'Public projection.
+
+
+        Deliberately omits `from_user_id`, `to_user_id`, emails, phones,
+
+        last names. Only the calling user''s relationship to the message
+
+        (`is_mine`) and the counter-party''s display name are exposed.'
+      properties:
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        from_name:
+          title: From Name
+          type: string
+        from_role:
+          title: From Role
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_mine:
+          title: Is Mine
+          type: boolean
+        is_read:
+          title: Is Read
+          type: boolean
+        message_type:
+          title: Message Type
+          type: string
+        moderated_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Moderated At
+        moderation_notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Moderation Notes
+        moderation_status:
+          title: Moderation Status
+          type: string
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
+        read_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Read At
+        to_name:
+          title: To Name
+          type: string
+        to_role:
+          title: To Role
+          type: string
+      required:
+      - id
+      - from_role
+      - from_name
+      - to_role
+      - to_name
+      - orphan_code
+      - message_type
+      - content
+      - moderation_status
+      - moderation_notes
+      - is_read
+      - is_mine
+      - created_at
+      - moderated_at
+      - read_at
+      title: MessageRead
       type: object
     MonthlyPoint:
       properties:
@@ -2389,6 +2754,17 @@ components:
       - updated_at
       title: OrphanRead
       type: object
+    OrphanRejectPayload:
+      properties:
+        reason:
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+          type: string
+      required:
+      - reason
+      title: OrphanRejectPayload
+      type: object
     OrphanUpdate:
       description: 'Partial update. Every field optional — only the supplied keys are
 
@@ -2638,6 +3014,29 @@ components:
       - limit
       - offset
       title: Page[MarketingChannelRead]
+      type: object
+    Page_MessageRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/MessageRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[MessageRead]
       type: object
     Page_OrphanRead_:
       properties:
@@ -5590,6 +5989,104 @@ paths:
       summary: Create Guardian
       tags:
       - families
+  /api/v1/guardian/me:
+    get:
+      description: 'Return the guardian profile for the calling user.
+
+
+        Joins on `families` to attach a thin family preview so the SPA can
+
+        show "you belong to family <code>" without a second round-trip.'
+      operationId: get_guardian_me_api_v1_guardian_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianMeRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Guardian Me
+      tags:
+      - guardian-self
+  /api/v1/guardian/me/orphans:
+    get:
+      description: 'List orphans belonging to the guardian''s family.
+
+
+        Financial fields are stripped by default. The org can opt in via
+
+        `business_rules.show_financial_to_guardian = TRUE` — when so, the
+
+        `financials` sub-object is attached per orphan.'
+      operationId: list_my_orphans_api_v1_guardian_me_orphans_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GuardianOrphanRead'
+                title: Response List My Orphans Api V1 Guardian Me Orphans Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Orphans
+      tags:
+      - guardian-self
+  /api/v1/guardian/me/reports:
+    get:
+      description: 'List reports for one of the guardian''s orphans.
+
+
+        403 if the orphan isn''t in the guardian''s family — we''d rather signal
+
+        "you can''t touch this" loudly than 404 (which would leak orphan
+
+        existence to non-owners).'
+      operationId: list_my_reports_api_v1_guardian_me_reports_get
+      parameters:
+      - description: Orphan UUID; must belong to the guardian's family
+        in: query
+        name: orphan_id
+        required: true
+        schema:
+          description: Orphan UUID; must belong to the guardian's family
+          format: uuid
+          title: Orphan Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ReportRead'
+                title: Response List My Reports Api V1 Guardian Me Reports Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Reports
+      tags:
+      - guardian-self
   /api/v1/guardians/{guardian_id}/documents:
     get:
       operationId: list_guardian_documents_api_v1_guardians__guardian_id__documents_get
@@ -6066,6 +6563,49 @@ paths:
       summary: List Orphan Photos
       tags:
       - media
+  /api/v1/media/{media_id}/moderate:
+    post:
+      description: 'Approve or reject a pending media item.
+
+
+        Approving advances visibility from the private default to
+
+        `donor_only` so sponsoring donors can render the photo; rejecting
+
+        leaves visibility untouched so the item stays hidden.'
+      operationId: moderate_media_api_v1_media__media_id__moderate_post
+      parameters:
+      - in: path
+        name: media_id
+        required: true
+        schema:
+          format: uuid
+          title: Media Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaModeratePayload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaModerationRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Moderate Media
+      tags:
+      - media
   /api/v1/media/{media_id}/url:
     get:
       description: Return a short-lived presigned URL for an uploaded media object.
@@ -6099,6 +6639,256 @@ paths:
       summary: Get Media Presigned Url
       tags:
       - media
+  /api/v1/messages:
+    get:
+      description: 'List messages the caller can see.
+
+
+        Moderators get everything in their org (RLS-scoped). Everyone else
+
+        sees only messages where they''re sender (any status) or recipient
+
+        (approved only). Use `orphan_id` to narrow to one conversation;
+
+        `unread_only` filters to incoming approved+unread.'
+      operationId: list_messages_api_v1_messages_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: orphan_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+      - in: query
+        name: unread_only
+        required: false
+        schema:
+          default: false
+          title: Unread Only
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_MessageRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Messages
+      tags:
+      - messages
+    post:
+      description: 'Send a new message. Lands as `pending` — recipient won''t see it
+
+        until a moderator approves.
+
+
+        Only donors and guardians may initiate via this surface. Staff
+
+        workflows go through the admin channels.'
+      operationId: send_message_api_v1_messages_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Send Message
+      tags:
+      - messages
+  /api/v1/messages/pending:
+    get:
+      description: 'Moderation queue. Returns org-wide pending messages, newest
+
+        first. RLS keeps this org-scoped automatically.'
+      operationId: list_pending_messages_api_v1_messages_pending_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_MessageRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Pending Messages
+      tags:
+      - messages
+  /api/v1/messages/{message_id}:
+    get:
+      operationId: get_message_api_v1_messages__message_id__get
+      parameters:
+      - in: path
+        name: message_id
+        required: true
+        schema:
+          format: uuid
+          title: Message Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Message
+      tags:
+      - messages
+  /api/v1/messages/{message_id}/moderate:
+    post:
+      description: 'Approve or reject a pending message.
+
+
+        Reject doesn''t delete — the row stays so disputes have an audit
+
+        trail. Sender keeps seeing it (with the reject note); the recipient
+
+        never does.'
+      operationId: moderate_message_api_v1_messages__message_id__moderate_post
+      parameters:
+      - in: path
+        name: message_id
+        required: true
+        schema:
+          format: uuid
+          title: Message Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageModerate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Moderate Message
+      tags:
+      - messages
+  /api/v1/messages/{message_id}/read:
+    post:
+      description: 'Mark a message as read by the calling user.
+
+
+        Only the recipient may mark; only approved messages can be marked
+
+        (anything else hasn''t been delivered yet). Idempotent — re-reading
+
+        leaves `read_at` at the first mark.'
+      operationId: mark_message_read_api_v1_messages__message_id__read_post
+      parameters:
+      - in: path
+        name: message_id
+        required: true
+        schema:
+          format: uuid
+          title: Message Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Mark Message Read
+      tags:
+      - messages
   /api/v1/organization:
     get:
       operationId: get_current_organization_api_v1_organization_get
@@ -6355,6 +7145,41 @@ paths:
       summary: Update Orphan
       tags:
       - orphans
+  /api/v1/orphans/{orphan_id}/approve:
+    post:
+      description: 'Mark a pending_review orphan as approved.
+
+
+        Only partner_manager + org admins may approve — partner_staff submits
+
+        but cannot self-approve, same separation the report workflow uses.'
+      operationId: approve_orphan_api_v1_orphans__orphan_id__approve_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Approve Orphan
+      tags:
+      - orphans
   /api/v1/orphans/{orphan_id}/assign-channel:
     post:
       description: 'Attach (or detach) an orphan to a marketing channel. Validates
@@ -6475,6 +7300,78 @@ paths:
       summary: Attach Document To Orphan
       tags:
       - documents
+  /api/v1/orphans/{orphan_id}/reject:
+    post:
+      description: 'Reject a pending_review orphan. Reason is required and stored on
+
+        the row so reviewers can see why this case didn''t move forward.'
+      operationId: reject_orphan_api_v1_orphans__orphan_id__reject_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanRejectPayload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Reject Orphan
+      tags:
+      - orphans
+  /api/v1/orphans/{orphan_id}/release:
+    post:
+      description: 'Move an approved or reserved orphan back to the available pool —
+
+        clearing any marketing-channel assignment. Used when a reservation
+
+        lapses or a channel is reshuffled.'
+      operationId: release_orphan_api_v1_orphans__orphan_id__release_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Release Orphan
+      tags:
+      - orphans
   /api/v1/orphans/{orphan_id}/timeline:
     get:
       description: 'Chronological feed of everything that has happened around an orphan:
@@ -7438,7 +8335,14 @@ paths:
       - reports
   /api/v1/reports/{report_id}/submit:
     post:
-      description: Move a draft report into the partner approval queue.
+      description: 'Move a draft report into the partner approval queue.
+
+
+        Same ownership rule as PATCH — the guardian who owns the orphan can
+
+        submit the draft; partner/admin staff can also submit on their
+
+        behalf.'
       operationId: submit_report_api_v1_reports__report_id__submit_post
       parameters:
       - in: path
