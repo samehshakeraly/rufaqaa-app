@@ -7,10 +7,18 @@ import { MarketingRoute } from "./components/MarketingRoute";
 import { OrphanRoute } from "./components/OrphanRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { PublicSiteLayout } from "./components/public/PublicSiteLayout";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
 import { OrphanLayout } from "./components/layout/OrphanLayout";
 import { PublicLayout } from "./components/layout/PublicLayout";
+
+// Public marketing pages (W-02..W-06)
+import { AboutPage } from "./pages/AboutPage";
+import { ContactPage } from "./pages/ContactPage";
+import { HowItWorksPage } from "./pages/HowItWorksPage";
+import { PublicPartnersPage } from "./pages/PublicPartnersPage";
+import { TransparencyPage } from "./pages/TransparencyPage";
 
 // Admin / staff pages (now mounted under /admin/*)
 import { AuditPage } from "./pages/AuditPage";
@@ -80,6 +88,15 @@ export function App() {
         <Route path="/orphans" element={<PublicOrphansPage />} />
         <Route path="/orphans/:code" element={<PublicOrphanDetailPage />} />
         <Route path="/signup" element={<SignupPage />} />
+      </Route>
+
+      {/* ── Public marketing site (W-02..W-06) — full-bleed, no auth ── */}
+      <Route element={<PublicSiteLayout />}>
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/transparency" element={<TransparencyPage />} />
+        <Route path="/partners" element={<PublicPartnersPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Route>
 
       {/* ── Donor authenticated area ────────────────────────────── */}
