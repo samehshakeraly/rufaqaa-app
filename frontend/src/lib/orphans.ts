@@ -11,8 +11,13 @@ export interface Orphan {
   case_status: string;
   is_sponsored: boolean;
   current_balance: string;
+  assigned_to_channel_id: string | null;
+  assigned_at: string | null;
+  assignment_deadline: string | null;
   created_at: string;
 }
+
+export type AssignmentStatus = "active" | "expired" | "all";
 
 export interface Page<T> {
   items: T[];
@@ -40,6 +45,11 @@ export async function listOrphans(params?: {
   offset?: number;
   q?: string;
   case_status?: string;
+  /** Narrow to orphans assigned to a marketing channel. */
+  channel_id?: string;
+  /** Filter by assignment deadline: active = not yet lapsed,
+   * expired = past deadline, all = no filter. */
+  assignment_status?: AssignmentStatus;
 }): Promise<Page<Orphan>> {
   const { data } = await api.get<Page<Orphan>>("/orphans", { params });
   return data;

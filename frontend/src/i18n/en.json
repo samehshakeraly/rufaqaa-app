@@ -222,7 +222,10 @@
     "approvals": "Approvals",
     "mediaReview": "Media review",
     "partnerStaff": "Partner staff",
-    "registerOrphan": "Register orphan"
+    "registerOrphan": "Register orphan",
+    "finance": "Finance",
+    "financeOverdue": "Overdue",
+    "financeReports": "Financial Reports"
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -259,7 +262,8 @@
     "empty": "No data yet",
     "loadError": "Could not load data",
     "createError": "Could not save",
-    "required": "This field is required"
+    "required": "This field is required",
+    "comingSoon": "Coming soon"
   },
   "pagination": {
     "page": "Page {{page}} of {{total}}",
@@ -769,5 +773,81 @@
     "country": "Country",
     "currency": "Preferred currency",
     "status": "Status"
+  },
+  "finance": {
+    "dashboard": {
+      "title": "Finance Dashboard",
+      "linkOverdue": "Overdue donors",
+      "linkReports": "Financial reports",
+      "received30d": "Received (last 30 days)",
+      "received30dCount": "{{n}} completed transactions",
+      "pendingPayments": "Pending payments",
+      "overdueDonors": "Overdue donors",
+      "completedTransfers": "Completed transfers",
+      "adminOnly": "Admin only",
+      "byMethod": "Payments by method",
+      "byMethodNote": "Computed from recent completed payments.",
+      "recentPayments": "Recent payments"
+    },
+    "overdue": {
+      "title": "Overdue Donors",
+      "minMonths": "Min. months overdue",
+      "empty": "No overdue sponsorships.",
+      "donor": "Donor",
+      "orphan": "Orphan",
+      "monthlyAmount": "Monthly amount",
+      "monthsOverdue": "Months overdue",
+      "lastPayment": "Last payment",
+      "sendReminder": "Send email reminder",
+      "monthsBadge": "{{n}} mo"
+    },
+    "reports": {
+      "title": "Financial Reports",
+      "from": "From",
+      "to": "To",
+      "exportCsv": "Export CSV",
+      "totalReceived": "Total received",
+      "totalReceivedHint": "Within the selected range",
+      "totalTransferred": "Total transferred to partners",
+      "netRetained": "Net retained",
+      "netRetainedHint": "Received minus transferred",
+      "donorCount": "Donor count",
+      "byPartner": "Payments by partner",
+      "partner": "Partner",
+      "transactions": "Transactions",
+      "amount": "Amount",
+      "windowHint": "Last {{days}} days",
+      "exportNote": "CSV export includes all completed payments; server-side date-range filtering of the export is not available yet."
+    }
+  },
+  "marketing": {
+    "channel": {
+      "eyebrow": "Marketing channel",
+      "viewOrphans": "Assigned orphans",
+      "goalProgress": "Goal progress",
+      "annual": "Annual ({{year}})",
+      "monthly": "Monthly",
+      "completion": "Completion",
+      "completionAmountLabel": "By amount",
+      "assignedOrphans": "Assigned orphans",
+      "viewAll": "View all",
+      "assignedCount": "{{n}} assigned orphans in total",
+      "acquiredDonors": "Acquired donors",
+      "sponsorships": "Sponsorships",
+      "amount": "Amount"
+    },
+    "orphans": {
+      "title": "Channel Orphans",
+      "assignmentStatus": "Assignment status",
+      "statuses": {
+        "active": "Active",
+        "expired": "Expired",
+        "all": "All"
+      },
+      "age": "Age",
+      "deadline": "Assignment deadline",
+      "release": "Release to available",
+      "releaseDone": "Orphan released to the available pool"
+    }
   }
 }

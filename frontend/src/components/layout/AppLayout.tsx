@@ -19,7 +19,7 @@ export function AppLayout() {
   const { t } = useTranslation();
   const clear = useAuthStore((s) => s.clear);
   const { data: me } = useCurrentUser();
-  const { isAdmin, isPartner, isPartnerApprover } = useRole();
+  const { isAdmin, isFinance, isMarketing, isPartner, isPartnerApprover } = useRole();
 
   function logout() {
     clear();
@@ -78,6 +78,21 @@ export function AppLayout() {
                 {t("nav.bankTransfers")}
               </NavLink>
             )}
+            {isFinance && (
+              <NavLink to="/admin/finance" end className={navItemClass}>
+                {t("nav.finance")}
+              </NavLink>
+            )}
+            {isFinance && (
+              <NavLink to="/admin/finance/overdue" className={navItemClass}>
+                {t("nav.financeOverdue")}
+              </NavLink>
+            )}
+            {isFinance && (
+              <NavLink to="/admin/finance/reports" className={navItemClass}>
+                {t("nav.financeReports")}
+              </NavLink>
+            )}
             <NavLink to="/admin/reports" className={navItemClass}>
               {t("nav.reports")}
             </NavLink>
@@ -94,7 +109,7 @@ export function AppLayout() {
                 {t("nav.partnerStaff")}
               </NavLink>
             )}
-            {isAdmin && (
+            {isMarketing && (
               <NavLink to="/admin/marketing-channels" className={navItemClass}>
                 {t("nav.marketingChannels")}
               </NavLink>

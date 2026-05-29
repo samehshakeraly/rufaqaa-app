@@ -10,6 +10,12 @@ export function useRole() {
   const role = data?.role;
 
   const isAdmin = role === "super_admin" || role === "org_admin";
+  // Finance + marketing gates mirror the server's FINANCE_ROLES /
+  // MARKETING_ROLES tuples (each includes the admin roles). Admins see
+  // every finance + marketing surface.
+  const isMarketingManager = role === "marketing_manager";
+  const isFinance = isAdmin || role === "finance";
+  const isMarketing = isAdmin || isMarketingManager;
   const isPartnerManager = role === "partner_manager";
   const isPartnerStaff = role === "partner_staff";
   const isPartner = isPartnerManager || isPartnerStaff;
@@ -28,6 +34,9 @@ export function useRole() {
   return {
     role,
     isAdmin,
+    isFinance,
+    isMarketing,
+    isMarketingManager,
     isPartnerManager,
     isPartnerStaff,
     isPartner,

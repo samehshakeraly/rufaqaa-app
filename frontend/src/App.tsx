@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AdminRoute } from "./components/AdminRoute";
 import { DonorRoute } from "./components/DonorRoute";
+import { FinanceRoute } from "./components/FinanceRoute";
+import { MarketingRoute } from "./components/MarketingRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -11,6 +13,8 @@ import { PublicLayout } from "./components/layout/PublicLayout";
 // Admin / staff pages (now mounted under /admin/*)
 import { AuditPage } from "./pages/AuditPage";
 import { BankTransfersPage } from "./pages/BankTransfersPage";
+import { ChannelDashboardPage } from "./pages/ChannelDashboardPage";
+import { ChannelOrphansPage } from "./pages/ChannelOrphansPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorDashboardPage } from "./pages/DonorDashboardPage";
 import { DonorMessagesPage } from "./pages/DonorMessagesPage";
@@ -22,6 +26,8 @@ import { DonorSponsorshipWizardPage } from "./pages/DonorSponsorshipWizardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { FamiliesPage } from "./pages/FamiliesPage";
 import { FamilyDetailPage } from "./pages/FamilyDetailPage";
+import { FinanceDashboardPage } from "./pages/FinanceDashboardPage";
+import { FinancialReportsPage } from "./pages/FinancialReportsPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -29,6 +35,7 @@ import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
 import { MediaReviewPage } from "./pages/MediaReviewPage";
 import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphansPage } from "./pages/OrphansPage";
+import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
 import { RegisterOrphanPage } from "./pages/RegisterOrphanPage";
 import { PartnerDetailPage } from "./pages/PartnerDetailPage";
 import { PartnersPage } from "./pages/PartnersPage";
@@ -121,9 +128,52 @@ export function App() {
         <Route
           path="marketing-channels"
           element={
-            <AdminRoute>
+            <MarketingRoute>
               <MarketingChannelsPage />
-            </AdminRoute>
+            </MarketingRoute>
+          }
+        />
+        {/* Finance screens (F-01, F-03, F-07) — finance + admin only */}
+        <Route
+          path="finance"
+          element={
+            <FinanceRoute>
+              <FinanceDashboardPage />
+            </FinanceRoute>
+          }
+        />
+        <Route
+          path="finance/overdue"
+          element={
+            <FinanceRoute>
+              <OverdueDonorsPage />
+            </FinanceRoute>
+          }
+        />
+        <Route
+          path="finance/reports"
+          element={
+            <FinanceRoute>
+              <FinancialReportsPage />
+            </FinanceRoute>
+          }
+        />
+        {/* Marketing channel detail screens (MM-01, MM-03) —
+            marketing_manager + admin only */}
+        <Route
+          path="marketing/channels/:id"
+          element={
+            <MarketingRoute>
+              <ChannelDashboardPage />
+            </MarketingRoute>
+          }
+        />
+        <Route
+          path="marketing/channels/:id/orphans"
+          element={
+            <MarketingRoute>
+              <ChannelOrphansPage />
+            </MarketingRoute>
           }
         />
         <Route path="sponsorships" element={<SponsorshipsPage />} />
