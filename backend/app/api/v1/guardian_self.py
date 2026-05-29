@@ -237,7 +237,9 @@ async def list_my_orphans(db: DbSession, user: CurrentUser) -> list[GuardianOrph
 async def list_my_reports(
     db: DbSession,
     user: CurrentUser,
-    orphan_id: Annotated[UUID, Query(description="Orphan UUID; must belong to the guardian's family")],
+    orphan_id: Annotated[
+        UUID, Query(description="Orphan UUID; must belong to the guardian's family")
+    ],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ) -> list[ReportRead]:
     """List reports for one of the guardian's orphans.

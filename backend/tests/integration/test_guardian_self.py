@@ -21,10 +21,7 @@ async def _seed_partner_id() -> str:
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT id::text FROM partner_organizations "
-                    "WHERE code = 'DEV-PTN' LIMIT 1"
-                )
+                text("SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1")
             )
         ).first()
         assert row is not None
@@ -247,9 +244,7 @@ async def test_guardian_orphans_omit_financials_by_default(
         assert item.get("financials") is None
         # And the raw financial keys must never appear top-level either.
         for forbidden in ("current_balance", "is_sponsored", "balance_currency"):
-            assert forbidden not in item, (
-                f"{forbidden} leaked even with show_financial=False"
-            )
+            assert forbidden not in item, f"{forbidden} leaked even with show_financial=False"
 
 
 async def test_guardian_orphans_include_financials_when_org_opts_in(

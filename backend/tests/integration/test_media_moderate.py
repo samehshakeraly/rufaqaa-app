@@ -86,9 +86,7 @@ async def _my_org_id(api: AsyncClient, h: dict[str, str]) -> str:
     return me["organization_id"]
 
 
-async def _login_as_partner_staff(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> dict[str, str]:
+async def _login_as_partner_staff(api: AsyncClient, auth_headers: dict[str, str]) -> dict[str, str]:
     email = f"ps-{uuid.uuid4().hex[:8]}@example.com"
     password = "staffpass1234"
     r = await api.post(
@@ -182,9 +180,7 @@ async def test_double_moderate_409(api: AsyncClient, auth_headers: dict[str, str
     assert r.status_code == 409
 
 
-async def test_moderate_missing_media_404(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_moderate_missing_media_404(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     r = await api.post(
         f"/api/v1/media/{uuid.uuid4()}/moderate",
         json={"decision": "approve"},

@@ -45,9 +45,7 @@ class Message(Base):
     media_url: Mapped[str | None] = mapped_column(String(500))
 
     moderation_status: Mapped[str] = mapped_column(String(20), default="pending")
-    moderated_by: Mapped[UUID | None] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("users.id")
-    )
+    moderated_by: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("users.id"))
     moderated_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
     moderation_notes: Mapped[str | None] = mapped_column(Text)
 
