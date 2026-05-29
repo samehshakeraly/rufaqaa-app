@@ -1158,6 +1158,109 @@ export interface paths {
         patch: operations["update_current_organization_api_v1_organization_patch"];
         trace?: never;
     };
+    "/api/v1/orphan/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orphan Me
+         * @description Return the orphan's own profile. No financial, partner, or
+         *     guardian fields are serialised.
+         */
+        get: operations["get_orphan_me_api_v1_orphan_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphan/me/achievements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Achievements
+         * @description List the orphan's published reports, projected to progress fields.
+         *
+         *     Only `published_to_donor` reports are returned — drafts and
+         *     in-review reports stay hidden. Financial, clinical (`health_status`,
+         *     `psychological_status`) and submitter fields are dropped.
+         */
+        get: operations["list_orphan_achievements_api_v1_orphan_me_achievements_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphan/me/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Messages
+         * @description List approved messages in the orphan's own thread.
+         *
+         *     Scoped to `related_orphan_id == self.id` and to messages the orphan
+         *     is actually a party to (sender or recipient). Only `approved`
+         *     messages surface here.
+         */
+        get: operations["list_orphan_messages_api_v1_orphan_me_messages_get"];
+        put?: never;
+        /**
+         * Send Orphan Message
+         * @description Compose a message.
+         *
+         *     The orphan can only ever send a message with `related_orphan_id` set
+         *     to their own id; the recipient auto-resolves to the orphan's primary
+         *     guardian (or NULL when none has a login, in which case a moderator
+         *     routes it). Every orphan-sent message lands as `pending`.
+         */
+        post: operations["send_orphan_message_api_v1_orphan_me_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphan/me/sponsor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orphan Sponsor
+         * @description Minimal sponsor view.
+         *
+         *     Returns `{has_sponsor: false}` when there is no active sponsorship.
+         *     Otherwise returns a generic display name (the donor's first name only
+         *     when the org has opted in) and the start year — never the donor's
+         *     identity, the amount, the currency, or the sponsorship id.
+         */
+        get: operations["get_orphan_sponsor_api_v1_orphan_me_sponsor_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans": {
         parameters: {
             query?: never;
@@ -3484,6 +3587,45 @@ export interface components {
             /** Timezone */
             timezone?: string | null;
         };
+        /**
+         * OrphanAchievementRead
+         * @description Published report, projected to the progress fields only.
+         *
+         *     Drops everything financial, drops `health_status` and
+         *     `psychological_status` (clinical), and drops `submitted_by` /
+         *     approver user info.
+         */
+        OrphanAchievementRead: {
+            /** Activities */
+            activities?: {
+                [key: string]: unknown;
+            } | null;
+            /** Educational Progress */
+            educational_progress?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /** Quran Progress */
+            quran_progress?: {
+                [key: string]: unknown;
+            } | null;
+            /** Report Type */
+            report_type: string;
+        };
         /** OrphanCreate */
         OrphanCreate: {
             /**
@@ -3517,6 +3659,82 @@ export interface components {
              * Format: uuid
              */
             partner_organization_id: string;
+        };
+        /**
+         * OrphanMeRead
+         * @description The orphan's own profile.
+         *
+         *     Deliberately omits every financial field (`current_balance`,
+         *     `is_sponsored`, `balance_currency`), partner identity
+         *     (`partner_organization_id`), and any guardian PII.
+         */
+        OrphanMeRead: {
+            /** Code */
+            code: string;
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Family Name */
+            family_name: string;
+            /** First Name */
+            first_name: string;
+            /** Gender */
+            gender: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Profile Completion Percentage */
+            profile_completion_percentage: number;
+        };
+        /**
+         * OrphanMessageCreate
+         * @description Compose payload. The orphan never picks the recipient or the
+         *     orphan context — both are derived server-side (recipient = primary
+         *     guardian, context = self).
+         */
+        OrphanMessageCreate: {
+            /** Content */
+            content: string;
+            /**
+             * Message Type
+             * @default text
+             * @constant
+             */
+            message_type: "text";
+        };
+        /**
+         * OrphanMessageRead
+         * @description Privacy-safe message projection.
+         *
+         *     Carries only `from_role` + `from_name` (first name) — no raw
+         *     `from_user_id` / `to_user_id`, no email, phone, or last name.
+         */
+        OrphanMessageRead: {
+            /** Content */
+            content: string | null;
+            /** Created At */
+            created_at?: string | null;
+            /** From Name */
+            from_name: string;
+            /** From Role */
+            from_role: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Mine */
+            is_mine: boolean;
+            /** Is Read */
+            is_read: boolean;
+            /** Message Type */
+            message_type: string;
+            /** Moderation Status */
+            moderation_status: string;
         };
         /** OrphanPhoto */
         OrphanPhoto: {
@@ -3614,6 +3832,24 @@ export interface components {
         OrphanRejectPayload: {
             /** Reason */
             reason: string;
+        };
+        /**
+         * OrphanSponsorView
+         * @description Minimal, child-safe view of the sponsorship.
+         *
+         *     When `has_sponsor` is False every other field is None. When True,
+         *     `display_name` is either the literal "كفيلك" or the donor's first
+         *     name (only if the org opted in), and `since_year` is the calendar
+         *     year the sponsorship started. NEVER carries donor id/email/phone/
+         *     full name, amount, currency, or sponsorship id.
+         */
+        OrphanSponsorView: {
+            /** Display Name */
+            display_name?: string | null;
+            /** Has Sponsor */
+            has_sponsor: boolean;
+            /** Since Year */
+            since_year?: number | null;
         };
         /**
          * OrphanUpdate
@@ -6803,6 +7039,141 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orphan_me_api_v1_orphan_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanMeRead"];
+                };
+            };
+        };
+    };
+    list_orphan_achievements_api_v1_orphan_me_achievements_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanAchievementRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_orphan_messages_api_v1_orphan_me_messages_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanMessageRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_orphan_message_api_v1_orphan_me_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrphanMessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanMessageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orphan_sponsor_api_v1_orphan_me_sponsor_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanSponsorView"];
                 };
             };
         };

@@ -985,7 +985,9 @@ CREATE TABLE messages (
     
     -- Participants
     from_user_id UUID NOT NULL REFERENCES users(id),
-    to_user_id UUID NOT NULL REFERENCES users(id),
+    -- Nullable: an orphan-composed message may not have a resolvable
+    -- recipient yet (no provisioned guardian); a moderator routes it.
+    to_user_id UUID REFERENCES users(id),
     related_orphan_id UUID REFERENCES orphans(id),
     related_sponsorship_id UUID REFERENCES sponsorships(id),
     
@@ -1143,6 +1145,9 @@ CREATE TABLE business_rules (
     show_donor_identity_to_guardian BOOLEAN DEFAULT FALSE,
     show_balance_to_guardian BOOLEAN DEFAULT FALSE,
     show_sponsorship_dates_to_guardian BOOLEAN DEFAULT TRUE,
+
+    -- Orphan portal visibility settings
+    show_donor_first_name_to_orphan BOOLEAN DEFAULT FALSE,
     
     -- Custom rules (JSONB for extensibility)
     custom_rules JSONB DEFAULT '{}'::jsonb,
