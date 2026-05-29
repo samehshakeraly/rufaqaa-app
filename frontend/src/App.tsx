@@ -13,8 +13,12 @@ import { AuditPage } from "./pages/AuditPage";
 import { BankTransfersPage } from "./pages/BankTransfersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DonorDashboardPage } from "./pages/DonorDashboardPage";
+import { DonorMessagesPage } from "./pages/DonorMessagesPage";
+import { DonorOrphanDetailPage } from "./pages/DonorOrphanDetailPage";
+import { DonorOrphansPage } from "./pages/DonorOrphansPage";
 import { DonorProfilePage } from "./pages/DonorProfilePage";
 import { DonorSponsorshipsPage } from "./pages/DonorSponsorshipsPage";
+import { DonorSponsorshipWizardPage } from "./pages/DonorSponsorshipWizardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { FamiliesPage } from "./pages/FamiliesPage";
 import { FamilyDetailPage } from "./pages/FamilyDetailPage";
@@ -75,6 +79,13 @@ export function App() {
         <Route path="/donor/dashboard" element={<DonorDashboardPage />} />
         <Route path="/donor/profile" element={<DonorProfilePage />} />
         <Route path="/donor/sponsorships" element={<DonorSponsorshipsPage />} />
+        <Route path="/donor/orphans" element={<DonorOrphansPage />} />
+        <Route path="/donor/orphans/:id" element={<DonorOrphanDetailPage />} />
+        <Route path="/donor/messages" element={<DonorMessagesPage />} />
+        <Route
+          path="/donor/sponsor/:code"
+          element={<DonorSponsorshipWizardPage />}
+        />
         <Route path="/sponsor/:code/checkout" element={<SponsorCheckoutPage />} />
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/failure" element={<PaymentFailurePage />} />
