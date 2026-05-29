@@ -36,7 +36,7 @@ describe("platform client", () => {
 
     const rows = await listPlatformOrganizations({ status: "active", search: "abc" });
     expect(rows).toHaveLength(1);
-    expect(rows[0].code).toBe("ORG");
+    expect(rows[0]?.code).toBe("ORG");
   });
 
   it("lists organizations with no filters", async () => {
