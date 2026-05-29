@@ -852,6 +852,31 @@ export interface paths {
         patch: operations["update_marketing_channel_api_v1_marketing_channels__channel_id__patch"];
         trace?: never;
     };
+    "/api/v1/marketing-channels/{channel_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Channel Progress
+         * @description Goal-vs-achieved progress for a channel's annual targets.
+         *
+         *     Achievement is measured within the channel's `goal_year` (falling back
+         *     to the current calendar year when the row has none set): non-cancelled
+         *     sponsorships acquired through the channel, and completed payments on
+         *     those sponsorships.
+         */
+        get: operations["channel_progress_api_v1_marketing_channels__channel_id__progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/reports": {
         parameters: {
             query?: never;
@@ -1148,6 +1173,11 @@ export interface paths {
          *     `search_vector` (covers Arabic + English name fields and the code) and
          *     also matches the code prefix directly so partial codes like "ORF-AB"
          *     still work.
+         *
+         *     `channel_id` narrows to orphans assigned to a marketing channel.
+         *     `assignment_status` filters by assignment deadline: "active" keeps
+         *     orphans whose deadline is still in the future, "expired" those past it,
+         *     "all" applies no deadline filter.
          */
         get: operations["list_orphans_api_v1_orphans_get"];
         put?: never;
@@ -2319,6 +2349,46 @@ export interface components {
             /** New Password */
             new_password: string;
         };
+        /**
+         * ChannelProgress
+         * @description Goal-vs-achieved snapshot for a marketing channel's annual targets.
+         *
+         *     `achieved_count` counts non-cancelled sponsorships acquired through the
+         *     channel within `goal_year`; `achieved_amount` sums completed payments on
+         *     those channel's sponsorships in the same year. Monthly figures track the
+         *     current calendar month against the (annual / 12) target.
+         */
+        ChannelProgress: {
+            /** Achieved Amount */
+            achieved_amount: string;
+            /** Achieved Count */
+            achieved_count: number;
+            /** Annual Goal Amount */
+            annual_goal_amount?: string | null;
+            /** Annual Goal Count */
+            annual_goal_count?: number | null;
+            /**
+             * Channel Id
+             * Format: uuid
+             */
+            channel_id: string;
+            /** Completion Percentage Amount */
+            completion_percentage_amount: number;
+            /** Completion Percentage Count */
+            completion_percentage_count: number;
+            /** Goal Currency */
+            goal_currency?: string | null;
+            /** Goal Year */
+            goal_year: number;
+            /** Monthly Achieved Amount */
+            monthly_achieved_amount: string;
+            /** Monthly Achieved Count */
+            monthly_achieved_count: number;
+            /** Monthly Goal Amount */
+            monthly_goal_amount?: string | null;
+            /** Monthly Goal Count */
+            monthly_goal_count?: number | null;
+        };
         /** CurrentUser */
         CurrentUser: {
             /**
@@ -3471,6 +3541,12 @@ export interface components {
         };
         /** OrphanRead */
         OrphanRead: {
+            /** Assigned At */
+            assigned_at?: string | null;
+            /** Assigned To Channel Id */
+            assigned_to_channel_id?: string | null;
+            /** Assignment Deadline */
+            assignment_deadline?: string | null;
             /**
              * Case Status
              * @enum {string}
@@ -6218,6 +6294,37 @@ export interface operations {
             };
         };
     };
+    channel_progress_api_v1_marketing_channels__channel_id__progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                channel_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChannelProgress"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     my_reports_api_v1_me_reports_get: {
         parameters: {
             query?: {
@@ -6706,6 +6813,8 @@ export interface operations {
                 limit?: number;
                 offset?: number;
                 case_status?: string | null;
+                channel_id?: string | null;
+                assignment_status?: "active" | "expired" | "all";
                 q?: string | null;
             };
             header?: never;
@@ -7325,6 +7434,7 @@ export interface operations {
                 donor_id?: string | null;
                 sponsorship_id?: string | null;
                 status?: string | null;
+                donor_overdue?: boolean | null;
             };
             header?: never;
             path?: never;
@@ -7972,6 +8082,8 @@ export interface operations {
                 donor_id?: string | null;
                 orphan_id?: string | null;
                 status?: string | null;
+                min_months_overdue?: number | null;
+                is_overdue?: boolean | null;
             };
             header?: never;
             path?: never;

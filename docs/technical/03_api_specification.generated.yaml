@@ -376,6 +376,83 @@ components:
       - new_password
       title: ChangePasswordRequest
       type: object
+    ChannelProgress:
+      description: 'Goal-vs-achieved snapshot for a marketing channel''s annual targets.
+
+
+        `achieved_count` counts non-cancelled sponsorships acquired through the
+
+        channel within `goal_year`; `achieved_amount` sums completed payments on
+
+        those channel''s sponsorships in the same year. Monthly figures track the
+
+        current calendar month against the (annual / 12) target.'
+      properties:
+        achieved_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Achieved Amount
+          type: string
+        achieved_count:
+          title: Achieved Count
+          type: integer
+        annual_goal_amount:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Annual Goal Amount
+        annual_goal_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Annual Goal Count
+        channel_id:
+          format: uuid
+          title: Channel Id
+          type: string
+        completion_percentage_amount:
+          title: Completion Percentage Amount
+          type: number
+        completion_percentage_count:
+          title: Completion Percentage Count
+          type: number
+        goal_currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Goal Currency
+        goal_year:
+          title: Goal Year
+          type: integer
+        monthly_achieved_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Monthly Achieved Amount
+          type: string
+        monthly_achieved_count:
+          title: Monthly Achieved Count
+          type: integer
+        monthly_goal_amount:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Monthly Goal Amount
+        monthly_goal_count:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Monthly Goal Count
+      required:
+      - channel_id
+      - goal_year
+      - achieved_count
+      - achieved_amount
+      - completion_percentage_count
+      - completion_percentage_amount
+      - monthly_achieved_count
+      - monthly_achieved_amount
+      title: ChannelProgress
+      type: object
     CurrentUser:
       properties:
         email:
@@ -2637,6 +2714,24 @@ components:
       type: object
     OrphanRead:
       properties:
+        assigned_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Assigned At
+        assigned_to_channel_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Assigned To Channel Id
+        assignment_deadline:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Assignment Deadline
         case_status:
           enum:
           - pending_review
@@ -6358,6 +6453,45 @@ paths:
       summary: Update Marketing Channel
       tags:
       - marketing-channels
+  /api/v1/marketing-channels/{channel_id}/progress:
+    get:
+      description: 'Goal-vs-achieved progress for a channel''s annual targets.
+
+
+        Achievement is measured within the channel''s `goal_year` (falling back
+
+        to the current calendar year when the row has none set): non-cancelled
+
+        sponsorships acquired through the channel, and completed payments on
+
+        those sponsorships.'
+      operationId: channel_progress_api_v1_marketing_channels__channel_id__progress_get
+      parameters:
+      - in: path
+        name: channel_id
+        required: true
+        schema:
+          format: uuid
+          title: Channel Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelProgress'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Channel Progress
+      tags:
+      - marketing-channels
   /api/v1/me/reports:
     get:
       description: 'Reports for every orphan this donor sponsors — only the ones that
@@ -6941,7 +7075,16 @@ paths:
 
         also matches the code prefix directly so partial codes like "ORF-AB"
 
-        still work.'
+        still work.
+
+
+        `channel_id` narrows to orphans assigned to a marketing channel.
+
+        `assignment_status` filters by assignment deadline: "active" keeps
+
+        orphans whose deadline is still in the future, "expired" those past it,
+
+        "all" applies no deadline filter.'
       operationId: list_orphans_api_v1_orphans_get
       parameters:
       - in: query
@@ -6969,6 +7112,26 @@ paths:
           - type: string
           - type: 'null'
           title: Case Status
+      - in: query
+        name: channel_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Channel Id
+      - in: query
+        name: assignment_status
+        required: false
+        schema:
+          default: all
+          enum:
+          - active
+          - expired
+          - all
+          title: Assignment Status
+          type: string
       - in: query
         name: q
         required: false
@@ -7647,6 +7810,14 @@ paths:
           - type: string
           - type: 'null'
           title: Status
+      - in: query
+        name: donor_overdue
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Donor Overdue
       responses:
         '200':
           content:
@@ -8417,6 +8588,23 @@ paths:
           - type: string
           - type: 'null'
           title: Status
+      - in: query
+        name: min_months_overdue
+        required: false
+        schema:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Months Overdue
+      - in: query
+        name: is_overdue
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Overdue
       responses:
         '200':
           content:
