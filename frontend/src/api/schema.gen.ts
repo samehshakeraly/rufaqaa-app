@@ -692,6 +692,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/guardian/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Guardian Me
+         * @description Return the guardian profile for the calling user.
+         *
+         *     Joins on `families` to attach a thin family preview so the SPA can
+         *     show "you belong to family <code>" without a second round-trip.
+         */
+        get: operations["get_guardian_me_api_v1_guardian_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/guardian/me/orphans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Orphans
+         * @description List orphans belonging to the guardian's family.
+         *
+         *     Financial fields are stripped by default. The org can opt in via
+         *     `business_rules.show_financial_to_guardian = TRUE` — when so, the
+         *     `financials` sub-object is attached per orphan.
+         */
+        get: operations["list_my_orphans_api_v1_guardian_me_orphans_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/guardian/me/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Reports
+         * @description List reports for one of the guardian's orphans.
+         *
+         *     403 if the orphan isn't in the guardian's family — we'd rather signal
+         *     "you can't touch this" loudly than 404 (which would leak orphan
+         *     existence to non-owners).
+         */
+        get: operations["list_my_reports_api_v1_guardian_me_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/guardians/{guardian_id}/documents": {
         parameters: {
             query?: never;
@@ -881,6 +952,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/media/{media_id}/moderate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Moderate Media
+         * @description Approve or reject a pending media item.
+         *
+         *     Approving advances visibility from the private default to
+         *     `donor_only` so sponsoring donors can render the photo; rejecting
+         *     leaves visibility untouched so the item stays hidden.
+         */
+        post: operations["moderate_media_api_v1_media__media_id__moderate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/media/{media_id}/url": {
         parameters: {
             query?: never;
@@ -895,6 +990,125 @@ export interface paths {
         get: operations["get_media_presigned_url_api_v1_media__media_id__url_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Messages
+         * @description List messages the caller can see.
+         *
+         *     Moderators get everything in their org (RLS-scoped). Everyone else
+         *     sees only messages where they're sender (any status) or recipient
+         *     (approved only). Use `orphan_id` to narrow to one conversation;
+         *     `unread_only` filters to incoming approved+unread.
+         */
+        get: operations["list_messages_api_v1_messages_get"];
+        put?: never;
+        /**
+         * Send Message
+         * @description Send a new message. Lands as `pending` — recipient won't see it
+         *     until a moderator approves.
+         *
+         *     Only donors and guardians may initiate via this surface. Staff
+         *     workflows go through the admin channels.
+         */
+        post: operations["send_message_api_v1_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/messages/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending Messages
+         * @description Moderation queue. Returns org-wide pending messages, newest
+         *     first. RLS keeps this org-scoped automatically.
+         */
+        get: operations["list_pending_messages_api_v1_messages_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/messages/{message_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Message */
+        get: operations["get_message_api_v1_messages__message_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/messages/{message_id}/moderate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Moderate Message
+         * @description Approve or reject a pending message.
+         *
+         *     Reject doesn't delete — the row stays so disputes have an audit
+         *     trail. Sender keeps seeing it (with the reject note); the recipient
+         *     never does.
+         */
+        post: operations["moderate_message_api_v1_messages__message_id__moderate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/messages/{message_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Message Read
+         * @description Mark a message as read by the calling user.
+         *
+         *     Only the recipient may mark; only approved messages can be marked
+         *     (anything else hasn't been delivered yet). Idempotent — re-reading
+         *     leaves `read_at` at the first mark.
+         */
+        post: operations["mark_message_read_api_v1_messages__message_id__read_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -989,6 +1203,29 @@ export interface paths {
         patch: operations["update_orphan_api_v1_orphans__orphan_id__patch"];
         trace?: never;
     };
+    "/api/v1/orphans/{orphan_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Orphan
+         * @description Mark a pending_review orphan as approved.
+         *
+         *     Only partner_manager + org admins may approve — partner_staff submits
+         *     but cannot self-approve, same separation the report workflow uses.
+         */
+        post: operations["approve_orphan_api_v1_orphans__orphan_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}/assign-channel": {
         parameters: {
             query?: never;
@@ -1023,6 +1260,49 @@ export interface paths {
         put?: never;
         /** Attach Document To Orphan */
         post: operations["attach_document_to_orphan_api_v1_orphans__orphan_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphans/{orphan_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Orphan
+         * @description Reject a pending_review orphan. Reason is required and stored on
+         *     the row so reviewers can see why this case didn't move forward.
+         */
+        post: operations["reject_orphan_api_v1_orphans__orphan_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphans/{orphan_id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Release Orphan
+         * @description Move an approved or reserved orphan back to the available pool —
+         *     clearing any marketing-channel assignment. Used when a reservation
+         *     lapses or a channel is reshuffled.
+         */
+        post: operations["release_orphan_api_v1_orphans__orphan_id__release_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1456,6 +1736,10 @@ export interface paths {
         /**
          * Submit Report
          * @description Move a draft report into the partner approval queue.
+         *
+         *     Same ownership rule as PATCH — the guardian who owns the orphan can
+         *     submit the draft; partner/admin staff can also submit on their
+         *     behalf.
          */
         post: operations["submit_report_api_v1_reports__report_id__submit_post"];
         delete?: never;
@@ -2615,6 +2899,99 @@ export interface components {
             /** Whatsapp */
             whatsapp?: string | null;
         };
+        /**
+         * GuardianFamilyMini
+         * @description Just enough to anchor the UI — no street address, no income.
+         */
+        GuardianFamilyMini: {
+            /** Code */
+            code: string;
+            /** Country Code */
+            country_code: string | null;
+            /** Family Name */
+            family_name: string | null;
+            /** Governorate */
+            governorate: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /** GuardianMeRead */
+        GuardianMeRead: {
+            /** Email */
+            email: string | null;
+            family: components["schemas"]["GuardianFamilyMini"] | null;
+            /** Full Name */
+            full_name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Literacy Level */
+            literacy_level: string;
+            /** Phone */
+            phone: string | null;
+            /** Preferred Communication */
+            preferred_communication: string;
+            /** Relation */
+            relation: string;
+            /** Status */
+            status: string;
+            /** User Id */
+            user_id: string | null;
+            /** Whatsapp */
+            whatsapp: string | null;
+        };
+        /**
+         * GuardianOrphanFinancials
+         * @description Only attached when `business_rules.show_financial_to_guardian` is
+         *     TRUE for the guardian's org.
+         */
+        GuardianOrphanFinancials: {
+            /** Balance Currency */
+            balance_currency: string | null;
+            /** Current Balance */
+            current_balance: string | null;
+            /** Is Sponsored */
+            is_sponsored: boolean;
+        };
+        /**
+         * GuardianOrphanRead
+         * @description Guardian-safe projection of an orphan.
+         *
+         *     Notice the omitted fields: no `current_balance`, no `balance_currency`,
+         *     no `is_sponsored`, no partner_organization_id. Those are unlocked
+         *     explicitly via `business_rules.show_financial_to_guardian = TRUE` and
+         *     re-attached as `financials` (see below).
+         */
+        GuardianOrphanRead: {
+            /** Case Status */
+            case_status: string;
+            /** Code */
+            code: string;
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Family Name */
+            family_name: string;
+            financials?: components["schemas"]["GuardianOrphanFinancials"] | null;
+            /** First Name */
+            first_name: string;
+            /** Gender */
+            gender: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Profile Completion Percentage */
+            profile_completion_percentage: number;
+        };
         /** GuardianRead */
         GuardianRead: {
             /**
@@ -2768,6 +3145,34 @@ export interface components {
             /** Status */
             status?: ("active" | "suspended" | "archived") | null;
         };
+        /** MediaModeratePayload */
+        MediaModeratePayload: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject";
+            /** Notes */
+            notes?: string | null;
+        };
+        /** MediaModerationRead */
+        MediaModerationRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Moderated At */
+            moderated_at: string | null;
+            /** Moderated By */
+            moderated_by: string | null;
+            /** Moderation Notes */
+            moderation_notes: string | null;
+            /** Moderation Status */
+            moderation_status: string;
+            /** Visibility */
+            visibility: string;
+        };
         /** MediaUploadResponse */
         MediaUploadResponse: {
             /**
@@ -2796,6 +3201,89 @@ export interface components {
              * Format: uuid
              */
             orphan_id: string;
+        };
+        /**
+         * MessageCreate
+         * @description Send payload — recipient and orphan are required so we always have
+         *     a moderation handle and a context.
+         */
+        MessageCreate: {
+            /** Content */
+            content: string;
+            /**
+             * Message Type
+             * @default text
+             * @constant
+             */
+            message_type: "text";
+            /**
+             * Related Orphan Id
+             * Format: uuid
+             */
+            related_orphan_id: string;
+            /** Related Sponsorship Id */
+            related_sponsorship_id?: string | null;
+            /**
+             * To User Id
+             * Format: uuid
+             */
+            to_user_id: string;
+        };
+        /** MessageModerate */
+        MessageModerate: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject";
+            /** Notes */
+            notes?: string | null;
+        };
+        /**
+         * MessageRead
+         * @description Public projection.
+         *
+         *     Deliberately omits `from_user_id`, `to_user_id`, emails, phones,
+         *     last names. Only the calling user's relationship to the message
+         *     (`is_mine`) and the counter-party's display name are exposed.
+         */
+        MessageRead: {
+            /** Content */
+            content: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** From Name */
+            from_name: string;
+            /** From Role */
+            from_role: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Mine */
+            is_mine: boolean;
+            /** Is Read */
+            is_read: boolean;
+            /** Message Type */
+            message_type: string;
+            /** Moderated At */
+            moderated_at: string | null;
+            /** Moderation Notes */
+            moderation_notes: string | null;
+            /** Moderation Status */
+            moderation_status: string;
+            /** Orphan Code */
+            orphan_code: string | null;
+            /** Read At */
+            read_at: string | null;
+            /** To Name */
+            to_name: string;
+            /** To Role */
+            to_role: string;
         };
         /** MonthlyPoint */
         MonthlyPoint: {
@@ -3046,6 +3534,11 @@ export interface components {
              */
             updated_at: string;
         };
+        /** OrphanRejectPayload */
+        OrphanRejectPayload: {
+            /** Reason */
+            reason: string;
+        };
         /**
          * OrphanUpdate
          * @description Partial update. Every field optional — only the supplied keys are
@@ -3152,6 +3645,17 @@ export interface components {
         Page_MarketingChannelRead_: {
             /** Items */
             items: components["schemas"]["MarketingChannelRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[MessageRead] */
+        Page_MessageRead_: {
+            /** Items */
+            items: components["schemas"]["MessageRead"][];
             /** Limit */
             limit: number;
             /** Offset */
@@ -5367,6 +5871,79 @@ export interface operations {
             };
         };
     };
+    get_guardian_me_api_v1_guardian_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianMeRead"];
+                };
+            };
+        };
+    };
+    list_my_orphans_api_v1_guardian_me_orphans_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianOrphanRead"][];
+                };
+            };
+        };
+    };
+    list_my_reports_api_v1_guardian_me_reports_get: {
+        parameters: {
+            query: {
+                /** @description Orphan UUID; must belong to the guardian's family */
+                orphan_id: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_guardian_documents_api_v1_guardians__guardian_id__documents_get: {
         parameters: {
             query?: {
@@ -5806,6 +6383,41 @@ export interface operations {
             };
         };
     };
+    moderate_media_api_v1_media__media_id__moderate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaModeratePayload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaModerationRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_media_presigned_url_api_v1_media__media_id__url_get: {
         parameters: {
             query?: never;
@@ -5826,6 +6438,202 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_messages_api_v1_messages_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                orphan_id?: string | null;
+                unread_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_MessageRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_message_api_v1_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_messages_api_v1_messages_pending_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_MessageRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_message_api_v1_messages__message_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderate_message_api_v1_messages__message_id__moderate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageModerate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_message_read_api_v1_messages__message_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
                 };
             };
             /** @description Validation Error */
@@ -6085,6 +6893,37 @@ export interface operations {
             };
         };
     };
+    approve_orphan_api_v1_orphans__orphan_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     assign_orphan_channel_api_v1_orphans__orphan_id__assign_channel_post: {
         parameters: {
             query?: never;
@@ -6176,6 +7015,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_orphan_api_v1_orphans__orphan_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrphanRejectPayload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    release_orphan_api_v1_orphans__orphan_id__release_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanRead"];
                 };
             };
             /** @description Validation Error */
