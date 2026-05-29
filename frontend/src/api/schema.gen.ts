@@ -1690,6 +1690,129 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Organizations
+         * @description List ALL organizations across the platform (no org filter — this
+         *     is an intentional cross-tenant read gated to super_admin). Tenant
+         *     counts are joined in via grouped subqueries to avoid N+1.
+         */
+        get: operations["list_organizations_api_v1_platform_organizations_get"];
+        put?: never;
+        /**
+         * Create Organization
+         * @description Provision a brand-new tenant org plus its initial org_admin user.
+         *
+         *     Cross-tenant write: the new org and its admin belong to a different
+         *     tenant than the calling super_admin, which is exactly the point.
+         *     Conflicts on org code / admin email return 409 rather than a 500.
+         */
+        post: operations["create_organization_api_v1_platform_organizations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/organizations/{org_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Organization
+         * @description Full detail for any org on the platform (cross-tenant read).
+         */
+        get: operations["get_organization_api_v1_platform_organizations__org_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Organization
+         * @description Platform-level edit of any org (status, plan, expiry, settings).
+         *     Cross-tenant write gated to super_admin.
+         */
+        patch: operations["update_organization_api_v1_platform_organizations__org_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/platform/organizations/{org_id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activate Organization
+         * @description Re-activate a suspended org (status=active) and clear the stored
+         *     suspension reason. Cross-tenant write gated to super_admin.
+         */
+        post: operations["activate_organization_api_v1_platform_organizations__org_id__activate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/organizations/{org_id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suspend Organization
+         * @description Suspend an org (status=suspended) and record the reason in
+         *     settings.suspension. Cross-tenant write gated to super_admin.
+         */
+        post: operations["suspend_organization_api_v1_platform_organizations__org_id__suspend_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Platform Settings
+         * @description Read the system-wide flags (maintenance_mode, signups_open, …).
+         *     Singleton row, no tenant scope.
+         */
+        get: operations["get_platform_settings_api_v1_platform_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Platform Settings
+         * @description Shallow-merge the provided keys into the platform settings JSONB.
+         *     Gated to super_admin.
+         */
+        patch: operations["update_platform_settings_api_v1_platform_settings_patch"];
+        trace?: never;
+    };
     "/api/v1/public/orphans": {
         parameters: {
             query?: never;
@@ -2031,6 +2154,71 @@ export interface paths {
          * @description Total paid + count grouped by month for the last 12 months.
          */
         get: operations["payments_timeseries_api_v1_stats_payments_timeseries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stats/platform/by-org": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform By Org
+         * @description Top N orgs by completed-donation total (with sponsorship counts).
+         *     Cross-org read gated to super_admin.
+         */
+        get: operations["platform_by_org_api_v1_stats_platform_by_org_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stats/platform/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform Summary
+         * @description Cross-org headline totals for the super-admin console. `total_donated`
+         *     is reported both as a converted figure (sum of
+         *     payments.amount_in_default_currency, where available) and as a
+         *     per-currency breakdown so nothing is silently lost to FX gaps.
+         */
+        get: operations["platform_summary_api_v1_stats_platform_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stats/platform/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform Timeseries
+         * @description Completed-payment totals + counts by month across ALL orgs, last
+         *     12 months. Cross-org read gated to super_admin.
+         */
+        get: operations["platform_timeseries_api_v1_stats_platform_timeseries_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2491,6 +2679,23 @@ export interface components {
             monthly_goal_amount?: string | null;
             /** Monthly Goal Count */
             monthly_goal_count?: number | null;
+        };
+        /** CreatedAdmin */
+        CreatedAdmin: {
+            /** Email */
+            email: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
+        /** CurrencyTotal */
+        CurrencyTotal: {
+            /** Currency */
+            currency: string;
+            /** Total */
+            total: string;
         };
         /** CurrentUser */
         CurrentUser: {
@@ -3517,6 +3722,24 @@ export interface components {
             /** Whatsapp */
             whatsapp?: boolean | null;
         };
+        /** OrgRanking */
+        OrgRanking: {
+            /** Code */
+            code: string;
+            /** Donations Total */
+            donations_total: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Sponsorships Count */
+            sponsorships_count: number;
+        };
         /** OrganizationRead */
         OrganizationRead: {
             /** Code */
@@ -4349,6 +4572,246 @@ export interface components {
             /** Months */
             months: components["schemas"]["MonthlyPoint"][];
         };
+        /** PlatformByOrg */
+        PlatformByOrg: {
+            /** Items */
+            items: components["schemas"]["OrgRanking"][];
+            /** Limit */
+            limit: number;
+        };
+        /** PlatformMonthlyPoint */
+        PlatformMonthlyPoint: {
+            /**
+             * Month
+             * Format: date-time
+             */
+            month: string;
+            /** Payments Count */
+            payments_count: number;
+            /** Payments Total */
+            payments_total: string;
+        };
+        /**
+         * PlatformOrgCreate
+         * @description Create a new tenant org plus its initial org_admin user.
+         */
+        PlatformOrgCreate: {
+            /**
+             * Admin Email
+             * Format: email
+             */
+            admin_email: string;
+            /**
+             * Admin First Name
+             * @default Org
+             */
+            admin_first_name: string;
+            /**
+             * Admin Last Name
+             * @default Admin
+             */
+            admin_last_name: string;
+            /** Admin Password */
+            admin_password: string;
+            /** Code */
+            code: string;
+            /** Country Code */
+            country_code: string;
+            /**
+             * Default Currency
+             * @default KWD
+             */
+            default_currency: string;
+            /**
+             * Deployment Mode
+             * @default self_hosted
+             * @enum {string}
+             */
+            deployment_mode: "self_hosted" | "saas_cloud";
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
+            /**
+             * Org Type
+             * @default standalone
+             * @enum {string}
+             */
+            org_type: "standalone" | "external_marketer" | "local_partner" | "hybrid" | "federated";
+        };
+        /** PlatformOrgCreateResponse */
+        PlatformOrgCreateResponse: {
+            admin_user: components["schemas"]["CreatedAdmin"];
+            organization: components["schemas"]["PlatformOrgDetail"];
+        };
+        /**
+         * PlatformOrgDetail
+         * @description Full org record + counts + creation/audit metadata.
+         */
+        PlatformOrgDetail: {
+            /** Code */
+            code: string;
+            /** Country Code */
+            country_code: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string | null;
+            /** Default Currency */
+            default_currency: string;
+            /** Default Language */
+            default_language: string;
+            /** Deployment Mode */
+            deployment_mode: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
+            /** Org Type */
+            org_type: string;
+            /** Settings */
+            settings: {
+                [key: string]: unknown;
+            };
+            /** Status */
+            status: string;
+            /** Subscription Expires At */
+            subscription_expires_at: string | null;
+            /** Subscription Plan */
+            subscription_plan: string | null;
+            /** Timezone */
+            timezone: string;
+            /**
+             * Total Donors
+             * @default 0
+             */
+            total_donors: number;
+            /**
+             * Total Orphans
+             * @default 0
+             */
+            total_orphans: number;
+            /**
+             * Total Sponsorships
+             * @default 0
+             */
+            total_sponsorships: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PlatformOrgSummary
+         * @description One row in the platform org list, with joined tenant counts.
+         */
+        PlatformOrgSummary: {
+            /** Code */
+            code: string;
+            /** Country Code */
+            country_code: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
+            /** Status */
+            status: string;
+            /** Subscription Plan */
+            subscription_plan: string | null;
+            /**
+             * Total Donors
+             * @default 0
+             */
+            total_donors: number;
+            /**
+             * Total Orphans
+             * @default 0
+             */
+            total_orphans: number;
+            /**
+             * Total Sponsorships
+             * @default 0
+             */
+            total_sponsorships: number;
+        };
+        /**
+         * PlatformOrgUpdate
+         * @description Platform-level org edits (status, plan, expiry, free-form settings).
+         */
+        PlatformOrgUpdate: {
+            /** Settings */
+            settings?: {
+                [key: string]: unknown;
+            } | null;
+            /** Status */
+            status?: ("active" | "suspended" | "archived" | "pending_approval") | null;
+            /** Subscription Expires At */
+            subscription_expires_at?: string | null;
+            /** Subscription Plan */
+            subscription_plan?: string | null;
+        };
+        /** PlatformSettingsRead */
+        PlatformSettingsRead: {
+            /** Settings */
+            settings: {
+                [key: string]: unknown;
+            };
+            /** Updated At */
+            updated_at: string | null;
+            /** Updated By */
+            updated_by: string | null;
+        };
+        /**
+         * PlatformSettingsUpdate
+         * @description Shallow-merged into the existing settings JSONB.
+         */
+        PlatformSettingsUpdate: {
+            /** Settings */
+            settings: {
+                [key: string]: unknown;
+            };
+        };
+        /** PlatformSummary */
+        PlatformSummary: {
+            /** Active Orgs */
+            active_orgs: number;
+            /** Total Donated By Currency */
+            total_donated_by_currency: components["schemas"]["CurrencyTotal"][];
+            /** Total Donated Converted */
+            total_donated_converted: string;
+            /** Total Donors */
+            total_donors: number;
+            /** Total Orgs */
+            total_orgs: number;
+            /** Total Orphans */
+            total_orphans: number;
+            /** Total Sponsorships */
+            total_sponsorships: number;
+        };
+        /** PlatformTimeseries */
+        PlatformTimeseries: {
+            /** Months */
+            months: components["schemas"]["PlatformMonthlyPoint"][];
+        };
         /**
          * PublicOrphanCard
          * @description Curated public projection of an orphan. Every field here was
@@ -4730,6 +5193,11 @@ export interface components {
             count: number;
             /** Status */
             status: string;
+        };
+        /** SuspendRequest */
+        SuspendRequest: {
+            /** Reason */
+            reason: string;
         };
         /** Timeline */
         Timeline: {
@@ -8066,6 +8534,257 @@ export interface operations {
             };
         };
     };
+    list_organizations_api_v1_platform_organizations_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                country?: string | null;
+                search?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_organization_api_v1_platform_organizations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlatformOrgCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgCreateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_organization_api_v1_platform_organizations__org_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_organization_api_v1_platform_organizations__org_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlatformOrgUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    activate_organization_api_v1_platform_organizations__org_id__activate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suspend_organization_api_v1_platform_organizations__org_id__suspend_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuspendRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformOrgDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_platform_settings_api_v1_platform_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformSettingsRead"];
+                };
+            };
+        };
+    };
+    update_platform_settings_api_v1_platform_settings_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlatformSettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformSettingsRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     public_list_orphans_api_v1_public_orphans_get: {
         parameters: {
             query?: {
@@ -8747,6 +9466,77 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentsTimeseries"];
+                };
+            };
+        };
+    };
+    platform_by_org_api_v1_stats_platform_by_org_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformByOrg"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    platform_summary_api_v1_stats_platform_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformSummary"];
+                };
+            };
+        };
+    };
+    platform_timeseries_api_v1_stats_platform_timeseries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformTimeseries"];
                 };
             };
         };

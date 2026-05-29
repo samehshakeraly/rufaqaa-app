@@ -7,20 +7,35 @@ organization the caller belongs to).
 
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import require_roles
 from app.models.donor import Donor
+from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
+from app.models.user import User
+from app.schemas.platform import (
+    CurrencyTotal,
+    OrgRanking,
+    PlatformByOrg,
+    PlatformMonthlyPoint,
+    PlatformSummary,
+    PlatformTimeseries,
+)
 
 router = APIRouter()
+
+# Platform analytics are super-admin only and intentionally cross-org.
+SuperAdmin = Annotated[User, Depends(require_roles("super_admin"))]
 
 
 class DashboardSummary(BaseModel):
@@ -196,6 +211,150 @@ async def donations_by_partner(db: DbSession, _user: CurrentUser) -> DonationsBy
                 partner_name=r[2],
                 payments_total=Decimal(r[3]),
                 payments_count=int(r[4]),
+            )
+            for r in rows
+        ],
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Platform-wide analytics (super_admin only).
+#
+# These deliberately aggregate across EVERY organization, bypassing the
+# per-tenant RLS scoping used by the dashboard endpoints above. They run
+# with no `app.current_org_id` filter; the super_admin DB context is
+# privileged to read all orgs' rows. ALL three are gated to super_admin
+# (never org_admin, which is per-org).
+# ═══════════════════════════════════════════════════════════════════
+
+
+@router.get("/platform/summary", response_model=PlatformSummary)
+async def platform_summary(db: DbSession, _admin: SuperAdmin) -> PlatformSummary:
+    """Cross-org headline totals for the super-admin console. `total_donated`
+    is reported both as a converted figure (sum of
+    payments.amount_in_default_currency, where available) and as a
+    per-currency breakdown so nothing is silently lost to FX gaps."""
+    total_orgs = await db.scalar(select(func.count(Organization.id))) or 0
+    active_orgs = (
+        await db.scalar(select(func.count(Organization.id)).where(Organization.status == "active"))
+        or 0
+    )
+    total_orphans = (
+        await db.scalar(select(func.count(Orphan.id)).where(Orphan.deleted_at.is_(None))) or 0
+    )
+    total_donors = (
+        await db.scalar(select(func.count(Donor.id)).where(Donor.deleted_at.is_(None))) or 0
+    )
+    total_sponsorships = await db.scalar(select(func.count(Sponsorship.id))) or 0
+
+    converted = await db.scalar(
+        select(func.coalesce(func.sum(Payment.amount_in_default_currency), 0)).where(
+            Payment.status == "completed"
+        )
+    )
+    by_currency_rows = (
+        await db.execute(
+            select(Payment.currency, func.coalesce(func.sum(Payment.amount), 0))
+            .where(Payment.status == "completed")
+            .group_by(Payment.currency)
+            .order_by(func.sum(Payment.amount).desc())
+        )
+    ).all()
+
+    return PlatformSummary(
+        total_orgs=int(total_orgs),
+        active_orgs=int(active_orgs),
+        total_orphans=int(total_orphans),
+        total_donors=int(total_donors),
+        total_sponsorships=int(total_sponsorships),
+        total_donated_converted=Decimal(converted or 0),
+        total_donated_by_currency=[
+            CurrencyTotal(currency=str(c), total=Decimal(t or 0)) for c, t in by_currency_rows
+        ],
+    )
+
+
+@router.get("/platform/timeseries", response_model=PlatformTimeseries)
+async def platform_timeseries(db: DbSession, _admin: SuperAdmin) -> PlatformTimeseries:
+    """Completed-payment totals + counts by month across ALL orgs, last
+    12 months. Cross-org read gated to super_admin."""
+    cutoff = datetime.now(UTC).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    ) - timedelta(days=365)
+    month = func.date_trunc("month", Payment.completed_at).label("month")
+    stmt = (
+        select(
+            month,
+            func.coalesce(func.sum(Payment.amount), 0).label("total"),
+            func.count(Payment.id).label("count"),
+        )
+        .where(Payment.status == "completed", Payment.completed_at >= cutoff)
+        .group_by(month)
+        .order_by(month)
+    )
+    rows = (await db.execute(stmt)).all()
+    return PlatformTimeseries(
+        months=[
+            PlatformMonthlyPoint(
+                month=r.month,
+                payments_total=Decimal(r.total),
+                payments_count=int(r._mapping["count"]),
+            )
+            for r in rows
+        ]
+    )
+
+
+@router.get("/platform/by-org", response_model=PlatformByOrg)
+async def platform_by_org(
+    db: DbSession,
+    _admin: SuperAdmin,
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+) -> PlatformByOrg:
+    """Top N orgs by completed-donation total (with sponsorship counts).
+    Cross-org read gated to super_admin."""
+    donation_totals = (
+        select(
+            Payment.organization_id.label("org_id"),
+            func.coalesce(func.sum(Payment.amount), 0).label("total"),
+        )
+        .where(Payment.status == "completed")
+        .group_by(Payment.organization_id)
+        .subquery()
+    )
+    sponsorship_counts = (
+        select(
+            Sponsorship.organization_id.label("org_id"),
+            func.count(Sponsorship.id).label("cnt"),
+        )
+        .group_by(Sponsorship.organization_id)
+        .subquery()
+    )
+    stmt = (
+        select(
+            Organization.id,
+            Organization.code,
+            Organization.name_ar,
+            Organization.name_en,
+            func.coalesce(sponsorship_counts.c.cnt, 0),
+            func.coalesce(donation_totals.c.total, 0),
+        )
+        .outerjoin(donation_totals, donation_totals.c.org_id == Organization.id)
+        .outerjoin(sponsorship_counts, sponsorship_counts.c.org_id == Organization.id)
+        .order_by(func.coalesce(donation_totals.c.total, 0).desc(), Organization.code)
+        .limit(limit)
+    )
+    rows = (await db.execute(stmt)).all()
+    return PlatformByOrg(
+        limit=limit,
+        items=[
+            OrgRanking(
+                organization_id=r[0],
+                code=r[1],
+                name_ar=r[2],
+                name_en=r[3],
+                sponsorships_count=int(r[4]),
+                donations_total=Decimal(r[5]),
             )
             for r in rows
         ],
