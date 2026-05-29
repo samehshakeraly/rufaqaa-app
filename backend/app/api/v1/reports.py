@@ -171,9 +171,7 @@ async def _load_or_404(db: AsyncSession, report_id: UUID) -> OrphanReport:
     return report
 
 
-async def _check_report_access(
-    report: OrphanReport, user: User, db: AsyncSession
-) -> None:
+async def _check_report_access(report: OrphanReport, user: User, db: AsyncSession) -> None:
     """Per-report ownership check.
 
     Guardians may only touch reports tied to orphans in their own family;

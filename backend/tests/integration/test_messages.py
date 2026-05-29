@@ -23,10 +23,7 @@ async def _seed_partner_id() -> str:
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT id::text FROM partner_organizations "
-                    "WHERE code = 'DEV-PTN' LIMIT 1"
-                )
+                text("SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1")
             )
         ).first()
         assert row is not None
@@ -50,9 +47,7 @@ async def _signup_donor(api: AsyncClient) -> tuple[str, str, dict[str, str]]:
     debug_token = r.json().get("debug_verify_token")
     if debug_token is None:
         # First call should still have given us one — re-issue path.
-        r2 = await api.post(
-            "/api/v1/auth/resend-verification", json={"email": email}
-        )
+        r2 = await api.post("/api/v1/auth/resend-verification", json={"email": email})
         debug_token = r2.json()["debug_verify_token"]
     r = await api.post("/api/v1/auth/verify-email", json={"token": debug_token})
     assert r.status_code == 200, r.text
@@ -86,9 +81,7 @@ async def _invite_user(
         json={"token": token, "password": password},
     )
     assert r.status_code == 200, r.text
-    r = await api.post(
-        "/api/v1/auth/login", json={"email": email, "password": password}
-    )
+    r = await api.post("/api/v1/auth/login", json={"email": email, "password": password})
     assert r.status_code == 200, r.text
     headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
     return user_id, email, headers
@@ -164,18 +157,14 @@ def _assert_privacy_safe(payload: Any) -> None:
 # ── Test setup builder ────────────────────────────────────────────────
 
 
-async def _setup_conversation(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> dict[str, Any]:
+async def _setup_conversation(api: AsyncClient, auth_headers: dict[str, str]) -> dict[str, Any]:
     """Provision: org, orphan, donor (in admin's org), guardian.
     Returns dict of ids/headers handy for tests.
     """
     org_id = await _admin_org_id(api, auth_headers)
     donor_id, donor_email, donor_h = await _signup_donor(api)
     await _move_donor_to_admin_org(donor_id, org_id)
-    guardian_id, guardian_email, guardian_h = await _invite_user(
-        api, auth_headers, "guardian"
-    )
+    guardian_id, guardian_email, guardian_h = await _invite_user(api, auth_headers, "guardian")
     orphan_id = await _make_orphan(api, auth_headers)
     return {
         "org_id": org_id,
@@ -215,16 +204,12 @@ async def test_donor_sends_moderator_approves_guardian_sees(
     message_id = sent["id"]
 
     # Recipient does NOT see it yet.
-    r = await api.get(
-        f"/api/v1/messages?orphan_id={ctx['orphan_id']}", headers=ctx["guardian_h"]
-    )
+    r = await api.get(f"/api/v1/messages?orphan_id={ctx['orphan_id']}", headers=ctx["guardian_h"])
     assert r.status_code == 200
     assert all(item["id"] != message_id for item in r.json()["items"])
 
     # Sender sees their pending message.
-    r = await api.get(
-        f"/api/v1/messages?orphan_id={ctx['orphan_id']}", headers=ctx["donor_h"]
-    )
+    r = await api.get(f"/api/v1/messages?orphan_id={ctx['orphan_id']}", headers=ctx["donor_h"])
     assert r.status_code == 200
     assert any(item["id"] == message_id for item in r.json()["items"])
 
@@ -238,9 +223,7 @@ async def test_donor_sends_moderator_approves_guardian_sees(
     assert r.json()["moderation_status"] == "approved"
 
     # Recipient now sees it.
-    r = await api.get(
-        f"/api/v1/messages?orphan_id={ctx['orphan_id']}", headers=ctx["guardian_h"]
-    )
+    r = await api.get(f"/api/v1/messages?orphan_id={ctx['orphan_id']}", headers=ctx["guardian_h"])
     assert r.status_code == 200
     body = r.json()
     _assert_privacy_safe(body)
@@ -250,9 +233,7 @@ async def test_donor_sends_moderator_approves_guardian_sees(
 # ── Privacy ────────────────────────────────────────────────────────────
 
 
-async def test_message_projection_hides_pii(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_message_projection_hides_pii(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     ctx = await _setup_conversation(api, auth_headers)
     r = await api.post(
         "/api/v1/messages",
@@ -400,9 +381,7 @@ async def test_guardian_only_sees_own_conversations_via_list(
     even when filtering by orphan_id (guardian A's orphan)."""
     ctx_a = await _setup_conversation(api, auth_headers)
     # Re-use the same admin org but add an unrelated guardian.
-    other_guardian_id, _, other_guardian_h = await _invite_user(
-        api, auth_headers, "guardian"
-    )
+    other_guardian_id, _, other_guardian_h = await _invite_user(api, auth_headers, "guardian")
 
     r = await api.post(
         "/api/v1/messages",

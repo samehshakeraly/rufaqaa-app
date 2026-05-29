@@ -96,9 +96,7 @@ class MessageRead(BaseModel):
 # ── Helpers ────────────────────────────────────────────────────────────
 
 
-async def _project(
-    msg: Message, viewer: User, db: AsyncSession
-) -> MessageRead:
+async def _project(msg: Message, viewer: User, db: AsyncSession) -> MessageRead:
     """Convert a Message ORM row into the privacy-safe wire shape.
 
     Loads sender/recipient first-name + role and the orphan code in a
@@ -106,21 +104,15 @@ async def _project(
     short threads, so this stays acceptable.
     """
     from_row = (
-        await db.execute(
-            select(User.first_name, User.role).where(User.id == msg.from_user_id)
-        )
+        await db.execute(select(User.first_name, User.role).where(User.id == msg.from_user_id))
     ).first()
     to_row = (
-        await db.execute(
-            select(User.first_name, User.role).where(User.id == msg.to_user_id)
-        )
+        await db.execute(select(User.first_name, User.role).where(User.id == msg.to_user_id))
     ).first()
 
     orphan_code: str | None = None
     if msg.related_orphan_id is not None:
-        orphan_code = await db.scalar(
-            select(Orphan.code).where(Orphan.id == msg.related_orphan_id)
-        )
+        orphan_code = await db.scalar(select(Orphan.code).where(Orphan.id == msg.related_orphan_id))
 
     return MessageRead(
         id=msg.id,
@@ -202,9 +194,7 @@ async def send_message(
         )
 
     orphan = await db.scalar(
-        select(Orphan).where(
-            Orphan.id == payload.related_orphan_id, Orphan.deleted_at.is_(None)
-        )
+        select(Orphan).where(Orphan.id == payload.related_orphan_id, Orphan.deleted_at.is_(None))
     )
     if orphan is None:
         raise NotFound("Orphan")
@@ -261,8 +251,7 @@ async def list_messages(
         stmt = stmt.where(
             or_(
                 Message.from_user_id == user.id,
-                (Message.to_user_id == user.id)
-                & (Message.moderation_status == "approved"),
+                (Message.to_user_id == user.id) & (Message.moderation_status == "approved"),
             )
         )
     if orphan_id is not None:
@@ -276,9 +265,7 @@ async def list_messages(
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
-        await db.scalars(
-            stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset)
-        )
+        await db.scalars(stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset))
     ).all()
     return Page(
         items=[await _project(r, user, db) for r in rows],
@@ -300,9 +287,7 @@ async def list_pending_messages(
     stmt = select(Message).where(Message.moderation_status == "pending")
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
-        await db.scalars(
-            stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset)
-        )
+        await db.scalars(stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset))
     ).all()
     return Page(
         items=[await _project(r, user, db) for r in rows],
@@ -320,9 +305,7 @@ async def _load_message_or_404(db: AsyncSession, message_id: UUID) -> Message:
 
 
 @router.get("/{message_id}", response_model=MessageRead)
-async def get_message(
-    message_id: UUID, db: DbSession, user: CurrentUser
-) -> MessageRead:
+async def get_message(message_id: UUID, db: DbSession, user: CurrentUser) -> MessageRead:
     msg = await _load_message_or_404(db, message_id)
     if not _viewer_can_see(msg, user):
         raise HTTPException(
@@ -333,9 +316,7 @@ async def get_message(
 
 
 @router.post("/{message_id}/read", response_model=MessageRead)
-async def mark_message_read(
-    message_id: UUID, db: DbSession, user: CurrentUser
-) -> MessageRead:
+async def mark_message_read(message_id: UUID, db: DbSession, user: CurrentUser) -> MessageRead:
     """Mark a message as read by the calling user.
 
     Only the recipient may mark; only approved messages can be marked
@@ -379,8 +360,7 @@ async def moderate_message(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=(
-                f"Message is in moderation_status '{msg.moderation_status}', "
-                "expected 'pending'"
+                f"Message is in moderation_status '{msg.moderation_status}', expected 'pending'"
             ),
         )
 

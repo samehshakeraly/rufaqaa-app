@@ -42,9 +42,7 @@ async def _make_orphan(api: AsyncClient, h: dict[str, str]) -> str:
     return r.json()["id"]
 
 
-async def _login_as_partner_staff(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> dict[str, str]:
+async def _login_as_partner_staff(api: AsyncClient, auth_headers: dict[str, str]) -> dict[str, str]:
     """Invite a partner_staff user, accept, log in. Returns auth headers."""
     email = f"ps-{uuid.uuid4().hex[:8]}@example.com"
     password = "staffpass1234"
@@ -253,8 +251,7 @@ async def test_release_from_approved_clears_channel(
         row = (
             await db.execute(
                 text(
-                    "SELECT assigned_to_channel_id, assignment_deadline "
-                    "FROM orphans WHERE id = :id"
+                    "SELECT assigned_to_channel_id, assignment_deadline FROM orphans WHERE id = :id"
                 ),
                 {"id": orphan_id},
             )
