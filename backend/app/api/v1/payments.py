@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, FINANCE_ROLES, require_roles
 from app.core.config import settings
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
@@ -40,20 +40,42 @@ router = APIRouter()
 @router.get("", response_model=Page[PaymentRead])
 async def list_payments(
     db: DbSession,
-    _user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     donor_id: UUID | None = None,
     sponsorship_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
+    donor_overdue: bool | None = None,
 ) -> Page[PaymentRead]:
-    stmt = select(Payment)
+    # Explicit org scope (defense-in-depth alongside RLS).
+    stmt = select(Payment).where(Payment.organization_id == user.organization_id)
     if donor_id:
         stmt = stmt.where(Payment.donor_id == donor_id)
     if sponsorship_id:
         stmt = stmt.where(Payment.sponsorship_id == sponsorship_id)
     if status_filter:
         stmt = stmt.where(Payment.status == status_filter)
+    if donor_overdue:
+        # Donors with at least one active, overdue sponsorship — return a
+        # single row per donor: their most recent payment. DISTINCT ON
+        # (donor_id) ordered by created_at DESC picks the latest.
+        overdue_donor_ids = (
+            select(Sponsorship.donor_id)
+            .where(
+                Sponsorship.organization_id == user.organization_id,
+                Sponsorship.status == "active",
+                Sponsorship.months_overdue >= 1,
+            )
+            .distinct()
+        )
+        last_payment_ids = (
+            select(Payment.id)
+            .where(Payment.donor_id.in_(overdue_donor_ids))
+            .distinct(Payment.donor_id)
+            .order_by(Payment.donor_id, Payment.created_at.desc())
+        )
+        stmt = stmt.where(Payment.id.in_(last_payment_ids))
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (

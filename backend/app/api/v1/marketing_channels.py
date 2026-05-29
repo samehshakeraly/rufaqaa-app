@@ -4,6 +4,8 @@ around assignment quotas live elsewhere."""
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+from decimal import Decimal
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -11,12 +13,15 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, MARKETING_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.partner import MarketingChannel
+from app.models.payment import Payment
+from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.marketing_channel import (
+    ChannelProgress,
     MarketingChannelCreate,
     MarketingChannelRead,
     MarketingChannelUpdate,
@@ -91,6 +96,97 @@ async def get_marketing_channel(
     if channel is None:
         raise NotFound("Marketing channel")
     return MarketingChannelRead.model_validate(channel)
+
+
+def _pct(achieved: float, goal: float | None) -> float:
+    """Completion percentage, rounded to 2 dp. 0.0 when no goal is set
+    (avoids divide-by-zero and a misleading 100%)."""
+    if not goal:
+        return 0.0
+    return round(achieved / goal * 100, 2)
+
+
+@router.get("/{channel_id}/progress", response_model=ChannelProgress)
+async def channel_progress(
+    channel_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*MARKETING_ROLES))],
+) -> ChannelProgress:
+    """Goal-vs-achieved progress for a channel's annual targets.
+
+    Achievement is measured within the channel's `goal_year` (falling back
+    to the current calendar year when the row has none set): non-cancelled
+    sponsorships acquired through the channel, and completed payments on
+    those sponsorships."""
+    channel = await db.scalar(
+        select(MarketingChannel).where(
+            MarketingChannel.id == channel_id,
+            MarketingChannel.organization_id == user.organization_id,
+        )
+    )
+    if channel is None:
+        raise NotFound("Marketing channel")
+
+    now = datetime.now(UTC)
+    year = channel.goal_year or now.year
+
+    achieved_count = await db.scalar(
+        select(func.count(Sponsorship.id)).where(
+            Sponsorship.marketing_channel_id == channel_id,
+            func.extract("year", Sponsorship.start_date) == year,
+            Sponsorship.status != "cancelled",
+        )
+    )
+    achieved_amount = await db.scalar(
+        select(func.coalesce(func.sum(Payment.amount), 0))
+        .join(Sponsorship, Payment.sponsorship_id == Sponsorship.id)
+        .where(
+            Sponsorship.marketing_channel_id == channel_id,
+            Payment.status == "completed",
+            func.extract("year", Payment.completed_at) == year,
+        )
+    )
+
+    monthly_achieved_count = await db.scalar(
+        select(func.count(Sponsorship.id)).where(
+            Sponsorship.marketing_channel_id == channel_id,
+            func.extract("year", Sponsorship.start_date) == now.year,
+            func.extract("month", Sponsorship.start_date) == now.month,
+            Sponsorship.status != "cancelled",
+        )
+    )
+    monthly_achieved_amount = await db.scalar(
+        select(func.coalesce(func.sum(Payment.amount), 0))
+        .join(Sponsorship, Payment.sponsorship_id == Sponsorship.id)
+        .where(
+            Sponsorship.marketing_channel_id == channel_id,
+            Payment.status == "completed",
+            func.extract("year", Payment.completed_at) == now.year,
+            func.extract("month", Payment.completed_at) == now.month,
+        )
+    )
+
+    achieved_count = int(achieved_count or 0)
+    achieved_amount = Decimal(achieved_amount or 0)
+
+    goal_count = channel.annual_goal_count
+    goal_amount = channel.annual_goal_amount
+
+    return ChannelProgress(
+        channel_id=channel.id,
+        goal_year=year,
+        annual_goal_count=goal_count,
+        annual_goal_amount=goal_amount,
+        goal_currency=channel.goal_currency,
+        achieved_count=achieved_count,
+        achieved_amount=achieved_amount,
+        completion_percentage_count=_pct(achieved_count, goal_count),
+        completion_percentage_amount=_pct(float(achieved_amount), float(goal_amount or 0)),
+        monthly_goal_count=(goal_count / 12) if goal_count is not None else None,
+        monthly_goal_amount=(goal_amount / 12) if goal_amount is not None else None,
+        monthly_achieved_count=int(monthly_achieved_count or 0),
+        monthly_achieved_amount=Decimal(monthly_achieved_amount or 0),
+    )
 
 
 @router.patch("/{channel_id}", response_model=MarketingChannelRead)

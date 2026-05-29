@@ -3,9 +3,10 @@ full models will be added in a later phase. Mapping just enough to satisfy
 ForeignKey resolution."""
 
 from datetime import datetime
+from decimal import Decimal
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, String, Text, func
+from sqlalchemy import ForeignKey, Integer, Numeric, String, Text, func
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -44,6 +45,15 @@ class MarketingChannel(Base):
     name_en: Mapped[str | None] = mapped_column(String(255))
     channel_type: Mapped[str | None] = mapped_column(String(50))
     description: Mapped[str | None] = mapped_column(Text)
+
+    # Annual goals — used by the marketing progress endpoint. Columns
+    # already exist in the canonical schema; mapping them here so the
+    # ORM can read them (no migration needed).
+    annual_goal_count: Mapped[int | None] = mapped_column(Integer)
+    annual_goal_amount: Mapped[Decimal | None] = mapped_column(Numeric(15, 2))
+    goal_year: Mapped[int | None] = mapped_column(Integer)
+    goal_currency: Mapped[str | None] = mapped_column(String(3))
+
     status: Mapped[str] = mapped_column(String(20), default="active")
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now()

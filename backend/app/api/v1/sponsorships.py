@@ -5,15 +5,17 @@ from datetime import UTC, date, datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import FINANCE_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.orphan import Orphan
 from app.models.sponsorship import Sponsorship
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.sponsorship import (
     SponsorshipCancel,
@@ -50,20 +52,35 @@ def _enrich(sp: Sponsorship, donor: Donor | None, orphan: Orphan | None) -> Spon
 @router.get("", response_model=Page[SponsorshipRead])
 async def list_sponsorships(
     db: DbSession,
-    _user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     donor_id: UUID | None = None,
     orphan_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
+    min_months_overdue: Annotated[int | None, Query(ge=0)] = None,
+    is_overdue: bool | None = None,
 ) -> Page[SponsorshipRead]:
-    stmt = select(Sponsorship)
+    # Explicit org scope (defense-in-depth alongside RLS).
+    stmt = select(Sponsorship).where(Sponsorship.organization_id == user.organization_id)
     if donor_id:
         stmt = stmt.where(Sponsorship.donor_id == donor_id)
     if orphan_id:
         stmt = stmt.where(Sponsorship.orphan_id == orphan_id)
     if status_filter:
         stmt = stmt.where(Sponsorship.status == status_filter)
+
+    # Overdue filters: `is_overdue=true` is shorthand for "at least one
+    # month behind". Both forms restrict to active sponsorships so the
+    # finance screen never surfaces cancelled/completed rows as overdue.
+    threshold = min_months_overdue
+    if is_overdue and threshold is None:
+        threshold = 1
+    if threshold is not None:
+        stmt = stmt.where(
+            Sponsorship.status == "active",
+            Sponsorship.months_overdue >= threshold,
+        )
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
