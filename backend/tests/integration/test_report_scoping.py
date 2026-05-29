@@ -19,10 +19,7 @@ async def _seed_partner_id() -> str:
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT id::text FROM partner_organizations "
-                    "WHERE code = 'DEV-PTN' LIMIT 1"
-                )
+                text("SELECT id::text FROM partner_organizations WHERE code = 'DEV-PTN' LIMIT 1")
             )
         ).first()
         assert row is not None
@@ -135,9 +132,7 @@ async def _create_family_and_guardian(
     return family_id, {"Authorization": f"Bearer {r.json()['access_token']}"}
 
 
-async def _login_as(
-    api: AsyncClient, admin_headers: dict[str, str], role: str
-) -> dict[str, str]:
+async def _login_as(api: AsyncClient, admin_headers: dict[str, str], role: str) -> dict[str, str]:
     """Invite + accept + login a generic user with `role`."""
     email = f"{role[:3]}-{uuid.uuid4().hex[:8]}@example.com"
     password = "longenoughpw1"
