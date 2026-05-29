@@ -39,6 +39,10 @@ export async function listSponsorships(params?: {
   donor_id?: string;
   orphan_id?: string;
   status?: string;
+  /** Only active sponsorships at least N months behind. */
+  min_months_overdue?: number;
+  /** Shorthand for `min_months_overdue=1`. */
+  is_overdue?: boolean;
 }): Promise<Page<Sponsorship>> {
   const { data } = await api.get<Page<Sponsorship>>("/sponsorships", { params });
   return data;

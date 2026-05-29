@@ -45,6 +45,10 @@ export async function listPayments(params?: {
   donor_id?: string;
   sponsorship_id?: string;
   status?: string;
+  /** Return one row per donor with an active, overdue sponsorship —
+   * that donor's most recent payment. Used by the Overdue Donors screen
+   * to surface each donor's last payment date. */
+  donor_overdue?: boolean;
 }): Promise<Page<Payment>> {
   const { data } = await api.get<Page<Payment>>("/payments", { params });
   return data;

@@ -222,7 +222,10 @@
     "approvals": "الموافقات",
     "mediaReview": "مراجعة الوسائط",
     "partnerStaff": "موظفو الشريك",
-    "registerOrphan": "تسجيل يتيم"
+    "registerOrphan": "تسجيل يتيم",
+    "finance": "المالية",
+    "financeOverdue": "المتأخرات",
+    "financeReports": "التقارير المالية"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
@@ -259,7 +262,8 @@
     "empty": "لا توجد بيانات بعد",
     "loadError": "تعذّر تحميل البيانات",
     "createError": "تعذّر الحفظ",
-    "required": "هذا الحقل مطلوب"
+    "required": "هذا الحقل مطلوب",
+    "comingSoon": "سيُتاح قريباً"
   },
   "pagination": {
     "page": "صفحة {{page}} من {{total}}",
@@ -769,5 +773,81 @@
     "country": "بلد الإقامة",
     "currency": "العملة المفضّلة",
     "status": "الحالة"
+  },
+  "finance": {
+    "dashboard": {
+      "title": "لوحة المالية",
+      "linkOverdue": "المتبرعون المتأخرون",
+      "linkReports": "التقارير المالية",
+      "received30d": "المُحصّل (آخر ٣٠ يوماً)",
+      "received30dCount": "{{n}} عملية مكتملة",
+      "pendingPayments": "مدفوعات معلّقة",
+      "overdueDonors": "متبرعون متأخرون",
+      "completedTransfers": "تحويلات مكتملة",
+      "adminOnly": "للمدير فقط",
+      "byMethod": "المدفوعات حسب الوسيلة",
+      "byMethodNote": "محسوبة من آخر المدفوعات المكتملة.",
+      "recentPayments": "أحدث المدفوعات"
+    },
+    "overdue": {
+      "title": "المتبرعون المتأخرون",
+      "minMonths": "الحد الأدنى لشهور التأخر",
+      "empty": "لا توجد كفالات متأخرة.",
+      "donor": "المتبرع",
+      "orphan": "اليتيم",
+      "monthlyAmount": "المبلغ الشهري",
+      "monthsOverdue": "شهور التأخر",
+      "lastPayment": "آخر دفعة",
+      "sendReminder": "تذكير عبر البريد",
+      "monthsBadge": "{{n}} شهر"
+    },
+    "reports": {
+      "title": "التقارير المالية",
+      "from": "من",
+      "to": "إلى",
+      "exportCsv": "تصدير CSV",
+      "totalReceived": "إجمالي المُحصّل",
+      "totalReceivedHint": "ضمن النطاق الزمني المحدد",
+      "totalTransferred": "إجمالي المُحوّل للشركاء",
+      "netRetained": "الصافي المُحتفظ به",
+      "netRetainedHint": "المُحصّل ناقص المُحوّل",
+      "donorCount": "عدد المتبرعين",
+      "byPartner": "المدفوعات حسب الشريك",
+      "partner": "الشريك",
+      "transactions": "العمليات",
+      "amount": "المبلغ",
+      "windowHint": "آخر {{days}} يوماً",
+      "exportNote": "تصدير CSV يشمل كل المدفوعات المكتملة؛ تصفية النطاق الزمني للتصدير غير متاحة حالياً من الخادم."
+    }
+  },
+  "marketing": {
+    "channel": {
+      "eyebrow": "قناة تسويق",
+      "viewOrphans": "الأيتام المخصّصون",
+      "goalProgress": "تقدّم الأهداف",
+      "annual": "السنوي ({{year}})",
+      "monthly": "الشهري",
+      "completion": "نسبة الإنجاز",
+      "completionAmountLabel": "حسب المبلغ",
+      "assignedOrphans": "الأيتام المخصّصون",
+      "viewAll": "عرض الكل",
+      "assignedCount": "إجمالي {{n}} يتيم مخصّص",
+      "acquiredDonors": "المتبرعون المُكتسَبون",
+      "sponsorships": "الكفالات",
+      "amount": "المبلغ"
+    },
+    "orphans": {
+      "title": "أيتام القناة",
+      "assignmentStatus": "حالة التخصيص",
+      "statuses": {
+        "active": "نشط",
+        "expired": "منتهٍ",
+        "all": "الكل"
+      },
+      "age": "العمر",
+      "deadline": "موعد انتهاء التخصيص",
+      "release": "إعادة للمتاحين",
+      "releaseDone": "تمت إعادة اليتيم إلى المتاحين"
+    }
   }
 }

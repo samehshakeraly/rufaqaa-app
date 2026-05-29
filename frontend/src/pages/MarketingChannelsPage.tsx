@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
@@ -99,7 +100,12 @@ export function MarketingChannelsPage() {
               {data.items.map((c) => (
                 <tr key={c.id} className="hover:bg-snow">
                   <td className="px-4 py-3">
-                    {i18n.language === "ar" ? c.name_ar : c.name_en ?? c.name_ar}
+                    <Link
+                      to={`/admin/marketing/channels/${c.id}`}
+                      className="text-trust underline"
+                    >
+                      {i18n.language === "ar" ? c.name_ar : c.name_en ?? c.name_ar}
+                    </Link>
                   </td>
                   <td className="px-4 py-3">
                     {c.channel_type
