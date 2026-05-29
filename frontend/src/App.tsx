@@ -2,10 +2,12 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AdminRoute } from "./components/AdminRoute";
 import { DonorRoute } from "./components/DonorRoute";
+import { GuardianRoute } from "./components/GuardianRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
+import { GuardianLayout } from "./components/layout/GuardianLayout";
 import { PublicLayout } from "./components/layout/PublicLayout";
 
 // Admin / staff pages (now mounted under /admin/*)
@@ -17,6 +19,10 @@ import { DonorProfilePage } from "./pages/DonorProfilePage";
 import { DonorSponsorshipsPage } from "./pages/DonorSponsorshipsPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { FamiliesPage } from "./pages/FamiliesPage";
+import { GuardianDashboardPage } from "./pages/GuardianDashboardPage";
+import { GuardianMessagesPage } from "./pages/GuardianMessagesPage";
+import { GuardianOrphanDetailPage } from "./pages/GuardianOrphanDetailPage";
+import { GuardianReportNewPage } from "./pages/GuardianReportNewPage";
 import { FamilyDetailPage } from "./pages/FamilyDetailPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
@@ -78,6 +84,23 @@ export function App() {
         <Route path="/sponsor/:code/checkout" element={<SponsorCheckoutPage />} />
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/failure" element={<PaymentFailurePage />} />
+      </Route>
+
+      {/* ── Guardian authenticated area ─────────────────────────── */}
+      <Route
+        element={
+          <GuardianRoute>
+            <GuardianLayout />
+          </GuardianRoute>
+        }
+      >
+        <Route path="/guardian" element={<GuardianDashboardPage />} />
+        <Route
+          path="/guardian/orphans/:id"
+          element={<GuardianOrphanDetailPage />}
+        />
+        <Route path="/guardian/reports/new" element={<GuardianReportNewPage />} />
+        <Route path="/guardian/messages" element={<GuardianMessagesPage />} />
       </Route>
 
       {/* ── Admin / staff area ──────────────────────────────────── */}

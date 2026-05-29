@@ -111,6 +111,123 @@
       "pay": "دفع"
     }
   },
+  "guardianNav": {
+    "dashboard": "الرئيسية",
+    "messages": "الرسائل"
+  },
+  "guardian": {
+    "dashboard": {
+      "welcome": "السلام عليكم، {{name}}",
+      "yourOrphans": "أيتامك",
+      "orphansInCare": "أيتام في رعايتك",
+      "quickReport": "رفع تقرير شهري",
+      "messages": "الرسائل",
+      "empty": "لا يوجد أيتام مرتبطون بحسابك. اتصل بالجهة الشريكة.",
+      "profileCompletion": "اكتمال الملف",
+      "loadError": "تعذّر تحميل بياناتك"
+    },
+    "orphan": {
+      "code": "الرمز",
+      "age": "{{age}} سنة",
+      "viewProfile": "صفحة اليتيم",
+      "uploadReport": "رفع تقرير",
+      "sponsored": "اليتيم مكفول",
+      "sponsoredShort": "مكفول ✓"
+    },
+    "detail": {
+      "basicInfo": "المعلومات الأساسية",
+      "dateOfBirth": "تاريخ الميلاد",
+      "gender": "الجنس",
+      "caseStatus": "حالة الملف",
+      "profileCompletion": "اكتمال الملف",
+      "reports": "التقارير المُقدّمة",
+      "reportsSubtitle": "التقارير التي قدّمتها لهذا اليتيم",
+      "noReports": "لا توجد تقارير بعد.",
+      "newReport": "رفع تقرير جديد",
+      "sendMessage": "إرسال رسالة عن هذا اليتيم",
+      "backToDashboard": "العودة للرئيسية",
+      "loadError": "تعذّر تحميل بيانات اليتيم"
+    },
+    "report": {
+      "newTitle": "رفع تقرير شهري",
+      "forOrphan": "تقرير عن: {{name}}",
+      "month": "الشهر",
+      "summary": "ملخّص عام",
+      "educationalProgress": "التقدّم الدراسي",
+      "quranProgress": "حفظ القرآن",
+      "activities": "الأنشطة",
+      "healthStatus": "الحالة الصحّية",
+      "notesPlaceholder": "اكتب هنا…",
+      "saveDraft": "حفظ كمسودة",
+      "submit": "إرسال للمراجعة",
+      "saving": "جارٍ الحفظ…",
+      "submitting": "جارٍ الإرسال…",
+      "draftSaved": "تم حفظ المسودة",
+      "submitted": "تم إرسال التقرير للمراجعة",
+      "saveError": "تعذّر حفظ التقرير",
+      "attachments": "المرفقات",
+      "attachmentsComingSoon": "رفع المستندات والصور الداعمة سيتاح قريباً.",
+      "submittedReports": "التقارير المُقدّمة",
+      "noReports": "لا توجد تقارير بعد.",
+      "rejectionReason": "سبب الرفض",
+      "resubmit": "إعادة التقديم",
+      "missingOrphan": "لم يُحدَّد يتيم. ارجع إلى الرئيسية واختر يتيماً.",
+      "statuses": {
+        "draft": "مسودة",
+        "pending_partner_approval": "بانتظار موافقة الشريك",
+        "partner_approved": "اعتمدها الشريك",
+        "pending_org_approval": "بانتظار موافقة المؤسسة",
+        "org_approved": "اعتمدتها المؤسسة",
+        "published_to_donor": "منشور للكفيل",
+        "rejected": "مرفوض"
+      },
+      "validation": {
+        "monthRequired": "اختر الشهر",
+        "summaryRequired": "اكتب ملخّصاً موجزاً"
+      }
+    },
+    "messages": {
+      "title": "الرسائل",
+      "reviewedNote": "الرسائل المعروضة هنا مُراجَعة من قِبَلنا حفاظاً على الخصوصية.",
+      "empty": "لا توجد رسائل بعد.",
+      "pendingMine": "رسالتك قيد المراجعة",
+      "rejectedMine": "رُفضت رسالتك",
+      "moderationNotes": "ملاحظة المُراجِع",
+      "you": "أنت",
+      "aboutOrphan": "بخصوص: {{code}}",
+      "composeComingSoon": "إرسال رسائل جديدة سيتاح قريباً بإذن الله.",
+      "loadError": "تعذّر تحميل الرسائل"
+    },
+    "relations": {
+      "mother": "الأم",
+      "father": "الأب",
+      "grandmother": "الجدّة",
+      "grandfather": "الجدّ",
+      "uncle": "العمّ/الخال",
+      "aunt": "العمّة/الخالة",
+      "brother": "الأخ",
+      "sister": "الأخت",
+      "guardian": "الوصيّ",
+      "other": "ولي الأمر"
+    },
+    "gender": {
+      "M": "ذكر",
+      "F": "أنثى"
+    },
+    "caseStatus": {
+      "active": "نشطة",
+      "pending": "قيد المراجعة",
+      "approved": "معتمدة",
+      "rejected": "مرفوضة",
+      "released": "مُفرَج عنها",
+      "archived": "مؤرشفة",
+      "draft": "مسودة"
+    },
+    "roles": {
+      "donor": "الكفيل",
+      "guardian": "ولي الأمر"
+    }
+  },
   "checkout": {
     "title": "كفالة هذا الطفل",
     "intro": "أنت على وشك إتمام دفعة لهذا اليتيم. تُدخل بيانات البطاقة على صفحة MyFatoorah الآمنة — لا نراها أبداً.",

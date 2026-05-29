@@ -19,7 +19,7 @@ export function AppLayout() {
   const { t } = useTranslation();
   const clear = useAuthStore((s) => s.clear);
   const { data: me } = useCurrentUser();
-  const { isAdmin, isPartner, isPartnerApprover } = useRole();
+  const { isAdmin, isPartner, isPartnerApprover, isGuardian } = useRole();
 
   function logout() {
     clear();
@@ -107,6 +107,13 @@ export function AppLayout() {
             <NavLink to="/admin/settings" className={navItemClass}>
               {t("nav.settings")}
             </NavLink>
+            {/* Rare: a guardian who also holds admin chrome gets a link
+                back to their own portal. */}
+            {isGuardian && (
+              <NavLink to="/guardian" className={navItemClass}>
+                {t("guardianNav.dashboard")}
+              </NavLink>
+            )}
           </nav>
           <div className="flex items-center gap-3">
             {me && (

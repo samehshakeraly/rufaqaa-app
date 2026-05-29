@@ -23,6 +23,7 @@ export function useRole() {
     role === "marketing_manager" ||
     role === "finance";
   const isDonor = role === "donor";
+  const isGuardian = role === "guardian";
   const emailVerified = Boolean(data?.email_verified_at);
 
   return {
@@ -34,9 +35,15 @@ export function useRole() {
     isPartnerApprover,
     isStaff,
     isDonor,
+    isGuardian,
     emailVerified,
     /** Where to send this user when they hit `/` or just signed in. */
-    homePath:
-      isStaff ? "/admin/dashboard" : isDonor ? "/donor/dashboard" : "/",
+    homePath: isStaff
+      ? "/admin/dashboard"
+      : isDonor
+        ? "/donor/dashboard"
+        : isGuardian
+          ? "/guardian"
+          : "/",
   };
 }

@@ -111,6 +111,123 @@
       "pay": "Pay"
     }
   },
+  "guardianNav": {
+    "dashboard": "Home",
+    "messages": "Messages"
+  },
+  "guardian": {
+    "dashboard": {
+      "welcome": "Peace be upon you, {{name}}",
+      "yourOrphans": "Your orphans",
+      "orphansInCare": "Orphans in your care",
+      "quickReport": "Upload monthly report",
+      "messages": "Messages",
+      "empty": "No orphans are linked to your account. Please contact the partner organization.",
+      "profileCompletion": "Profile completion",
+      "loadError": "Could not load your details"
+    },
+    "orphan": {
+      "code": "Code",
+      "age": "{{age}} years",
+      "viewProfile": "Orphan page",
+      "uploadReport": "Upload report",
+      "sponsored": "Sponsored",
+      "sponsoredShort": "Sponsored ✓"
+    },
+    "detail": {
+      "basicInfo": "Basic information",
+      "dateOfBirth": "Date of birth",
+      "gender": "Gender",
+      "caseStatus": "Case status",
+      "profileCompletion": "Profile completion",
+      "reports": "Submitted reports",
+      "reportsSubtitle": "Reports you submitted for this orphan",
+      "noReports": "No reports yet.",
+      "newReport": "Upload new report",
+      "sendMessage": "Send a message about this orphan",
+      "backToDashboard": "Back to home",
+      "loadError": "Could not load the orphan's details"
+    },
+    "report": {
+      "newTitle": "Upload monthly report",
+      "forOrphan": "Report for: {{name}}",
+      "month": "Month",
+      "summary": "Summary",
+      "educationalProgress": "Educational progress",
+      "quranProgress": "Qur'an progress",
+      "activities": "Activities",
+      "healthStatus": "Health status",
+      "notesPlaceholder": "Write here…",
+      "saveDraft": "Save as draft",
+      "submit": "Submit for review",
+      "saving": "Saving…",
+      "submitting": "Submitting…",
+      "draftSaved": "Draft saved",
+      "submitted": "Report submitted for review",
+      "saveError": "Could not save the report",
+      "attachments": "Attachments",
+      "attachmentsComingSoon": "Uploading supporting documents and photos will be available soon.",
+      "submittedReports": "Submitted reports",
+      "noReports": "No reports yet.",
+      "rejectionReason": "Rejection reason",
+      "resubmit": "Resubmit",
+      "missingOrphan": "No orphan selected. Go back to the home page and pick an orphan.",
+      "statuses": {
+        "draft": "Draft",
+        "pending_partner_approval": "Pending partner approval",
+        "partner_approved": "Partner approved",
+        "pending_org_approval": "Pending org approval",
+        "org_approved": "Org approved",
+        "published_to_donor": "Published to sponsor",
+        "rejected": "Rejected"
+      },
+      "validation": {
+        "monthRequired": "Select a month",
+        "summaryRequired": "Write a short summary"
+      }
+    },
+    "messages": {
+      "title": "Messages",
+      "reviewedNote": "Messages shown here are reviewed by us to protect privacy.",
+      "empty": "No messages yet.",
+      "pendingMine": "Your message is under review",
+      "rejectedMine": "Your message was rejected",
+      "moderationNotes": "Reviewer note",
+      "you": "You",
+      "aboutOrphan": "Re: {{code}}",
+      "composeComingSoon": "Sending new messages will be available soon.",
+      "loadError": "Could not load messages"
+    },
+    "relations": {
+      "mother": "Mother",
+      "father": "Father",
+      "grandmother": "Grandmother",
+      "grandfather": "Grandfather",
+      "uncle": "Uncle",
+      "aunt": "Aunt",
+      "brother": "Brother",
+      "sister": "Sister",
+      "guardian": "Guardian",
+      "other": "Guardian"
+    },
+    "gender": {
+      "M": "Male",
+      "F": "Female"
+    },
+    "caseStatus": {
+      "active": "Active",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "released": "Released",
+      "archived": "Archived",
+      "draft": "Draft"
+    },
+    "roles": {
+      "donor": "Sponsor",
+      "guardian": "Guardian"
+    }
+  },
   "checkout": {
     "title": "Sponsor this child",
     "intro": "You're about to make a payment toward the orphan below. Card details are entered on MyFatoorah's secure page — we never see them.",

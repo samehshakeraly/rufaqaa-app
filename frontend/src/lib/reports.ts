@@ -23,8 +23,34 @@ export interface Report {
   health_status: Record<string, unknown> | null;
   psychological_status: Record<string, unknown> | null;
   status: ReportStatus;
+  rejection_reason?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export type ReportType =
+  | "monthly"
+  | "quarterly"
+  | "annual"
+  | "special"
+  | "incident";
+
+export interface ReportCreateInput {
+  orphan_id: string;
+  report_type: ReportType;
+  period_start: string;
+  period_end: string;
+  summary?: string;
+  educational_progress?: Record<string, unknown>;
+  quran_progress?: Record<string, unknown>;
+  activities?: Record<string, unknown>;
+  health_status?: Record<string, unknown>;
+  psychological_status?: Record<string, unknown>;
+}
+
+export async function createReport(payload: ReportCreateInput): Promise<Report> {
+  const { data } = await api.post<Report>("/reports", payload);
+  return data;
 }
 
 export type ReportAction =
