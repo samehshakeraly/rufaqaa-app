@@ -975,9 +975,12 @@
     },
     "register": {
       "title": "Register a new orphan",
+      "subtitle": "Add a new case to your organization's register. The case is submitted for a manager's approval.",
+      "sectionBasic": "Basic details",
+      "sectionBasicDesc": "Enter the orphan's core identity details. You can add documents and photos from the case page after saving.",
       "duplicate": "Possible duplicate — this case looks similar to an existing record",
       "viewExisting": "View existing record",
-      "back": "← Back to orphans"
+      "back": "Back to orphans"
     },
     "photo": {
       "title": "Photos",
