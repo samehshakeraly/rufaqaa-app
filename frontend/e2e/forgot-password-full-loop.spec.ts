@@ -95,7 +95,11 @@ test("forgot → reset → login with new password", async ({ page, context }) =
   if ((await confirm.count()) > 0) {
     await confirm.fill(newPassword);
   }
-  await page.getByRole("button", { name: /(reset|إعادة)/i }).click();
+  // A-03 renamed the submit CTA to "Change password" / "تغيير كلمة المرور";
+  // keep the old reset/إعادة terms too so the query stays stable across copy.
+  await page
+    .getByRole("button", { name: /(reset|change|إعادة|تغيير)/i })
+    .click();
   await expect.poll(() => tokenConsumed, { timeout: 5000 }).toBe(true);
 
   // Final leg — log in with the new password.
