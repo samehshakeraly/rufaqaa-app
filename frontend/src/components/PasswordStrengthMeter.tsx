@@ -7,16 +7,15 @@ import "./PasswordStrengthMeter.css";
 // signup and password-reset (A-03) flows share one implementation. The
 // i18n keys live under `signup.*` (strengthLabel / strengthLevels / checks).
 
-export interface PasswordChecks {
+interface PasswordChecks {
   length: boolean;
   digit: boolean;
   upper: boolean;
   symbol: boolean;
 }
 
-// The 4 live checks that drive the meter. Reused by callers that also need
-// the booleans for their own validation (e.g. signup step 1).
-export function evaluatePasswordChecks(password: string): PasswordChecks {
+// The 4 live checks that drive the meter.
+function evaluatePasswordChecks(password: string): PasswordChecks {
   return {
     length: password.length >= 8,
     digit: /\d/.test(password),

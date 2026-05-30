@@ -276,36 +276,7 @@ export function SignupPage() {
                     </button>
                   </div>
 
-                  <div className="sg-strength">
-                    <div className="sg-strength-bars" aria-hidden="true">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          className={`sg-strength-bar${
-                            i <= score ? ` ${STRENGTH_CLASS[score]}` : ""
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <div className="sg-strength-label">
-                      {score === 0
-                        ? t("signup.strengthLabel")
-                        : t(`signup.strengthLevels.${STRENGTH_KEY[score]}`)}
-                    </div>
-                    <div className="sg-strength-checks">
-                      {(
-                        ["length", "digit", "upper", "symbol"] as const
-                      ).map((c) => (
-                        <span
-                          key={c}
-                          className={`sg-strength-check${checks[c] ? " ok" : ""}`}
-                        >
-                          <CheckIcon />
-                          {t(`signup.checks.${c}`)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  <PasswordStrengthMeter password={password} />
                   {errors.password && (
                     <p className="sg-field-error" role="alert">
                       {errors.password}
