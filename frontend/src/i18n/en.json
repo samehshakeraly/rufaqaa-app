@@ -775,6 +775,83 @@
       "weak": "Too short (min 8 chars)",
       "okay": "OK — add an uppercase letter and a digit for stronger",
       "strong": "Strong"
+    },
+    "loginLink": "I have an account",
+    "eyebrow": "A new journey as a companion",
+    "headline": "Create your account in a minute",
+    "subtitle": "Everything you need to begin — and orphans waiting for a companion to touch their hearts.",
+    "orFast": "Or sign up quickly with",
+    "selectPlaceholder": "Choose…",
+    "strengthLabel": "Password strength",
+    "phoneHint": "Optional — helps us reach you quickly when needed.",
+    "progress": {
+      "stepLabel": "Step",
+      "stepValue": "{{current}} of {{total}}",
+      "done": "complete"
+    },
+    "steps": {
+      "account": "Account",
+      "info": "Your info",
+      "verify": "Verify email"
+    },
+    "step1": {
+      "title": "Your email and password",
+      "subtitle": "We'll use your email for receipts and updates about your orphans."
+    },
+    "step2": {
+      "title": "Your personal info",
+      "subtitle": "This is not shown to the orphan's family — only to the responsible party."
+    },
+    "step3": {
+      "title": "Confirm your email",
+      "sentTo": "We sent a verification link to",
+      "spamHint": "Didn't find the message? Check your Spam folder or the Promotions tab."
+    },
+    "fields": {
+      "confirmPassword": "Confirm password",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Mobile number",
+      "countryCode": "Country code",
+      "nationality": "Nationality",
+      "residence": "Country of residence"
+    },
+    "placeholders": {
+      "firstName": "e.g. Abdullah",
+      "lastName": "e.g. Al-Salem"
+    },
+    "strengthLevels": {
+      "weak": "Weak",
+      "ok": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "checks": {
+      "length": "8 characters or more",
+      "digit": "At least one digit",
+      "upper": "An uppercase Latin letter",
+      "symbol": "A special character"
+    },
+    "countries": {
+      "KW": "Kuwait",
+      "SA": "Saudi Arabia",
+      "AE": "United Arab Emirates",
+      "QA": "Qatar",
+      "BH": "Bahrain",
+      "OM": "Oman",
+      "other": "Other"
+    },
+    "validation": {
+      "passwordWeak": "Password must be 8 characters or more.",
+      "firstName": "First name is required.",
+      "lastName": "Last name is required."
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "createAccount": "Create account",
+      "resend": "Resend link",
+      "goVerify": "Go to verification page"
     }
   },
   "verifyPending": {
