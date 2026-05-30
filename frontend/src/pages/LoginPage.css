@@ -1,0 +1,810 @@
+/* ═══════════════════════════════════════════════════════════════
+   A-01 Shared Login — scoped styles
+   Ported from docs/design/screens/auth/A-01 Shared Login.html.
+   All values are design-system tokens (rufaqaa v0.1); no ad-hoc hex
+   outside the token block. Selectors are scoped under `.lg-root` and
+   prefixed `lg-` so they never collide with the app-wide component
+   classes (.card / .input / .btn-primary) or other pages. Physical
+   left/right are rewritten as logical (inline-start/-end) for the
+   RTL-first layout, so the split + field affordances flip correctly
+   when the language switcher toggles to LTR.
+   ═══════════════════════════════════════════════════════════════ */
+
+.lg-root {
+  /* Design-system tokens (rufaqaa v0.1) */
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --tranquil-300: #c2d8ec;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-200: #97b7d6;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+  --trust-800: #142e4d;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-500: #10b981;
+  --danger-50: #fef2f2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08), 0 2px 4px -1px rgba(11, 30, 51, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.3);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--snow-100);
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-root *,
+  .lg-root *::before,
+  .lg-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.lg-root .lg-latin,
+.lg-root .lg-num {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.lg-root :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-sm);
+}
+
+/* ═══ Language switcher (top inline-start of form) ═══ */
+.lg-lang {
+  position: absolute;
+  top: 24px;
+  inset-inline-start: 24px;
+  z-index: 5;
+}
+
+/* ═══ LAYOUT (split) ═══ */
+.lg-screen {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+}
+
+@media (max-width: 1024px) {
+  .lg-screen {
+    grid-template-columns: 1fr;
+  }
+  .lg-illustration {
+    display: none;
+  }
+}
+
+/* ═══ FORM SIDE (inline-start column — right in RTL) ═══ */
+.lg-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 28px;
+  background: white;
+}
+
+.lg-form-wrap {
+  width: 100%;
+  max-width: 440px;
+}
+
+.lg-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.lg-logo-mark {
+  width: 48px;
+  height: 48px;
+  background: var(--trust-300);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.lg-logo-text h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.lg-logo-text p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.lg-greeting {
+  margin-bottom: 22px;
+}
+
+.lg-greeting h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.lg-greeting p {
+  font-size: 14.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* ═══ Role pills ═══ */
+.lg-role-pills {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+
+.lg-role-pill {
+  padding: 9px 6px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--gray-600);
+  transition: var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.lg-role-pill:hover {
+  background: white;
+  color: var(--gray-900);
+}
+
+.lg-role-pill.active {
+  background: white;
+  color: var(--trust-600);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.lg-role-pill svg {
+  width: 16px;
+  height: 16px;
+  color: var(--gray-400);
+}
+
+.lg-role-pill.active svg {
+  color: var(--trust-500);
+}
+
+@media (max-width: 480px) {
+  .lg-role-pills {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ═══ Form ═══ */
+.lg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lg-field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: 0.02em;
+}
+
+.lg-field-input-wrap {
+  position: relative;
+}
+
+.lg-input {
+  width: 100%;
+  padding: 13px 14px;
+  padding-inline-start: 44px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+/* Password leaves room on the inline-end side for the eye toggle. */
+.lg-input--password {
+  padding-inline-end: 44px;
+}
+
+.lg-input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.lg-input::placeholder {
+  color: var(--gray-400);
+}
+
+.lg-input.lg-latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.02em;
+}
+
+.lg-field-icon {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 14px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+  display: flex;
+}
+
+.lg-field-eye {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--gray-400);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+}
+
+.lg-field-eye:hover {
+  color: var(--gray-700);
+  background: var(--gray-100);
+}
+
+.lg-field-error {
+  font-size: 12px;
+  color: var(--danger-600);
+}
+
+.lg-form-error {
+  border-radius: var(--radius-md);
+  background: var(--danger-50);
+  border: 1px solid var(--danger-600);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--danger-700);
+}
+
+.lg-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lg-remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--gray-700);
+  cursor: pointer;
+}
+
+/* The native checkbox stays accessible but visually hidden; the
+   styled box mirrors its checked state via the sibling selector. */
+.lg-remember-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lg-remember-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.lg-remember-input:checked + .lg-remember-box {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+}
+
+.lg-remember-input:checked + .lg-remember-box::after {
+  content: "";
+  width: 10px;
+  height: 5px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.lg-remember-input:focus-visible + .lg-remember-box {
+  box-shadow: var(--shadow-focus);
+}
+
+.lg-forgot-link {
+  font-size: 13px;
+  color: var(--trust-500);
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.lg-forgot-link:hover {
+  color: var(--trust-700);
+  text-decoration: underline;
+}
+
+.lg-btn-submit {
+  margin-top: 6px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 15.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.lg-btn-submit:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  box-shadow: var(--shadow-md);
+}
+
+.lg-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* The chevron points "forward"; flip it to follow text direction. */
+[dir="rtl"] .lg-btn-submit svg {
+  transform: scaleX(1);
+}
+[dir="ltr"] .lg-btn-submit svg {
+  transform: scaleX(-1);
+}
+
+/* ═══ OR divider ═══ */
+.lg-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+.lg-or-divider::before,
+.lg-or-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+/* ═══ Social buttons ═══ */
+.lg-social-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.lg-social-btn {
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-800);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.lg-social-btn:hover {
+  border-color: var(--gray-300);
+  background: var(--gray-50);
+}
+
+.lg-social-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lg-social-btn:disabled:hover {
+  border-color: var(--gray-200);
+  background: white;
+}
+
+.lg-social-btn .lg-logo-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══ Register link ═══ */
+.lg-register-link {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: var(--gray-600);
+}
+
+.lg-register-link a {
+  color: var(--trust-500);
+  font-weight: 600;
+  text-decoration: none;
+  margin-inline-start: 4px;
+}
+
+.lg-register-link a:hover {
+  text-decoration: underline;
+}
+
+/* ═══ Footer help ═══ */
+.lg-help-row {
+  margin-top: 28px;
+  padding: 14px 16px;
+  background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  color: var(--gray-700);
+  line-height: 1.55;
+}
+
+.lg-help-row svg {
+  color: var(--trust-500);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.lg-help-row strong {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+
+.lg-help-row a {
+  color: var(--trust-600);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ═══ ILLUSTRATION SIDE ═══ */
+.lg-illustration {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(118, 159, 205, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(150, 183, 214, 0.25) 0%, transparent 50%),
+    linear-gradient(160deg, var(--tranquil-200) 0%, var(--snow-200) 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 56px;
+  color: var(--trust-800);
+}
+
+.lg-illustration-orbit {
+  position: absolute;
+  inset: -10% -20% auto auto;
+  width: 60%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(46, 86, 131, 0.12);
+  border-radius: 50%;
+}
+
+.lg-illustration-orbit::before,
+.lg-illustration-orbit::after {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border: 1px solid rgba(46, 86, 131, 0.12);
+  border-radius: 50%;
+}
+
+.lg-illustration-orbit::after {
+  inset: 28%;
+}
+
+.lg-illustration-stat {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(118, 159, 205, 0.25);
+  border-radius: var(--radius-xl);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-md);
+}
+
+.lg-illustration-stat-num {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--trust-700);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.lg-illustration-stat-label {
+  font-size: 11px;
+  color: var(--gray-600);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.lg-stat-orphans {
+  top: 18%;
+  inset-inline-end: 8%;
+}
+.lg-stat-donors {
+  top: 38%;
+  inset-inline-end: 24%;
+}
+.lg-stat-orgs {
+  top: 58%;
+  inset-inline-end: 4%;
+}
+.lg-stat-countries {
+  bottom: 18%;
+  inset-inline-end: 28%;
+}
+
+@media (max-width: 1200px) {
+  .lg-stat-donors {
+    inset-inline-end: 18%;
+  }
+  .lg-stat-orgs {
+    inset-inline-end: 2%;
+  }
+  .lg-stat-countries {
+    inset-inline-end: 22%;
+  }
+}
+
+.lg-illustration-top {
+  position: relative;
+  z-index: 2;
+}
+
+.lg-illustration-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--trust-600);
+  border: 1px solid rgba(118, 159, 205, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.lg-illustration-eyebrow .lg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success-500);
+}
+
+.lg-illustration-bottom {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+}
+
+.lg-illustration-bottom h3 {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 14px;
+  color: var(--trust-800);
+}
+
+.lg-illustration-bottom .lg-verse {
+  font-size: 18px;
+  color: var(--trust-700);
+  line-height: 1.85;
+  font-weight: 500;
+  padding: 18px 22px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(118, 159, 205, 0.2);
+  border-radius: var(--radius-lg);
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.lg-illustration-bottom .lg-verse::before {
+  content: "“";
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 14px;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--trust-300);
+  font-family: serif;
+  opacity: 0.5;
+}
+
+.lg-illustration-bottom .lg-verse-attr {
+  display: block;
+  font-size: 12.5px;
+  color: var(--trust-500);
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+/* ═══ Partner logos strip ═══ */
+.lg-partner-strip {
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(118, 159, 205, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+}
+
+.lg-partner-strip-label {
+  font-size: 11px;
+  color: var(--gray-600);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.lg-partner-logos {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.lg-partner-logo {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--trust-700);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lg-partner-logo .lg-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--trust-300);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* ═══ Icons ═══ */
+.lg-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.lg-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 540px) {
+  .lg-form-side {
+    padding: 20px 18px;
+  }
+  .lg-lang {
+    top: 16px;
+    inset-inline-start: 16px;
+  }
+  .lg-greeting h2 {
+    font-size: 24px;
+  }
+}

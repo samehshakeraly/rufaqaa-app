@@ -101,7 +101,7 @@ test("forgot → reset → login with new password", async ({ page, context }) =
   // Final leg — log in with the new password.
   await page.goto("/login");
   await page.getByLabel(/email/i).fill(email);
-  await page.getByLabel(/password/i).fill(newPassword);
+  await page.locator("#login-password").fill(newPassword);
   await page.getByRole("button", { name: /(sign in|دخول)/i }).click();
   await expect(page).toHaveURL(/\/admin\/dashboard$/, { timeout: 10_000 });
 });

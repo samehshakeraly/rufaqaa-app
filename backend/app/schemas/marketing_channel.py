@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
@@ -41,3 +42,31 @@ class MarketingChannelRead(MarketingChannelBase):
     id: UUID
     status: ChannelStatus
     created_at: datetime
+
+
+class ChannelProgress(BaseModel):
+    """Goal-vs-achieved snapshot for a marketing channel's annual targets.
+
+    `achieved_count` counts non-cancelled sponsorships acquired through the
+    channel within `goal_year`; `achieved_amount` sums completed payments on
+    those channel's sponsorships in the same year. Monthly figures track the
+    current calendar month against the (annual / 12) target.
+    """
+
+    channel_id: UUID
+    goal_year: int
+
+    annual_goal_count: int | None = None
+    annual_goal_amount: Decimal | None = None
+    goal_currency: str | None = None
+
+    achieved_count: int
+    achieved_amount: Decimal
+
+    completion_percentage_count: float
+    completion_percentage_amount: float
+
+    monthly_goal_count: float | None = None
+    monthly_goal_amount: Decimal | None = None
+    monthly_achieved_count: int
+    monthly_achieved_amount: Decimal

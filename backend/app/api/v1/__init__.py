@@ -15,9 +15,11 @@ from app.api.v1 import (
     media,
     messages,
     organization,
+    orphan_self,
     orphans,
     partners,
     payments,
+    platform,
     public,
     reports,
     sponsorships,
@@ -48,9 +50,11 @@ api_router.include_router(families.router, prefix="/families", tags=["families"]
 api_router.include_router(donor_portal.router, prefix="/me", tags=["donor-portal"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(organization.router, prefix="/organization", tags=["organization"])
+api_router.include_router(platform.router, prefix="/platform", tags=["platform"])
 api_router.include_router(documents.router, tags=["documents"])
 api_router.include_router(bank_transfers.router, prefix="/bank-transfers", tags=["bank-transfers"])
 api_router.include_router(public.router, prefix="/public", tags=["public"])
 api_router.include_router(donor_self.router, prefix="/donor", tags=["donor-self"])
 api_router.include_router(guardian_self.router, prefix="/guardian", tags=["guardian-self"])
+api_router.include_router(orphan_self.router, prefix="/orphan", tags=["orphan-self"])
 api_router.include_router(messages.router, prefix="/messages", tags=["messages"])

@@ -21,6 +21,10 @@ Role = str
 # Common role groupings — keep them short and centralised so the call sites
 # read fluently (`require_roles(STAFF_ROLES)`).
 ADMIN_ROLES: tuple[Role, ...] = ("super_admin", "org_admin")
+# Finance-facing views (overdue donors, reconciliation lists).
+FINANCE_ROLES: tuple[Role, ...] = ("finance", *ADMIN_ROLES)
+# Marketing-facing views (channel goals / progress).
+MARKETING_ROLES: tuple[Role, ...] = ("marketing_manager", *ADMIN_ROLES)
 STAFF_ROLES: tuple[Role, ...] = (
     "super_admin",
     "org_admin",

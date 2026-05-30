@@ -376,6 +376,111 @@ components:
       - new_password
       title: ChangePasswordRequest
       type: object
+    ChannelProgress:
+      description: 'Goal-vs-achieved snapshot for a marketing channel''s annual targets.
+
+
+        `achieved_count` counts non-cancelled sponsorships acquired through the
+
+        channel within `goal_year`; `achieved_amount` sums completed payments on
+
+        those channel''s sponsorships in the same year. Monthly figures track the
+
+        current calendar month against the (annual / 12) target.'
+      properties:
+        achieved_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Achieved Amount
+          type: string
+        achieved_count:
+          title: Achieved Count
+          type: integer
+        annual_goal_amount:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Annual Goal Amount
+        annual_goal_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Annual Goal Count
+        channel_id:
+          format: uuid
+          title: Channel Id
+          type: string
+        completion_percentage_amount:
+          title: Completion Percentage Amount
+          type: number
+        completion_percentage_count:
+          title: Completion Percentage Count
+          type: number
+        goal_currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Goal Currency
+        goal_year:
+          title: Goal Year
+          type: integer
+        monthly_achieved_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Monthly Achieved Amount
+          type: string
+        monthly_achieved_count:
+          title: Monthly Achieved Count
+          type: integer
+        monthly_goal_amount:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Monthly Goal Amount
+        monthly_goal_count:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Monthly Goal Count
+      required:
+      - channel_id
+      - goal_year
+      - achieved_count
+      - achieved_amount
+      - completion_percentage_count
+      - completion_percentage_amount
+      - monthly_achieved_count
+      - monthly_achieved_amount
+      title: ChannelProgress
+      type: object
+    CreatedAdmin:
+      properties:
+        email:
+          title: Email
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+      required:
+      - id
+      - email
+      title: CreatedAdmin
+      type: object
+    CurrencyTotal:
+      properties:
+        currency:
+          title: Currency
+          type: string
+        total:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total
+          type: string
+      required:
+      - currency
+      - total
+      title: CurrencyTotal
+      type: object
     CurrentUser:
       properties:
         email:
@@ -2388,6 +2493,37 @@ components:
           title: Whatsapp
       title: NotificationPreferencesUpdate
       type: object
+    OrgRanking:
+      properties:
+        code:
+          title: Code
+          type: string
+        donations_total:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Donations Total
+          type: string
+        name_ar:
+          title: Name Ar
+          type: string
+        name_en:
+          title: Name En
+          type: string
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        sponsorships_count:
+          title: Sponsorships Count
+          type: integer
+      required:
+      - organization_id
+      - code
+      - name_ar
+      - name_en
+      - sponsorships_count
+      - donations_total
+      title: OrgRanking
+      type: object
     OrganizationRead:
       properties:
         code:
@@ -2533,6 +2669,56 @@ components:
           title: Timezone
       title: OrganizationUpdate
       type: object
+    OrphanAchievementRead:
+      description: 'Published report, projected to the progress fields only.
+
+
+        Drops everything financial, drops `health_status` and
+
+        `psychological_status` (clinical), and drops `submitted_by` /
+
+        approver user info.'
+      properties:
+        activities:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Activities
+        educational_progress:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Educational Progress
+        id:
+          format: uuid
+          title: Id
+          type: string
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+        quran_progress:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Quran Progress
+        report_type:
+          title: Report Type
+          type: string
+      required:
+      - id
+      - report_type
+      - period_start
+      - period_end
+      title: OrphanAchievementRead
+      type: object
     OrphanCreate:
       properties:
         date_of_birth:
@@ -2604,6 +2790,122 @@ components:
       - partner_organization_id
       title: OrphanCreate
       type: object
+    OrphanMeRead:
+      description: 'The orphan''s own profile.
+
+
+        Deliberately omits every financial field (`current_balance`,
+
+        `is_sponsored`, `balance_currency`), partner identity
+
+        (`partner_organization_id`), and any guardian PII.'
+      properties:
+        code:
+          title: Code
+          type: string
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        family_name:
+          title: Family Name
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          title: Gender
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        profile_completion_percentage:
+          title: Profile Completion Percentage
+          type: integer
+      required:
+      - id
+      - code
+      - first_name
+      - family_name
+      - date_of_birth
+      - gender
+      - profile_completion_percentage
+      title: OrphanMeRead
+      type: object
+    OrphanMessageCreate:
+      description: 'Compose payload. The orphan never picks the recipient or the
+
+        orphan context — both are derived server-side (recipient = primary
+
+        guardian, context = self).'
+      properties:
+        content:
+          maxLength: 4000
+          minLength: 1
+          title: Content
+          type: string
+        message_type:
+          const: text
+          default: text
+          title: Message Type
+          type: string
+      required:
+      - content
+      title: OrphanMessageCreate
+      type: object
+    OrphanMessageRead:
+      description: 'Privacy-safe message projection.
+
+
+        Carries only `from_role` + `from_name` (first name) — no raw
+
+        `from_user_id` / `to_user_id`, no email, phone, or last name.'
+      properties:
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+        created_at:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Created At
+        from_name:
+          title: From Name
+          type: string
+        from_role:
+          title: From Role
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_mine:
+          title: Is Mine
+          type: boolean
+        is_read:
+          title: Is Read
+          type: boolean
+        message_type:
+          title: Message Type
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+      required:
+      - id
+      - from_role
+      - from_name
+      - message_type
+      - content
+      - moderation_status
+      - is_read
+      - is_mine
+      title: OrphanMessageRead
+      type: object
     OrphanPhoto:
       properties:
         created_at:
@@ -2637,6 +2939,24 @@ components:
       type: object
     OrphanRead:
       properties:
+        assigned_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Assigned At
+        assigned_to_channel_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Assigned To Channel Id
+        assignment_deadline:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Assignment Deadline
         case_status:
           enum:
           - pending_review
@@ -2764,6 +3084,37 @@ components:
       required:
       - reason
       title: OrphanRejectPayload
+      type: object
+    OrphanSponsorView:
+      description: 'Minimal, child-safe view of the sponsorship.
+
+
+        When `has_sponsor` is False every other field is None. When True,
+
+        `display_name` is either the literal "كفيلك" or the donor''s first
+
+        name (only if the org opted in), and `since_year` is the calendar
+
+        year the sponsorship started. NEVER carries donor id/email/phone/
+
+        full name, amount, currency, or sponsorship id.'
+      properties:
+        display_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Name
+        has_sponsor:
+          title: Has Sponsor
+          type: boolean
+        since_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Since Year
+      required:
+      - has_sponsor
+      title: OrphanSponsorView
       type: object
     OrphanUpdate:
       description: 'Partial update. Every field optional — only the supplied keys are
@@ -3793,6 +4144,394 @@ components:
       - months
       title: PaymentsTimeseries
       type: object
+    PlatformByOrg:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/OrgRanking'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+      required:
+      - limit
+      - items
+      title: PlatformByOrg
+      type: object
+    PlatformMonthlyPoint:
+      properties:
+        month:
+          format: date-time
+          title: Month
+          type: string
+        payments_count:
+          title: Payments Count
+          type: integer
+        payments_total:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Payments Total
+          type: string
+      required:
+      - month
+      - payments_total
+      - payments_count
+      title: PlatformMonthlyPoint
+      type: object
+    PlatformOrgCreate:
+      description: Create a new tenant org plus its initial org_admin user.
+      properties:
+        admin_email:
+          format: email
+          title: Admin Email
+          type: string
+        admin_first_name:
+          default: Org
+          maxLength: 100
+          minLength: 1
+          title: Admin First Name
+          type: string
+        admin_last_name:
+          default: Admin
+          maxLength: 100
+          minLength: 1
+          title: Admin Last Name
+          type: string
+        admin_password:
+          maxLength: 128
+          minLength: 8
+          title: Admin Password
+          type: string
+        code:
+          maxLength: 20
+          minLength: 2
+          title: Code
+          type: string
+        country_code:
+          maxLength: 2
+          minLength: 2
+          title: Country Code
+          type: string
+        default_currency:
+          default: KWD
+          maxLength: 3
+          minLength: 3
+          title: Default Currency
+          type: string
+        deployment_mode:
+          default: self_hosted
+          enum:
+          - self_hosted
+          - saas_cloud
+          title: Deployment Mode
+          type: string
+        name_ar:
+          maxLength: 255
+          minLength: 1
+          title: Name Ar
+          type: string
+        name_en:
+          maxLength: 255
+          minLength: 1
+          title: Name En
+          type: string
+        org_type:
+          default: standalone
+          enum:
+          - standalone
+          - external_marketer
+          - local_partner
+          - hybrid
+          - federated
+          title: Org Type
+          type: string
+      required:
+      - code
+      - name_ar
+      - name_en
+      - country_code
+      - admin_email
+      - admin_password
+      title: PlatformOrgCreate
+      type: object
+    PlatformOrgCreateResponse:
+      properties:
+        admin_user:
+          $ref: '#/components/schemas/CreatedAdmin'
+        organization:
+          $ref: '#/components/schemas/PlatformOrgDetail'
+      required:
+      - organization
+      - admin_user
+      title: PlatformOrgCreateResponse
+      type: object
+    PlatformOrgDetail:
+      description: Full org record + counts + creation/audit metadata.
+      properties:
+        code:
+          title: Code
+          type: string
+        country_code:
+          title: Country Code
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        created_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Created By
+        default_currency:
+          title: Default Currency
+          type: string
+        default_language:
+          title: Default Language
+          type: string
+        deployment_mode:
+          title: Deployment Mode
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name_ar:
+          title: Name Ar
+          type: string
+        name_en:
+          title: Name En
+          type: string
+        org_type:
+          title: Org Type
+          type: string
+        settings:
+          additionalProperties: true
+          title: Settings
+          type: object
+        status:
+          title: Status
+          type: string
+        subscription_expires_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Subscription Expires At
+        subscription_plan:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subscription Plan
+        timezone:
+          title: Timezone
+          type: string
+        total_donors:
+          default: 0
+          title: Total Donors
+          type: integer
+        total_orphans:
+          default: 0
+          title: Total Orphans
+          type: integer
+        total_sponsorships:
+          default: 0
+          title: Total Sponsorships
+          type: integer
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - code
+      - name_ar
+      - name_en
+      - country_code
+      - status
+      - subscription_plan
+      - created_at
+      - org_type
+      - deployment_mode
+      - timezone
+      - default_language
+      - default_currency
+      - subscription_expires_at
+      - settings
+      - created_by
+      - updated_at
+      title: PlatformOrgDetail
+      type: object
+    PlatformOrgSummary:
+      description: One row in the platform org list, with joined tenant counts.
+      properties:
+        code:
+          title: Code
+          type: string
+        country_code:
+          title: Country Code
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name_ar:
+          title: Name Ar
+          type: string
+        name_en:
+          title: Name En
+          type: string
+        status:
+          title: Status
+          type: string
+        subscription_plan:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subscription Plan
+        total_donors:
+          default: 0
+          title: Total Donors
+          type: integer
+        total_orphans:
+          default: 0
+          title: Total Orphans
+          type: integer
+        total_sponsorships:
+          default: 0
+          title: Total Sponsorships
+          type: integer
+      required:
+      - id
+      - code
+      - name_ar
+      - name_en
+      - country_code
+      - status
+      - subscription_plan
+      - created_at
+      title: PlatformOrgSummary
+      type: object
+    PlatformOrgUpdate:
+      description: Platform-level org edits (status, plan, expiry, free-form settings).
+      properties:
+        settings:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Settings
+        status:
+          anyOf:
+          - enum:
+            - active
+            - suspended
+            - archived
+            - pending_approval
+            type: string
+          - type: 'null'
+          title: Status
+        subscription_expires_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Subscription Expires At
+        subscription_plan:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: Subscription Plan
+      title: PlatformOrgUpdate
+      type: object
+    PlatformSettingsRead:
+      properties:
+        settings:
+          additionalProperties: true
+          title: Settings
+          type: object
+        updated_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Updated At
+        updated_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Updated By
+      required:
+      - settings
+      - updated_at
+      - updated_by
+      title: PlatformSettingsRead
+      type: object
+    PlatformSettingsUpdate:
+      description: Shallow-merged into the existing settings JSONB.
+      properties:
+        settings:
+          additionalProperties: true
+          title: Settings
+          type: object
+      required:
+      - settings
+      title: PlatformSettingsUpdate
+      type: object
+    PlatformSummary:
+      properties:
+        active_orgs:
+          title: Active Orgs
+          type: integer
+        total_donated_by_currency:
+          items:
+            $ref: '#/components/schemas/CurrencyTotal'
+          title: Total Donated By Currency
+          type: array
+        total_donated_converted:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Donated Converted
+          type: string
+        total_donors:
+          title: Total Donors
+          type: integer
+        total_orgs:
+          title: Total Orgs
+          type: integer
+        total_orphans:
+          title: Total Orphans
+          type: integer
+        total_sponsorships:
+          title: Total Sponsorships
+          type: integer
+      required:
+      - total_orgs
+      - active_orgs
+      - total_orphans
+      - total_donors
+      - total_sponsorships
+      - total_donated_converted
+      - total_donated_by_currency
+      title: PlatformSummary
+      type: object
+    PlatformTimeseries:
+      properties:
+        months:
+          items:
+            $ref: '#/components/schemas/PlatformMonthlyPoint'
+          title: Months
+          type: array
+      required:
+      - months
+      title: PlatformTimeseries
+      type: object
     PublicOrphanCard:
       description: 'Curated public projection of an orphan. Every field here was
 
@@ -4467,6 +5206,17 @@ components:
       - status
       - count
       title: StatusSlice
+      type: object
+    SuspendRequest:
+      properties:
+        reason:
+          maxLength: 500
+          minLength: 1
+          title: Reason
+          type: string
+      required:
+      - reason
+      title: SuspendRequest
       type: object
     Timeline:
       properties:
@@ -6358,6 +7108,45 @@ paths:
       summary: Update Marketing Channel
       tags:
       - marketing-channels
+  /api/v1/marketing-channels/{channel_id}/progress:
+    get:
+      description: 'Goal-vs-achieved progress for a channel''s annual targets.
+
+
+        Achievement is measured within the channel''s `goal_year` (falling back
+
+        to the current calendar year when the row has none set): non-cancelled
+
+        sponsorships acquired through the channel, and completed payments on
+
+        those sponsorships.'
+      operationId: channel_progress_api_v1_marketing_channels__channel_id__progress_get
+      parameters:
+      - in: path
+        name: channel_id
+        required: true
+        schema:
+          format: uuid
+          title: Channel Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelProgress'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Channel Progress
+      tags:
+      - marketing-channels
   /api/v1/me/reports:
     get:
       description: 'Reports for every orphan this donor sponsors — only the ones that
@@ -6930,6 +7719,169 @@ paths:
       summary: Update Current Organization
       tags:
       - organization
+  /api/v1/orphan/me:
+    get:
+      description: 'Return the orphan''s own profile. No financial, partner, or
+
+        guardian fields are serialised.'
+      operationId: get_orphan_me_api_v1_orphan_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanMeRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphan Me
+      tags:
+      - orphan-self
+  /api/v1/orphan/me/achievements:
+    get:
+      description: 'List the orphan''s published reports, projected to progress fields.
+
+
+        Only `published_to_donor` reports are returned — drafts and
+
+        in-review reports stay hidden. Financial, clinical (`health_status`,
+
+        `psychological_status`) and submitter fields are dropped.'
+      operationId: list_orphan_achievements_api_v1_orphan_me_achievements_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanAchievementRead'
+                title: Response List Orphan Achievements Api V1 Orphan Me Achievements Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Achievements
+      tags:
+      - orphan-self
+  /api/v1/orphan/me/messages:
+    get:
+      description: 'List approved messages in the orphan''s own thread.
+
+
+        Scoped to `related_orphan_id == self.id` and to messages the orphan
+
+        is actually a party to (sender or recipient). Only `approved`
+
+        messages surface here.'
+      operationId: list_orphan_messages_api_v1_orphan_me_messages_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanMessageRead'
+                title: Response List Orphan Messages Api V1 Orphan Me Messages Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Messages
+      tags:
+      - orphan-self
+    post:
+      description: 'Compose a message.
+
+
+        The orphan can only ever send a message with `related_orphan_id` set
+
+        to their own id; the recipient auto-resolves to the orphan''s primary
+
+        guardian (or NULL when none has a login, in which case a moderator
+
+        routes it). Every orphan-sent message lands as `pending`.'
+      operationId: send_orphan_message_api_v1_orphan_me_messages_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanMessageCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanMessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Send Orphan Message
+      tags:
+      - orphan-self
+  /api/v1/orphan/me/sponsor:
+    get:
+      description: 'Minimal sponsor view.
+
+
+        Returns `{has_sponsor: false}` when there is no active sponsorship.
+
+        Otherwise returns a generic display name (the donor''s first name only
+
+        when the org has opted in) and the start year — never the donor''s
+
+        identity, the amount, the currency, or the sponsorship id.'
+      operationId: get_orphan_sponsor_api_v1_orphan_me_sponsor_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanSponsorView'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphan Sponsor
+      tags:
+      - orphan-self
   /api/v1/orphans:
     get:
       description: 'List orphans, optionally filtered by case_status and a search term.
@@ -6941,7 +7893,16 @@ paths:
 
         also matches the code prefix directly so partial codes like "ORF-AB"
 
-        still work.'
+        still work.
+
+
+        `channel_id` narrows to orphans assigned to a marketing channel.
+
+        `assignment_status` filters by assignment deadline: "active" keeps
+
+        orphans whose deadline is still in the future, "expired" those past it,
+
+        "all" applies no deadline filter.'
       operationId: list_orphans_api_v1_orphans_get
       parameters:
       - in: query
@@ -6969,6 +7930,26 @@ paths:
           - type: string
           - type: 'null'
           title: Case Status
+      - in: query
+        name: channel_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Channel Id
+      - in: query
+        name: assignment_status
+        required: false
+        schema:
+          default: all
+          enum:
+          - active
+          - expired
+          - all
+          title: Assignment Status
+          type: string
       - in: query
         name: q
         required: false
@@ -7647,6 +8628,14 @@ paths:
           - type: string
           - type: 'null'
           title: Status
+      - in: query
+        name: donor_overdue
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Donor Overdue
       responses:
         '200':
           content:
@@ -7940,6 +8929,278 @@ paths:
       summary: Update Payment Status
       tags:
       - payments
+  /api/v1/platform/organizations:
+    get:
+      description: 'List ALL organizations across the platform (no org filter — this
+
+        is an intentional cross-tenant read gated to super_admin). Tenant
+
+        counts are joined in via grouped subqueries to avoid N+1.'
+      operationId: list_organizations_api_v1_platform_organizations_get
+      parameters:
+      - in: query
+        name: status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - in: query
+        name: country
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+      - in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Search
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PlatformOrgSummary'
+                title: Response List Organizations Api V1 Platform Organizations Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Organizations
+      tags:
+      - platform
+    post:
+      description: 'Provision a brand-new tenant org plus its initial org_admin user.
+
+
+        Cross-tenant write: the new org and its admin belong to a different
+
+        tenant than the calling super_admin, which is exactly the point.
+
+        Conflicts on org code / admin email return 409 rather than a 500.'
+      operationId: create_organization_api_v1_platform_organizations_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformOrgCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrgCreateResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Organization
+      tags:
+      - platform
+  /api/v1/platform/organizations/{org_id}:
+    get:
+      description: Full detail for any org on the platform (cross-tenant read).
+      operationId: get_organization_api_v1_platform_organizations__org_id__get
+      parameters:
+      - in: path
+        name: org_id
+        required: true
+        schema:
+          format: uuid
+          title: Org Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrgDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Organization
+      tags:
+      - platform
+    patch:
+      description: 'Platform-level edit of any org (status, plan, expiry, settings).
+
+        Cross-tenant write gated to super_admin.'
+      operationId: update_organization_api_v1_platform_organizations__org_id__patch
+      parameters:
+      - in: path
+        name: org_id
+        required: true
+        schema:
+          format: uuid
+          title: Org Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformOrgUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrgDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Organization
+      tags:
+      - platform
+  /api/v1/platform/organizations/{org_id}/activate:
+    post:
+      description: 'Re-activate a suspended org (status=active) and clear the stored
+
+        suspension reason. Cross-tenant write gated to super_admin.'
+      operationId: activate_organization_api_v1_platform_organizations__org_id__activate_post
+      parameters:
+      - in: path
+        name: org_id
+        required: true
+        schema:
+          format: uuid
+          title: Org Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrgDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Activate Organization
+      tags:
+      - platform
+  /api/v1/platform/organizations/{org_id}/suspend:
+    post:
+      description: 'Suspend an org (status=suspended) and record the reason in
+
+        settings.suspension. Cross-tenant write gated to super_admin.'
+      operationId: suspend_organization_api_v1_platform_organizations__org_id__suspend_post
+      parameters:
+      - in: path
+        name: org_id
+        required: true
+        schema:
+          format: uuid
+          title: Org Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformOrgDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Suspend Organization
+      tags:
+      - platform
+  /api/v1/platform/settings:
+    get:
+      description: 'Read the system-wide flags (maintenance_mode, signups_open, …).
+
+        Singleton row, no tenant scope.'
+      operationId: get_platform_settings_api_v1_platform_settings_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSettingsRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Platform Settings
+      tags:
+      - platform
+    patch:
+      description: 'Shallow-merge the provided keys into the platform settings JSONB.
+
+        Gated to super_admin.'
+      operationId: update_platform_settings_api_v1_platform_settings_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformSettingsUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSettingsRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Platform Settings
+      tags:
+      - platform
   /api/v1/public/orphans:
     get:
       description: 'Anonymous-safe orphan listing. Always filters to case statuses a
@@ -8417,6 +9678,23 @@ paths:
           - type: string
           - type: 'null'
           title: Status
+      - in: query
+        name: min_months_overdue
+        required: false
+        schema:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Months Overdue
+      - in: query
+        name: is_overdue
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Overdue
       responses:
         '200':
           content:
@@ -8711,6 +9989,80 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Payments Timeseries
+      tags:
+      - stats
+  /api/v1/stats/platform/by-org:
+    get:
+      description: 'Top N orgs by completed-donation total (with sponsorship counts).
+
+        Cross-org read gated to super_admin.'
+      operationId: platform_by_org_api_v1_stats_platform_by_org_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformByOrg'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Platform By Org
+      tags:
+      - stats
+  /api/v1/stats/platform/summary:
+    get:
+      description: 'Cross-org headline totals for the super-admin console. `total_donated`
+
+        is reported both as a converted figure (sum of
+
+        payments.amount_in_default_currency, where available) and as a
+
+        per-currency breakdown so nothing is silently lost to FX gaps.'
+      operationId: platform_summary_api_v1_stats_platform_summary_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSummary'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Platform Summary
+      tags:
+      - stats
+  /api/v1/stats/platform/timeseries:
+    get:
+      description: 'Completed-payment totals + counts by month across ALL orgs, last
+
+        12 months. Cross-org read gated to super_admin.'
+      operationId: platform_timeseries_api_v1_stats_platform_timeseries_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformTimeseries'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Platform Timeseries
       tags:
       - stats
   /api/v1/stats/sponsorships-by-status:

@@ -1,0 +1,581 @@
+/* ═══════════════════════════════════════════════════════════════
+   PS-05 Reports Review — scoped styles
+   Ported from docs/design/screens/partner-staff/PS-05 Reports
+   Review.html. Master-detail review queue for partner roles. Tokens
+   only; scoped under `.ps-reports`, prefixed `ps-`. Physical
+   left/right rewritten as logical for RTL-first. The fixed-viewport
+   panes are constrained to a contained height with internal scroll,
+   since this renders inside the app's max-width main column.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ps-reports {
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-700: #1d4ed8;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.ps-reports .latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ───────────── Two-pane shell ───────────── */
+.ps-reports-shell {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  height: min(76vh, 820px);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: white;
+}
+@media (max-width: 1100px) {
+  .ps-reports-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+
+/* ───────────── Review list (start side) ───────────── */
+.ps-review-list {
+  background: white;
+  border-inline-end: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+@media (max-width: 1100px) {
+  .ps-review-list {
+    max-height: 360px;
+    border-inline-end: none;
+    border-bottom: 1px solid var(--gray-200);
+  }
+}
+.ps-list-tabs {
+  display: flex;
+  gap: 0;
+  padding: 6px 12px 0;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+.ps-list-tab {
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: var(--transition-fast);
+}
+.ps-list-tab:hover {
+  color: var(--gray-900);
+}
+.ps-list-tab.active {
+  color: var(--trust-600);
+  border-bottom-color: var(--trust-300);
+  background: white;
+  font-weight: 600;
+}
+.ps-list-tab .count {
+  background: var(--gray-200);
+  color: var(--gray-700);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.ps-list-tab.active .count {
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+}
+.ps-list-filter {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  gap: 8px;
+}
+.ps-list-search {
+  flex: 1;
+  position: relative;
+}
+.ps-list-search input {
+  width: 100%;
+  padding: 8px 36px 8px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+.ps-list-search input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-focus);
+}
+.ps-list-search svg {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 12px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+.ps-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+.ps-review-item {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  width: 100%;
+  border-inline-end: 3px solid transparent;
+  background: transparent;
+  border-top: none;
+  border-inline-start: none;
+  text-align: start;
+  font-family: inherit;
+}
+.ps-review-item:hover {
+  background: var(--snow-200);
+}
+.ps-review-item.active {
+  background: white;
+  border-inline-end-color: var(--trust-400);
+}
+.ps-review-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--snow-200) 0,
+    var(--snow-200) 5px,
+    var(--tranquil-100) 5px,
+    var(--tranquil-100) 10px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--trust-700);
+  flex-shrink: 0;
+}
+.ps-review-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.ps-review-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.ps-review-item-time {
+  font-size: 11px;
+  color: var(--gray-500);
+  font-family: "IBM Plex Sans", sans-serif;
+  white-space: nowrap;
+}
+.ps-review-item-sub {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 6px;
+}
+.ps-review-item-preview {
+  font-size: 12px;
+  color: var(--gray-600);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ps-review-item-pills {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.ps-review-item-pill {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+.ps-review-item-pill.health {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+}
+.ps-review-item-pill.edu {
+  background: var(--info-50);
+  color: var(--info-700);
+  border: 1px solid var(--info-100);
+}
+.ps-review-item-pill.image {
+  background: var(--tranquil-100);
+  color: var(--trust-700);
+  border: 1px solid var(--sky-200);
+}
+
+.ps-list-empty {
+  padding: 32px 18px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+
+/* ───────────── Reviewer panel ───────────── */
+.ps-reviewer {
+  display: flex;
+  flex-direction: column;
+  background: var(--gray-50);
+  min-width: 0;
+}
+.ps-reviewer-head {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 24px;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.ps-reviewer-head-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--snow-200) 0,
+    var(--snow-200) 6px,
+    var(--tranquil-100) 6px,
+    var(--tranquil-100) 12px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--trust-700);
+}
+.ps-reviewer-head-text {
+  min-width: 0;
+}
+.ps-reviewer-head-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ps-reviewer-head-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ps-reviewer-head-meta .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--gray-400);
+  display: inline-block;
+}
+.ps-reviewer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 26px 26px;
+}
+.ps-report-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.ps-report-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.ps-report-badge {
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-100);
+}
+.ps-report-badge.ok {
+  background: var(--success-50);
+  color: var(--success-700);
+  border-color: var(--success-100);
+}
+.ps-report-badge.no {
+  background: var(--danger-50);
+  color: var(--danger-700);
+  border-color: var(--danger-100);
+}
+.ps-report-badge .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* report sections */
+.ps-r-section {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.ps-r-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ps-r-section-title svg {
+  color: var(--trust-400);
+}
+.ps-r-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--gray-800);
+  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+.ps-r-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ps-r-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 13px;
+}
+.ps-r-row-label {
+  color: var(--gray-600);
+}
+.ps-r-row-value {
+  color: var(--gray-900);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.ps-reviewer-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--gray-500);
+  padding: 40px 24px;
+}
+.ps-reviewer-empty svg {
+  color: var(--gray-300);
+}
+
+/* foot bar */
+.ps-reviewer-foot {
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ps-reviewer-note {
+  flex: 1;
+  min-width: 180px;
+}
+.ps-reviewer-note input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+.ps-reviewer-note input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-focus);
+}
+.ps-foot-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.ps-foot-btn {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+.ps-foot-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ps-foot-btn-ghost {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+}
+.ps-foot-btn-ghost:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.ps-foot-btn-reject {
+  background: white;
+  color: var(--danger-700);
+  border-color: var(--danger-100);
+}
+.ps-foot-btn-reject:hover:not(:disabled) {
+  background: var(--danger-50);
+  border-color: var(--danger-600);
+}
+.ps-foot-btn-approve {
+  background: var(--success-600);
+  color: white;
+  border-color: var(--success-600);
+}
+.ps-foot-btn-approve:hover:not(:disabled) {
+  background: var(--success-700);
+}
+.ps-foot-hint {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+/* ───────────── Header above the shell ───────────── */
+.ps-reports-header {
+  margin-bottom: 16px;
+}
+.ps-reports-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+.ps-reports-header p {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+
+/* ───────────── Icons ───────────── */
+.ps-reports .ps-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ps-reports .ps-icon-sm {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}

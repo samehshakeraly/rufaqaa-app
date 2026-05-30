@@ -64,3 +64,52 @@ export async function fetchDonationsByPartner(): Promise<DonationsByPartner> {
   const { data } = await api.get<DonationsByPartner>("/stats/donations-by-partner");
   return data;
 }
+
+// ── Platform-level (super-admin, cross-org) stats ────────────────────
+
+export interface CurrencyTotal {
+  currency: string;
+  total: string;
+}
+
+export interface PlatformSummary {
+  total_orgs: number;
+  active_orgs: number;
+  total_orphans: number;
+  total_donors: number;
+  total_sponsorships: number;
+  total_donated_converted: string;
+  total_donated_by_currency: CurrencyTotal[];
+}
+
+export async function fetchPlatformSummary(): Promise<PlatformSummary> {
+  const { data } = await api.get<PlatformSummary>("/stats/platform/summary");
+  return data;
+}
+
+export async function fetchPlatformTimeseries(): Promise<PaymentsTimeseries> {
+  // Same shape as the per-org payments timeseries: { months: [...] }.
+  const { data } = await api.get<PaymentsTimeseries>("/stats/platform/timeseries");
+  return data;
+}
+
+export interface OrgRanking {
+  organization_id: string;
+  code: string;
+  name_ar: string;
+  name_en: string;
+  sponsorships_count: number;
+  donations_total: string;
+}
+
+export interface PlatformByOrg {
+  limit: number;
+  items: OrgRanking[];
+}
+
+export async function fetchPlatformByOrg(limit = 10): Promise<PlatformByOrg> {
+  const { data } = await api.get<PlatformByOrg>("/stats/platform/by-org", {
+    params: { limit },
+  });
+  return data;
+}

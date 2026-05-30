@@ -5,16 +5,53 @@
   },
   "public": {
     "nav": {
+      "primary": "Primary navigation",
+      "home": "Home",
+      "about": "About",
+      "howItWorks": "How it works",
+      "transparency": "Transparency",
+      "partners": "Partners",
+      "contact": "Contact",
       "browseOrphans": "Browse orphans",
       "login": "Sign in",
       "signup": "Sign up",
       "toMyArea": "My area",
-      "toHome": "Back home"
+      "toHome": "Back home",
+      "donate": "Donate now"
+    },
+    "brand": {
+      "tagline": "A global digital endowment"
     },
     "footer": {
-      "terms": "Terms",
-      "privacy": "Privacy",
-      "contact": "Contact"
+      "desc": "A global, open-source digital-endowment platform connecting sponsors with orphans — fully transparent, with dignity preserved.",
+      "terms": "Terms of use",
+      "privacy": "Privacy policy",
+      "contact": "Contact us",
+      "license": "licensed under",
+      "licenseNote": "free to use, copy and modify.",
+      "madeWith": "One of Sameh Abdulaziz's digital-endowment projects",
+      "platform": {
+        "title": "Platform",
+        "browse": "Browse orphans",
+        "sponsor": "Become a sponsor",
+        "howItWorks": "How it works",
+        "forOrgs": "For organizations",
+        "login": "Sign in"
+      },
+      "trust": {
+        "title": "Trust & transparency",
+        "financials": "Financial transparency",
+        "reports": "Annual reports",
+        "partners": "Partner organizations"
+      },
+      "community": {
+        "title": "Community & code",
+        "repo": "Repository on GitHub",
+        "repoBadge": "Open",
+        "contributing": "Contributing guide",
+        "roadmap": "Roadmap",
+        "contact": "Contact us"
+      }
     },
     "orphans": {
       "title": "Orphans",
@@ -24,6 +61,554 @@
       "age": "{{age}} years",
       "viewAndSponsor": "View & sponsor",
       "sponsor": "Sponsor this child"
+    },
+    "about": {
+      "meta": {
+        "title": "About Rufaqaa — our story, vision and values",
+        "description": "The Rufaqaa story: from one charity's need to a global, open-source digital endowment. Our vision, mission, values, and the team behind the platform."
+      },
+      "hero": {
+        "eyebrow": "About Rufaqaa",
+        "title": "The story of",
+        "titleAccent": "Rufaqaa",
+        "subtitle": "What begins as one charity's need becomes, God willing, a digital endowment serving thousands of orphans around the world. This is how we started, and why we keep going.",
+        "metaFounded": "Founded 2024",
+        "metaOpenSource": "Open source · MIT license",
+        "metaWaqf": "A non-profit endowment project"
+      },
+      "story": {
+        "eyebrow": "The story",
+        "title": "From a local need,",
+        "titleAccent": "to a global endowment",
+        "lede": "We didn't design Rufaqaa on a blank page — it was born from daily friction at a single charity, then grew because thousands of orphans needed the same answer.",
+        "phase1Year": "2023",
+        "phase1Title": "It started as a need",
+        "phase1Desc": "At one charity, orphan sponsorships were managed on scattered papers and spreadsheets. Transfers were logged by hand, and reports lagged by months. The need was clear: one transparent system serving everyone.",
+        "phase2Year": "2024",
+        "phase2Title": "It grew worldwide",
+        "phase2Desc": "Other partner charities saw the platform and asked to join, across several countries. Sponsors began reaching orphans across continents, and reports started flowing monthly, automatically.",
+        "phase3Year": "2025",
+        "phase3Title": "It became a digital endowment",
+        "phase3Desc": "The final decision: no for-profit entity, no monopoly. Rufaqaa is an open-source digital endowment under the MIT license — any organization worldwide can use it free, copy it, or contribute to it. An unbroken good, God willing."
+      },
+      "vm": {
+        "eyebrow": "Vision & mission",
+        "title": "Where we're headed,",
+        "titleAccent": "and how",
+        "visionLabel": "Vision",
+        "visionTitle": "A world where no orphan is left without a companion.",
+        "visionBody": "We dream of a platform that connects every orphan — however far — with a sponsor who prays for them, checks on them, and becomes their companion. We dream of waiting lists disappearing, and sponsorship becoming as simple as sending a message.",
+        "missionLabel": "Mission",
+        "missionTitle": "Connecting sponsors with orphans, transparently and with dignity.",
+        "missionBody": "We build an open-source, secure, easy-to-use tool that lets any verified charity manage its sponsorships efficiently, and lets any sponsor follow their orphan with confidence — without ever compromising the child's dignity or privacy."
+      },
+      "values": {
+        "eyebrow": "Values",
+        "title": "Four values",
+        "titleAccent": "we answer for before the numbers",
+        "lede": "Values aren't slogans on a wall — they're decision criteria. Facing any design or financial choice, we ask: does it serve sincerity? Transparency? Dignity? Excellence?",
+        "v1Name": "Sincerity",
+        "v1Desc": "Deeds are judged by intentions. We work seeking God's pleasure — not reputation or awards. When intention conflicts with interest, we choose intention.",
+        "v2Name": "Transparency",
+        "v2Desc": "The code is open, the accounts are audited, the decisions are documented. Every amount carries a serial number — from the sponsor's card to the hand that delivers it to the orphan.",
+        "v3Name": "Dignity",
+        "v3Desc": "An orphan is a whole human being, not a marketing case. No real photos, no tear-jerking stories to extract donations. We guard privacy as we guard money.",
+        "v4Name": "Excellence",
+        "v4Desc": "God loves that when one of you does a thing, they do it well. We build the platform with care — every line of code, every button, every word placed deliberately."
+      },
+      "hadith": {
+        "eyebrow": "From the Sunnah",
+        "title": "A hadith",
+        "titleAccent": "that lights the way",
+        "text": "I and the guardian of the orphan will be in Paradise like this",
+        "source": "Sahih al-Bukhari · The merit of one who cares for an orphan",
+        "narrator": "Narrated by Sahl ibn Sa'd (may God be pleased with him)",
+        "tafsirLabel": "Brief commentary",
+        "tafsir": "The Prophet ﷺ joined his index and middle fingers, indicating that the guardian of an orphan will be this close to him on the Day of Judgement. Guardianship isn't only financial support — it includes care, supplication, and following up on the orphan's education, health and character. The Prophet ﷺ made it general, opening the door for every believer to attain this merit."
+      },
+      "os": {
+        "eyebrow": "Open source",
+        "title": "Why we chose to be",
+        "titleAccent": "open source?",
+        "lede": "In charitable work, trust is the currency. Open code is the strongest form of trust — because you don't take our word for it, you read it yourself.",
+        "point1": "Full transparency — every line of code is open to public review. Any developer or security engineer can verify for themselves how data is stored and transactions are protected.",
+        "point2": "Any organization can use it free — no subscription fees, no dependence on Rufaqaa as a company. Download, deploy, modify — freely, under the MIT license.",
+        "point3": "Community contributions — developers, translators and reviewers from several countries have contributed code and translations. A good not limited to one team.",
+        "point4": "An unbroken endowment — even if the founding team stopped tomorrow, the code remains available forever for any party to complete or copy. An ongoing charity in software form.",
+        "repoButton": "Browse the repository on GitHub",
+        "windowTitle": "github.com",
+        "stars": "Stars",
+        "forks": "Forks",
+        "contributors": "Contributors"
+      },
+      "founder": {
+        "eyebrow": "The founder",
+        "title": "Who started",
+        "titleAccent": "Rufaqaa?",
+        "label": "Founder · developer · endower",
+        "name": "Sameh Abdulaziz",
+        "titleLine": "Software engineer · interested in digital endowments",
+        "bio1": "Sameh is a software engineer building technical tools that serve charitable and Islamic work. He started Rufaqaa as a tool for a single charity, then decided to turn it into an open-source digital endowment whose reward, God willing, keeps flowing.",
+        "bio2": "Sameh takes no financial compensation for developing the platform, treating it as an ongoing charity in software form — on behalf of his parents and the orphans they knew.",
+        "initials": "SA",
+        "linkSeries": "Digital endowments series"
+      },
+      "team": {
+        "badge": "Team forming — volunteer cards are being filled in gradually",
+        "title": "The team",
+        "titleAccent": "and volunteers",
+        "lede": "Rufaqaa isn't one person's work — it's the fruit of volunteers from different countries. These are the first team cards, and the rest remain open to anyone who wants to contribute.",
+        "leadName": "Sameh Abdulaziz",
+        "leadRole": "Founder · lead developer",
+        "placeholderName": "Volunteer spot",
+        "role1": "Product design (UI/UX)",
+        "role2": "Shariah review",
+        "role3": "Partner support",
+        "role4": "Translation & localization",
+        "role5": "Content & copy",
+        "leadInitials": "SA"
+      },
+      "cta": {
+        "eyebrow": "Join as a contributor",
+        "title": "Your place in Rufaqaa",
+        "titleSoft": "is waiting on GitHub.",
+        "lede": "Whether you're a developer, a designer, or a student of knowledge reviewing text — your contribution becomes an ongoing charity in work that serves orphans you've never met.",
+        "github": "Join on GitHub",
+        "contact": "Contact us — I want to help another way"
+      }
+    },
+    "how": {
+      "meta": {
+        "title": "How it works — Rufaqaa from the inside",
+        "description": "A detailed, step-by-step explanation of how Rufaqaa works: for sponsors, for orphans and their families, and for partner organizations — with the full money flow and security safeguards."
+      },
+      "hero": {
+        "eyebrow": "How it works · detailed",
+        "title": "Rufaqaa",
+        "titleAccent": "from the inside",
+        "subtitle": "Simple on the outside, precise in operation. Here we explain step by step how your sponsorship reaches your orphan — and how the platform verifies every amount and every report.",
+        "jumpDonors": "For sponsors",
+        "jumpOrphans": "For orphans & families",
+        "jumpPartners": "For partner organizations",
+        "jumpMoney": "Where the money goes"
+      },
+      "donors": {
+        "eyebrow": "Path 1 of 3",
+        "title": "For sponsors — how do you sponsor an orphan?",
+        "subtitle": "Five steps stand between you and becoming an orphan's companion. The first three take minutes; the rest continue with you as long as you wish.",
+        "metaValue": "5–10 minutes",
+        "metaLabel": "to register and make the first payment",
+        "s1Title": "Browse available orphans",
+        "s1Chip": "no account",
+        "s1Desc": "No registration or email needed — open the 'Browse orphans' page and you'll find profiles of orphans available for sponsorship now, with age, country, and education status.",
+        "s2Title": "Choose an orphan who touches your heart",
+        "s2Chip": "two minutes",
+        "s2Desc": "Each orphan has a profile with their story — without personal photos — to help you choose. You can sponsor one orphan or more, in different countries.",
+        "s3Title": "Pay securely via MyFatoorah",
+        "s3Chip": "automatic · secured",
+        "s3Desc": "Payment options: Visa/Mastercard, Apple Pay, K-NET, or bank transfer. Every transaction is encrypted, and a PDF receipt reaches you instantly. Sponsorship is monthly and automatic, and you can cancel anytime.",
+        "s4Title": "Receive verified monthly reports",
+        "s4Chip": "every 30 days",
+        "s4Desc": "Each month, you receive a report approved by the partner organization: health status, schooling, the orphan's activities — with safe images and official documents. The report is reviewed before it reaches you.",
+        "s5Title": "Message the guardian if you wish",
+        "s5Chip": "optional",
+        "s5Desc": "You can send messages to the orphan's guardian through the platform — and every message passes human review before delivery, protecting both sides. The guardian doesn't get your data, nor you theirs."
+      },
+      "orphansPath": {
+        "eyebrow": "Path 2 of 3",
+        "title": "For orphans & guardians — how does support arrive?",
+        "subtitle": "You and your orphan don't deal with the platform directly — everything goes through the accredited charity in your country. It is your face to us.",
+        "metaValue": "7–14 days",
+        "metaLabel": "from registration to sponsorship",
+        "s1Title": "The partner registers the orphan",
+        "s1Chip": "in their country",
+        "s1Desc": "Direct yourself or the guardian to the nearest accredited partner — a locally licensed charity. They open a file with the official documents and a social report.",
+        "s2Title": "Documents are verified",
+        "s2Chip": "2–5 days",
+        "s2Desc": "The partner manager reviews the file, then submits it to Rufaqaa for approval. An orphan's profile isn't shown to sponsors before document verification is complete.",
+        "s3Title": "The orphan is matched with a sponsor",
+        "s3Chip": "automatic on selection",
+        "s3Desc": "The orphan's profile appears to a potential sponsor — via direct browsing or a marketing campaign. When the sponsor chooses them, matching happens instantly and the sponsorship counter starts.",
+        "s4Title": "Monthly disbursement from the partner's account",
+        "s4Chip": "monthly · hand to hand",
+        "s4Desc": "Rufaqaa transfers the total of sponsorships to the partner's account in one batch each month. The partner then disburses to the guardian per its policy, and a receipt is signed.",
+        "s5Title": "Periodic reports uploaded to the platform",
+        "s5Chip": "every month",
+        "s5Desc": "A partner staff member uploads a monthly report on the orphan: health, schooling, exceptional needs, and images under privacy controls. Reports pass review before reaching the sponsor."
+      },
+      "partnersPath": {
+        "eyebrow": "Path 3 of 3",
+        "title": "For partner organizations — how do you join?",
+        "subtitle": "Rufaqaa can't work without you. The partner is the local eye and the hand that reaches the orphan. But we are careful in choosing.",
+        "metaValue": "7–14 days",
+        "metaLabel": "for review and accreditation",
+        "s1Title": "Register the organization",
+        "s1Chip": "via the form",
+        "s1Desc": "The organization fills a partnership request with name, country, license, expected number of orphans, and bank accounts — and uploads document copies electronically.",
+        "s2Title": "Accreditation by Rufaqaa",
+        "s2Chip": "7–14 days",
+        "s2Desc": "The platform reviews the documents with an independent auditor in the organization's country. Review covers license validity, activity history, and community reputation.",
+        "s3Title": "Register orphans on the platform",
+        "s3Chip": "with staff accounts",
+        "s3Desc": "The organization gets manager and staff accounts. Staff start registering orphans via 'Register new orphan': a full profile plus documents, submitted for the manager's approval.",
+        "s4Title": "Receive monthly transfers",
+        "s4Chip": "one monthly batch",
+        "s4Desc": "The organization receives a unified bank transfer for all its sponsored orphans from the prior month, with a statement listing each orphan and amount (without sponsor contact data).",
+        "s5Title": "Disburse to orphans",
+        "s5Chip": "within 10 days",
+        "s5Desc": "The organization disburses to guardians per its policy and obtains a documented receipt signature. Staff then upload the receipt plus a monthly report on each orphan's status."
+      },
+      "flow": {
+        "eyebrow": "The money path",
+        "title": "Where does",
+        "titleAccent": "every dollar go?",
+        "lede": "Five stops between your card and your orphan's hand. Every stop is documented with a serial number, and audited by a neutral party annually.",
+        "node1Label": "Sponsor",
+        "node1Sub": "pays monthly",
+        "node2Label": "MyFatoorah",
+        "node2Sub": "licensed payment gateway",
+        "node3Label": "Rufaqaa",
+        "node3Sub": "endowment account · pass-through",
+        "node4Label": "Partner organization",
+        "node4Sub": "locally licensed",
+        "node5Label": "Orphan & family",
+        "node5Sub": "signed receipt",
+        "arrow1": "1. Secure charge",
+        "arrow2": "2. Aggregation",
+        "arrow3": "3. Bank transfer",
+        "arrow4": "4. Delivery",
+        "note1Title": "TLS 1.3 encryption",
+        "note1Desc": "for every payment transaction, and card data is never stored with us.",
+        "note2Title": "Transit time",
+        "note2Desc": "24–48 hours from payment until the amount reaches the partner's account monthly.",
+        "note3Title": "Annual review",
+        "note3Desc": "by an independent chartered accounting firm, with results published on the transparency page.",
+        "note4Title": "Pass-through ratio",
+        "note4Desc": "95% of the amount reaches the orphan directly, 3% operations, 2% reserves."
+      },
+      "security": {
+        "eyebrow": "Security & trust",
+        "title": "How do we protect",
+        "titleAccent": "data and children?",
+        "lede": "Not just secure infrastructure — a whole approach to platform design that puts the child's dignity before any marketing feature.",
+        "c1Title": "Full encryption",
+        "c1Desc": "Payment data is encrypted with TLS 1.3, and orphan data is encrypted in the database with managed keys.",
+        "c1Chip": "PCI-DSS standards",
+        "c2Title": "Children's data protection",
+        "c2Desc": "No full family names, no clear face photos, and no orphan contact data available to the sponsor. A 'minimum necessary' principle.",
+        "c2Chip": "Privacy first",
+        "c3Title": "Annual review",
+        "c3Desc": "An independent chartered accounting firm audits the accounts and operations every 12 months, with results published publicly on the transparency page.",
+        "c3Chip": "Published report",
+        "c4Title": "Open source",
+        "c4Desc": "All code is on GitHub under the MIT license. Any security expert can review encryption, storage and data handling for themselves.",
+        "c4Chip": "MIT license"
+      },
+      "cta": {
+        "eyebrow": "Now that you understand how we work",
+        "title": "Your first step",
+        "titleSoft": "is two minutes away.",
+        "lede": "Browse the profiles of available orphans now, or contact us if you represent an organization that wants to join as a partner.",
+        "browse": "Browse available orphans",
+        "partner": "I'm a partner organization — contact us"
+      }
+    },
+    "transparency": {
+      "meta": {
+        "title": "Financial transparency — our numbers, unfiltered",
+        "description": "Rufaqaa's live numbers: orphans sponsored, donors, countries served, and how every dollar is allocated — plus our commitment to independent annual audits and open code."
+      },
+      "hero": {
+        "eyebrow": "Financial transparency",
+        "title": "Our numbers,",
+        "titleAccent": "unfiltered",
+        "subtitle": "A page not updated from a quarterly slide deck — but live from the database. Every number you see here is auditable.",
+        "live": "Live numbers from the production database"
+      },
+      "kpi": {
+        "heading": "Live platform-wide numbers",
+        "sponsored": "Orphans sponsored",
+        "available": "Awaiting sponsorship",
+        "donors": "Donors",
+        "countries": "Countries served",
+        "donationsMonth": "Total donations this month",
+        "donationsMonthMeta": "A public revenue total is not exposed yet",
+        "sponsoredMeta": "Currently active sponsorships",
+        "avgDuration": "Average sponsorship duration",
+        "avgDurationMeta": "A duration aggregate is not exposed yet",
+        "transferRatio": "Share transferred to orphans",
+        "transferRatioMeta": "After payment-gateway and operating costs"
+      },
+      "alloc": {
+        "title": "How every dollar is split",
+        "period": "Current policy",
+        "centerLabel": "to orphans directly",
+        "toOrphans": "To orphans directly",
+        "operations": "Platform operations",
+        "reserves": "Emergency reserves",
+        "footer": "There are no salaries for Rufaqaa's management — the whole team is volunteers. Operations cover servers, payment-gateway fees, and the annual auditor's review."
+      },
+      "feed": {
+        "title": "Latest transfers",
+        "live": "Live updating",
+        "empty": "The live transfers feed is being prepared — it will appear here (anonymized, without names) as soon as a dedicated public endpoint is available.",
+        "todo": "TODO: wire to a public 'recent transfers' endpoint (not exposed by /public/stats today).",
+        "footer": "This list shows the most recent transfers (anonymized, without names) once a public endpoint is available."
+      },
+      "reports": {
+        "eyebrow": "Annual reports",
+        "title": "Audited accounts,",
+        "titleAccent": "published openly",
+        "lede": "We commit to publishing an independently audited annual financial report — with full financial statements and the auditor's opinion. Reports will appear here as soon as they are issued.",
+        "pending": "In preparation",
+        "pendingNote": "The audited report will be published here",
+        "figureDonations": "Total donations",
+        "figureSponsored": "Orphans sponsored",
+        "soon": "Coming soon"
+      },
+      "commitments": {
+        "eyebrow": "Transparency commitments",
+        "title": "How we keep the numbers",
+        "titleAccent": "honest",
+        "c1Title": "Independent annual audit",
+        "c1Desc": "An independent chartered accounting firm audits the accounts every 12 months, with results published openly on this page.",
+        "c2Title": "Fully open code",
+        "c2Desc": "Every line driving the platform is published on GitHub under the MIT license — see for yourself how numbers are computed and data is stored.",
+        "c3Title": "Every transaction traceable",
+        "c3Desc": "Each transfer carries a serial number, from the sponsor's card to the hand that delivers it to the orphan — no black boxes."
+      },
+      "os": {
+        "eyebrow": "Open source",
+        "title": "The code itself is on GitHub — review it yourself.",
+        "subtitle": "Rufaqaa's transparency doesn't stop at the numbers. The code driving the platform is published under the MIT license, open to any developer or security expert.",
+        "repoButton": "samehshakeraly/rufaqaa-app",
+        "contributing": "Contributing guide",
+        "stars": "Stars",
+        "forks": "Forks",
+        "contributors": "Contributors",
+        "commits": "Commits"
+      },
+      "auditor": {
+        "eyebrow": "Independent auditor",
+        "title": "Who",
+        "titleAccent": "audits our accounts?",
+        "label": "Audit firm",
+        "namePending": "To be announced",
+        "cert": "We commit to appointing a licensed, independent chartered accounting firm to audit Rufaqaa's accounts annually. The auditor's identity and opinion will be published here once the first audit is issued.",
+        "tagIndependent": "Financially and administratively independent",
+        "tagStandards": "IFRS standards",
+        "tagAnnual": "Annual review",
+        "cta": "View audit certificate"
+      }
+    },
+    "partners": {
+      "meta": {
+        "title": "Partners — verified charities around the world",
+        "description": "Rufaqaa is a bridge between sponsors and licensed charities operating in the orphan's country. Learn the partnership criteria and how to join as a verified partner organization."
+      },
+      "hero": {
+        "eyebrow": "Partner organizations",
+        "title": "Our partners",
+        "titleAccent": "around the world",
+        "subtitle": "Rufaqaa doesn't collect sponsorships on anyone's behalf — we are a bridge between sponsors and licensed charities operating in the orphan's country.",
+        "statPartners": "Partner organizations",
+        "statCountries": "Countries",
+        "statOrphans": "Orphans sponsored",
+        "statVerified": "Verified"
+      },
+      "list": {
+        "eyebrow": "Verified partners",
+        "title": "Organizations",
+        "titleAccent": "serving orphans",
+        "lede": "Every partner passes an independent audit + document review + field assessment. We only recommend those we trust.",
+        "placeholderNote": "The partner names below are placeholders — real names are shown only after each organization's consent is confirmed.",
+        "placeholderName": "Partner",
+        "verified": "Verified",
+        "orphansLabel": "Orphans sponsored",
+        "sinceLabel": "Partner since",
+        "licensed": "Locally licensed",
+        "visit": "Visit website",
+        "country": "Partner country",
+        "viewAll": "View all organizations"
+      },
+      "join": {
+        "eyebrow": "For organizations wishing to join",
+        "title": "How do you join",
+        "titleAccent": "as a partner?",
+        "lede": "A rigorous but clear process. Our goal is to choose partners worthy of the trust of orphan sponsorship.",
+        "stepsTitle": "Five steps to partnership",
+        "s1Title": "Get in touch via the form",
+        "s1Desc": "An initial introduction form with basic information about the organization.",
+        "s1Dur": "10 minutes",
+        "s2Title": "Submit license and documents",
+        "s2Desc": "Legal license + budgets for the last three years + activity reports.",
+        "s2Dur": "2–3 days",
+        "s3Title": "Rufaqaa review + local audit",
+        "s3Desc": "We work with an independent auditor in your country to verify on the ground.",
+        "s3Dur": "7–14 days",
+        "s4Title": "Sign the partnership agreement",
+        "s4Desc": "An approved agreement with clear criteria — no fees.",
+        "s4Dur": "one day",
+        "s5Title": "Training and launch",
+        "s5Desc": "Training sessions for your team on the platform + creating staff accounts.",
+        "s5Dur": "3 days",
+        "startButton": "Start the join form",
+        "benefitsTitle": "What do you get?",
+        "b1Title": "A free, full-featured platform",
+        "b1Desc": "Orphan management, monthly reports, staff accounts, unified bank transfers — with no subscription fees or annual contracts.",
+        "b2Title": "Ongoing technical support",
+        "b2Desc": "A dedicated support channel via WhatsApp and Email, plus monthly follow-up with the Rufaqaa team.",
+        "b3Title": "A global network of sponsors",
+        "b3Desc": "Direct access to sponsors from several countries, with organized marketing campaigns across channels.",
+        "b4Title": "Advanced reports and analytics",
+        "b4Desc": "Dashboards, sponsorship-growth analytics, cancellation rates, orphan well-being — with real data insight."
+      },
+      "cta": {
+        "eyebrow": "Become a partner",
+        "title": "Your charity can",
+        "titleSoft": "change an orphan's life.",
+        "lede": "If you represent a licensed charity working with orphans, we welcome reviewing your request. The contact form takes no more than 10 minutes.",
+        "join": "Join form",
+        "question": "I have a question — contact us"
+      },
+      "map": {
+        "title": "Geographic distribution (schematic)",
+        "legendHigh": "More than 4 organizations",
+        "legendMid": "2–4 organizations",
+        "legendLow": "One organization",
+        "c1": "Region 1",
+        "c2": "Region 2",
+        "c3": "Region 3",
+        "c4": "Region 4",
+        "c5": "Region 5",
+        "c6": "Region 6",
+        "c7": "Region 7",
+        "c8": "Region 8"
+      }
+    },
+    "contact": {
+      "meta": {
+        "title": "Contact us & FAQ",
+        "description": "Ways to reach Rufaqaa, a direct message form, and answers to the most common questions about sponsorship, the platform, transparency, and technical matters."
+      },
+      "hero": {
+        "eyebrow": "Contact & FAQ",
+        "title": "We are",
+        "titleAccent": "close to you",
+        "subtitle": "A question about sponsorship? A technical doubt? A suggestion? We'd love to hear from you. Choose the best channel, or search the FAQ first."
+      },
+      "channels": {
+        "heading": "Available contact channels",
+        "whatsappLabel": "Fastest",
+        "whatsappName": "WhatsApp",
+        "whatsappValue": "+965 9000 0000",
+        "whatsappMeta": "Reply within an hour on business days",
+        "emailLabel": "For official inquiries",
+        "emailName": "Email",
+        "emailValue": "hello@rufaqaa.app",
+        "emailMeta": "Reply within 24 hours",
+        "githubLabel": "For developers & technical users",
+        "githubName": "GitHub Issues",
+        "githubValue": "samehshakeraly/rufaqaa-app",
+        "githubMeta": "For technical reports and suggestions",
+        "telegramLabel": "Rufaqaa community",
+        "telegramName": "Telegram channel",
+        "telegramValue": "@rufaqaa",
+        "telegramMeta": "Announcements and updates only",
+        "xLabel": "Social network",
+        "xName": "X / Twitter",
+        "xValue": "@rufaqaa_app",
+        "xMeta": "For general questions"
+      },
+      "form": {
+        "title": "Send us a direct message",
+        "subtitle": "You'll get a reply within 24 hours on business days. Messages about an existing sponsorship are handled first.",
+        "name": "Full name",
+        "namePlaceholder": "e.g. Ahmad",
+        "email": "Email",
+        "emailPlaceholder": "you@example.com",
+        "phone": "Phone number",
+        "phoneOptional": "(optional)",
+        "subject": "Subject",
+        "subjectSponsorship": "Sponsorship question",
+        "subjectPayment": "Payment issue",
+        "subjectTechnical": "Technical issue",
+        "subjectPartnership": "Partnership request (organization)",
+        "subjectContribute": "Contribute to the project",
+        "subjectMedia": "Media · press inquiry",
+        "subjectOther": "Other",
+        "message": "Your message",
+        "messagePlaceholder": "Explain your question in detail. The clearer your message, the more precise our reply.",
+        "messageHelp": "Up to 2000 characters · don't include sensitive info like card numbers.",
+        "submit": "Send message",
+        "privacy": "Your data is safe · we won't share it with any third party",
+        "required": "This field is required",
+        "nameMin": "Enter your full name (at least 2 characters)",
+        "emailInvalid": "Enter a valid email address",
+        "messageMin": "Write your message (at least 10 characters)",
+        "messageMax": "Message too long (2000 characters max)",
+        "success": "We'll be in touch soon"
+      },
+      "info": {
+        "hoursTitle": "Working hours",
+        "hoursDays1": "Saturday – Wednesday",
+        "hoursTime1": "9:00 AM — 5:00 PM",
+        "hoursDays2": "Thursday",
+        "hoursTime2": "9:00 AM — 1:00 PM",
+        "hoursDays3": "Friday · public holidays",
+        "hoursTime3": "Closed",
+        "hoursTz": "Kuwait time, GMT+3",
+        "addressTitle": "Our mailing address",
+        "addressBody": "Rufaqaa office · for official correspondence only · please don't visit without a prior appointment.",
+        "urgentTitle": "For urgent cases",
+        "urgentBody": "For payment problems or a stuck account: WhatsApp +965 9000 0001 — a dedicated line for financial emergencies, 7 days a week."
+      },
+      "faq": {
+        "eyebrow": "Frequently asked questions",
+        "title": "Answers",
+        "titleAccent": "before you ask",
+        "lede": "We've gathered the most common questions here — organized by category. Browse by topic.",
+        "g1Title": "About sponsorship",
+        "g1q1": "What's the minimum sponsorship?",
+        "g1a1": "The minimum varies by country based on the orphan's actual need. Generally, the average ranges between 15 and 50 Kuwaiti dinars per month (or the equivalent in your currency). The actual amount appears on each orphan's profile before sponsorship.",
+        "g1q2": "Can I cancel the sponsorship anytime?",
+        "g1a2": "Yes, you can cancel from your account anytime with no obligation or fees. We just let you know that your orphan will return to the list, and that if the reason is temporary financial difficulty you can pause for a month instead of cancelling permanently.",
+        "g1q3": "When does the sponsorship reach the orphan?",
+        "g1a3": "From your card to Rufaqaa: instantly via MyFatoorah. From Rufaqaa to the partner: 24–48 hours as a bank transfer. From the partner to the guardian: within 5–10 days of the next month's start. The whole process is at most two weeks from the payment date.",
+        "g1q4": "Do you provide a zakat receipt?",
+        "g1a4": "Yes, we provide an annual receipt you can download from your account — with the total of your yearly donations and transfer numbers. Tax-exemption rules vary by country, so consult the relevant specialists in your country.",
+        "g2Title": "About the platform",
+        "g2q1": "Is the platform secure? How do you protect my data?",
+        "g2a1": "Yes — we use TLS 1.3 encryption for all transactions, and encryption for data in the database. We never store card numbers — they go directly to MyFatoorah, which holds PCI-DSS certification. The code is open on GitHub for anyone to verify.",
+        "g2q2": "What are MyFatoorah's fees? Are they deducted from the sponsorship?",
+        "g2a2": "MyFatoorah charges between 2.5% and 3% depending on the payment method. These fees are covered by the operations share (3%) — your sponsorship reaches the orphan in full.",
+        "g2q3": "How do I know my sponsorship actually reached the orphan?",
+        "g2a3": "You receive a PDF receipt instantly after payment, then notifications at each stage: the amount reaching the partner, delivery to the guardian with a signed receipt, and the orphan's report at month's end. Every transaction has a traceable serial number.",
+        "g2q4": "Can I contact the orphan or guardian directly?",
+        "g2a4": "Yes, but through the platform only — no direct contact. Every message passes human review before delivery to protect both sides. The guardian doesn't get your contact data, nor you theirs.",
+        "g3Title": "About transparency",
+        "g3q1": "Who audits Rufaqaa's accounts?",
+        "g3a1": "A licensed chartered accounting firm, financially and administratively independent from Rufaqaa's management, audits the accounts annually, with audit results published on the transparency page.",
+        "g3q2": "Where do I see the full financial reports?",
+        "g3a2": "On the transparency page — you'll find audited annual reports as soon as they're issued, plus live numbers on sponsored orphans and countries served.",
+        "g3q3": "Is the project for-profit? How much does the Rufaqaa team earn?",
+        "g3a3": "The project is not for-profit — it's a digital endowment. No one on the team takes a salary. The 3% operations share is spent only on servers, payment-gateway fees, and the auditor's fees.",
+        "g4Title": "Technical questions",
+        "g4q1": "Do I need an account to browse orphans?",
+        "g4a1": "No — browsing orphans is available without an account. You only need an account when starting a sponsorship, to link the payment to your account and receive reports.",
+        "g4q2": "Do you have a mobile app?",
+        "g4a2": "The platform is optimized for mobile via the browser. iOS and Android apps are on the roadmap.",
+        "g4q3": "How do I contribute to the code or report a bug?",
+        "g4a3": "We welcome any contribution! Start from the repository on GitHub and read the CONTRIBUTING file. For bugs, open a new Issue; for features, start a Discussion.",
+        "catAll": "All",
+        "noResults": "No questions match your search.",
+        "searchPlaceholder": "Search the FAQ..."
+      },
+      "note": {
+        "title": "Didn't find your answer?",
+        "body": "A short WhatsApp message is sometimes faster than a long search. Write to us, and we'll reply as soon as we can, God willing.",
+        "whatsapp": "Message us on WhatsApp"
+      }
     }
   },
   "landing": {
@@ -31,19 +616,147 @@
       "title": "Sponsor an orphan, change a life.",
       "subtitle": "Every donation goes directly to the children — fully transparent, fully tracked.",
       "browse": "Browse orphans",
-      "signup": "Create an account"
+      "signup": "Create an account",
+      "eyebrow": "Open source · Fully transparent · MIT licensed",
+      "titleAccent": "the Prophet's companion",
+      "trustPayments": "Encrypted payments via MyFatoorah",
+      "trustAudit": "Independent annual financial audit",
+      "trustCountries": "{{count}} countries",
+      "chip1Title": "New sponsorship just now",
+      "chip1Sub": "A sponsor → an orphan abroad",
+      "chip2Title": "“May God reward you”",
+      "chip2Sub": "A message from a guardian"
     },
     "stats": {
       "available": "Waiting for sponsorship",
       "sponsored": "Currently sponsored",
       "donors": "Donors who care",
-      "countries": "Countries served"
+      "countries": "Countries served",
+      "srTitle": "Rufaqaa's live numbers",
+      "pulse": "Numbers updated live from Rufaqaa's database",
+      "sponsoredLabel": "Orphans sponsored",
+      "sponsoredMeta": "across {{count}} verified partner organizations",
+      "donorsLabel": "Active sponsors",
+      "donorsMeta": "{{count}} joined this month",
+      "countriesLabel": "Countries worldwide",
+      "countriesMeta": "From Kuwait and Palestine to Sudan"
     },
     "howItWorks": {
-      "title": "How it works",
-      "step1": "Browse the orphans waiting for sponsorship.",
-      "step2": "Create a free donor account in under a minute.",
-      "step3": "Pay securely through MyFatoorah — your card stays with them, never us."
+      "title": "Three simple steps",
+      "step1": {
+        "title": "Browse",
+        "desc": "Explore the orphans available for sponsorship, read their profiles, and choose whose story touches your heart — no pressure, no account required first."
+      },
+      "step2": {
+        "title": "Pay",
+        "desc": "Pay your monthly sponsorship securely through MyFatoorah — card, Apple Pay, or bank transfer. No mandatory subscription and no hidden fees."
+      },
+      "step3": {
+        "title": "Follow along",
+        "desc": "Receive verified monthly reports, approved photos, and messages from the guardian — and connect with your orphan if you wish, overseen by the platform team."
+      },
+      "eyebrow": "How it works",
+      "titleAccent": "that connect you to an orphan",
+      "lede": "The platform is deliberately simple — because sponsorship is a decision of the heart, not a matter of complexity. Three steps stand between you and becoming an orphan's companion."
+    },
+    "meta": {
+      "title": "Sponsor an orphan, change a life",
+      "description": "A global, open-source digital-endowment platform connecting sponsors with orphans everywhere — fully transparent, with dignity preserved."
+    },
+    "partners": {
+      "eyebrow": "Partner organizations",
+      "title": "Verified charities",
+      "titleAccent": "that receive the sponsorships",
+      "lede": "Rufaqaa does not collect money on anyone's behalf — transfers go directly to licensed charities in the orphan's country, after full verification.",
+      "orphanCount": "{{count}} orphans",
+      "footerCount": "A total of {{orgs}} verified partner organizations across {{countries}} countries · ",
+      "footerLink": "Meet all our partners",
+      "p1": {
+        "mark": "P1",
+        "name": "Partner organization 1",
+        "country": "Kuwait"
+      },
+      "p2": {
+        "mark": "P2",
+        "name": "Partner organization 2",
+        "country": "Egypt"
+      },
+      "p3": {
+        "mark": "P3",
+        "name": "Partner organization 3",
+        "country": "Palestine"
+      },
+      "p4": {
+        "mark": "P4",
+        "name": "Partner organization 4",
+        "country": "Sudan"
+      }
+    },
+    "testimonials": {
+      "sampleBadge": "Illustrative samples — to be replaced with real testimonials later",
+      "title": "From the hearts of sponsors",
+      "titleAccent": "and families",
+      "t1": {
+        "text": "Every time a new monthly report about Ahmad arrives, I feel I have been granted a second son. I see that God has given him to me in the face of a child I share no blood with — only the mercy of God.",
+        "initials": "A.M",
+        "name": "Abu Muhammad",
+        "meta": "Sponsor from Kuwait · 3 years on the platform"
+      },
+      "t2": {
+        "text": "My daughter Layla always asks, “When will my uncle write me a letter?” This sponsorship is not just money — it is a hand extended with dignity, making us feel we are not alone in this life.",
+        "initials": "U.L",
+        "name": "Umm Layla",
+        "meta": "Mother of a sponsored orphan · Jordan — Zarqa"
+      },
+      "t3": {
+        "text": "What I loved is the transparency. I know where every riyal goes, I see the transfers in real time, and I read the approved reports. This is what I had been looking for in charity work for years.",
+        "initials": "A.A",
+        "name": "Abu Abdulaziz",
+        "meta": "Sponsor from Saudi Arabia · 14 months"
+      }
+    },
+    "transparency": {
+      "eyebrow": "Transparency first",
+      "title": "Transparency without flattery,",
+      "titleAccent": "and audited from outside",
+      "lede": "Rufaqaa is a digital endowment, not a for-profit organization. Every riyal that enters is recorded, audited, and reaches an orphan. The code is open, the accounts are open, and the decisions are written down.",
+      "t1": {
+        "title": "Full financial transparency — 100%",
+        "desc": "Every donation carries a traceable serial number — from the sponsor's card to the organization that delivers it to the orphan."
+      },
+      "t2": {
+        "title": "Fully open source — MIT licensed",
+        "desc": "Any organization in the world can copy, deploy, and modify the code for free. No lock-in and no monopoly."
+      },
+      "t3": {
+        "title": "Independent annual audit",
+        "desc": "Rufaqaa's accounts are audited every year by an external certified accounting firm, and the results are published openly."
+      }
+    },
+    "allocation": {
+      "title": "How every 100 riyals is allocated",
+      "ariaLabel": "Funds allocation: 95% to orphans, 3% operations, 2% reserve",
+      "period": "Fiscal year 2025",
+      "toOrphans": "Directly to orphans",
+      "operations": "Platform operations",
+      "reserve": "Emergency reserve"
+    },
+    "hadith": {
+      "srTitle": "A hadith on the virtue of sponsoring an orphan",
+      "text": "I and the one who sponsors an orphan will be in Paradise like this",
+      "source": "Sahih al-Bukhari",
+      "narrator": "Narrated by Sahl ibn Sa'd (may God be pleased with him)"
+    },
+    "finalCta": {
+      "eyebrow": "Begin your journey with Rufaqaa",
+      "title": "Start your sponsorship journey today —",
+      "titleSoft": "one orphan is waiting for you.",
+      "lede": "The first step takes only minutes. Browse among {{count}} available orphans, choose the one who touches your heart, and be their companion in this life before the next.",
+      "browse": "Browse available orphans",
+      "partner": "I'm a partner organization — how do we join?",
+      "meta1": "No subscription fees",
+      "meta2": "Cancel anytime",
+      "meta3": "Annual zakat receipt"
     }
   },
   "signup": {
@@ -82,7 +795,9 @@
     "dashboard": "Dashboard",
     "sponsorships": "My sponsorships",
     "browseMore": "Browse more",
-    "profile": "Profile"
+    "profile": "Profile",
+    "myOrphans": "My orphans",
+    "messages": "Messages"
   },
   "donor": {
     "dashboard": {
@@ -109,6 +824,84 @@
       "totalPaid": "Total paid",
       "status": "Status",
       "pay": "Pay"
+    },
+    "wizard": {
+      "title": "New sponsorship",
+      "intro": "Complete the steps to start sponsoring this child.",
+      "stepOrphan": "Orphan",
+      "stepAmount": "Amount",
+      "stepReview": "Review",
+      "orphanSummaryTitle": "Orphan summary",
+      "orphanSummaryHint": "Make sure you're sponsoring the right child before continuing.",
+      "amountTitle": "Sponsorship amount",
+      "amountHint": "Choose the amount, currency and payment frequency.",
+      "amount": "Monthly amount",
+      "currency": "Currency",
+      "frequency": "Payment frequency",
+      "reviewTitle": "Review & confirm",
+      "reviewHint": "Review the details before confirming the sponsorship.",
+      "orphanLabel": "Child",
+      "confirm": "Confirm sponsorship",
+      "creating": "Creating…",
+      "success": "Sponsorship created successfully",
+      "duplicate": "You already sponsor this child.",
+      "error": "Could not create the sponsorship",
+      "back": "Back",
+      "next": "Next",
+      "amountInvalid": "Enter a valid amount greater than zero.",
+      "currencyInvalid": "Enter a 3-letter currency code.",
+      "payNote": "You'll be able to complete payment after creating the sponsorship."
+    },
+    "orphans": {
+      "title": "My orphans",
+      "subtitle": "The children you currently sponsor.",
+      "empty": "You haven't started a sponsorship yet. Browse available orphans",
+      "browse": "Browse available orphans",
+      "viewDetail": "View details",
+      "monthlyAmount": "Monthly",
+      "totalPaid": "Total paid"
+    },
+    "orphanDetail": {
+      "back": "Back to my orphans",
+      "info": "Basic information",
+      "age": "Age",
+      "ageValue": "{{age}} years",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "country": "Country",
+      "sponsorshipStatus": "Sponsorship status",
+      "monthlyAmount": "Monthly amount",
+      "nextPayment": "Next payment date",
+      "totalPaid": "Total paid",
+      "notScheduled": "Not scheduled",
+      "reports": "Published reports",
+      "noReports": "No published reports yet.",
+      "notFound": "We couldn't find a sponsorship for this child among yours."
+    },
+    "messages": {
+      "title": "Messages",
+      "subtitle": "Your conversations about the children you sponsor.",
+      "empty": "No messages yet.",
+      "cta": "Go to my orphans",
+      "statusPending": "Under review",
+      "statusRejected": "Rejected",
+      "pendingNote": "Visible to the other party once a moderator approves.",
+      "rejectedNote": "This message was rejected by a moderator.",
+      "you": "You",
+      "about": "About",
+      "sentAt": "Sent",
+      "markRead": "Mark as read",
+      "composeNote": "Sending new messages will be available soon.",
+      "roles": {
+        "donor": "Donor",
+        "guardian": "Guardian",
+        "partner_manager": "Partner manager",
+        "partner_staff": "Partner staff",
+        "org_admin": "Organization admin",
+        "super_admin": "Super admin",
+        "unknown": "Unknown"
+      }
     }
   },
   "checkout": {
@@ -142,7 +935,11 @@
     "approvals": "Approvals",
     "mediaReview": "Media review",
     "partnerStaff": "Partner staff",
-    "registerOrphan": "Register orphan"
+    "registerOrphan": "Register orphan",
+    "finance": "Finance",
+    "financeOverdue": "Overdue",
+    "financeReports": "Financial Reports",
+    "businessRules": "Business Rules"
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -167,7 +964,73 @@
     "newPassword": "New password",
     "confirmPassword": "Confirm new password",
     "passwordMismatch": "Passwords do not match",
-    "backToLogin": "Back to sign in"
+    "backToLogin": "Back to sign in",
+    "login": {
+      "brandName": "Rufaqaa",
+      "brandTagline": "A global orphan-sponsorship platform",
+      "rolesLabel": "Account type",
+      "roles": {
+        "guardian": "Guardian",
+        "donor": "Sponsor",
+        "partner": "Partner org",
+        "admin": "Admin"
+      },
+      "greeting": {
+        "guardian": {
+          "title": "Welcome, guardian",
+          "sub": "Sign in to follow your orphans and file their reports"
+        },
+        "donor": {
+          "title": "Welcome back",
+          "sub": "Sign in to track your sponsorships and orphan reports"
+        },
+        "partner": {
+          "title": "Welcome, partner",
+          "sub": "Sign in to manage orphans and follow up with them"
+        },
+        "admin": {
+          "title": "Welcome, admin",
+          "sub": "Platform administration and oversight dashboard"
+        }
+      },
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Show/hide password",
+      "remember": "Remember me",
+      "loginButton": "Sign in",
+      "or": "or",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithApple": "Continue with Apple",
+      "noAccount": "Don't have an account?",
+      "signupCta": "Register as a new sponsor",
+      "help": {
+        "title": "Haven't received your credentials yet?",
+        "before": "Reach out to the organization responsible for sponsoring your orphans, or",
+        "contact": "contact us",
+        "after": "and we'll help."
+      },
+      "illustration": {
+        "eyebrowBefore": "More than",
+        "eyebrowAfter": "orphans under Rufaqaa's care now",
+        "eyebrowCount": "12,000",
+        "headline": "Standing by an orphan writes light into your record.",
+        "verse": "Whoever sponsors an orphan, his own or another's, he and I will be like these two in Paradise",
+        "verseAttr": "— Sahih Muslim",
+        "stats": {
+          "orphans": "orphans sponsored",
+          "donors": "active sponsors",
+          "orgs": "partner orgs",
+          "countries": "countries"
+        },
+        "partnersLabel": "Partner organizations",
+        "partners": {
+          "fajr": "Al-Fajr Society",
+          "amal": "Al-Amal Society",
+          "karam": "Al-Karam Society",
+          "ihsan": "Ihsan"
+        }
+      }
+    }
   },
   "common": {
     "loading": "Loading...",
@@ -179,7 +1042,8 @@
     "empty": "No data yet",
     "loadError": "Could not load data",
     "createError": "Could not save",
-    "required": "This field is required"
+    "required": "This field is required",
+    "comingSoon": "Coming soon"
   },
   "pagination": {
     "page": "Page {{page}} of {{total}}",
@@ -187,7 +1051,8 @@
     "next": "Next"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Executive dashboard",
+    "subtitle": "A complete view of your organization's activity this month",
     "accountInfo": "Account info",
     "name": "Name",
     "email": "Email",
@@ -202,7 +1067,105 @@
     "payments30d": "Payments (30d)",
     "paymentsChart": "Monthly payments (last 12 months)",
     "sponsorshipsByStatus": "Sponsorships by status",
-    "donationsByPartner": "Donations by partner (last {{days}} days)"
+    "donationsByPartner": "Donations by partner (last {{days}} days)",
+    "greeting": "Welcome, {{name}}",
+    "greetingSubtitle": "A complete view of your organization's activity. These figures are live from the database.",
+    "lastUpdated": "Last updated: {{time}}",
+    "comingSoonTitle": "Data coming soon",
+    "comingSoonBody": "No backend data source is wired for this section yet.",
+    "kpi": {
+      "revenue": "Monthly revenue",
+      "activeSponsorships": "Active sponsorships",
+      "activeDonors": "Active donors",
+      "registeredOrphans": "Registered orphans",
+      "zakatRate": "Zakat share of revenue",
+      "availableForSponsorship": "available",
+      "underReview": "under review"
+    },
+    "revenue": {
+      "title": "Monthly revenue",
+      "legendActual": "Total revenue",
+      "legendZakat": "of which Zakat",
+      "legendTarget": "Monthly target",
+      "yearTotal": "Last 12 months total",
+      "monthlyAvg": "Monthly average",
+      "fromRamadan": "Ramadan alone",
+      "empty": "No payments recorded yet"
+    },
+    "alerts": {
+      "title": "Alerts that need your attention",
+      "count": "{{count}} alerts",
+      "overdueTitle": "{{count}} overdue sponsorships",
+      "overdueMeta": "Need follow-up with donors",
+      "review": "Review",
+      "empty": "No critical alerts right now",
+      "criticalOnly": "Critical alerts only",
+      "viewAll": "View all"
+    },
+    "movement": {
+      "title": "Sponsorship movement — last 12 months",
+      "new": "New",
+      "renewals": "Renewals",
+      "cancellations": "Cancellations"
+    },
+    "channels": {
+      "title": "Top 5 marketing channels",
+      "meta": "By sponsorships this month",
+      "unit": "sponsorships",
+      "manage": "Manage channels"
+    },
+    "topDonors": {
+      "title": "Top 5 donors — this month",
+      "meta": "Aliases shown for anyone who asked to stay anonymous",
+      "colDonor": "Donor",
+      "colOrphans": "Orphans",
+      "colTotal": "Total",
+      "colType": "Type",
+      "viewAll": "View all"
+    },
+    "geo": {
+      "title": "Orphans by country",
+      "meta": "Distribution of orphans across countries"
+    }
+  },
+  "psDash": {
+    "title": "Staff dashboard",
+    "greeting": "Hello {{name}}, blessed day",
+    "greetingSubtitle": "You have {{reports}} reports awaiting review and {{pending}} cases pending approval.",
+    "registerCta": "New orphan",
+    "comingSoon": "Coming soon",
+    "comingSoonBody": "This view will light up once its data source is connected.",
+    "kpi": {
+      "activeOrphans": "Active orphans",
+      "activeOrphansUnit": "orphans",
+      "activeOrphansFoot": "Across all your cases",
+      "pendingApproval": "Pending approval",
+      "pendingApprovalUnit": "cases",
+      "pendingApprovalFoot": "Awaiting a manager's decision",
+      "reportsReceived": "Reports received",
+      "reportsReceivedUnit": "reports",
+      "reportsReceivedFoot": "In your review queue",
+      "photosReview": "Photos to review",
+      "photosReviewUnit": "photos"
+    },
+    "tasks": {
+      "title": "Your tasks today"
+    },
+    "newOrphans": {
+      "title": "Recently registered",
+      "viewAll": "View all",
+      "empty": "No orphans registered yet",
+      "yearsOld_one": "{{count}} yr",
+      "yearsOld_other": "{{count}} yrs"
+    },
+    "performance": {
+      "title": "Your performance this month"
+    },
+    "reportsQueue": {
+      "title": "Reports to review",
+      "inbox": "Reports inbox",
+      "empty": "Nothing in the review queue"
+    }
   },
   "orphans": {
     "title": "Orphans",
@@ -217,11 +1180,17 @@
     "fatherName": "Father's name",
     "dateOfBirth": "Date of birth",
     "gender": "Gender",
+    "age": "Age",
     "male": "Male",
     "female": "Female",
     "nationality": "Nationality",
     "partner": "Partner organization",
     "status": "Status",
+    "sponsorship": "Sponsorship",
+    "sponsored": "Sponsored",
+    "notSponsored": "Not sponsored",
+    "view": "View",
+    "actionsCol": "Actions",
     "selectPartner": "Choose a partner",
     "balance": "Current balance",
     "timeline": "Timeline",
@@ -233,6 +1202,9 @@
     "bulkArchivePartial": "Archived {{ok}}; {{fail}} failed.",
     "subtitle": {
       "approvals": "Cases awaiting your approval"
+    },
+    "detail": {
+      "approverHint": "Review the case details, documents, and photos before approving, rejecting, or releasing this case."
     },
     "actions": {
       "approve": "Approve",
@@ -249,9 +1221,12 @@
     },
     "register": {
       "title": "Register a new orphan",
+      "subtitle": "Add a new case to your organization's register. The case is submitted for a manager's approval.",
+      "sectionBasic": "Basic details",
+      "sectionBasicDesc": "Enter the orphan's core identity details. You can add documents and photos from the case page after saving.",
       "duplicate": "Possible duplicate — this case looks similar to an existing record",
       "viewExisting": "View existing record",
-      "back": "← Back to orphans"
+      "back": "Back to orphans"
     },
     "photo": {
       "title": "Photos",
@@ -342,7 +1317,18 @@
       "chargeback": "Chargeback",
       "disputed": "Disputed",
       "on_hold": "On hold"
-    }
+    },
+    "subtitle": "A complete record of every payment received — linked to sponsorship and receipt",
+    "searchPlaceholder": "Search by code, gateway or reference…",
+    "addManual": "Add manual payment",
+    "tabAll": "All",
+    "statRevenue": "Revenue (30d)",
+    "statCount": "Transactions (30d)",
+    "statPending": "Pending",
+    "statRefunded": "Refunded",
+    "showing": "Showing {{from}}–{{to}} of {{total}}",
+    "noResults": "No payments match this filter.",
+    "donor": "Donor"
   },
   "reports": {
     "title": "Reports",
@@ -365,7 +1351,8 @@
       "quarterly": "Quarterly",
       "annual": "Annual",
       "special": "Special",
-      "incident": "Incident"
+      "incident": "Incident",
+      "financial": "Financial"
     },
     "statuses": {
       "draft": "Draft",
@@ -386,10 +1373,166 @@
       "rejectSubmit": "Reject report",
       "rejected": "Report rejected",
       "success": "Report updated"
+    },
+    "centerTitle": "Reports Center",
+    "reviewTitle": "Reports review",
+    "reviewSubtitle": "Review guardian reports for your orphans and move them through the approval workflow.",
+    "reviewTabs": {
+      "pending": "Under review",
+      "rejected": "Rejected",
+      "approved": "Approved"
+    },
+    "reviewSearch": "Search by code or name…",
+    "reviewNotePlaceholder": "Internal note (not visible to the donor or family)…",
+    "reviewReadOnly": "Submitted — awaiting a manager's approval.",
+    "reviewEmptySelection": "Select a report from the list to review it.",
+    "emptyDesc": "No reports found for the selected filter.",
+    "filterAll": "All",
+    "filterByType": "Filter by report type",
+    "builderAriaLabel": "Report Builder",
+    "builderTitle": "Drag-and-Drop Report Builder",
+    "builderDesc": "Build a custom report by dragging fields and choosing your period, channels, and partners. See a live preview instantly, then export, save, or schedule for automatic delivery.",
+    "myTemplates": "My Templates",
+    "startReport": "Start a Report",
+    "seasonTemplates": "Seasonal Reports",
+    "seasonTemplatesDesc": "Auto-renewed according to the Hijri calendar",
+    "readyTemplates": "Ready Reports",
+    "readyTemplatesDesc": "Ready for immediate export — customisable before exporting",
+    "allReports": "All Reports",
+    "scheduledReports": "Scheduled Reports",
+    "addSchedule": "Add Schedule",
+    "recentExports": "Recent Exports",
+    "colReport": "Report",
+    "colCadence": "Cadence",
+    "colRecipients": "Recipients",
+    "colNextRun": "Next Run",
+    "colLastRun": "Last Run",
+    "exportPdf": "Export PDF",
+    "exportExcel": "Export Excel",
+    "download": "Download",
+    "shareFile": "Share",
+    "fileSize": "File size",
+    "cadence": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annual": "Annual",
+      "weekly": "Weekly"
+    },
+    "tmpl": {
+      "fields": "Report fields",
+      "thisMonth": "This Month",
+      "lastRun": "Last run {{days}} days ago",
+      "ramadan": {
+        "name": "Annual Ramadan Report",
+        "desc": "Total new sponsors, Zakat, largest donations, highest-impact channels during Ramadan 1446.",
+        "f1": "New Sponsors",
+        "f2": "Zakat",
+        "f3": "Channels",
+        "f4": "Daily",
+        "period": "Ramadan"
+      },
+      "zakat": {
+        "name": "Annual Zakat Report",
+        "desc": "Detailed aggregation of Zakat received and how it was disbursed for orphans, with print-ready Sharia certificates.",
+        "f1": "Zakat Received",
+        "f2": "Disbursements",
+        "f3": "Sharia Certificates"
+      },
+      "donors": {
+        "name": "Annual Donor Report",
+        "desc": "Donor count, geographic distribution, retention, donation patterns, and top 50 most impactful sponsors.",
+        "f1": "Count + Retention",
+        "f2": "Geographic",
+        "f3": "Referral Channels"
+      },
+      "orphans": {
+        "name": "Annual Orphans Report",
+        "desc": "Full orphan census, sponsorship rates, age groups, new and graduated cases, and average sponsorship duration.",
+        "f1": "Total",
+        "f2": "Sponsored",
+        "f3": "Transitions"
+      },
+      "finance": {
+        "name": "Financial Performance Report",
+        "desc": "Revenue, expenses, partner transfers, orphan balances, and cash flow — detailed in a unified currency.",
+        "f1": "Revenue",
+        "f2": "Transfers",
+        "f3": "Balances"
+      },
+      "partners": {
+        "name": "Partner Organisation Performance",
+        "desc": "Comparison across partner organisations: orphan counts, compliance, processing time, acceptance/rejection rate.",
+        "f1": "Full Comparison",
+        "f2": "Processing Time",
+        "f3": "Compliance"
+      },
+      "marketing": {
+        "name": "Marketing Channel Performance",
+        "desc": "Conversion rate per channel, cost per sponsor, sponsor lifetime value, and top-performing channels.",
+        "f3": "Conversion"
+      },
+      "late": {
+        "name": "Late Payers Report",
+        "desc": "Late payers classified by 1, 2, or 3 months overdue — with contact or suspension recommendations.",
+        "f1": "Time Classification",
+        "f2": "Blocked Value",
+        "f3": "Recommendations"
+      }
+    },
+    "sched": {
+      "finance": {
+        "name": "Monthly Financial Report",
+        "sub": "CEO + Finance + Auditors",
+        "cadence": "Monthly · 1st of month"
+      },
+      "partners": {
+        "name": "Partner Organisation Performance",
+        "sub": "Partner managers + Org admin",
+        "cadence": "Monthly · end of month"
+      },
+      "marketing": {
+        "name": "Marketing Channel Performance",
+        "sub": "Marketing team only",
+        "cadence": "Weekly · Sunday"
+      },
+      "zakat": {
+        "name": "Zakat Receipts",
+        "sub": "All Zakat donors (automatic)",
+        "cadence": "Annual · 1 Muharram"
+      },
+      "late": {
+        "name": "Late Payers",
+        "sub": "Finance team + Org guardian",
+        "cadence": "Monthly · 15th"
+      },
+      "paused": "Temporarily paused"
+    },
+    "schedAction": {
+      "settings": "Settings",
+      "runNow": "Run now",
+      "disable": "Disable"
+    },
+    "recent": {
+      "r1": {
+        "name": "Quarterly Financial Report · Q3 — 1446",
+        "meta": "Sameh Abdelaziz · 3 hours ago · 22 pages"
+      },
+      "r2": {
+        "name": "Partner Organisation Performance — 1–20 Dhu al-Qa'dah",
+        "meta": "Dr. Khaled al-Mutairi · 2 days ago · 12 sheets"
+      },
+      "r3": {
+        "name": "Gulf WhatsApp Channel Sponsors · Shawwal",
+        "meta": "Layla al-Mansour · 3 days ago · 896 rows"
+      },
+      "r4": {
+        "name": "Zakat Receipt — Sponsor DON-2718",
+        "meta": "System (automatic) · 1 week ago · 2 pages"
+      }
     }
   },
   "settings": {
-    "title": "Settings",
+    "title": "Organization Settings",
     "changePassword": "Change password",
     "currentPassword": "Current password",
     "newPassword": "New password",
@@ -421,10 +1564,138 @@
       "whatsapp": "WhatsApp",
       "weekly_digest": "Weekly digest",
       "marketing": "Marketing & updates"
+    },
+    "pageSubtitle": "Organization identity, regional settings, integrations, and developer tools",
+    "exportSettings": "Export settings",
+    "tabs": {
+      "general": "General",
+      "regional": "Regional & languages",
+      "integrations": "Integrations",
+      "webhooks": "Webhooks",
+      "api": "API keys",
+      "danger": "Danger zone"
+    },
+    "identity": {
+      "title": "Organization identity",
+      "description": "Basic information shown to partner organizations and sponsors on all pages, receipts, and reports.",
+      "officialName": "Official name",
+      "officialNameHint": "Arabic and English names are used in official receipts",
+      "namePlaceholderAr": "Name in Arabic",
+      "namePlaceholderEn": "Name in English",
+      "namePlaceholderShort": "Short name (for headings)",
+      "logo": "Logo",
+      "logoHint": "PNG/SVG · max 2 MB",
+      "logoReplace": "Replace",
+      "logoDelete": "Delete",
+      "primaryColor": "Primary brand colour",
+      "primaryColorHint": "Used in main buttons, links, and email headers",
+      "colorTrust": "Trust",
+      "colorSerenity": "Serenity",
+      "colorSakina": "Sakina",
+      "colorWaqar": "Waqar",
+      "colorCustom": "Custom colour",
+      "tagline": "Tagline",
+      "taglineHint": "Short phrase reflecting the spirit of the organization",
+      "taglinePlaceholder": "e.g. Guardian of the orphan, companion of the Prophet ﷺ",
+      "contactDetails": "Official contact details",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "website": "Website URL",
+      "address": "Headquarters address"
+    },
+    "about": {
+      "title": "About the organization",
+      "description": "Description shown on the public \"About us\" page and in annual reports.",
+      "bioAr": "Arabic description",
+      "bioEn": "English description",
+      "charCount": "{{current}} / {{max}} characters"
+    },
+    "regional": {
+      "title": "Languages & timezone",
+      "description": "These settings control default system behaviour. Each user can customize their preferences in personal settings.",
+      "defaultLanguage": "Default language",
+      "defaultLanguageHint": "Language the app opens in for new visitors before sign-in",
+      "supportedLanguages": "Supported languages",
+      "addLanguage": "Add language",
+      "langAr": "Arabic",
+      "langEn": "English",
+      "timezone": "Timezone",
+      "calendar": "Display calendar",
+      "calHijriPrimary": "Hijri — primary",
+      "calGregorianPrimary": "Gregorian — primary",
+      "calBoth": "Both",
+      "currency": "Default currency",
+      "currencyHint": "Sponsors also see their preferred currency — auto-converted at daily exchange rates",
+      "numberFormat": "Number format",
+      "firstDayOfWeek": "First day of week",
+      "daySunday": "Sunday",
+      "daySaturday": "Saturday",
+      "dayMonday": "Monday"
+    },
+    "integrations": {
+      "title": "Available integrations",
+      "description": "Connect Rufaqaa to payment, messaging, and storage tools. Each integration keeps its settings separately.",
+      "browseAll": "Browse all integrations",
+      "manageSettings": "Manage settings →",
+      "upgradePackage": "Upgrade package →",
+      "connected": "Connected",
+      "warning": "Limit near",
+      "since": "Since {{n}} months",
+      "officialApi": "Official API"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "URLs called automatically when events occur in Rufaqaa. Delivered as POST with HMAC signature for source verification.",
+      "addWebhook": "Add webhook",
+      "colUrl": "URL",
+      "colEvents": "Events",
+      "colStatus": "Status",
+      "colLastCall": "Last call",
+      "statusHealthy": "Healthy",
+      "statusFailing": "{{n}} failed attempts",
+      "actionView": "View",
+      "actionRetry": "Retry",
+      "actionDelete": "Delete"
+    },
+    "api": {
+      "title": "API keys",
+      "description": "Keys for programmatic access. Never share a secret key over plain email — use a password manager.",
+      "createKey": "Create key",
+      "scopeRead": "read",
+      "scopeWrite": "write",
+      "scopeTestOnly": "test only",
+      "actionCopy": "Copy",
+      "actionView": "View",
+      "actionRevoke": "Revoke"
+    },
+    "danger": {
+      "title": "Danger zone",
+      "description": "Actions that cannot easily be undone. Each action requires double confirmation + logging in the audit trail.",
+      "exportTitle": "Full data export",
+      "exportDesc": "A JSON + CSV file containing all orphan, sponsor, and transaction data. Takes a few minutes to generate, then sent to your email.",
+      "exportAction": "Request export",
+      "freezeTitle": "Temporarily freeze the organization",
+      "freezeDesc": "Stops accepting new donations but keeps reports and media running. Useful during major maintenance or legal reviews.",
+      "freezeAction": "Freeze",
+      "transferTitle": "Transfer the organization to a new owner",
+      "transferDesc": "Transfer ownership to another administrator. Requires a signature from the current guardian + platform manager + legal documentation.",
+      "transferAction": "Start transfer",
+      "deleteTitle": "Delete the organization from Rufaqaa",
+      "deleteDesc": "A legal copy of the data is retained for {{n}} years (regulatory requirement) then destroyed. This action is irreversible.",
+      "deleteAction": "Permanently delete"
+    },
+    "cardFoot": {
+      "savedAgo": "Saved {{time}} ago",
+      "revert": "Revert",
+      "saveChanges": "Save changes"
+    },
+    "myAccount": {
+      "title": "My Account",
+      "subtitle": "Personal security and notification settings"
     }
   },
   "partners": {
-    "title": "Partners",
+    "title": "Partner Organisations",
     "addNew": "Add partner",
     "code": "Code",
     "name": "Name",
@@ -436,47 +1707,274 @@
     "statuses": {
       "active": "Active",
       "suspended": "Suspended",
-      "archived": "Archived"
-    }
+      "archived": "Archived",
+      "pending": "Under review"
+    },
+    "subtitle": "Manage the associations and local organisations that work with Rufaqaa",
+    "export": "Export",
+    "exportCsv": "Export CSV",
+    "exportComingSoon": "Export coming soon",
+    "filterComingSoon": "Filter coming soon",
+    "statsSummary": "Partners summary",
+    "stats": {
+      "total": "Total organisations",
+      "active": "Active",
+      "underReview": "Under review",
+      "orphans": "Orphans in their care",
+      "countries": "Countries"
+    },
+    "filterByStatus": "Filter by status",
+    "tabs": {
+      "all": "All",
+      "active": "Active",
+      "underReview": "Under review",
+      "suspended": "Suspended"
+    },
+    "toolbarLabel": "Search and filter tools",
+    "searchLabel": "Search partners",
+    "searchPlaceholder": "Search by name, country or registration number…",
+    "filterCountry": "Filter by country",
+    "countryAll": "Country: All",
+    "sortLabel": "Sort",
+    "sortOrphans": "Sort: Orphan count",
+    "viewToggle": "View mode",
+    "viewGrid": "Cards",
+    "viewList": "Table",
+    "viewMap": "Map",
+    "gridLabel": "Partner organisations list",
+    "statsLabel": "Partner statistics",
+    "stat": {
+      "orphans": "Orphans",
+      "potentialOrphans": "Est. orphans",
+      "sponsored": "Sponsored",
+      "documents": "Documents",
+      "staff": "Staff",
+      "reviewers": "Reviewers",
+      "compliance": "Compliance",
+      "fileCompletion": "File completion"
+    },
+    "moreOptions": "More options for {{name}}",
+    "action": {
+      "open": "Open",
+      "review": "Review"
+    },
+    "emptyTitle": "No partners found",
+    "emptyBody": "Try adjusting your search or filter, or add a new partner organisation.",
+    "showing": "Showing",
+    "of": "of",
+    "entities": "organisations",
+    "paginationLabel": "Pagination",
+    "pagePrev": "Previous",
+    "pageNext": "Next"
   },
   "audit": {
-    "title": "Audit log",
+    "title": "Audit Log",
     "allTypes": "All types",
     "when": "When",
     "action": "Action",
     "entity": "Entity",
     "entityId": "ID",
-    "details": "Details"
+    "details": "Details",
+    "subtitle": "Every sensitive operation on the platform — fully traced by who, when, what, and how",
+    "h1": "Audit Log",
+    "stats": {
+      "events24h": "Events last 24 h",
+      "activeUsers": "Active users",
+      "approvals": "Approvals",
+      "securityAlerts": "Security alerts",
+      "failedAttempts": "Failed attempts"
+    },
+    "filters": {
+      "searchPlaceholder": "Search: actor:khalid  action:update  entity:business_rules …",
+      "action": "Action",
+      "actor": "Actor",
+      "entity": "Entity",
+      "rangeLabel": "Time range",
+      "lastHour": "Last hour",
+      "last24h": "Last 24 h",
+      "last7d": "7 days",
+      "last30d": "30 days",
+      "custom": "Custom…"
+    },
+    "table": {
+      "severity": "Severity",
+      "time": "Time",
+      "actor": "Actor",
+      "action": "Action",
+      "entity": "Entity",
+      "summary": "Summary",
+      "source": "Source"
+    },
+    "actions": {
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete",
+      "read": "Read",
+      "login": "Login",
+      "logout": "Logout",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rule": "Rule change",
+      "auth": "Auth"
+    },
+    "actor": {
+      "system": "System",
+      "unknown": "Unknown"
+    },
+    "source": {
+      "system": "system",
+      "webhook": "webhook"
+    },
+    "pagination": {
+      "showing": "Showing {{from}}–{{to}} of {{total}} events",
+      "first": "First page",
+      "prev": "Previous page",
+      "next": "Next page"
+    },
+    "loading": "Loading audit log…",
+    "empty": "No events found",
+    "error": "Could not load audit log",
+    "export": "Export CSV",
+    "liveStream": "Live stream"
   },
   "users": {
-    "title": "Users",
-    "allRoles": "All roles",
-    "name": "Name",
+    "title": "Users Management",
+    "allRoles": "All Roles",
+    "name": "Full Name",
     "email": "Email",
     "role": "Role",
-    "status": "Status",
-    "twofa": "2FA",
-    "lastLogin": "Last sign-in",
+    "status": {
+      "active": "Active",
+      "invited": "Invitation Pending",
+      "disabled": "Disabled",
+      "locked": "Security Locked"
+    },
+    "twofa": {
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "notEnabled": "Not enabled",
+      "notYet": "Not yet enabled",
+      "optional": "Optional"
+    },
+    "lastLogin": "Last Login",
     "suspend": "Suspend",
     "reactivate": "Reactivate",
     "suspended": "User suspended",
     "reactivated": "User reactivated",
     "roles": {
-      "super_admin": "Super admin",
-      "org_admin": "Organisation admin",
-      "partner_manager": "Partner manager",
-      "partner_staff": "Partner staff",
-      "marketing_manager": "Marketing manager",
+      "super_admin": "Super Admin",
+      "org_admin": "Org Admin",
+      "partner_manager": "Partner Manager",
+      "partner_staff": "Partner Staff",
+      "marketing_manager": "Marketing Manager",
       "finance": "Finance",
       "donor": "Donor",
       "guardian": "Guardian",
-      "viewer": "Viewer"
+      "viewer": "Viewer",
+      "case_manager": "Case Manager",
+      "finance_officer": "Finance Officer"
     },
     "staff": {
-      "title": "Partner staff",
-      "invite": "Invite user",
-      "invitePartnerStaff": "Invitation sent"
-    }
+      "title": "Partner Staff",
+      "invite": "Invite User",
+      "invitePartnerStaff": "Invited"
+    },
+    "subtitle": "Manage the team and their permissions within the organisation",
+    "exportCsv": "Export CSV",
+    "inviteUser": "Invite User",
+    "searchPlaceholder": "Search by name, email or phone…",
+    "allStatuses": "Status: All",
+    "allOrgs": "Organisation: All",
+    "moreFilters": "More Filters",
+    "advancedFilters": "Advanced Filters",
+    "usersTable": "Users Table",
+    "usersSummary": "Users Summary",
+    "stats": {
+      "total": "Total Users",
+      "active": "Active",
+      "pendingInvitations": "Pending Invitations",
+      "twoFactor": "Two-Factor Auth",
+      "twoFactorEnabled": "enabled",
+      "lastLogin": "Last Login"
+    },
+    "bulk": {
+      "selected": "selected",
+      "changeRole": "Change Role",
+      "disable": "Disable",
+      "resendInvite": "Resend Invite",
+      "clearSelection": "Clear Selection"
+    },
+    "cols": {
+      "user": "User",
+      "rolePerms": "Role & Permissions",
+      "status": "Status",
+      "twoFactor": "Two-Factor Auth",
+      "lastActivity": "Last Activity",
+      "actions": "Actions"
+    },
+    "youLabel": "(you)",
+    "noSelfEdit": "You cannot edit yourself",
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "users": "users",
+      "rowsPerPage": "Rows:"
+    },
+    "invite": {
+      "title": "Invite a New User",
+      "subtitle": "The email will receive a link valid for {{days}} days.",
+      "emailLabel": "Email Address",
+      "emailHelp": "You may enter multiple addresses separated by commas for a bulk invite.",
+      "fullNameLabel": "Full Name",
+      "fullNameOptional": "— optional",
+      "roleLabel": "Role",
+      "accessScopeLabel": "Access Scope",
+      "accessScopeOptional": "— for Finance role",
+      "settingsLabel": "Settings",
+      "require2fa": "Require Two-Factor Authentication",
+      "require2faHelp": "Will be prompted on first login",
+      "sendWelcome": "Send Custom Welcome Email",
+      "sendWelcomeHelp": "With a message from {{name}}",
+      "permissionsNote": "You can review permissions later.",
+      "send": "Send Invitation",
+      "roleCards": {
+        "org_admin": "Org Admin",
+        "org_adminDesc": "Full access to everything",
+        "finance": "Finance",
+        "financeDesc": "Transfers, payments, reports",
+        "marketing": "Marketing",
+        "marketingDesc": "Manage channels and campaigns",
+        "partner_manager": "Partner Manager",
+        "partner_managerDesc": "Oversight of partner organisations",
+        "partner_staff": "Partner Staff",
+        "partner_staffDesc": "Requires selecting an organisation",
+        "viewer": "Viewer",
+        "viewerDesc": "View reports only"
+      }
+    },
+    "drawer": {
+      "details": "Details",
+      "permissions": "Permissions",
+      "activityLog": "Activity Log",
+      "accountInfo": "Account Information",
+      "createdBy": "Created By",
+      "createdAt": "Created At",
+      "lastLogin": "Last Login",
+      "twoFactor": "Two-Factor Auth",
+      "activeSessions": "Active Sessions",
+      "resetPassword": "Reset Password",
+      "saveChanges": "Save Changes",
+      "disableUser": "Disable"
+    },
+    "actions": {
+      "editProfile": "Edit Profile",
+      "changeRole": "Change Role",
+      "resetPassword": "Reset Password",
+      "viewActivity": "View Activity Log",
+      "sendNotification": "Send Notification",
+      "disable": "Disable User"
+    },
+    "empty": "No users found"
   },
   "marketingChannels": {
     "title": "Marketing channels",
@@ -566,7 +2064,33 @@
       "completed": "Completed",
       "failed": "Failed",
       "cancelled": "Cancelled"
-    }
+    },
+    "subtitle": "Every transfer passes approval and execution — dual approval before money moves",
+    "pipelineTitle": "Transfers in the pipeline",
+    "pipelineDesc": "Each one goes through dual approval — finance officer + org admin — before it is executed.",
+    "pipelineTotal": "Total",
+    "stageDraft": "Draft",
+    "stagePendingApproval": "Awaiting approval",
+    "stageExecuting": "Executing",
+    "stageAwaitingConfirm": "Awaiting receipt",
+    "stageCount": "{{count}} transfers",
+    "searchPlaceholder": "Search by partner, code or reference…",
+    "createTitle": "Create a bank transfer",
+    "createDesc": "Record a transfer to a partner organization for a given period. After creation it needs admin approval before execution.",
+    "createItemizedNote": "Per-orphan itemization is computed by the backend at execution; this form records the transfer total and period.",
+    "wfDraft": "Draft created",
+    "wfApproval": "Org approval",
+    "wfExecute": "Execute transfer",
+    "wfConfirm": "Receipt confirmed",
+    "viewDetails": "View details",
+    "reference": "Bank reference",
+    "notes": "Notes",
+    "notesPlaceholder": "Notes that will appear on the transfer file…",
+    "metaReference": "Reference",
+    "metaBank": "Bank",
+    "metaCreated": "Created",
+    "noneInStage": "No transfers in this stage.",
+    "filterAll": "All stages"
   },
   "media": {
     "moderate": {
@@ -582,7 +2106,12 @@
       "description": "Review and moderate photos uploaded by partner staff before they appear on donor-facing pages.",
       "todoBackend": "Pending media moderation requires a backend list endpoint (TODO). Until it lands, use the per-photo controls on the orphan detail page.",
       "thumbnailAlt": "Pending media thumbnail {{id}}",
-      "workaround": "Open orphans pending review"
+      "workaround": "Open orphans pending review",
+      "aiTitle": "AI moderation — coming soon",
+      "aiBody": "Once the moderation-queue endpoint lands, AI-screened media will be summarised here for your visual review.",
+      "privacyLabel": "Reminder:",
+      "privacyBody": "Every photo must pass a human visual review even if it clears the AI check. Bulk auto-approval is not permitted by policy.",
+      "comingSoonTitle": "The media queue isn't wired yet"
     }
   },
   "documents": {
@@ -689,5 +2218,1010 @@
     "country": "Country",
     "currency": "Preferred currency",
     "status": "Status"
+  },
+  "finance": {
+    "dashboard": {
+      "title": "Finance Dashboard",
+      "linkOverdue": "Overdue donors",
+      "linkReports": "Financial reports",
+      "received30d": "Received (last 30 days)",
+      "received30dCount": "{{n}} completed transactions",
+      "pendingPayments": "Pending payments",
+      "overdueDonors": "Overdue donors",
+      "completedTransfers": "Completed transfers",
+      "adminOnly": "Admin only",
+      "byMethod": "Payments by method",
+      "byMethodNote": "Computed from recent completed payments.",
+      "recentPayments": "Recent payments",
+      "subtitle": "Today's financial performance — live treasury, payments and transfers",
+      "exportDaily": "Daily export",
+      "createTransfer": "New bank transfer",
+      "treasuryLabel": "Received · last 30 days",
+      "treasuryNote": "Completed donations reaching the treasury over the last 30 days",
+      "splitReceivedCount": "Transactions (30d)",
+      "splitPendingTransfers": "Transfers awaiting approval",
+      "splitOverdue": "Overdue donors",
+      "splitCompletedTransfers": "Completed transfers",
+      "cashflowTitle": "Cash flow · monthly",
+      "cashflowEmpty": "No payment history yet",
+      "legendIn": "Donations in",
+      "legendOut": "Transfers out",
+      "legendNet": "Net",
+      "kpiMonthRevenue": "Revenue (last 30 days)",
+      "kpiMonthRevenueFoot": "From {{count}} completed transactions",
+      "kpiPendingTransfers": "Transfers awaiting approval",
+      "kpiPendingTransfersFoot": "{{count}} pending",
+      "kpiOverdue": "Overdue donors",
+      "kpiOverdueFoot": "Donors with an overdue sponsorship",
+      "kpiCompletedTransfers": "Completed transfers",
+      "kpiCompletedTransfersFoot": "Confirmed to partners",
+      "qaCreateTransfer": "Create a bank transfer",
+      "qaCreateTransferSub": "To a partner for a chosen period",
+      "qaImport": "Import a bank statement",
+      "qaImportSub": "CSV / Excel · auto-reconcile",
+      "qaOverdue": "Overdue donors",
+      "qaOverdueSub": "A gentle reminder",
+      "qaReports": "Financial reports",
+      "qaReportsSub": "Statutory & management",
+      "incomingTitle": "Recent incoming payments",
+      "incomingSub": "Latest completed payments",
+      "allPayments": "All payments",
+      "transfersTitle": "Partner transfers",
+      "transfersSub": "Current transfer pipeline",
+      "allTransfers": "All transfers",
+      "orphanBalTitle": "Donations by partner",
+      "orphanBalSub": "Completed donations attributed to each partner",
+      "fxNote": "Live FX rates are not available from the backend yet.",
+      "adminOnlyTransfers": "Transfers are visible to admins only."
+    },
+    "overdue": {
+      "title": "Overdue Donors",
+      "minMonths": "Min. months overdue",
+      "empty": "No overdue sponsorships.",
+      "donor": "Donor",
+      "orphan": "Orphan",
+      "monthlyAmount": "Monthly amount",
+      "monthsOverdue": "Months overdue",
+      "lastPayment": "Last payment",
+      "sendReminder": "Send email reminder",
+      "monthsBadge": "{{n}} mo",
+      "subtitle": "A gentle reminder for those who fell behind — kindness before pressure",
+      "toneBanner": "Remember: a sponsor is not a debtor — they may be busy, forgot, or facing hardship.",
+      "toneBannerStrong": "Reach out with mercy, offer help before pressure.",
+      "bandLight": "Slightly late",
+      "bandLightRange": "7–30 days",
+      "bandMedium": "Moderately late",
+      "bandMediumRange": "31–60 days",
+      "bandLong": "Long overdue",
+      "bandLongRange": "61–90 days",
+      "bandCritical": "Critical",
+      "bandCriticalRange": "3+ months",
+      "bandDonors": "{{count}} donors",
+      "searchPlaceholder": "Search by name or sponsor code…",
+      "reminderTrail": "Reminders",
+      "reminderNotTracked": "Reminder history is not tracked yet.",
+      "bulkReminder": "Bulk reminder",
+      "totalOverdue": "Total overdue across {{count}} donors",
+      "daysBadge": "{{n}} days"
+    },
+    "reports": {
+      "title": "Financial Reports",
+      "from": "From",
+      "to": "To",
+      "exportCsv": "Export CSV",
+      "totalReceived": "Total received",
+      "totalReceivedHint": "Within the selected range",
+      "totalTransferred": "Total transferred to partners",
+      "netRetained": "Net retained",
+      "netRetainedHint": "Received minus transferred",
+      "donorCount": "Donor count",
+      "byPartner": "Payments by partner",
+      "partner": "Partner",
+      "transactions": "Transactions",
+      "amount": "Amount",
+      "windowHint": "Last {{days}} days",
+      "exportNote": "CSV export includes all completed payments; server-side date-range filtering of the export is not available yet.",
+      "subtitle": "Statutory and management reports for your organization",
+      "savedLibrary": "Saved reports library",
+      "customReport": "Custom report",
+      "yearLabel": "Selected range",
+      "yearTitle": "Financial period",
+      "yearDesc": "All payments received within the selected window, with partner transfer totals and the net retained.",
+      "statRevenue": "Total received",
+      "statExpenses": "Total transferred",
+      "statZakat": "Donors",
+      "statBalance": "Net retained",
+      "sectionStatutory": "Reports",
+      "sectionStatutoryNote": "Generate for any period",
+      "repRevenue": "Revenue report",
+      "repRevenueDesc": "All incoming payments, exportable as CSV",
+      "repExpenses": "Expenses · transfers report",
+      "repExpensesDesc": "All transfers to partner organizations",
+      "repBalance": "Balance sheet",
+      "repBalanceDesc": "Assets, liabilities and equity at a point in time",
+      "repCashflow": "Cash flow",
+      "repCashflowDesc": "Inflow and outflow movement over time",
+      "repDonors": "Detailed donor list",
+      "repDonorsDesc": "Every donor, total contributions and status",
+      "repZakat": "Annual zakat report",
+      "repZakatDesc": "Full aggregation of zakat and how it was disbursed",
+      "repAudit": "Audit-log report",
+      "repAuditDesc": "Sensitive operations, signed for the external auditor",
+      "flagMonthly": "Monthly",
+      "flagQuarterly": "Quarterly",
+      "flagAnnual": "Annual",
+      "flagRequired": "Required",
+      "flagSeasonal": "Seasonal",
+      "exportCsvShort": "CSV",
+      "pdf": "PDF",
+      "excel": "Excel",
+      "generateUnavailable": "This report cannot be generated yet.",
+      "byPartnerEmpty": "No partner donations in this window."
+    }
+  },
+  "marketing": {
+    "channel": {
+      "eyebrow": "Marketing channel",
+      "viewOrphans": "Assigned orphans",
+      "goalProgress": "Goal progress",
+      "annual": "Annual ({{year}})",
+      "monthly": "Monthly",
+      "completion": "Completion",
+      "completionAmountLabel": "By amount",
+      "assignedOrphans": "Assigned orphans",
+      "viewAll": "View all",
+      "assignedCount": "{{n}} assigned orphans in total",
+      "acquiredDonors": "Acquired donors",
+      "sponsorships": "Sponsorships",
+      "amount": "Amount"
+    },
+    "orphans": {
+      "title": "Channel Orphans",
+      "assignmentStatus": "Assignment status",
+      "statuses": {
+        "active": "Active",
+        "expired": "Expired",
+        "all": "All"
+      },
+      "age": "Age",
+      "deadline": "Assignment deadline",
+      "release": "Release to available",
+      "releaseDone": "Orphan released to the available pool"
+    },
+    "title": "Marketing Channels",
+    "subtitle": "The channels that introduce sponsors to Rufaqaa — track each channel's performance and goals",
+    "pageLabel": "Performance summary",
+    "yearLabel": "Hijri year",
+    "prevYear": "Previous year",
+    "nextYear": "Next year",
+    "monthlyReport": "Monthly report",
+    "createChannel": "Create new channel",
+    "activeChannels": "Active channels",
+    "pausedChannels": "Paused channels",
+    "searchPlaceholder": "Search by channel name or type…",
+    "filterStatus": "Status: active",
+    "filterSort": "Sort: goal progress",
+    "viewCards": "Cards",
+    "viewTable": "Table",
+    "openChannel": "Open channel",
+    "reactivate": "Reactivate",
+    "archiveBtn": "Archive",
+    "reviewBtn": "Review",
+    "topPerformer": "Top performer",
+    "createNew": "Create new channel",
+    "createNewDesc": "Create a channel for every marketing source you want to track with separate goals and performance",
+    "referralCode": "Referral code",
+    "orphanCount": "Orphans assigned",
+    "noReferralCode": "—",
+    "loading": "Loading channels…",
+    "loadError": "Could not load marketing channels",
+    "empty": "No channels yet",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "This metric will be available once connected to the backend",
+    "kpi": {
+      "activeChannels": "Active channels",
+      "activeChannelsUnit": "channel",
+      "orphansAssigned": "Orphans assigned",
+      "conversionRate": "Conversion rate",
+      "conversionSub": "visitor → sponsor",
+      "avgSponsorDuration": "Avg. sponsorship duration",
+      "avgSponsorDurationUnit": "months",
+      "avgTimeToSponsor": "Avg. time to sponsor",
+      "avgTimeToSponsorUnit": "minutes",
+      "expiredOrphans": "Expired-slot orphans",
+      "expiredOrphansSub": "needs reassignment",
+      "annualTotal": "Sponsors acquired this year",
+      "annualTotalUnit": "sponsor",
+      "annualGoal": "Annual goal of",
+      "annualGoalUnit": "sponsors",
+      "thisMonth": "this month",
+      "monthsRemaining": "months remaining",
+      "pctOfGoal": "% of goal",
+      "waitingForSponsor": "waiting for a sponsor",
+      "yearRetention": "Annual retention",
+      "fromOpenToPayment": "from page-open to payment"
+    },
+    "card": {
+      "annualGoal": "Annual goal",
+      "campaignGoal": "Campaign goal",
+      "newSponsors": "new sponsors",
+      "ofGoal": "of goal",
+      "remainingMonths": "months remaining",
+      "weeks": "weeks remaining",
+      "lastUpdated": "Last updated",
+      "nextNewsletter": "Next newsletter",
+      "lastPost": "Last post",
+      "expires": "Expires in",
+      "days": "days",
+      "lastReferral": "Last referral",
+      "nextEvent": "Next event",
+      "goalExceeded": "Exceeded goal",
+      "onTrack": "On track",
+      "slightDelay": "Slight delay",
+      "needsReview": "Needs review",
+      "conversionRate": "Conversion rate",
+      "orphansAssigned": "Orphans assigned",
+      "annualRetention": "Annual retention",
+      "openRate": "Open rate",
+      "clickRate": "Sponsorship clicks",
+      "costPerSponsor": "Cost per sponsor",
+      "views": "Views",
+      "sponsorValue": "Sponsor value",
+      "conversionRateShort": "Conversion",
+      "acceptanceRate": "Acceptance rate",
+      "engagement": "Engagement",
+      "postsPerMonth": "Posts/month",
+      "attendance": "Attendees/event",
+      "cpa": "CPA",
+      "ctr": "CTR",
+      "lastPerformance": "Last performance before pause",
+      "lowPerformance": "Low performance",
+      "pausedAdmin": "Administrative pause",
+      "awaitingDecision": "Awaiting decision",
+      "strategicReview": "Strategic review",
+      "partnerOrgs": "partner orgs",
+      "followers": "followers",
+      "upcomingEvents": "upcoming events",
+      "monthlyBudget": "Monthly budget",
+      "seasonal": "Seasonal",
+      "sponsorToSponsor": "Sponsor-to-sponsor referral"
+    },
+    "types": {
+      "digital_marketing": "Digital marketing",
+      "committee": "Committee",
+      "website": "Website",
+      "branch": "Branch",
+      "social_media": "Social media",
+      "partnership": "Partnership",
+      "other": "Other",
+      "email": "Email",
+      "influencer": "Influencer",
+      "events": "Events",
+      "referral": "Referral",
+      "tv": "TV",
+      "search": "Paid search"
+    },
+    "statuses": {
+      "active": "Active",
+      "suspended": "Paused",
+      "archived": "Archived"
+    },
+    "modal": {
+      "title": "Create new marketing channel",
+      "subtitle": "Channel performance will be automatically tracked via UTM parameters",
+      "close": "Close",
+      "cancel": "Cancel",
+      "create": "Create channel",
+      "channelName": "Channel name",
+      "channelNamePlaceholder": "e.g. Eid al-Fitr campaign — TikTok",
+      "channelNameHelp": "A descriptive name that distinguishes this channel from others",
+      "channelType": "Channel type",
+      "annualGoal": "Annual goal",
+      "annualGoalSuffix": "(number of sponsors)",
+      "annualGoalPlaceholder": "500",
+      "owner": "Owner",
+      "ownerPlaceholder": "Select owner…",
+      "utmParams": "UTM parameters",
+      "utmSuffix": "(auto-generated)",
+      "utmHelp": "Add this link to any URLs you publish in this channel to track them"
+    }
+  },
+  "orphanNav": {
+    "home": "Home",
+    "messages": "My Messages",
+    "achievements": "My Achievements"
+  },
+  "orphan": {
+    "layout": {
+      "greeting": "Hi {{name}}",
+      "navLabel": "Portal navigation"
+    },
+    "ageGate": {
+      "title": "See you soon 🌱",
+      "body": "You can use this app once you turn 12. Until then, your guardian keeps up with all your wonderful news."
+    },
+    "login": {
+      "title": "Welcome 🌟",
+      "subtitle": "Sign in to see your news and messages from your sponsor.",
+      "submit": "Sign in"
+    },
+    "home": {
+      "greeting": "Hi {{name}}",
+      "subtitle": "Great to see you today!",
+      "profileTitle": "My profile",
+      "age": "Age: {{age}}",
+      "completion": "Your profile is {{percent}}% complete",
+      "sponsorTitle": "My sponsor",
+      "sendMessage": "Send a message",
+      "noSponsor": "Soon, you'll have a sponsor who cares about you and prays for you.",
+      "sponsorFallback": "Your sponsor",
+      "sponsorCaring": "Your sponsor prays for you every day.",
+      "sponsorSince": "For {{years}} years"
+    },
+    "messages": {
+      "title": "My messages",
+      "subtitle": "Write a thank-you or a prayer for your sponsor.",
+      "composeTitle": "Write from the heart",
+      "placeholder": "For example: Thank you for everything. I pray God protects you and blesses your life...",
+      "send": "Send",
+      "sending": "Sending...",
+      "sent": "Your message is on its way! It will reach your sponsor after a quick review.",
+      "sendError": "Couldn't send your message. Please try again.",
+      "threadTitle": "My previous messages",
+      "empty": "Start by writing your first message to your sponsor.",
+      "you": "Me",
+      "onTheWay": "On its way..."
+    },
+    "achievements": {
+      "title": "Well done! These are your achievements",
+      "subtitle": "We're proud of you, and so is your sponsor.",
+      "empty": "Your achievements will appear here once your guardian adds them.",
+      "education": "School",
+      "quran": "Qur'an",
+      "activities": "My activities",
+      "noHighlights": "No details for this period yet."
+    }
+  },
+  "platform": {
+    "modeBadge": "Platform Administration",
+    "exitToAdmin": "Back to org admin",
+    "nav": {
+      "dashboard": "Dashboard",
+      "organizations": "Organizations",
+      "analytics": "Analytics",
+      "settings": "Settings"
+    },
+    "dashboard": {
+      "title": "Platform Overview",
+      "manageOrgs": "Manage organizations",
+      "paymentsChart": "Payments over time",
+      "topOrgs": "Top organizations by donations",
+      "recentOrgs": "Recently added organizations",
+      "viewAll": "View all",
+      "headline": "Platform overview",
+      "subtitle": "All organizations · all figures · live",
+      "exportCsv": "Export CSV",
+      "newOrg": "New organization",
+      "kpi": {
+        "activeOrgs": "Active organizations",
+        "pendingMeta": "of which {{count}} pending approval",
+        "totalOrphans": "Orphans across the platform",
+        "countriesMeta": "in {{count}} countries",
+        "totalDonated": "Total donations",
+        "donatedMeta": "Since the start of the period",
+        "uptime": "System uptime",
+        "uptimeMeta": "Last 30 days"
+      },
+      "growth": {
+        "title": "Donations growth",
+        "source": "Source: database · live",
+        "legendDonations": "Total donations",
+        "empty": "No payments recorded yet"
+      },
+      "health": {
+        "title": "System health"
+      },
+      "recent": {
+        "title": "Recent platform activity",
+        "viewAll": "View full log",
+        "added": "Organization added:",
+        "empty": "No organizations yet",
+        "footer": "Showing the {{count}} most recent organizations"
+      }
+    },
+    "summary": {
+      "totalOrgs": "Total organizations",
+      "activeOrgs": "Active organizations",
+      "totalOrphans": "Total orphans",
+      "totalDonors": "Total donors",
+      "totalSponsorships": "Total sponsorships",
+      "totalDonated": "Total donated"
+    },
+    "orgStatus": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "archived": "Archived",
+      "pending_approval": "Pending approval"
+    },
+    "orgType": {
+      "standalone": "Standalone",
+      "external_marketer": "External marketer",
+      "local_partner": "Local partner",
+      "hybrid": "Hybrid",
+      "federated": "Federated"
+    },
+    "deployment": {
+      "self_hosted": "Self-hosted",
+      "saas_cloud": "SaaS cloud"
+    },
+    "orgs": {
+      "title": "Organizations Management",
+      "add": "Add organization",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "country": "Country",
+        "search": "Search",
+        "searchPlaceholder": "Name or code…"
+      },
+      "cols": {
+        "code": "Code",
+        "name": "Name",
+        "country": "Country",
+        "status": "Status",
+        "plan": "Plan",
+        "orphans": "Orphans",
+        "donors": "Donors",
+        "createdAt": "Created",
+        "actions": "Actions",
+        "organization": "Organization"
+      },
+      "create": {
+        "title": "Add a new organization",
+        "code": "Code",
+        "country": "Country code",
+        "nameAr": "Name (Arabic)",
+        "nameEn": "Name (English)",
+        "currency": "Default currency",
+        "orgType": "Organization type",
+        "deployment": "Deployment mode",
+        "adminLegend": "Initial org admin",
+        "adminEmail": "Email",
+        "adminPassword": "Temporary password",
+        "adminFirst": "First name",
+        "adminLast": "Last name",
+        "submit": "Create organization",
+        "created": "Organization created with admin: {{email}}"
+      },
+      "suspendDialog": {
+        "title": "Suspend organization",
+        "body": "You are about to suspend “{{name}}”. Its users won't be able to sign in until reactivated.",
+        "reason": "Reason for suspension",
+        "done": "Organization suspended"
+      },
+      "activateDialog": {
+        "title": "Activate organization",
+        "body": "Reactivate “{{name}}” and restore access for its users.",
+        "done": "Organization activated"
+      },
+      "summaryLine": "{{total}} organizations · {{active}} active · {{pending}} pending · {{suspended}} suspended",
+      "export": "Export",
+      "edit": "Edit",
+      "editSaved": "Changes saved",
+      "editPlanPlaceholder": "e.g. free / pro",
+      "planFree": "FREE",
+      "searchPlaceholder": "Search by name, country, or code…",
+      "footerCount": "Showing {{count}} organizations",
+      "tabs": {
+        "all": "All"
+      },
+      "toolbar": {
+        "filter": "Filter",
+        "columns": "Columns",
+        "sort": "Sort"
+      }
+    },
+    "analytics": {
+      "title": "Platform Analytics",
+      "range": "Range",
+      "lastMonths": "Last {{count}} months",
+      "exportCsv": "Export CSV",
+      "paymentsByMonth": "Payments by month",
+      "topOrgs": "Top organizations by donations",
+      "orgsByCountry": "Organizations by country",
+      "subtitle": "Rufaqaa performance worldwide",
+      "pdfReport": "PDF report",
+      "growth": {
+        "title": "Sponsorship & donations growth",
+        "donations": "Total donations",
+        "payments": "Payments",
+        "orphans": "Orphans",
+        "legendDonations": "Donations",
+        "empty": "No payments recorded yet"
+      },
+      "geo": {
+        "title": "Orphan distribution by country",
+        "meta": "{{countries}} countries · {{orphans}} orphans",
+        "partners": "{{count}} partner organizations"
+      },
+      "paymentMethods": {
+        "title": "Payment methods used"
+      },
+      "stats": {
+        "avgDuration": "Average sponsorship duration",
+        "avgDurationHint": "From sponsorship start to cancellation.",
+        "conversion": "Conversion rate (visitor → donor)",
+        "conversionHint": "From site visit to first sponsorship payment.",
+        "reportRead": "Monthly report read rate",
+        "reportReadHint": "Sponsors who open their orphan's monthly report."
+      },
+      "funnel": {
+        "title": "Visitor-to-sponsor conversion funnel"
+      }
+    },
+    "settings": {
+      "title": "Platform Settings",
+      "subtitle": "Changes here affect every user on the platform",
+      "updatedAt": "Last updated: {{date}}",
+      "general": "General",
+      "advanced": "Advanced settings",
+      "advancedHint": "Complex values are read-only from the platform server.",
+      "saved": "Settings saved",
+      "saveAll": "Save all",
+      "dangerZone": "Danger zone",
+      "dangerHint": "Operations that can affect the whole platform. Proceed with care.",
+      "keys": {
+        "maintenance_mode": "Maintenance mode",
+        "signups_open": "Signups open",
+        "default_subscription_plan": "Default subscription plan"
+      },
+      "danger": {
+        "backup": {
+          "title": "Run full manual backup",
+          "body": "Create an immediate database backup.",
+          "action": "Run now",
+          "confirm": "Start a full database + storage backup now?"
+        },
+        "reindex": {
+          "title": "Rebuild search indexes",
+          "body": "May take a while depending on data size.",
+          "action": "Start reindex",
+          "confirm": "Rebuild search indexes? Search may be slower while this runs."
+        },
+        "restart": {
+          "title": "Restart API server",
+          "body": "Brief downtime up to 30s; in-flight requests are cancelled.",
+          "action": "Restart",
+          "confirm": "Restart the API server? In-flight requests will be cancelled."
+        }
+      },
+      "navLabel": "Settings categories",
+      "generalHint": "These flags apply to every user on the platform.",
+      "maintenance": {
+        "title": "Maintenance mode",
+        "on": "Enabled",
+        "off": "Disabled",
+        "toggleTitle": "Enable maintenance mode",
+        "toggleBody": "When enabled, visitors see a \"We'll be back soon\" page. Super-admin access stays open.",
+        "hint": "Affects every visitor immediately."
+      }
+    },
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "This panel will light up once the supporting data is available."
+  },
+  "businessRules": {
+    "title": "Business Rules",
+    "subtitle": "Settings that control how the system operates within the organisation",
+    "lastEdit": "Last edited {{days}} days ago by {{name}}",
+    "viewLog": "View log",
+    "infoBanner": "These rules apply to the entire organisation (<strong>{{orgName}}</strong>). Each partner organisation may request a limited exception with your approval. Any change takes effect immediately after saving and is recorded in the <strong>Audit log</strong>.",
+    "unsavedFlag": "Unsaved change",
+    "toc": {
+      "heading": "Sections",
+      "assign": "Orphan assignment",
+      "payment": "Payment delays",
+      "orphan": "Orphan lifecycle",
+      "report": "Report requirements",
+      "approval": "Approval rules",
+      "visibility": "Guardian visibility",
+      "custom": "Custom rules"
+    },
+    "assign": {
+      "heading": "Orphan assignment to marketing channels",
+      "desc": "How long an orphan stays reserved for a marketing channel before returning to the available pool, and who decides to return them manually.",
+      "defaultDuration": {
+        "title": "Default channel assignment duration",
+        "desc": "Maximum period a channel may hold a specific orphan before they return to the available pool.",
+        "was": "Was: {{old}} days",
+        "now": "Now: {{new}} days",
+        "unit": "days"
+      },
+      "expiryWarning": {
+        "title": "Expiry warning notifications",
+        "desc": "Days before deadline to send a reminder to the channel manager.",
+        "at": "At {{n}}"
+      },
+      "autoReturn": {
+        "title": "Auto-return after deadline",
+        "desc": "If the orphan is not sponsored before the deadline, they automatically return to the available pool for all channels. When off, a manual decision from the org admin is required."
+      },
+      "multiChannel": {
+        "title": "Allow assigning an orphan to multiple channels",
+        "desc": "When enabled, multiple channels can market the same orphan simultaneously. Recommended to keep off to avoid conflicts."
+      },
+      "preview": "Summary after change: each channel will have <code>{{days}} days</code> to promote the orphan, with a reminder at <code>{{warn}} days remaining</code>, then automatic return to the available pool."
+    },
+    "payment": {
+      "heading": "Sponsor payment delays",
+      "desc": "When a sponsor is considered overdue, when sponsorship is automatically suspended, and how to gently remind late payers.",
+      "mildThreshold": {
+        "title": "\"Mildly late\" threshold",
+        "desc": "Days after the due date before classifying a sponsor as \"mildly late\". Only a friendly reminder is sent.",
+        "unit": "days"
+      },
+      "moderateThreshold": {
+        "title": "\"Moderately late\" threshold",
+        "desc": "A second reminder is sent offering help updating the payment method or suggesting a deferral.",
+        "unit": "days"
+      },
+      "suspendThreshold": {
+        "title": "Auto-suspension threshold",
+        "desc": "After this period, the orphan automatically moves to \"awaiting new sponsor\" status. The sponsor's file remains open for resuming later.",
+        "pillSensitive": "Sensitive",
+        "unit": "days"
+      },
+      "reminderChannels": {
+        "title": "Late-payment reminder channels",
+        "desc": "Channels used to send reminders. Only those available for each sponsor's preferences are used.",
+        "email": "Email",
+        "whatsapp": "WhatsApp",
+        "sms": "SMS",
+        "call": "Call"
+      },
+      "deferral": {
+        "title": "Allow one payment deferral per year",
+        "desc": "The sponsor can self-defer one payment per year with a click, no org approval needed, max <strong>30 days</strong>."
+      }
+    },
+    "orphan": {
+      "heading": "Orphan lifecycle",
+      "desc": "Graduation age, transition states, and when an orphan becomes an adult managing their own account.",
+      "minAge": {
+        "title": "Minimum age for independent orphan account",
+        "desc": "The age at which an orphan can log in independently and view their own page.",
+        "was": "Was: {{old}} years",
+        "now": "Now: {{new}} years",
+        "unit": "years"
+      },
+      "graduationAge": {
+        "title": "Default graduation age",
+        "desc": "The age at which the orphan automatically transitions to \"graduated\" status and their sponsorship ends. Can be extended manually for university students.",
+        "unit": "years"
+      },
+      "universityExtension": {
+        "title": "Allow sponsorship extension for university students",
+        "desc": "Extend sponsorship up to age 24 upon submission of a university enrollment proof."
+      },
+      "graduationNotice": {
+        "title": "Graduation advance notice",
+        "desc": "Months before graduation when notifications are sent to the sponsor and guardian to coordinate the transition.",
+        "3months": "3 months",
+        "6months": "6 months",
+        "9months": "9 months",
+        "1year": "1 year"
+      }
+    },
+    "report": {
+      "heading": "Report requirements from guardians",
+      "desc": "Report frequency, mandatory fields, and reminders.",
+      "frequency": {
+        "title": "Mandatory report frequency",
+        "desc": "How many times per year a report must be submitted for each orphan.",
+        "monthly": "Every month",
+        "bimonthly": "Every 2 months",
+        "quarterly": "Every 3 months",
+        "semiannual": "Every 6 months"
+      },
+      "photo": {
+        "title": "Require photo with report",
+        "desc": "When enabled, a report is not accepted without at least one photo within the approved privacy settings."
+      },
+      "reminder": {
+        "title": "Guardian reminder for due report",
+        "desc": "Days before the due date to send the first reminder via WhatsApp.",
+        "unit": "days before"
+      },
+      "voice": {
+        "title": "Accept voice recording instead of text",
+        "desc": "Allows the guardian to send a voice recording up to <strong>60 seconds</strong> instead of writing a summary."
+      },
+      "notifyDonor": {
+        "title": "Automatically notify sponsor of approved report",
+        "desc": "The report summary is sent to the sponsor as soon as it is approved by the organisation, with no extra click."
+      }
+    },
+    "approval": {
+      "heading": "Approval rules",
+      "desc": "Determine whether sensitive operations require single approval (staff) or dual approval (staff + manager).",
+      "newOrphan": {
+        "title": "Approve new orphan file",
+        "desc": "Who approves a new orphan file after it is registered by a staff member.",
+        "pillSensitive": "Sensitive",
+        "staffOnly": "Partner staff only",
+        "staffManager": "Staff + partner manager",
+        "staffManagerOrg": "Staff + partner manager + org admin"
+      },
+      "monthlyReports": {
+        "title": "Approve monthly reports",
+        "desc": "Who reviews reports before sending them to sponsors.",
+        "staffOnly": "Partner staff only",
+        "staffManager": "Staff + partner manager"
+      },
+      "media": {
+        "title": "Approve media (photos/video)",
+        "desc": "Approval is completed after automatic AI screening + human review.",
+        "aiOnly": "AI only",
+        "aiStaff": "AI + staff",
+        "aiStaffManager": "AI + staff + manager"
+      },
+      "bankTransfers": {
+        "title": "Approve bank transfers",
+        "desc": "Who approves monthly transfers to partner organisations before execution.",
+        "pillSensitive": "Sensitive",
+        "financeManager": "Finance officer + finance manager",
+        "financeManagerOrg": "Finance officer + finance manager + org admin"
+      },
+      "donorMessages": {
+        "title": "Sponsor messages to guardians",
+        "desc": "Before the message reaches the guardian.",
+        "aiAuto": "Automatic after AI screening",
+        "aiStaff": "AI + staff review"
+      }
+    },
+    "visibility": {
+      "heading": "Guardian visibility in the app",
+      "desc": "What the guardian can see in the orphan's file. The golden rule: <strong>no financial figures, no donor name</strong>.",
+      "amount": {
+        "title": "View sponsorship amount",
+        "desc": "The sponsorship amount must always remain hidden from the guardian. Changing this requires confirmation from the org admin + a sharia signature.",
+        "pill": "Golden rule"
+      },
+      "donorName": {
+        "title": "Show sponsor name to guardian",
+        "desc": "Only \"Sponsor of [orphan name]\" is shown — even if the sponsor consents to showing their name, platform-level privacy is preserved.",
+        "pill": "Golden rule"
+      },
+      "nationality": {
+        "title": "Show sponsor nationality or country",
+        "desc": "When enabled, the guardian can see the sponsor's country (without their name) — useful for directed prayer."
+      },
+      "duration": {
+        "title": "Show \"how long have they sponsored\"",
+        "desc": "Shows \"has sponsored your child for 3 years\" without exact dates."
+      },
+      "reportDetail": {
+        "title": "Report detail level shown to guardian",
+        "desc": "How much of the previous record the guardian can see for the same orphan.",
+        "all": "All reports",
+        "last6": "Last 6 reports",
+        "last1": "Last report only",
+        "none": "Not shown"
+      }
+    },
+    "custom": {
+      "heading": "Custom rules (advanced editor)",
+      "desc": "Additional rules in JSON format for specifics not covered by the sections above. Applied at the entire organisation level.",
+      "fileName": "business_rules.custom.json",
+      "validJson": "Valid JSON",
+      "format": "Format",
+      "validate": "Validate",
+      "fullscreen": "Fullscreen",
+      "note": "Editing this section is restricted to the <strong>org admin</strong> only. The complete JSON file is saved when you press save, and a previous version can be restored from the <strong>Audit log</strong>."
+    },
+    "sensitive": "Sensitive",
+    "on": "On",
+    "off": "Off"
+  },
+  "partner": {
+    "portalName": "Partner organization portal",
+    "portalBadge": "Manager portal",
+    "tenantShort": "ORG",
+    "tenantName": "Partner organization",
+    "managerShort": "Manager",
+    "managerRole": "Branch manager",
+    "managerPermissions": "Manager permissions",
+    "nav": {
+      "section": "Management",
+      "opsSection": "Operations",
+      "approvals": "Approval center",
+      "staff": "Staff",
+      "transfers": "Incoming transfers",
+      "performance": "Performance reports",
+      "allOrphans": "All orphans",
+      "reports": "Reports"
+    },
+    "approvals": {
+      "title": "Approval center",
+      "subtitle": "Items awaiting your approval as branch manager.",
+      "tabs": {
+        "orphans": "Orphans pending review",
+        "reports": "Reports — dual approval",
+        "media": "Sensitive media",
+        "bank": "Bank transfers"
+      },
+      "reportApproved": "Report approved.",
+      "reportRejected": "Report rejected.",
+      "rejectReportTitle": "Why are you rejecting this report?",
+      "approvePartner": "Approve (partner)",
+      "bankRowTitle": "Transfer from parent organization",
+      "awaitingApproval": "Awaiting your approval",
+      "empty": {
+        "orphansTitle": "No orphans awaiting review",
+        "orphansBody": "New cases sent for approval will appear here.",
+        "reportsTitle": "No reports awaiting approval",
+        "reportsBody": "Reports submitted by staff will appear here for partner approval.",
+        "bankTitle": "No bank transfers awaiting approval",
+        "bankBody": "Pending transfers from the parent organization will appear here.",
+        "mediaTitle": "Media moderation not available yet",
+        "mediaBody": "A media moderation queue is not exposed by the API yet. It will appear here once available."
+      }
+    },
+    "transfers": {
+      "title": "Incoming transfers from the parent organization",
+      "subtitle": "Monthly payments for the branch's orphans · confirm receipt within the agreed window.",
+      "export": "Export",
+      "notifyPolicy": "Notification policy",
+      "accountLabel": "Branch bank account for incoming transfers",
+      "accountNamePlaceholder": "Branch bank account",
+      "accountNumber": "Account",
+      "beneficiary": "Beneficiary",
+      "accumulatedBalance": "Accumulated balance awaiting confirmation",
+      "unitTransfers": "transfers",
+      "period": "Period",
+      "reference": "Reference",
+      "issuedAt": "Issued",
+      "kpi": {
+        "awaiting": "Awaiting your confirmation",
+        "awaitingFoot": "Executed by the parent organization.",
+        "confirmed": "Confirmed",
+        "confirmedFoot": "Receipt acknowledged.",
+        "scheduled": "Scheduled",
+        "scheduledFoot": "Not yet executed.",
+        "avgTime": "Avg. confirmation time",
+        "avgTimeFoot": "Not available yet."
+      },
+      "tabs": {
+        "awaiting": "Awaiting confirmation",
+        "confirmed": "Confirmed",
+        "scheduled": "Scheduled"
+      },
+      "status": {
+        "received": "Received",
+        "scheduled": "Scheduled",
+        "awaiting": "Awaiting confirmation"
+      },
+      "empty": {
+        "title": "Nothing here",
+        "body": "No transfers in this bucket right now."
+      }
+    },
+    "staff": {
+      "title": "Branch staff",
+      "subtitle": "Manage the staff in your branch and their permissions.",
+      "export": "Export",
+      "invite": "Invite new staff",
+      "inviteHint": "Staff invitations are managed by the organization admin on the Users screen.",
+      "inviteSub": "Enter their email and set permissions. A secure invitation is sent within seconds.",
+      "forbiddenNotice": "Staff management is restricted to the organization admin. Ask your org admin to add or change branch staff from the Users screen.",
+      "searchPlaceholder": "Search by name or email…",
+      "disableConfirm": "Disable this account?",
+      "neverSeen": "Never signed in",
+      "lastSeen": "Last seen",
+      "inviteSent": "Invitation sent",
+      "invitePending": "Invitation pending",
+      "accountDisabled": "Account disabled",
+      "kpi": {
+        "active": "Active staff",
+        "ofTotal": "of {{total}}",
+        "activeFoot": "Currently active accounts.",
+        "online": "Online now",
+        "onlineFoot": "Not available yet.",
+        "weekTx": "Transactions this week",
+        "weekTxFoot": "Not available yet.",
+        "avgTime": "Avg. processing time",
+        "avgTimeFoot": "Not available yet."
+      },
+      "roles": {
+        "all": "All",
+        "managers": "Managers",
+        "staff": "Case staff",
+        "finance": "Finance",
+        "disabled": "Disabled"
+      },
+      "rolePills": {
+        "manager": "Manager",
+        "staff": "Case staff",
+        "finance": "Finance officer",
+        "reviewer": "Reviewer"
+      },
+      "stats": {
+        "transactions": "Transactions",
+        "orphans": "Orphans",
+        "tenure": "Tenure"
+      },
+      "empty": {
+        "title": "No staff found",
+        "body": "No staff match the current filter."
+      }
+    },
+    "performance": {
+      "title": "Branch performance",
+      "subtitle": "Continuous measurement of the branch against targets and sister branches.",
+      "period": "Period",
+      "exportPdf": "Export PDF",
+      "fullReport": "Full monthly report",
+      "unitOrphans": "orphans",
+      "unitSponsorships": "sponsorships",
+      "comingSoon": "Coming soon",
+      "kpi": {
+        "orphans": "Total orphans",
+        "orphansBench": "Managed by this branch.",
+        "sponsorRate": "Sponsorship rate",
+        "sponsoredOf": "{{sponsored}} of {{total}} sponsored",
+        "activeSponsorships": "Active sponsorships",
+        "overdue": "{{count}} overdue",
+        "noOverdue": "None overdue.",
+        "satisfaction": "Parent satisfaction",
+        "satisfactionBench": "Not available yet."
+      },
+      "trendTitle": "Branch performance — last 6 months",
+      "trendMeta": "Monthly payments",
+      "trendEmpty": "No payment history to chart yet.",
+      "legendActual": "Actual",
+      "legendTarget": "Monthly target",
+      "regionTitle": "Geographic distribution of orphans",
+      "regionEmpty": "A by-region breakdown is not exposed by the API yet.",
+      "workloadTitle": "Workload distribution",
+      "workloadEmpty": "A workload breakdown is not exposed by the API yet.",
+      "slaTitle": "SLA compliance",
+      "slaEmpty": "SLA metrics are not exposed by the API yet.",
+      "healthTitle": "Health flags",
+      "health": {
+        "overdue": "{{count}} sponsorships are overdue and need follow-up.",
+        "good": "Healthy — no overdue sponsorships right now.",
+        "available": "{{count}} orphans are available for sponsorship."
+      }
+    }
+  },
+  "financeImport": {
+    "title": "Bank statement import",
+    "subtitle": "Match incoming payments automatically with your sponsors — saves hours of manual reconciliation",
+    "importLog": "Import history",
+    "notice": "This screen is a design preview. Automatic statement import and reconciliation are not wired to the backend yet (TODO).",
+    "step1": "Upload file",
+    "step2": "Bank & format",
+    "step3": "Field mapping",
+    "step4": "Review & confirm",
+    "step5": "Import",
+    "fileTitle": "Drop a statement file here",
+    "fileSub": "or choose a file to upload",
+    "fileDisabled": "Upload is not available yet",
+    "bankTitle": "Bank that issued the statement",
+    "mappingTitle": "Map statement columns to Rufaqaa fields",
+    "colStatement": "Statement column",
+    "colSample": "Sample",
+    "colField": "Rufaqaa field",
+    "colStatus": "Status",
+    "mappedAuto": "Auto",
+    "mappedManual": "Manual",
+    "reconTitle": "Automatic reconciliation results",
+    "reconDesc": "Review the results before importing — every match can be adjusted by hand",
+    "reconMatched": "Fully matched",
+    "reconPartial": "Partial",
+    "reconUnmatched": "Unmatched",
+    "reconDup": "Duplicate",
+    "awaitingData": "Awaiting backend"
   }
 }

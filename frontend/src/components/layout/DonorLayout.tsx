@@ -39,6 +39,12 @@ export function DonorLayout() {
             <NavLink to="/donor/sponsorships" className={navItemClass}>
               {t("donorNav.sponsorships")}
             </NavLink>
+            <NavLink to="/donor/orphans" className={navItemClass}>
+              {t("donorNav.myOrphans")}
+            </NavLink>
+            <NavLink to="/donor/messages" className={navItemClass}>
+              {t("donorNav.messages")}
+            </NavLink>
             <NavLink to="/orphans" className={navItemClass}>
               {t("donorNav.browseMore")}
             </NavLink>

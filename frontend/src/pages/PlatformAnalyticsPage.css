@@ -1,0 +1,475 @@
+/* ═══════════════════════════════════════════════════════════════
+   SA-03 Platform Analytics — scoped styles
+   Ported 1:1 from docs/design/screens/super-admin/SA-03-Analytics.html.
+   Design-system tokens only; no ad-hoc hex (SVG gradient stops
+   excepted). Scoped under `.sa-analytics`, prefixed `sa-`. App-shell
+   chrome is provided by PlatformLayout. Physical left/right → logical
+   (inline-start/-end) for RTL-first.
+   ═══════════════════════════════════════════════════════════════ */
+
+.sa-analytics {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-700: #b45309;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08);
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 14.5px;
+}
+
+.sa-analytics .latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.sa-analytics .sa-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.sa-analytics .sa-icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+/* ───────────── Topbar ───────────── */
+.sa-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.sa-topbar-title h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.sa-topbar-title p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+.sa-topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.sa-date-range {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--snow-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+}
+.sa-dr-btn {
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-600);
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+.sa-dr-btn:hover {
+  background: white;
+}
+.sa-dr-btn.active {
+  background: var(--trust-500);
+  color: white;
+}
+.sa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-700);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.sa-btn:hover {
+  background: var(--snow-100);
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.sa-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ───────────── Panels ───────────── */
+.sa-section {
+  margin-bottom: 20px;
+}
+.sa-panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.sa-panel-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sa-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.sa-panel-title svg {
+  color: var(--trust-400);
+}
+.sa-panel-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+.sa-panel-body {
+  padding: 20px;
+}
+
+/* ───────────── Growth chart ───────────── */
+.sa-growth-summary {
+  display: flex;
+  gap: 32px;
+  align-items: baseline;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--gray-200);
+  flex-wrap: wrap;
+}
+.sa-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sa-summary-label {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.sa-summary-value {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.sa-summary-value .unit {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  margin-inline-start: 4px;
+}
+.sa-growth-chart {
+  width: 100%;
+  height: 240px;
+}
+.sa-growth-chart svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.sa-chart-x-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: var(--gray-500);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  padding: 0 6px;
+  margin-top: 8px;
+}
+.sa-chart-x-labels .current {
+  color: var(--trust-600);
+  font-weight: 600;
+}
+.sa-chart-legend {
+  display: flex;
+  gap: 18px;
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--gray-600);
+  flex-wrap: wrap;
+}
+.sa-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sa-chart-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* ───────────── Grid row ───────────── */
+.sa-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 1024px) {
+  .sa-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ───────────── Geo list ───────────── */
+.sa-geo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sa-geo-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+}
+.sa-geo-flag {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.sa-geo-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.sa-geo-detail {
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+.sa-geo-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sa-geo-bar {
+  width: 100px;
+  height: 8px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.sa-geo-bar-fill {
+  height: 100%;
+  background: var(--trust-400);
+  border-radius: var(--radius-full);
+}
+.sa-geo-count {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-900);
+  min-width: 28px;
+  text-align: end;
+}
+
+/* ───────────── Top orgs (ranked bars) ───────────── */
+.sa-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sa-rank-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+}
+.sa-rank-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  grid-column: 1 / -1;
+  font-size: 13px;
+}
+.sa-rank-name {
+  color: var(--gray-700);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.sa-rank-code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: var(--gray-500);
+}
+.sa-rank-value {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-weight: 600;
+  color: var(--gray-900);
+  white-space: nowrap;
+}
+.sa-rank-bar {
+  grid-column: 1 / -1;
+  height: 8px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.sa-rank-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--trust-300), var(--trust-500));
+  border-radius: var(--radius-full);
+}
+
+/* ───────────── Big stats ───────────── */
+.sa-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 760px) {
+  .sa-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.sa-stat-big {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+}
+.sa-stat-big-label {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sa-stat-big-label svg {
+  color: var(--trust-400);
+}
+.sa-stat-big-value {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.sa-stat-big-explain {
+  font-size: 12.5px;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+/* ───────────── Empty state ───────────── */
+.sa-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 28px 20px;
+  color: var(--gray-500);
+}
+.sa-empty svg {
+  color: var(--gray-300);
+}
+.sa-empty-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+.sa-empty-sub {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  max-width: 36ch;
+}
+.sa-skeleton {
+  background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-200) 37%, var(--gray-100) 63%);
+  background-size: 400% 100%;
+  border-radius: var(--radius-md);
+  animation: sa-an-shimmer 1.4s ease infinite;
+}
+@keyframes sa-an-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-skeleton {
+    animation: none;
+  }
+}

@@ -1,7 +1,7 @@
 import csv
 import io
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -31,10 +31,12 @@ router = APIRouter()
 @router.get("", response_model=Page[OrphanRead])
 async def list_orphans(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     case_status: str | None = None,
+    channel_id: UUID | None = None,
+    assignment_status: Literal["active", "expired", "all"] = "all",
     q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
 ) -> Page[OrphanRead]:
     """List orphans, optionally filtered by case_status and a search term.
@@ -43,10 +45,25 @@ async def list_orphans(
     `search_vector` (covers Arabic + English name fields and the code) and
     also matches the code prefix directly so partial codes like "ORF-AB"
     still work.
+
+    `channel_id` narrows to orphans assigned to a marketing channel.
+    `assignment_status` filters by assignment deadline: "active" keeps
+    orphans whose deadline is still in the future, "expired" those past it,
+    "all" applies no deadline filter.
     """
-    stmt = select(Orphan).where(Orphan.deleted_at.is_(None))
+    # Explicit org scope (defense-in-depth alongside RLS).
+    stmt = select(Orphan).where(
+        Orphan.deleted_at.is_(None),
+        Orphan.organization_id == user.organization_id,
+    )
     if case_status:
         stmt = stmt.where(Orphan.case_status == case_status)
+    if channel_id:
+        stmt = stmt.where(Orphan.assigned_to_channel_id == channel_id)
+    if assignment_status == "active":
+        stmt = stmt.where(Orphan.assignment_deadline >= datetime.now(UTC))
+    elif assignment_status == "expired":
+        stmt = stmt.where(Orphan.assignment_deadline < datetime.now(UTC))
     if q:
         # plainto_tsquery treats input as raw text and handles tokenisation,
         # which is safer than letting users craft tsquery operators.

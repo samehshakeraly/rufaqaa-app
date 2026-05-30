@@ -5,6 +5,7 @@ from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.partner import MarketingChannel, PartnerOrganization
 from app.models.payment import Payment
+from app.models.platform_settings import PlatformSettings
 from app.models.report import OrphanReport
 from app.models.session import UserSession
 from app.models.sponsorship import Sponsorship
@@ -21,6 +22,7 @@ __all__ = [
     "OrphanReport",
     "PartnerOrganization",
     "Payment",
+    "PlatformSettings",
     "Sponsorship",
     "User",
     "UserSession",

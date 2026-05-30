@@ -60,6 +60,9 @@ class OrphanRead(OrphanBase):
     partner_organization_id: UUID
     family_id: UUID | None
     case_status: CaseStatus
+    assigned_to_channel_id: UUID | None = None
+    assigned_at: datetime | None = None
+    assignment_deadline: datetime | None = None
     is_sponsored: bool
     current_balance: Decimal
     created_at: datetime

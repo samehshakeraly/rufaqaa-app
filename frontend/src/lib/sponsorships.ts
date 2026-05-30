@@ -39,8 +39,27 @@ export async function listSponsorships(params?: {
   donor_id?: string;
   orphan_id?: string;
   status?: string;
+  /** Only active sponsorships at least N months behind. */
+  min_months_overdue?: number;
+  /** Shorthand for `min_months_overdue=1`. */
+  is_overdue?: boolean;
 }): Promise<Page<Sponsorship>> {
   const { data } = await api.get<Page<Sponsorship>>("/sponsorships", { params });
+  return data;
+}
+
+/** Donor self-service: every sponsorship belonging to the calling
+ * donor, full `SponsorshipRead` shape (includes `orphan_id`,
+ * `next_payment_date`, `total_paid`). The backend pins the result to
+ * the donor linked to the auth token — a donor can never read another
+ * donor's rows. */
+export async function listMySponsorships(params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<Page<Sponsorship>> {
+  const { data } = await api.get<Page<Sponsorship>>("/me/sponsorships", {
+    params,
+  });
   return data;
 }
 
