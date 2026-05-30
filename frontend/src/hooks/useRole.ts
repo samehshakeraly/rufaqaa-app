@@ -33,6 +33,7 @@ export function useRole() {
     role === "marketing_manager" ||
     role === "finance";
   const isDonor = role === "donor";
+  const isGuardian = role === "guardian";
   const isOrphan = role === "orphan";
   const emailVerified = Boolean(data?.email_verified_at);
 
@@ -49,15 +50,34 @@ export function useRole() {
     isPartnerApprover,
     isStaff,
     isDonor,
+    isGuardian,
     isOrphan,
     emailVerified,
-    /** Where to send this user when they hit `/` or just signed in. */
-    homePath: isStaff
-      ? "/admin/dashboard"
-      : isDonor
-        ? "/donor/dashboard"
-        : isOrphan
-          ? "/orphan"
-          : "/",
+    /**
+     * Where to send this user when they hit `/` or just signed in.
+     * Each role lands on the surface its own API permits — staff no
+     * longer all funnel onto the org-admin dashboard. Keep the ordering
+     * super_admin → org_admin (super_admin is also an admin) so the most
+     * specific role wins.
+     */
+    homePath: isSuperAdmin
+      ? "/platform"
+      : role === "org_admin"
+        ? "/admin/dashboard"
+        : isPartnerManager
+          ? "/partner/approvals"
+          : isPartnerStaff
+            ? "/admin/orphans"
+            : role === "finance"
+              ? "/admin/finance"
+              : isMarketingManager
+                ? "/admin/marketing-channels"
+                : isDonor
+                  ? "/donor/dashboard"
+                  : isGuardian
+                    ? "/guardian"
+                    : isOrphan
+                      ? "/orphan"
+                      : "/",
   };
 }
