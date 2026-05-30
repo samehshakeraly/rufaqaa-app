@@ -19,8 +19,15 @@ export function AppLayout() {
   const { t } = useTranslation();
   const clear = useAuthStore((s) => s.clear);
   const { data: me } = useCurrentUser();
-  const { isAdmin, isFinance, isMarketing, isPartner, isPartnerApprover, isSuperAdmin } =
-    useRole();
+  const {
+    isAdmin,
+    isFinance,
+    isMarketing,
+    isPartner,
+    isPartnerApprover,
+    isPartnerManager,
+    isSuperAdmin,
+  } = useRole();
 
   function logout() {
     clear();
@@ -128,6 +135,23 @@ export function AppLayout() {
             <NavLink to="/admin/settings" className={navItemClass}>
               {t("nav.settings")}
             </NavLink>
+            {/* Partner-manager portal entry — partner_manager ONLY.
+                The PM-01..PM-04 screens live under their own chrome at
+                /partner/*; admins keep using the /admin/* screens. */}
+            {isPartnerManager && (
+              <NavLink
+                to="/partner/approvals"
+                className={({ isActive }) =>
+                  `rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                    isActive
+                      ? "bg-trust-700 text-white"
+                      : "border border-trust-300 text-trust-700 hover:bg-tranquil dark:border-trust-500 dark:text-trust-200 dark:hover:bg-gray-700"
+                  }`
+                }
+              >
+                {t("partner.portalBadge")}
+              </NavLink>
+            )}
             {/* Platform-administration entry — super_admin ONLY. Hidden
                 for org_admins so the per-tenant sidebar stays clean. */}
             {isSuperAdmin && (

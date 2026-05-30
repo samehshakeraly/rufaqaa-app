@@ -1,0 +1,485 @@
+/* ═══════════════════════════════════════════════════════════════
+   Partner-Manager portal shell — scoped styles (PM-01..PM-04)
+   Ported 1:1 from docs/design/screens/partner-mgr/*.html. All values
+   are design-system tokens (rufaqaa v0.1); no ad-hoc hex. Selectors
+   are scoped under `.pm-app` and prefixed `pm-` so they never collide
+   with the app-wide component classes or the OA-* admin screens.
+   Physical left/right are written as logical (inline-start/-end) for
+   RTL-first. Tokens are declared once here and inherited by every page
+   that renders inside the shell.
+   ═══════════════════════════════════════════════════════════════ */
+
+.pm-app {
+  /* Design-system tokens (rufaqaa v0.1) */
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --info-50: #eff6ff;
+  --info-100: #dbeaff;
+  --info-700: #1d4ed8;
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-700: #6d28d9;
+  --gold-50: #fffbeb;
+  --gold-100: #fef3c7;
+  --gold-700: #855e08;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08), 0 2px 4px -1px rgba(11, 30, 51, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+  --pm-sidebar-w: 220px;
+
+  display: grid;
+  grid-template-columns: var(--pm-sidebar-w) 1fr;
+  min-height: 100vh;
+  background: var(--snow-100);
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+@media (max-width: 900px) {
+  .pm-app {
+    grid-template-columns: 1fr;
+  }
+  .pm-sidebar {
+    display: none;
+  }
+}
+
+/* Numeric / latin runs — tabular figures */
+.pm-app .pm-latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.pm-app .pm-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Screen-reader-only (single semantic h1 lives here) */
+.pm-app .pm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pm-app :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-md);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pm-app *,
+  .pm-app *::before,
+  .pm-app *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ───────────── Sidebar ───────────── */
+.pm-sidebar {
+  background: white;
+  border-inline-start: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.pm-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.pm-brand-mark {
+  width: 32px;
+  height: 32px;
+  background: var(--trust-300);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+.pm-brand-text h1,
+.pm-brand-text .pm-brand-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.2;
+}
+.pm-brand-text p {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+.pm-tenant {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  font-size: 12px;
+  width: 100%;
+}
+.pm-tenant-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--trust-500), var(--trust-700));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.pm-tenant-name {
+  flex: 1;
+  text-align: start;
+  font-weight: 600;
+  color: var(--gray-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pm-role-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: var(--purple-50);
+  color: var(--purple-700);
+  border: 1px solid var(--purple-100);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+.pm-nav-section {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 14px 12px 6px;
+}
+.pm-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: start;
+}
+.pm-nav-item:hover {
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
+.pm-nav-item.active {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  font-weight: 600;
+}
+.pm-nav-item svg {
+  color: var(--gray-400);
+  flex-shrink: 0;
+}
+.pm-nav-item.active svg {
+  color: var(--trust-500);
+}
+.pm-nav-badge {
+  margin-inline-start: auto;
+  background: var(--danger-600);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  min-width: 18px;
+  text-align: center;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.pm-nav-badge.muted {
+  background: var(--gray-200);
+  color: var(--gray-700);
+}
+.pm-sidebar-foot {
+  margin-top: auto;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+}
+.pm-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--purple-50);
+  color: var(--purple-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.pm-user-info {
+  flex: 1;
+  min-width: 0;
+}
+.pm-user-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pm-user-role {
+  font-size: 10.5px;
+  color: var(--purple-700);
+  font-weight: 500;
+}
+.pm-sidebar-logout {
+  margin-inline-start: auto;
+  color: var(--gray-400);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pm-sidebar-logout:hover {
+  background: var(--gray-100);
+  color: var(--danger-600);
+}
+
+/* ───────────── Main + topbar ───────────── */
+.pm-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pm-topbar {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap;
+}
+.pm-topbar-title h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pm-mgr-badge {
+  background: var(--purple-50);
+  color: var(--purple-700);
+  border: 1px solid var(--purple-100);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+}
+.pm-topbar-title p {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+.pm-topbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ───────────── Shared buttons ───────────── */
+.pm-btn-primary {
+  padding: 8px 14px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pm-btn-primary:hover {
+  background: var(--trust-500);
+}
+.pm-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.pm-btn-secondary {
+  padding: 8px 14px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pm-btn-secondary:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.pm-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+/* ───────────── Page wrapper ───────────── */
+.pm-page {
+  padding: 20px 28px 48px;
+  max-width: 1380px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ───────────── Shared empty / loading / error ───────────── */
+.pm-empty {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--gray-500);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.pm-empty svg {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 6px;
+  color: var(--success-500);
+  opacity: 0.8;
+}
+.pm-empty.neutral svg {
+  color: var(--gray-300);
+}
+.pm-empty h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+}
+.pm-state {
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.pm-state.error {
+  color: var(--danger-700);
+  background: var(--danger-50);
+  border: 1px solid var(--danger-100);
+  border-radius: var(--radius-lg);
+}
+
+/* ───────────── Icons ───────────── */
+.pm-app .pm-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.pm-app .pm-icon-sm {
+  width: 14px;
+  height: 14px;
+}
+.pm-app .pm-icon-lg {
+  width: 24px;
+  height: 24px;
+}
