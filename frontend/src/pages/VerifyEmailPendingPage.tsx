@@ -10,6 +10,10 @@ import { useAuthStore } from "@/store/auth";
 import { BrandMark, ChevronStart, MailIcon } from "./verifyEmailChrome";
 import "./VerifyEmailPage.css";
 
+// Matches the resend cooldown on the password-reset flow
+// (ForgotPasswordPage) so the resend action can't be spammed.
+const RESEND_COOLDOWN_SECONDS = 60;
+
 /**
  * After signup the user lands here. They expect to receive an email
  * (or, in dev, we stashed the token in sessionStorage). The page lets
@@ -21,6 +25,7 @@ export function VerifyEmailPendingPage() {
   const setTokens = useAuthStore((s) => s.setTokens);
   const [resendEmail, setResendEmail] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
 
   // Dev shortcut: if signup left a token in sessionStorage we can
   // verify immediately. Production donors get this via email instead.
@@ -44,6 +49,9 @@ export function VerifyEmailPendingPage() {
   });
   const resendMut = useMutation({
     mutationFn: () => resendVerification(resendEmail),
+    onSuccess: () => {
+      setCooldown(RESEND_COOLDOWN_SECONDS);
+    },
   });
 
   // Auto-verify if we got here straight from /signup in dev mode.
@@ -53,6 +61,13 @@ export function VerifyEmailPendingPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Tick the resend cooldown down to zero.
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
+    return () => clearInterval(id);
+  }, [cooldown]);
 
   return (
     <div className="ve-root">
@@ -108,11 +123,13 @@ export function VerifyEmailPendingPage() {
                   type="button"
                   className="ve-btn ve-btn-secondary"
                   onClick={() => resendMut.mutate()}
-                  disabled={!resendEmail || resendMut.isPending}
+                  disabled={!resendEmail || resendMut.isPending || cooldown > 0}
                 >
                   {resendMut.isPending
                     ? t("auth.submitting")
-                    : t("verifyPending.resend")}
+                    : cooldown > 0
+                      ? t("auth.resendCooldown", { seconds: cooldown })
+                      : t("verifyPending.resend")}
                 </button>
               </div>
               {resendMut.isSuccess && (
