@@ -866,7 +866,12 @@
     "missing": "No verification token found in the URL.",
     "checking": "Verifying your email…",
     "failed": "Could not verify",
-    "failedBody": "The link may have expired. Request a new one below."
+    "failedBody": "The link may have expired. Request a new one below.",
+    "success": {
+      "title": "Email verified",
+      "body": "Your account is now active. You can continue."
+    },
+    "continue": "Continue"
   },
   "donorNav": {
     "dashboard": "Dashboard",
