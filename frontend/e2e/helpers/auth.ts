@@ -11,7 +11,7 @@ const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? "admin12345";
 export async function adminLogin(page: Page): Promise<void> {
   await page.goto("/login");
   await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
-  await page.getByLabel(/password/i).fill(ADMIN_PASSWORD);
+  await page.locator("#login-password").fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: /(sign in|دخول)/i }).click();
   await page.waitForURL(/\/admin\/dashboard$/);
 }

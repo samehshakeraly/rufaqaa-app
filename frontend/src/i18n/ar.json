@@ -964,7 +964,73 @@
     "newPassword": "كلمة المرور الجديدة",
     "confirmPassword": "تأكيد كلمة المرور الجديدة",
     "passwordMismatch": "كلمتا المرور غير متطابقتين",
-    "backToLogin": "العودة لتسجيل الدخول"
+    "backToLogin": "العودة لتسجيل الدخول",
+    "login": {
+      "brandName": "رفقاء",
+      "brandTagline": "منصّة عالميّة لكفالة الأيتام",
+      "rolesLabel": "نوع الحساب",
+      "roles": {
+        "guardian": "ولي أمر",
+        "donor": "كفيل",
+        "partner": "جهة شريكة",
+        "admin": "مشرف"
+      },
+      "greeting": {
+        "guardian": {
+          "title": "أهلاً يا ولي الأمر",
+          "sub": "سجّل دخولك لمتابعة شؤون أيتامك ورفع تقاريرهم"
+        },
+        "donor": {
+          "title": "أهلاً بعودتك",
+          "sub": "سجّل دخولك لمتابعة كفالاتك وتقارير أيتامك"
+        },
+        "partner": {
+          "title": "أهلاً يا جهة شريكة",
+          "sub": "سجّل دخولك لإدارة الأيتام والمتابعة معهم"
+        },
+        "admin": {
+          "title": "أهلاً بالمشرف",
+          "sub": "لوحة الإدارة والإشراف على المنصّة"
+        }
+      },
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "إظهار/إخفاء كلمة المرور",
+      "remember": "تذكّرني",
+      "loginButton": "تسجيل الدخول",
+      "or": "أو",
+      "continueWithGoogle": "المتابعة عبر Google",
+      "continueWithApple": "المتابعة عبر Apple",
+      "noAccount": "ليس لديك حساب؟",
+      "signupCta": "سجّل ككفيل جديد",
+      "help": {
+        "title": "لم تستلم بياناتك بعد؟",
+        "before": "تواصل مع الجهة المسؤولة عن كفالة أيتامك، أو",
+        "contact": "اتّصل بنا",
+        "after": "وسنساعدك."
+      },
+      "illustration": {
+        "eyebrowBefore": "أكثر من",
+        "eyebrowAfter": "يتيم تحت رعاية رفقاء الآن",
+        "eyebrowCount": "12,000",
+        "headline": "وقفة بجانب يتيم تكتب نوراً في صحيفتك.",
+        "verse": "مَن كَفَلَ يَتيمًا لَهُ أَو لِغَيرِهِ كُنتُ أَنا وَهُوَ كَهاتَينِ فِي الجَنَّةِ",
+        "verseAttr": "— صحيح مسلم",
+        "stats": {
+          "orphans": "يتيم مكفول",
+          "donors": "كفيل نشط",
+          "orgs": "جهة شريكة",
+          "countries": "دولة"
+        },
+        "partnersLabel": "جهات شريكة",
+        "partners": {
+          "fajr": "جمعية الفجر",
+          "amal": "جمعية الأمل",
+          "karam": "جمعية الكرم",
+          "ihsan": "إحسان"
+        }
+      }
+    }
   },
   "common": {
     "loading": "جاري التحميل...",
