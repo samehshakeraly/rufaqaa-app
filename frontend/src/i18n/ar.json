@@ -1127,6 +1127,17 @@
       "success": "تم تحديث التقرير"
     },
     "centerTitle": "مركز التقارير",
+    "reviewTitle": "مراجعة التقارير",
+    "reviewSubtitle": "راجع تقارير أولياء الأمور لأيتامك وانقلها عبر مسار الاعتماد.",
+    "reviewTabs": {
+      "pending": "قيد المراجعة",
+      "rejected": "رُفضت",
+      "approved": "معتمدة"
+    },
+    "reviewSearch": "ابحث بالاسم أو الكود…",
+    "reviewNotePlaceholder": "ملاحظة داخليّة (لن تظهر للكفيل ولا الأهل)…",
+    "reviewReadOnly": "أُرسل — بانتظار اعتماد المدير.",
+    "reviewEmptySelection": "اختر تقريراً من القائمة لمراجعته.",
     "emptyDesc": "لا توجد تقارير للفلتر المحدد.",
     "filterAll": "الكلّ",
     "filterByType": "تصفية حسب النوع",

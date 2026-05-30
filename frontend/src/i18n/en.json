@@ -1127,6 +1127,17 @@
       "success": "Report updated"
     },
     "centerTitle": "Reports Center",
+    "reviewTitle": "Reports review",
+    "reviewSubtitle": "Review guardian reports for your orphans and move them through the approval workflow.",
+    "reviewTabs": {
+      "pending": "Under review",
+      "rejected": "Rejected",
+      "approved": "Approved"
+    },
+    "reviewSearch": "Search by code or name…",
+    "reviewNotePlaceholder": "Internal note (not visible to the donor or family)…",
+    "reviewReadOnly": "Submitted — awaiting a manager's approval.",
+    "reviewEmptySelection": "Select a report from the list to review it.",
     "emptyDesc": "No reports found for the selected filter.",
     "filterAll": "All",
     "filterByType": "Filter by report type",
