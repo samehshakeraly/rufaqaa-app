@@ -1,0 +1,164 @@
+/* ═══════════════════════════════════════════════════════════════
+   PS-03 Register New Orphan — scoped styles
+   Ported from docs/design/screens/partner-staff/PS-03 Register New
+   Orphan.html. The real registration is a single-step create (shared
+   NewOrphanForm), so the multi-step wizard chrome is rendered as a
+   single styled section rather than fabricated steps. Field styling
+   from the mockup is applied via `.ps-register`-scoped overrides so
+   the shared form component is untouched elsewhere. Tokens only;
+   logical inline-start/-end for RTL-first.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ps-register {
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-600: #dc2626;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+/* ───────────── Header ───────────── */
+.ps-reg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.ps-reg-titles h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.ps-reg-titles p {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+.ps-reg-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.ps-reg-back:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+/* ───────────── Section panel ───────────── */
+.ps-reg-panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 30px;
+  max-width: 760px;
+}
+.ps-reg-head {
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.ps-reg-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ps-reg-head h2 svg {
+  color: var(--trust-400);
+}
+.ps-reg-head p {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* ───────────── Field styling (scoped form overrides) ───────────── */
+.ps-reg-panel .card {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+.ps-reg-panel .input {
+  padding: 9px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+.ps-reg-panel .input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ───────────── Icons ───────────── */
+.ps-register .ps-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ps-register .ps-icon-sm {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}

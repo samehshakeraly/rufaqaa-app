@@ -1,0 +1,431 @@
+/* ═══════════════════════════════════════════════════════════════
+   PS-01 Partner Staff Dashboard — scoped styles
+   Ported 1:1 from docs/design/screens/partner-staff/PS-01 Partner
+   Staff Dashboard.html. All values are design-system tokens
+   (rufaqaa v0.1); no ad-hoc hex. Selectors are scoped under
+   `.ps-dash` and prefixed `ps-` so they never collide with the
+   app-wide `.card` / `.btn-*` component classes. Physical
+   left/right are rewritten as logical (inline-start/-end) for
+   RTL-first.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ps-dash {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --purple-50: #f5f3ff;
+  --purple-700: #6d28d9;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.ps-dash .latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ───────────── Greeting strip ───────────── */
+.ps-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.ps-greeting h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.ps-greeting p {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+.ps-greeting .latin {
+  color: var(--trust-600);
+  font-weight: 600;
+}
+.ps-quick-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: var(--trust-400);
+  color: white;
+  border: 1px solid var(--trust-400);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.ps-quick-add:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ───────────── KPIs ───────────── */
+.ps-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+@media (max-width: 1024px) {
+  .ps-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .ps-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.ps-kpi {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+}
+.ps-kpi-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ps-kpi-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ps-kpi-icon.orphans {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+}
+.ps-kpi-icon.review {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.ps-kpi-icon.reports {
+  background: var(--purple-50);
+  color: var(--purple-700);
+}
+.ps-kpi-icon.media {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+.ps-kpi-spark {
+  width: 56px;
+  height: 28px;
+}
+.ps-kpi-spark-line {
+  fill: none;
+  stroke: var(--gray-300);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ps-kpi-label {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.ps-kpi-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.ps-kpi-value .unit {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+.ps-kpi-foot {
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ps-kpi-foot.warn {
+  color: var(--warning-700);
+}
+
+/* ───────────── Grid ───────────── */
+.ps-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .ps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.ps-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.ps-card-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--gray-50);
+}
+.ps-card-head h3 {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ps-card-head h3 svg {
+  color: var(--trust-400);
+}
+.ps-pill {
+  background: var(--gray-200);
+  color: var(--gray-700);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.ps-head-link {
+  font-size: 12.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+}
+.ps-head-link:hover {
+  color: var(--trust-700);
+}
+.ps-card-body {
+  padding: 4px 0;
+}
+
+/* ───────────── Queue rows (reports) ───────────── */
+.ps-queue-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--gray-100);
+  text-align: start;
+  width: 100%;
+  background: transparent;
+  border-inline: none;
+  border-block-start: none;
+  transition: background var(--transition-fast);
+}
+.ps-queue-row:last-child {
+  border-bottom: none;
+}
+.ps-queue-row:hover {
+  background: var(--snow-200);
+}
+.ps-queue-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.ps-queue-text {
+  min-width: 0;
+}
+.ps-queue-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+  text-align: start;
+}
+.ps-queue-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ps-queue-meta .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+.ps-queue-cta {
+  font-size: 11.5px;
+  color: var(--trust-600);
+  font-weight: 600;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+/* ───────────── New orphans this week ───────────── */
+.ps-new-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 14px 18px;
+}
+.ps-new-mini {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  text-align: start;
+}
+.ps-new-mini:hover {
+  background: white;
+  border-color: var(--sky-300);
+}
+.ps-new-photo {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--snow-200) 0,
+    var(--snow-200) 5px,
+    var(--tranquil-100) 5px,
+    var(--tranquil-100) 10px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--trust-700);
+}
+.ps-new-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.ps-new-meta {
+  font-size: 10.5px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+
+/* ───────────── Empty / coming-soon states ───────────── */
+.ps-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--gray-500);
+}
+.ps-empty svg {
+  color: var(--gray-300);
+}
+.ps-empty-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+.ps-empty-sub {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  max-width: 34ch;
+}
+
+/* ───────────── Icons ───────────── */
+.ps-dash .ps-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ps-dash .ps-icon-sm {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}

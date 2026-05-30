@@ -1062,6 +1062,45 @@
       "meta": "Distribution of orphans across countries"
     }
   },
+  "psDash": {
+    "title": "Staff dashboard",
+    "greeting": "Hello {{name}}, blessed day",
+    "greetingSubtitle": "You have {{reports}} reports awaiting review and {{pending}} cases pending approval.",
+    "registerCta": "New orphan",
+    "comingSoon": "Coming soon",
+    "comingSoonBody": "This view will light up once its data source is connected.",
+    "kpi": {
+      "activeOrphans": "Active orphans",
+      "activeOrphansUnit": "orphans",
+      "activeOrphansFoot": "Across all your cases",
+      "pendingApproval": "Pending approval",
+      "pendingApprovalUnit": "cases",
+      "pendingApprovalFoot": "Awaiting a manager's decision",
+      "reportsReceived": "Reports received",
+      "reportsReceivedUnit": "reports",
+      "reportsReceivedFoot": "In your review queue",
+      "photosReview": "Photos to review",
+      "photosReviewUnit": "photos"
+    },
+    "tasks": {
+      "title": "Your tasks today"
+    },
+    "newOrphans": {
+      "title": "Recently registered",
+      "viewAll": "View all",
+      "empty": "No orphans registered yet",
+      "yearsOld_one": "{{count}} yr",
+      "yearsOld_other": "{{count}} yrs"
+    },
+    "performance": {
+      "title": "Your performance this month"
+    },
+    "reportsQueue": {
+      "title": "Reports to review",
+      "inbox": "Reports inbox",
+      "empty": "Nothing in the review queue"
+    }
+  },
   "orphans": {
     "title": "Orphans",
     "addNew": "Add orphan",
@@ -1075,11 +1114,17 @@
     "fatherName": "Father's name",
     "dateOfBirth": "Date of birth",
     "gender": "Gender",
+    "age": "Age",
     "male": "Male",
     "female": "Female",
     "nationality": "Nationality",
     "partner": "Partner organization",
     "status": "Status",
+    "sponsorship": "Sponsorship",
+    "sponsored": "Sponsored",
+    "notSponsored": "Not sponsored",
+    "view": "View",
+    "actionsCol": "Actions",
     "selectPartner": "Choose a partner",
     "balance": "Current balance",
     "timeline": "Timeline",
@@ -1091,6 +1136,9 @@
     "bulkArchivePartial": "Archived {{ok}}; {{fail}} failed.",
     "subtitle": {
       "approvals": "Cases awaiting your approval"
+    },
+    "detail": {
+      "approverHint": "Review the case details, documents, and photos before approving, rejecting, or releasing this case."
     },
     "actions": {
       "approve": "Approve",
@@ -1107,9 +1155,12 @@
     },
     "register": {
       "title": "Register a new orphan",
+      "subtitle": "Add a new case to your organization's register. The case is submitted for a manager's approval.",
+      "sectionBasic": "Basic details",
+      "sectionBasicDesc": "Enter the orphan's core identity details. You can add documents and photos from the case page after saving.",
       "duplicate": "Possible duplicate — this case looks similar to an existing record",
       "viewExisting": "View existing record",
-      "back": "← Back to orphans"
+      "back": "Back to orphans"
     },
     "photo": {
       "title": "Photos",
@@ -1258,6 +1309,17 @@
       "success": "Report updated"
     },
     "centerTitle": "Reports Center",
+    "reviewTitle": "Reports review",
+    "reviewSubtitle": "Review guardian reports for your orphans and move them through the approval workflow.",
+    "reviewTabs": {
+      "pending": "Under review",
+      "rejected": "Rejected",
+      "approved": "Approved"
+    },
+    "reviewSearch": "Search by code or name…",
+    "reviewNotePlaceholder": "Internal note (not visible to the donor or family)…",
+    "reviewReadOnly": "Submitted — awaiting a manager's approval.",
+    "reviewEmptySelection": "Select a report from the list to review it.",
     "emptyDesc": "No reports found for the selected filter.",
     "filterAll": "All",
     "filterByType": "Filter by report type",
@@ -1978,7 +2040,12 @@
       "description": "Review and moderate photos uploaded by partner staff before they appear on donor-facing pages.",
       "todoBackend": "Pending media moderation requires a backend list endpoint (TODO). Until it lands, use the per-photo controls on the orphan detail page.",
       "thumbnailAlt": "Pending media thumbnail {{id}}",
-      "workaround": "Open orphans pending review"
+      "workaround": "Open orphans pending review",
+      "aiTitle": "AI moderation — coming soon",
+      "aiBody": "Once the moderation-queue endpoint lands, AI-screened media will be summarised here for your visual review.",
+      "privacyLabel": "Reminder:",
+      "privacyBody": "Every photo must pass a human visual review even if it clears the AI check. Bulk auto-approval is not permitted by policy.",
+      "comingSoonTitle": "The media queue isn't wired yet"
     }
   },
   "documents": {

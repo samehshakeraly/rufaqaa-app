@@ -20,6 +20,7 @@ import { Link } from "react-router-dom";
 
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
+import { PartnerReportsReviewPage } from "./PartnerReportsReviewPage";
 import {
   listReports,
   transitionReport,
@@ -179,6 +180,15 @@ function typeBadgeClass(t: string): string {
 // Main page
 // ════════════════════════════════════════════════════════════════════
 export function ReportsPage() {
+  // Partner roles get the PS-05 master-detail reports-review queue; admins
+  // and other staff keep the OA-08 Reports Center below. Mirrors the
+  // role-split used for the dashboard (DashboardHome).
+  const { isAdmin, isPartner } = useRole();
+  if (isPartner && !isAdmin) return <PartnerReportsReviewPage />;
+  return <ReportsCenterPage />;
+}
+
+function ReportsCenterPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const { isAdmin, isPartnerApprover, isPartnerStaff } = useRole();

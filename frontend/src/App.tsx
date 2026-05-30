@@ -30,7 +30,7 @@ import { BankTransfersPage } from "./pages/BankTransfersPage";
 import { BankStatementImportPage } from "./pages/BankStatementImportPage";
 import { ChannelDashboardPage } from "./pages/ChannelDashboardPage";
 import { ChannelOrphansPage } from "./pages/ChannelOrphansPage";
-import { DashboardPage } from "./pages/DashboardPage";
+import { DashboardHome } from "./pages/PartnerStaffDashboardPage";
 import { DonorDashboardPage } from "./pages/DonorDashboardPage";
 import { DonorMessagesPage } from "./pages/DonorMessagesPage";
 import { DonorOrphanDetailPage } from "./pages/DonorOrphanDetailPage";
@@ -163,7 +163,7 @@ export function App() {
         }
       >
         <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="dashboard" element={<DashboardHome />} />
         <Route path="orphans" element={<OrphansPage />} />
         <Route path="orphans/new" element={<RegisterOrphanPage />} />
         <Route path="orphans/:id" element={<OrphanDetailPage />} />

@@ -18,11 +18,19 @@ import { listOrphanPhotos, moderateMedia } from "@/lib/media";
 import { listReports } from "@/lib/reports";
 import { toast } from "@/store/toasts";
 
-const KIND_ACCENT: Record<string, string> = {
-  sponsorship: "border-trust",
-  payment: "border-success-500",
-  report: "border-warning-500",
-  media: "border-sky",
+import "./OrphanDetailPage.css";
+
+// Map a case_status onto a hero-badge variant (PS-04 visual language).
+const STATUS_BADGE: Record<string, string> = {
+  pending_review: "review",
+  approved: "active",
+  available: "active",
+  reserved: "pending",
+  sponsored: "active",
+  graduated: "active",
+  deceased: "archived",
+  rejected: "archived",
+  archived: "archived",
 };
 
 export function OrphanDetailPage() {
@@ -123,13 +131,9 @@ export function OrphanDetailPage() {
     },
   });
 
-  if (isLoading) return <p className="text-gray-500">{t("common.loading")}</p>;
+  if (isLoading) return <p className="ps-detail-msg">{t("common.loading")}</p>;
   if (error || !orphan) {
-    return (
-      <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700">
-        {t("common.loadError")}
-      </p>
-    );
+    return <p className="ps-detail-error">{t("common.loadError")}</p>;
   }
 
   // Donor-facing CTA must never leak to partner staff/managers. Only
@@ -156,177 +160,251 @@ export function OrphanDetailPage() {
     : undefined;
 
   const pendingPhotos = photos?.filter((p) => p.moderation_status === "pending") ?? [];
+  const statusLabel = t(`orphans.caseStatus.${orphan.case_status}`, orphan.case_status);
+  const badgeVariant = STATUS_BADGE[orphan.case_status] ?? "archived";
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+    <div className="ps-detail">
+      {/* Breadcrumb */}
+      <nav className="ps-crumb" aria-label="breadcrumb">
+        <Link to="/admin/orphans">{t("orphans.title")}</Link>
+        <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        <span className="ps-crumb-current">{orphan.code}</span>
+      </nav>
+
+      {/* Hero — the single semantic h1 is the orphan's name. */}
+      <div className="ps-hero">
+        <div className="ps-hero-photo" aria-hidden="true">
+          {orphan.first_name?.trim()?.[0] ?? "—"}
+        </div>
+        <div className="ps-hero-text">
+          <span className="ps-hero-code">{orphan.code}</span>
+          <h1 className="ps-hero-name">
             {orphan.first_name} {orphan.family_name}
           </h1>
-          <p className="text-sm text-gray-500">
-            <span className="font-mono">{orphan.code}</span> ·{" "}
-            {t(`orphans.caseStatus.${orphan.case_status}`, orphan.case_status)}
-          </p>
+          <div className="ps-hero-meta">
+            <span className="tabular-nums">{orphan.date_of_birth}</span>
+            <span className="dot" aria-hidden="true" />
+            <span>{orphan.gender === "M" ? t("orphans.male") : t("orphans.female")}</span>
+            <span className="dot" aria-hidden="true" />
+            <span>
+              {t("orphans.balance")}:{" "}
+              <span className="tabular-nums">{orphan.current_balance}</span>
+            </span>
+          </div>
+          <div className="ps-hero-badges">
+            <span className={`ps-badge ${badgeVariant}`}>
+              <span className="dot" aria-hidden="true" />
+              {statusLabel}
+            </span>
+            <span className={`ps-badge ${orphan.is_sponsored ? "active" : "partner"}`}>
+              {orphan.is_sponsored ? t("orphans.sponsored") : t("orphans.notSponsored")}
+            </span>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="ps-hero-actions">
           {showSponsorCta && (
-            <Link to={`/sponsor/${orphan.code}/checkout`} className="btn-primary">
+            <Link to={`/sponsor/${orphan.code}/checkout`} className="ps-btn ps-btn-primary">
               {t("checkout.sponsorThisChild")}
             </Link>
           )}
-          <Link
-            to="/admin/orphans"
-            className="rounded-lg border border-sky px-3 py-1 text-sm text-gray-700 hover:bg-tranquil"
-          >
-            ← {t("orphans.title")}
+          <Link to="/admin/orphans" className="ps-btn">
+            {t("orphans.register.back")}
           </Link>
         </div>
       </div>
 
+      {/* Pending review banner — approver-only action surface. partner_staff
+          never sees approve / reject / release here (gating preserved). */}
       {(showApproveReject || showRelease) && (
-        <div className="card flex flex-wrap items-center gap-3">
-          {showApproveReject && (
-            <>
+        <div className="ps-pending-banner">
+          <div className="ps-pending-banner-icon" aria-hidden="true">
+            <svg className="ps-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div className="ps-pending-banner-text">
+            <h2>{showApproveReject ? t("orphans.subtitle.approvals") : statusLabel}</h2>
+            <p>{t("orphans.detail.approverHint")}</p>
+          </div>
+          <div className="ps-pending-banner-actions">
+            {showApproveReject && (
+              <>
+                <button
+                  type="button"
+                  aria-label={t("orphans.actions.approve")}
+                  className="ps-btn ps-btn-success"
+                  onClick={() => approveMut.mutate()}
+                  disabled={approveMut.isPending}
+                >
+                  {t("orphans.actions.approve")}
+                </button>
+                <button
+                  type="button"
+                  aria-label={t("orphans.actions.reject")}
+                  className="ps-btn ps-btn-danger"
+                  onClick={() => setRejectMode({ kind: "orphan" })}
+                  disabled={rejectMut.isPending}
+                >
+                  {t("orphans.actions.reject")}
+                </button>
+              </>
+            )}
+            {showRelease && (
               <button
                 type="button"
-                aria-label={t("orphans.actions.approve")}
-                className="rounded-lg bg-success-600 px-3 py-2 text-sm font-medium text-white hover:bg-success-700 disabled:opacity-50"
-                onClick={() => approveMut.mutate()}
-                disabled={approveMut.isPending}
+                aria-label={t("orphans.actions.release")}
+                className="ps-btn"
+                onClick={() => releaseMut.mutate()}
+                disabled={releaseMut.isPending}
               >
-                {t("orphans.actions.approve")}
+                {t("orphans.actions.release")}
               </button>
-              <button
-                type="button"
-                aria-label={t("orphans.actions.reject")}
-                className="rounded-lg bg-danger-600 px-3 py-2 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50"
-                onClick={() => setRejectMode({ kind: "orphan" })}
-                disabled={rejectMut.isPending}
-              >
-                {t("orphans.actions.reject")}
-              </button>
-            </>
-          )}
-          {showRelease && (
-            <button
-              type="button"
-              aria-label={t("orphans.actions.release")}
-              className="rounded-lg border border-sky bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-tranquil disabled:opacity-50"
-              onClick={() => releaseMut.mutate()}
-              disabled={releaseMut.isPending}
-            >
-              {t("orphans.actions.release")}
-            </button>
-          )}
+            )}
+          </div>
         </div>
       )}
 
-      <div className="card">
-        <h2 className="mb-3 text-lg font-semibold">{t("orphans.title")}</h2>
-        <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-          <div>
-            <dt className="text-gray-500">{t("orphans.dateOfBirth")}</dt>
-            <dd className="font-medium tabular-nums">{orphan.date_of_birth}</dd>
-          </div>
-          <div>
-            <dt className="text-gray-500">{t("orphans.gender")}</dt>
-            <dd className="font-medium">
-              {orphan.gender === "M" ? t("orphans.male") : t("orphans.female")}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-gray-500">{t("orphans.status")}</dt>
-            <dd className="font-medium">
-              {t(`orphans.caseStatus.${orphan.case_status}`, orphan.case_status)}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-gray-500">{t("orphans.balance")}</dt>
-            <dd className="font-medium tabular-nums">{orphan.current_balance}</dd>
-          </div>
-        </dl>
-      </div>
+      <div className="ps-col-2">
+        {/* Main column */}
+        <div className="ps-stack">
+          <section className="ps-info-block">
+            <div className="ps-info-block-head">
+              <span className="ps-info-block-title">
+                <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                {t("orphans.title")}
+              </span>
+            </div>
+            <div className="ps-info-rows">
+              <div className="ps-info-row">
+                <span className="ps-info-row-label">{t("orphans.dateOfBirth")}</span>
+                <span className="ps-info-row-value tabular-nums">{orphan.date_of_birth}</span>
+              </div>
+              <div className="ps-info-row">
+                <span className="ps-info-row-label">{t("orphans.gender")}</span>
+                <span className="ps-info-row-value">
+                  {orphan.gender === "M" ? t("orphans.male") : t("orphans.female")}
+                </span>
+              </div>
+              <div className="ps-info-row">
+                <span className="ps-info-row-label">{t("orphans.status")}</span>
+                <span className="ps-info-row-value">{statusLabel}</span>
+              </div>
+              <div className="ps-info-row">
+                <span className="ps-info-row-label">{t("orphans.balance")}</span>
+                <span className="ps-info-row-value tabular-nums">{orphan.current_balance}</span>
+              </div>
+            </div>
+          </section>
 
-      <OrphanPhotoUpload orphanId={id} />
+          <OrphanReportsCard orphanId={id} />
 
-      {isPartnerApprover && pendingPhotos.length > 0 && (
-        <div className="card space-y-3">
-          <h2 className="text-lg font-semibold">{t("media.review.title")}</h2>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {pendingPhotos.map((p) => (
-              <li
-                key={p.id}
-                className="overflow-hidden rounded-lg border border-sky bg-snow"
-              >
-                <img
-                  src={p.presigned_url}
-                  alt={t("media.review.thumbnailAlt", { id: p.id.slice(0, 8) })}
-                  className="aspect-square w-full object-cover"
-                  loading="lazy"
-                />
-                <div className="flex gap-1 p-2">
-                  <button
-                    type="button"
-                    aria-label={`${t("media.moderate.approve")} ${p.id.slice(0, 8)}`}
-                    className="flex-1 rounded bg-success-600 px-2 py-1 text-[10px] text-white hover:bg-success-700 disabled:opacity-50"
-                    onClick={() => mediaApproveMut.mutate(p.id)}
-                    disabled={mediaApproveMut.isPending}
-                  >
-                    {t("media.moderate.approve")}
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`${t("media.moderate.reject")} ${p.id.slice(0, 8)}`}
-                    className="flex-1 rounded bg-danger-600 px-2 py-1 text-[10px] text-white hover:bg-danger-700 disabled:opacity-50"
-                    onClick={() => setRejectMode({ kind: "media", mediaId: p.id })}
-                    disabled={mediaRejectMut.isPending}
-                  >
-                    {t("media.moderate.reject")}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <section className="ps-info-block">
+            <div className="ps-info-block-head">
+              <span className="ps-info-block-title">
+                <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <line x1="12" y1="20" x2="12" y2="10" />
+                  <line x1="18" y1="20" x2="18" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="16" />
+                </svg>
+                {t("orphans.timeline")}
+              </span>
+            </div>
+            <div className="ps-timeline">
+              {!filteredTimeline && <p className="ps-detail-msg">{t("common.loading")}</p>}
+              {filteredTimeline && filteredTimeline.items.length === 0 && (
+                <p className="ps-detail-msg">{t("common.empty")}</p>
+              )}
+              {filteredTimeline && filteredTimeline.items.length > 0 && (
+                <ol>
+                  {filteredTimeline.items.map((e) => (
+                    <li
+                      key={`${e.kind}-${e.entity_id}-${e.when}`}
+                      className="ps-audit-row"
+                    >
+                      <span className={`ps-audit-dot ${e.kind}`} aria-hidden="true" />
+                      <div className="ps-audit-body">
+                        <div className="ps-audit-summary">{e.summary}</div>
+                        <div className="ps-audit-meta">
+                          <span className="ps-audit-kind">{e.kind}</span>
+                          <span className="tabular-nums">
+                            {new Date(e.when).toLocaleString(i18n.language)}
+                          </span>
+                          {e.status && <span>{e.status}</span>}
+                        </div>
+                      </div>
+                      {canSeeAmounts && e.amount && (
+                        <span className="ps-audit-amount">
+                          {e.amount} {e.currency}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </section>
         </div>
-      )}
 
-      <DocumentUploadCard target={{ kind: "orphan", orphanId: id }} />
+        {/* Side column */}
+        <div className="ps-stack">
+          <OrphanPhotoUpload orphanId={id} />
 
-      <OrphanReportsCard orphanId={id} />
-
-      <div className="card">
-        <h2 className="mb-3 text-lg font-semibold">{t("orphans.timeline")}</h2>
-        {!filteredTimeline && <p className="text-gray-500">{t("common.loading")}</p>}
-        {filteredTimeline && filteredTimeline.items.length === 0 && (
-          <p className="text-gray-500">{t("common.empty")}</p>
-        )}
-        {filteredTimeline && filteredTimeline.items.length > 0 && (
-          <ol className="space-y-2">
-            {filteredTimeline.items.map((e) => (
-              <li
-                key={`${e.kind}-${e.entity_id}-${e.when}`}
-                className={`flex items-start gap-3 border-s-4 ${KIND_ACCENT[e.kind] ?? "border-sky"} bg-snow px-3 py-2 text-sm`}
-              >
-                <span className="min-w-[10rem] text-xs text-gray-500 tabular-nums">
-                  {new Date(e.when).toLocaleString(i18n.language)}
+          {isPartnerApprover && pendingPhotos.length > 0 && (
+            <section className="ps-info-block">
+              <div className="ps-info-block-head">
+                <span className="ps-info-block-title">
+                  <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  {t("media.review.title")}
                 </span>
-                <span className="rounded-md bg-tranquil px-2 py-0.5 text-xs font-medium uppercase">
-                  {e.kind}
-                </span>
-                <span className="flex-1">{e.summary}</span>
-                {canSeeAmounts && e.amount && (
-                  <span className="font-mono text-xs text-gray-700 tabular-nums">
-                    {e.amount} {e.currency}
-                  </span>
-                )}
-                {e.status && (
-                  <span className="text-xs text-gray-500">{e.status}</span>
-                )}
-              </li>
-            ))}
-          </ol>
-        )}
+              </div>
+              <div className="ps-media-grid">
+                {pendingPhotos.map((p) => (
+                  <div key={p.id} className="ps-media-card">
+                    <img
+                      src={p.presigned_url}
+                      alt={t("media.review.thumbnailAlt", { id: p.id.slice(0, 8) })}
+                      loading="lazy"
+                    />
+                    <div className="ps-media-card-actions">
+                      <button
+                        type="button"
+                        aria-label={`${t("media.moderate.approve")} ${p.id.slice(0, 8)}`}
+                        className="ps-media-mini ok"
+                        onClick={() => mediaApproveMut.mutate(p.id)}
+                        disabled={mediaApproveMut.isPending}
+                      >
+                        {t("media.moderate.approve")}
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`${t("media.moderate.reject")} ${p.id.slice(0, 8)}`}
+                        className="ps-media-mini no"
+                        onClick={() => setRejectMode({ kind: "media", mediaId: p.id })}
+                        disabled={mediaRejectMut.isPending}
+                      >
+                        {t("media.moderate.reject")}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <DocumentUploadCard target={{ kind: "orphan", orphanId: id }} />
+        </div>
       </div>
 
       {rejectMode && (
@@ -373,40 +451,42 @@ function OrphanReportsCard({ orphanId }: { orphanId: string }) {
     enabled: !!orphanId,
   });
   return (
-    <div className="card">
-      <h2 className="mb-3 text-lg font-semibold">{t("reports.title")}</h2>
-      {isLoading && <p className="text-gray-500">{t("common.loading")}</p>}
+    <section className="ps-info-block">
+      <div className="ps-info-block-head">
+        <span className="ps-info-block-title">
+          <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          {t("reports.title")}
+        </span>
+      </div>
+      {isLoading && <p className="ps-detail-msg" style={{ padding: "14px 16px" }}>{t("common.loading")}</p>}
       {error && (
-        <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700">
+        <p className="ps-detail-error" style={{ margin: 14 }}>
           {t("common.loadError")}
         </p>
       )}
       {data && data.items.length === 0 && (
-        <p className="text-gray-500">{t("common.empty")}</p>
+        <p className="ps-detail-msg" style={{ padding: "14px 16px" }}>{t("common.empty")}</p>
       )}
       {data && data.items.length > 0 && (
-        <ul className="divide-y divide-sky/40 text-sm">
+        <ul>
           {data.items.map((r) => (
-            <li
-              key={r.id}
-              className="flex flex-wrap items-center justify-between gap-2 py-2"
-            >
+            <li key={r.id} className="ps-report-row">
               <div>
-                <span className="font-medium">
+                <span className="ps-report-type">
                   {t(`reports.types.${r.report_type}`, r.report_type)}
                 </span>
-                <span className="ms-2 text-xs text-gray-500 tabular-nums">
+                <span className="ps-report-period tabular-nums">
                   {r.period_start} → {r.period_end}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span className="ps-report-status">
                   {t(`reports.statuses.${r.status}`, r.status)}
                 </span>
-                <Link
-                  to={`/admin/reports/${r.id}`}
-                  className="rounded-lg border border-sky px-2 py-1 text-xs text-gray-700 hover:bg-tranquil"
-                >
+                <Link to={`/admin/reports/${r.id}`} className="ps-btn">
                   {t("reports.open")}
                 </Link>
               </div>
@@ -414,7 +494,7 @@ function OrphanReportsCard({ orphanId }: { orphanId: string }) {
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }
 
