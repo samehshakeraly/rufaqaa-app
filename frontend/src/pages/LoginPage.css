@@ -491,6 +491,16 @@
   background: var(--gray-50);
 }
 
+.lg-social-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lg-social-btn:disabled:hover {
+  border-color: var(--gray-200);
+  background: white;
+}
+
 .lg-social-btn .lg-logo-icon {
   width: 18px;
   height: 18px;

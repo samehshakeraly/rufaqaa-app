@@ -234,7 +234,7 @@ export function LoginPage() {
             <div className="lg-or-divider">{t("auth.login.or")}</div>
 
             <div className="lg-social-buttons">
-              <button type="button" className="lg-social-btn" aria-label={t("auth.login.continueWithGoogle")}>
+              <button type="button" className="lg-social-btn" disabled title={t("common.comingSoon")} aria-label={t("auth.login.continueWithGoogle")}>
                 <span className="lg-logo-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="18" height="18">
                     <path
@@ -257,7 +257,7 @@ export function LoginPage() {
                 </span>
                 Google
               </button>
-              <button type="button" className="lg-social-btn" aria-label={t("auth.login.continueWithApple")}>
+              <button type="button" className="lg-social-btn" disabled title={t("common.comingSoon")} aria-label={t("auth.login.continueWithApple")}>
                 <span className="lg-logo-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                     <path d="M17.6 12.7c0-2.1 1.7-3.1 1.7-3.1-.9-1.4-2.4-1.5-2.9-1.5-1.2-.1-2.4.7-3 .7s-1.5-.7-2.5-.7c-1.3 0-2.5.7-3.1 1.9-1.4 2.3-.4 5.8 1 7.7.7.9 1.4 2 2.4 2 1 0 1.3-.6 2.5-.6s1.5.6 2.5.6 1.7-.9 2.3-1.8c.7-1 1-2 1-2 0-.1-2-.7-2-3.2zM15.7 6.8c.5-.6.9-1.5.8-2.3-.8 0-1.7.5-2.2 1.1-.5.5-.9 1.4-.8 2.2.8.1 1.7-.4 2.2-1z" />
