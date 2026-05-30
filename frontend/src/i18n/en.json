@@ -964,7 +964,73 @@
     "newPassword": "New password",
     "confirmPassword": "Confirm new password",
     "passwordMismatch": "Passwords do not match",
-    "backToLogin": "Back to sign in"
+    "backToLogin": "Back to sign in",
+    "login": {
+      "brandName": "Rufaqaa",
+      "brandTagline": "A global orphan-sponsorship platform",
+      "rolesLabel": "Account type",
+      "roles": {
+        "guardian": "Guardian",
+        "donor": "Sponsor",
+        "partner": "Partner org",
+        "admin": "Admin"
+      },
+      "greeting": {
+        "guardian": {
+          "title": "Welcome, guardian",
+          "sub": "Sign in to follow your orphans and file their reports"
+        },
+        "donor": {
+          "title": "Welcome back",
+          "sub": "Sign in to track your sponsorships and orphan reports"
+        },
+        "partner": {
+          "title": "Welcome, partner",
+          "sub": "Sign in to manage orphans and follow up with them"
+        },
+        "admin": {
+          "title": "Welcome, admin",
+          "sub": "Platform administration and oversight dashboard"
+        }
+      },
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Show/hide password",
+      "remember": "Remember me",
+      "loginButton": "Sign in",
+      "or": "or",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithApple": "Continue with Apple",
+      "noAccount": "Don't have an account?",
+      "signupCta": "Register as a new sponsor",
+      "help": {
+        "title": "Haven't received your credentials yet?",
+        "before": "Reach out to the organization responsible for sponsoring your orphans, or",
+        "contact": "contact us",
+        "after": "and we'll help."
+      },
+      "illustration": {
+        "eyebrowBefore": "More than",
+        "eyebrowAfter": "orphans under Rufaqaa's care now",
+        "eyebrowCount": "12,000",
+        "headline": "Standing by an orphan writes light into your record.",
+        "verse": "Whoever sponsors an orphan, his own or another's, he and I will be like these two in Paradise",
+        "verseAttr": "— Sahih Muslim",
+        "stats": {
+          "orphans": "orphans sponsored",
+          "donors": "active sponsors",
+          "orgs": "partner orgs",
+          "countries": "countries"
+        },
+        "partnersLabel": "Partner organizations",
+        "partners": {
+          "fajr": "Al-Fajr Society",
+          "amal": "Al-Amal Society",
+          "karam": "Al-Karam Society",
+          "ihsan": "Ihsan"
+        }
+      }
+    }
   },
   "common": {
     "loading": "Loading...",

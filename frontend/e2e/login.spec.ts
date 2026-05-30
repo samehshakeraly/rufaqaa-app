@@ -26,5 +26,5 @@ test("invalid credentials show an error and stay on /login", async ({ page }) =>
   await page.getByRole("button", { name: /(sign in|دخول)/i }).click();
 
   await expect(page).toHaveURL(/\/login$/);
-  await expect(page.locator("form .bg-red-50").first()).toBeVisible();
+  await expect(page.locator("form .lg-form-error").first()).toBeVisible();
 });

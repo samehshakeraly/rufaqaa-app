@@ -45,7 +45,7 @@ describe("LoginPage", () => {
     await user.clear(screen.getByLabelText("البريد الإلكتروني"));
     await user.type(screen.getByLabelText("البريد الإلكتروني"), "admin@example.com");
     await user.type(screen.getByLabelText("كلمة المرور"), "short");
-    await user.click(screen.getByRole("button", { name: "دخول" }));
+    await user.click(screen.getByRole("button", { name: "تسجيل الدخول" }));
 
     expect(
       await screen.findByText("كلمة المرور يجب أن تكون 8 أحرف على الأقل"),
