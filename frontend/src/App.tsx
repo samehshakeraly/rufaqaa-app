@@ -27,6 +27,7 @@ import { TransparencyPage } from "./pages/TransparencyPage";
 // Admin / staff pages (now mounted under /admin/*)
 import { AuditPage } from "./pages/AuditPage";
 import { BankTransfersPage } from "./pages/BankTransfersPage";
+import { BankStatementImportPage } from "./pages/BankStatementImportPage";
 import { ChannelDashboardPage } from "./pages/ChannelDashboardPage";
 import { ChannelOrphansPage } from "./pages/ChannelOrphansPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -193,6 +194,14 @@ export function App() {
           element={
             <FinanceRoute>
               <FinanceDashboardPage />
+            </FinanceRoute>
+          }
+        />
+        <Route
+          path="finance/import"
+          element={
+            <FinanceRoute>
+              <BankStatementImportPage />
             </FinanceRoute>
           }
         />
