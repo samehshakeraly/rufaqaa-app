@@ -27,7 +27,12 @@ export function AppLayout() {
     isPartnerApprover,
     isPartnerManager,
     isSuperAdmin,
+    homePath,
   } = useRole();
+
+  // Case-management surfaces (orphans, donors, families, partners,
+  // sponsorships, reports) — org admins and partner staff/managers only.
+  const isContentManager = isAdmin || isPartner;
 
   function logout() {
     clear();
@@ -38,17 +43,21 @@ export function AppLayout() {
     <div className="min-h-screen bg-snow dark:bg-gray-900">
       <header className="border-b border-sky bg-white dark:border-gray-700 dark:bg-gray-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <Link to="/admin/dashboard" className="text-xl font-bold text-trust">
+          <Link to={homePath} className="text-xl font-bold text-trust">
             {t("app.name")}
           </Link>
           <nav className="flex gap-2">
-            <NavLink to="/admin/dashboard" className={navItemClass}>
-              {t("nav.dashboard")}
-            </NavLink>
-            <NavLink to="/admin/orphans" className={navItemClass}>
-              {t("nav.orphans")}
-            </NavLink>
-            {(isPartner || isAdmin) && (
+            {isContentManager && (
+              <NavLink to="/admin/dashboard" className={navItemClass}>
+                {t("nav.dashboard")}
+              </NavLink>
+            )}
+            {isContentManager && (
+              <NavLink to="/admin/orphans" className={navItemClass}>
+                {t("nav.orphans")}
+              </NavLink>
+            )}
+            {isContentManager && (
               <NavLink to="/admin/orphans/new" className={navItemClass}>
                 {t("nav.registerOrphan")}
               </NavLink>
@@ -66,22 +75,32 @@ export function AppLayout() {
                 {t("nav.mediaReview")}
               </NavLink>
             )}
-            <NavLink to="/admin/donors" className={navItemClass}>
-              {t("nav.donors")}
-            </NavLink>
-            <NavLink to="/admin/partners" className={navItemClass}>
-              {t("nav.partners")}
-            </NavLink>
-            <NavLink to="/admin/families" className={navItemClass}>
-              {t("nav.families")}
-            </NavLink>
-            <NavLink to="/admin/sponsorships" className={navItemClass}>
-              {t("nav.sponsorships")}
-            </NavLink>
-            <NavLink to="/admin/payments" className={navItemClass}>
-              {t("nav.payments")}
-            </NavLink>
-            {isAdmin && (
+            {isContentManager && (
+              <NavLink to="/admin/donors" className={navItemClass}>
+                {t("nav.donors")}
+              </NavLink>
+            )}
+            {isContentManager && (
+              <NavLink to="/admin/partners" className={navItemClass}>
+                {t("nav.partners")}
+              </NavLink>
+            )}
+            {isContentManager && (
+              <NavLink to="/admin/families" className={navItemClass}>
+                {t("nav.families")}
+              </NavLink>
+            )}
+            {isContentManager && (
+              <NavLink to="/admin/sponsorships" className={navItemClass}>
+                {t("nav.sponsorships")}
+              </NavLink>
+            )}
+            {isFinance && (
+              <NavLink to="/admin/payments" className={navItemClass}>
+                {t("nav.payments")}
+              </NavLink>
+            )}
+            {isFinance && (
               <NavLink to="/admin/bank-transfers" className={navItemClass}>
                 {t("nav.bankTransfers")}
               </NavLink>
@@ -101,9 +120,11 @@ export function AppLayout() {
                 {t("nav.financeReports")}
               </NavLink>
             )}
-            <NavLink to="/admin/reports" className={navItemClass}>
-              {t("nav.reports")}
-            </NavLink>
+            {isContentManager && (
+              <NavLink to="/admin/reports" className={navItemClass}>
+                {t("nav.reports")}
+              </NavLink>
+            )}
             {isAdmin && (
               <NavLink to="/admin/users" className={navItemClass}>
                 {t("nav.users")}
@@ -132,9 +153,11 @@ export function AppLayout() {
                 {t("nav.businessRules")}
               </NavLink>
             )}
-            <NavLink to="/admin/settings" className={navItemClass}>
-              {t("nav.settings")}
-            </NavLink>
+            {isAdmin && (
+              <NavLink to="/admin/settings" className={navItemClass}>
+                {t("nav.settings")}
+              </NavLink>
+            )}
             {/* Partner-manager portal entry — partner_manager ONLY.
                 The PM-01..PM-04 screens live under their own chrome at
                 /partner/*; admins keep using the /admin/* screens. */}

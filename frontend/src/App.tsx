@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AdminRoute } from "./components/AdminRoute";
+import { ContentRoute } from "./components/ContentRoute";
 import { DonorRoute } from "./components/DonorRoute";
 import { FinanceRoute } from "./components/FinanceRoute";
 import { MarketingRoute } from "./components/MarketingRoute";
@@ -163,10 +164,26 @@ export function App() {
         }
       >
         <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardHome />} />
-        <Route path="orphans" element={<OrphansPage />} />
-        <Route path="orphans/new" element={<RegisterOrphanPage />} />
-        <Route path="orphans/:id" element={<OrphanDetailPage />} />
+
+        {/* Org-admin + partner case-management surfaces. Gated to
+            isAdmin || isPartner — finance & marketing roles are redirected
+            to their own home so they can't reach these screens. The admin
+            still lands on /admin/dashboard (login e2e smoke test). */}
+        <Route element={<ContentRoute />}>
+          <Route path="dashboard" element={<DashboardHome />} />
+          <Route path="orphans" element={<OrphansPage />} />
+          <Route path="orphans/new" element={<RegisterOrphanPage />} />
+          <Route path="orphans/:id" element={<OrphanDetailPage />} />
+          <Route path="donors" element={<DonorsPage />} />
+          <Route path="families" element={<FamiliesPage />} />
+          <Route path="families/:id" element={<FamilyDetailPage />} />
+          <Route path="partners" element={<PartnersPage />} />
+          <Route path="partners/:id" element={<PartnerDetailPage />} />
+          <Route path="sponsorships" element={<SponsorshipsPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="reports/:id" element={<ReportDetailPage />} />
+        </Route>
+
         <Route
           path="media-review"
           element={
@@ -175,11 +192,6 @@ export function App() {
             </PartnerApproverGate>
           }
         />
-        <Route path="donors" element={<DonorsPage />} />
-        <Route path="families" element={<FamiliesPage />} />
-        <Route path="families/:id" element={<FamilyDetailPage />} />
-        <Route path="partners" element={<PartnersPage />} />
-        <Route path="partners/:id" element={<PartnerDetailPage />} />
         <Route
           path="marketing-channels"
           element={
@@ -239,8 +251,15 @@ export function App() {
             </MarketingRoute>
           }
         />
-        <Route path="sponsorships" element={<SponsorshipsPage />} />
-        <Route path="payments" element={<PaymentsPage />} />
+        {/* Payments + bank transfers — finance + admin only (isFinance). */}
+        <Route
+          path="payments"
+          element={
+            <FinanceRoute>
+              <PaymentsPage />
+            </FinanceRoute>
+          }
+        />
         <Route
           path="payments/walk-in"
           element={
@@ -249,17 +268,22 @@ export function App() {
             </AdminRoute>
           }
         />
-        <Route path="payments/:id/receipt" element={<PaymentReceiptPage />} />
+        <Route
+          path="payments/:id/receipt"
+          element={
+            <FinanceRoute>
+              <PaymentReceiptPage />
+            </FinanceRoute>
+          }
+        />
         <Route
           path="bank-transfers"
           element={
-            <AdminRoute>
+            <FinanceRoute>
               <BankTransfersPage />
-            </AdminRoute>
+            </FinanceRoute>
           }
         />
-        <Route path="reports" element={<ReportsPage />} />
-        <Route path="reports/:id" element={<ReportDetailPage />} />
         <Route
           path="audit"
           element={
@@ -284,7 +308,14 @@ export function App() {
             </AdminRoute>
           }
         />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route
+          path="settings"
+          element={
+            <AdminRoute>
+              <SettingsPage />
+            </AdminRoute>
+          }
+        />
       </Route>
 
       {/* ── Partner-manager portal (PM-01..PM-04) ───────────────────
