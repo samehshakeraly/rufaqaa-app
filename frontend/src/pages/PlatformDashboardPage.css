@@ -1,0 +1,491 @@
+/* ═══════════════════════════════════════════════════════════════
+   SA-01 Platform Dashboard — scoped styles
+   Ported 1:1 from docs/design/screens/super-admin/SA-01-Dashboard.html.
+   All values are design-system tokens (rufaqaa v0.1); no ad-hoc hex
+   (SVG gradient stops excepted). Selectors are scoped under `.sa-dash`
+   and prefixed `sa-` so they never collide with app-wide component
+   classes. The mockup's app-shell (sidebar/topbar chrome) is provided
+   by PlatformLayout and is intentionally NOT ported here. Physical
+   left/right are rewritten as logical (inline-start/-end) for RTL-first.
+   ═══════════════════════════════════════════════════════════════ */
+
+.sa-dash {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --snow-300: #e2eef3;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-700: #b91c1c;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08), 0 2px 4px -1px rgba(11, 30, 51, 0.04);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.sa-dash .latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.sa-dash .mono {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.sa-dash .sa-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.sa-dash .sa-icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+/* ───────────── Topbar (page header) ───────────── */
+.sa-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.sa-topbar-title h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.sa-topbar-title p {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+.sa-topbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.sa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sa-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+}
+.sa-btn-secondary:hover {
+  background: var(--snow-100);
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.sa-btn-primary {
+  background: var(--trust-500);
+  color: white;
+  border-color: var(--trust-500);
+}
+.sa-btn-primary:hover {
+  background: var(--trust-600);
+  border-color: var(--trust-600);
+}
+.sa-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ───────────── KPI grid ───────────── */
+.sa-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1100px) {
+  .sa-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .sa-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sa-kpi {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  transition: var(--transition);
+}
+.sa-kpi:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.sa-kpi-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.sa-kpi-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+}
+.sa-kpi-icon.green {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+.sa-kpi-icon.gold {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.sa-kpi-icon.snow {
+  background: var(--snow-300);
+  color: var(--trust-700);
+}
+.sa-kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+.sa-kpi-trend.up {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+}
+.sa-kpi-trend.flat {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+.sa-kpi-value {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.sa-kpi-value .unit {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  margin-inline-start: 4px;
+}
+.sa-kpi-label {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+.sa-kpi-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--gray-200);
+}
+
+/* ───────────── Grid + panels ───────────── */
+.sa-grid-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1024px) {
+  .sa-grid-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sa-panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.sa-panel-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sa-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.sa-panel-title svg {
+  color: var(--trust-400);
+}
+.sa-panel-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.sa-panel-body {
+  padding: 20px;
+}
+.sa-panel-link {
+  font-size: 13px;
+  color: var(--trust-500);
+  font-weight: 500;
+}
+.sa-panel-link:hover {
+  color: var(--trust-600);
+  text-decoration: underline;
+}
+
+.sa-status-pill {
+  font-size: 11px;
+  color: var(--success-700);
+  background: var(--success-50);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--success-100);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ───────────── Chart ───────────── */
+.sa-chart-wrap {
+  padding: 12px 0;
+}
+.sa-chart-meta {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: var(--gray-600);
+  flex-wrap: wrap;
+}
+.sa-chart-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sa-chart-meta-item.muted {
+  color: var(--gray-400);
+}
+.sa-chart-meta-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.sa-area-chart {
+  width: 100%;
+  height: 200px;
+}
+.sa-area-chart svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.sa-chart-x-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: var(--gray-500);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  padding: 0 6px;
+  margin-top: 8px;
+}
+.sa-chart-x-labels .current {
+  color: var(--trust-600);
+  font-weight: 600;
+}
+
+/* ───────────── Activity / recent list ───────────── */
+.sa-activity-list {
+  display: flex;
+  flex-direction: column;
+}
+.sa-activity-row {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-100);
+  align-items: flex-start;
+  text-align: start;
+  width: 100%;
+  background: transparent;
+}
+.sa-activity-row:last-child {
+  border-bottom: none;
+}
+a.sa-activity-row:hover {
+  background: var(--snow-100);
+}
+.sa-activity-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sa-activity-dot.create {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+.sa-activity-dot.warn {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.sa-activity-body {
+  min-width: 0;
+}
+.sa-activity-text {
+  font-size: 13.5px;
+  color: var(--gray-800);
+  line-height: 1.55;
+}
+.sa-activity-text strong {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.sa-activity-meta {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+.sa-activity-time {
+  font-size: 11px;
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+.sa-panel-footer {
+  padding: 12px 20px;
+  background: var(--snow-100);
+  border-top: 1px solid var(--gray-200);
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--gray-600);
+}
+
+/* ───────────── Empty / not-yet-sourced state ───────────── */
+.sa-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 28px 20px;
+  color: var(--gray-500);
+}
+.sa-empty svg {
+  color: var(--gray-300);
+}
+.sa-empty-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+.sa-empty-sub {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  max-width: 36ch;
+}
+
+/* Shared loading shimmer for in-panel skeletons */
+.sa-skeleton {
+  background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-200) 37%, var(--gray-100) 63%);
+  background-size: 400% 100%;
+  border-radius: var(--radius-md);
+  animation: sa-shimmer 1.4s ease infinite;
+}
+@keyframes sa-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-skeleton {
+    animation: none;
+  }
+  .sa-kpi:hover {
+    transform: none;
+  }
+}

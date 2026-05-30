@@ -2162,7 +2162,37 @@
       "paymentsChart": "Payments over time",
       "topOrgs": "Top organizations by donations",
       "recentOrgs": "Recently added organizations",
-      "viewAll": "View all"
+      "viewAll": "View all",
+      "headline": "Platform overview",
+      "subtitle": "All organizations · all figures · live",
+      "exportCsv": "Export CSV",
+      "newOrg": "New organization",
+      "kpi": {
+        "activeOrgs": "Active organizations",
+        "pendingMeta": "of which {{count}} pending approval",
+        "totalOrphans": "Orphans across the platform",
+        "countriesMeta": "in {{count}} countries",
+        "totalDonated": "Total donations",
+        "donatedMeta": "Since the start of the period",
+        "uptime": "System uptime",
+        "uptimeMeta": "Last 30 days"
+      },
+      "growth": {
+        "title": "Donations growth",
+        "source": "Source: database · live",
+        "legendDonations": "Total donations",
+        "empty": "No payments recorded yet"
+      },
+      "health": {
+        "title": "System health"
+      },
+      "recent": {
+        "title": "Recent platform activity",
+        "viewAll": "View full log",
+        "added": "Organization added:",
+        "empty": "No organizations yet",
+        "footer": "Showing the {{count}} most recent organizations"
+      }
     },
     "summary": {
       "totalOrgs": "Total organizations",
@@ -2192,10 +2222,6 @@
     "orgs": {
       "title": "Organizations Management",
       "add": "Add organization",
-      "edit": {
-        "saved": "Changes saved",
-        "planPlaceholder": "e.g. free / pro"
-      },
       "suspend": "Suspend",
       "activate": "Activate",
       "filters": {
@@ -2214,7 +2240,8 @@
         "orphans": "Orphans",
         "donors": "Donors",
         "createdAt": "Created",
-        "actions": "Actions"
+        "actions": "Actions",
+        "organization": "Organization"
       },
       "create": {
         "title": "Add a new organization",
@@ -2243,6 +2270,22 @@
         "title": "Activate organization",
         "body": "Reactivate “{{name}}” and restore access for its users.",
         "done": "Organization activated"
+      },
+      "summaryLine": "{{total}} organizations · {{active}} active · {{pending}} pending · {{suspended}} suspended",
+      "export": "Export",
+      "edit": "Edit",
+      "editSaved": "Changes saved",
+      "editPlanPlaceholder": "e.g. free / pro",
+      "planFree": "FREE",
+      "searchPlaceholder": "Search by name, country, or code…",
+      "footerCount": "Showing {{count}} organizations",
+      "tabs": {
+        "all": "All"
+      },
+      "toolbar": {
+        "filter": "Filter",
+        "columns": "Columns",
+        "sort": "Sort"
       }
     },
     "analytics": {
@@ -2252,7 +2295,36 @@
       "exportCsv": "Export CSV",
       "paymentsByMonth": "Payments by month",
       "topOrgs": "Top organizations by donations",
-      "orgsByCountry": "Organizations by country"
+      "orgsByCountry": "Organizations by country",
+      "subtitle": "Rufaqaa performance worldwide",
+      "pdfReport": "PDF report",
+      "growth": {
+        "title": "Sponsorship & donations growth",
+        "donations": "Total donations",
+        "payments": "Payments",
+        "orphans": "Orphans",
+        "legendDonations": "Donations",
+        "empty": "No payments recorded yet"
+      },
+      "geo": {
+        "title": "Orphan distribution by country",
+        "meta": "{{countries}} countries · {{orphans}} orphans",
+        "partners": "{{count}} partner organizations"
+      },
+      "paymentMethods": {
+        "title": "Payment methods used"
+      },
+      "stats": {
+        "avgDuration": "Average sponsorship duration",
+        "avgDurationHint": "From sponsorship start to cancellation.",
+        "conversion": "Conversion rate (visitor → donor)",
+        "conversionHint": "From site visit to first sponsorship payment.",
+        "reportRead": "Monthly report read rate",
+        "reportReadHint": "Sponsors who open their orphan's monthly report."
+      },
+      "funnel": {
+        "title": "Visitor-to-sponsor conversion funnel"
+      }
     },
     "settings": {
       "title": "Platform Settings",
@@ -2274,20 +2346,35 @@
         "backup": {
           "title": "Run full manual backup",
           "body": "Create an immediate database backup.",
-          "action": "Run now"
+          "action": "Run now",
+          "confirm": "Start a full database + storage backup now?"
         },
         "reindex": {
           "title": "Rebuild search indexes",
           "body": "May take a while depending on data size.",
-          "action": "Start reindex"
+          "action": "Start reindex",
+          "confirm": "Rebuild search indexes? Search may be slower while this runs."
         },
         "restart": {
           "title": "Restart API server",
           "body": "Brief downtime up to 30s; in-flight requests are cancelled.",
-          "action": "Restart"
+          "action": "Restart",
+          "confirm": "Restart the API server? In-flight requests will be cancelled."
         }
+      },
+      "navLabel": "Settings categories",
+      "generalHint": "These flags apply to every user on the platform.",
+      "maintenance": {
+        "title": "Maintenance mode",
+        "on": "Enabled",
+        "off": "Disabled",
+        "toggleTitle": "Enable maintenance mode",
+        "toggleBody": "When enabled, visitors see a \"We'll be back soon\" page. Super-admin access stays open.",
+        "hint": "Affects every visitor immediately."
       }
-    }
+    },
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "This panel will light up once the supporting data is available."
   },
   "businessRules": {
     "title": "Business Rules",
