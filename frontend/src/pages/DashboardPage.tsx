@@ -128,10 +128,16 @@ export function DashboardPage() {
 
   return (
     <div className="oa-dash">
-      {/* ── Greeting (page h1) ─────────────────────────────────────── */}
+      {/* Page title — the single semantic h1. Visually hidden because the
+          mockup shows the page name in the app top-bar, not in the page
+          body; the visible greeting below is an h2. Keeps screen readers
+          (and the login e2e smoke test) anchored on the page name. */}
+      <h1 className="sr-only">{t("dashboard.title")}</h1>
+
+      {/* ── Greeting ───────────────────────────────────────────────── */}
       <div className="oa-greeting">
         <div className="oa-greeting-text">
-          <h1>{t("dashboard.greeting", { name: me?.first_name ?? "" })}</h1>
+          <h2>{t("dashboard.greeting", { name: me?.first_name ?? "" })}</h2>
           <p>{t("dashboard.greetingSubtitle")}</p>
         </div>
         {summaryQuery.dataUpdatedAt > 0 && (
