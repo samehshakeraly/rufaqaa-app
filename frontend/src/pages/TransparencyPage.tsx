@@ -1,315 +1,436 @@
 import { useQuery } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { SeoHead } from "@/components/public/SeoHead";
 import {
+  ArrowEndIcon,
   BarChartIcon,
+  CheckIcon,
   CheckCircleIcon,
+  ClockIcon,
   CodeIcon,
   CreditCardIcon,
   DollarIcon,
-  GlobeIcon,
+  GithubIcon,
   HeartIcon,
-  LockIcon,
-  SearchIcon,
+  NetworkIcon,
+  StarIcon,
+  UsersIcon,
 } from "@/components/public/icons";
-import { Hero, Section, SectionHead } from "@/components/public/ui";
 import { getPublicStats } from "@/lib/public";
+
+import "./TransparencyPage.css";
 
 const REPO_URL = "https://github.com/samehshakeraly/rufaqaa-app";
 
+/** No financial / row-level data is exposed by /public/stats, so every
+ *  monetary or unbacked figure renders as this honest placeholder. */
+const PLACEHOLDER = "—";
+
 /**
- * W-04 — Transparency (/transparency). Live platform stats from
- * GET /public/stats, the "where every dollar goes" allocation
- * breakdown (95 / 3 / 2, design-system colours only), transparency
- * commitments, and the open-source strip.
+ * W-04 — Transparency (/transparency). Pixel-matches the W-04 mockup,
+ * mirroring the OA-01 scoped-CSS pattern: all body sections are ported
+ * under the `.tr-root` scope; the shared nav/footer come from
+ * PublicSiteLayout and are NOT duplicated here.
  *
- * The "recent transactions" feed is intentionally an empty/placeholder
- * state: /public/stats exposes aggregates only, never row-level
- * transactions, so we don't fabricate a feed. See the TODO below.
- * Rendered inside PublicSiteLayout — content only.
+ * Data wiring: GET /public/stats is the ONLY data source, and it returns
+ * platform aggregates only — never money or row-level transactions. So:
+ *   • Active sponsorships  ← stats.orphans_sponsored (real)
+ *   • Everything financial (monthly donations, transfer ratio, average
+ *     sponsorship duration, per-year report figures) and the live
+ *     transfer feed and open-source repo metrics have NO backing
+ *     endpoint → rendered as "—" placeholders with TODO(backend). We
+ *     never fabricate financial numbers or transactions.
+ *
+ * The 95/3/2 allocation split is a stated, design-system policy (not a
+ * computed figure), so it is shown as written in the mockup.
  */
 export function TransparencyPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const statsQ = useQuery({ queryKey: ["public", "stats"], queryFn: getPublicStats });
 
-  const fmt = (v: number | undefined) =>
-    v === undefined ? "—" : v.toLocaleString();
+  // Locale-aware integer formatting with tabular figures (the .tr-latin /
+  // unit spans carry the IBM Plex tnum styling).
+  const int = (v: number | undefined) =>
+    v === undefined ? PLACEHOLDER : v.toLocaleString(i18n.language, { maximumFractionDigits: 0 });
 
-  const kpis = [
-    { label: "sponsored", value: statsQ.data?.orphans_sponsored, Icon: HeartIcon, accent: true },
-    { label: "available", value: statsQ.data?.orphans_available, Icon: SearchIcon },
-    { label: "donors", value: statsQ.data?.donors_total, Icon: DollarIcon },
-    { label: "countries", value: statsQ.data?.countries_served, Icon: GlobeIcon },
-  ];
-
-  // 95 / 3 / 2 split — design-system token colours only.
+  // 95 / 3 / 2 split — stated policy, design-system token colours only.
   const allocation = [
-    { label: "toOrphans", pct: 95, stroke: "stroke-trust-300", swatch: "bg-trust-300" },
-    { label: "operations", pct: 3, stroke: "stroke-sky-300", swatch: "bg-sky-300" },
-    { label: "reserves", pct: 2, stroke: "stroke-tranquil-300", swatch: "bg-tranquil-300" },
-  ];
+    { label: "toOrphans", pct: 95, swatch: "tr-sw-1", stroke: "var(--trust-300)" },
+    { label: "operations", pct: 3, swatch: "tr-sw-2", stroke: "var(--sky-300)" },
+    { label: "reserves", pct: 2, swatch: "tr-sw-3", stroke: "var(--tranquil-300)" },
+  ] as const;
 
   const commitments = [
-    { t: "c1Title", d: "c1Desc", Icon: CheckCircleIcon },
-    { t: "c2Title", d: "c2Desc", Icon: CodeIcon },
-    { t: "c3Title", d: "c3Desc", Icon: LockIcon },
-  ];
+    { tt: "c1Title", d: "c1Desc", Icon: CheckCircleIcon },
+    { tt: "c2Title", d: "c2Desc", Icon: CodeIcon },
+    { tt: "c3Title", d: "c3Desc", Icon: CheckCircleIcon },
+  ] as const;
+
+  // Open-source repo metrics have no backing endpoint — honest placeholders.
+  // TODO(backend): expose GitHub repo stats (stars/forks/contributors/commits).
+  const osStats = ["stars", "forks", "contributors", "commits"] as const;
+  const osIcons: Record<(typeof osStats)[number], ReactNode> = {
+    stars: <StarIcon className="tr-icon tr-icon-sm" />,
+    forks: <NetworkIcon className="tr-icon tr-icon-sm" />,
+    contributors: <UsersIcon className="tr-icon tr-icon-sm" />,
+    commits: <BarChartIcon className="tr-icon tr-icon-sm" />,
+  };
 
   return (
-    <>
+    <div className="tr-root">
       <SeoHead
         titleKey="public.transparency.meta.title"
         descriptionKey="public.transparency.meta.description"
       />
-      <Hero
-        eyebrow={
-          <>
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-success-500" />
-            {t("public.transparency.hero.eyebrow")}
-          </>
-        }
-        title={t("public.transparency.hero.title")}
-        titleAccent={t("public.transparency.hero.titleAccent")}
-        subtitle={t("public.transparency.hero.subtitle")}
-      >
-        <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-success-100 bg-success-50 px-3 py-1.5 text-xs font-medium text-success-700">
-          <span aria-hidden="true" className="h-2 w-2 animate-pulse rounded-full bg-success-500" />
-          {t("public.transparency.hero.live")}
-        </div>
-      </Hero>
 
-      {/* LIVE KPIs */}
-      <Section labelledBy="kpi-title">
-        <h2 id="kpi-title" className="sr-only">
+      {/* ── HERO ── */}
+      <section className="tr-hero" aria-labelledby="tr-hero-title">
+        <div className="tr-container tr-hero-inner">
+          <span className="tr-eyebrow">
+            <span className="tr-dot" aria-hidden="true" />
+            {t("public.transparency.hero.eyebrow")}
+          </span>
+          <h1 className="tr-hero-title" id="tr-hero-title">
+            {t("public.transparency.hero.title")}{" "}
+            <span className="tr-accent">{t("public.transparency.hero.titleAccent")}</span>
+          </h1>
+          <p className="tr-hero-sub">{t("public.transparency.hero.subtitle")}</p>
+          <div className="tr-last-updated">
+            <span className="tr-pulse-dot" aria-hidden="true" />
+            {t("public.transparency.hero.live")}
+          </div>
+        </div>
+      </section>
+
+      {/* ── REAL-TIME KPIs ── */}
+      <section className="tr-kpi" aria-labelledby="tr-kpi-title">
+        <h2 id="tr-kpi-title" className="tr-sr-only">
           {t("public.transparency.kpi.heading")}
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {kpis.map(({ label, value, Icon, accent }) => (
-            <div
-              key={label}
-              className="rounded-2xl border border-sky-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-            >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-tranquil-200 text-trust-600 dark:bg-gray-700">
-                <Icon className="h-5 w-5" />
-              </div>
-              <div
-                className={`text-3xl font-bold tabular-nums ${
-                  accent ? "text-trust-600 dark:text-trust-100" : "text-gray-900 dark:text-gray-100"
-                }`}
-              >
-                {statsQ.isLoading ? "…" : fmt(value)}
-              </div>
-              <div className="mt-1 text-sm text-gray-500">
-                {t(`public.transparency.kpi.${label}`)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* FEED (placeholder) + ALLOCATION */}
-      <Section className="bg-white dark:bg-gray-800/40">
-        <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-          {/* Recent transfers — placeholder, no fabricated data */}
-          <div className="rounded-2xl border border-sky-200 bg-snow-100 p-6 dark:border-gray-700 dark:bg-gray-900">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-gray-100">
-                <CreditCardIcon className="h-4 w-4 text-trust-500" />
-                {t("public.transparency.feed.title")}
-              </div>
-              <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
-                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-gray-300" />
-                {t("public.transparency.feed.live")}
-              </span>
-            </div>
-            {/*
-              TODO(public): wire to a future public "recent transfers" endpoint.
-              GET /public/stats returns aggregates only — never row-level
-              transactions — so we render an honest placeholder instead of
-              fabricating a feed. See public.transparency.feed.todo.
-            */}
-            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-sky-300 bg-white px-6 py-12 text-center dark:border-gray-700 dark:bg-gray-800">
-              <CreditCardIcon className="h-8 w-8 text-gray-300" />
-              <p className="max-w-sm text-sm leading-relaxed text-gray-500">
-                {t("public.transparency.feed.empty")}
-              </p>
-            </div>
+        <div className="tr-container">
+          <div className="tr-kpi-grid">
+            {/* 1 — Donations this month. TODO(backend): no public revenue
+                aggregate is exposed by /public/stats. */}
+            <KpiCard
+              icon={<DollarIcon className="tr-icon" />}
+              value={PLACEHOLDER}
+              label={t("public.transparency.kpi.donationsMonth")}
+              meta={t("public.transparency.kpi.donationsMonthMeta")}
+            />
+            {/* 2 — Active sponsorships (real). */}
+            <KpiCard
+              icon={<HeartIcon className="tr-icon" />}
+              value={int(statsQ.data?.orphans_sponsored)}
+              loading={statsQ.isLoading}
+              label={t("public.transparency.kpi.sponsored")}
+              meta={t("public.transparency.kpi.sponsoredMeta")}
+            />
+            {/* 3 — Average sponsorship duration. TODO(backend): no duration
+                aggregate is exposed by /public/stats. */}
+            <KpiCard
+              icon={<ClockIcon className="tr-icon" />}
+              value={PLACEHOLDER}
+              label={t("public.transparency.kpi.avgDuration")}
+              meta={t("public.transparency.kpi.avgDurationMeta")}
+            />
+            {/* 4 — Share transferred to orphans. TODO(backend): no
+                fee/transfer-ratio aggregate is exposed by /public/stats. */}
+            <KpiCard
+              icon={<CheckIcon className="tr-icon" />}
+              value={PLACEHOLDER}
+              label={t("public.transparency.kpi.transferRatio")}
+              meta={t("public.transparency.kpi.transferRatioMeta")}
+            />
           </div>
-
-          {/* Allocation donut */}
-          <aside className="rounded-2xl border border-sky-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-            <div className="mb-5 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-gray-100">
-                <BarChartIcon className="h-4 w-4 text-trust-500" />
-                {t("public.transparency.alloc.title")}
-              </div>
-              <span className="text-xs text-gray-500">{t("public.transparency.alloc.period")}</span>
-            </div>
-            <div className="relative mx-auto h-44 w-44">
-              <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90" role="img" aria-label={t("public.transparency.alloc.title")}>
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="none"
-                  className="stroke-tranquil-100"
-                  strokeWidth="3.6"
-                />
-                {(() => {
-                  let offset = 0;
-                  return allocation.map((seg) => {
-                    const dash = `${seg.pct} ${100 - seg.pct}`;
-                    const el = (
-                      <circle
-                        key={seg.label}
-                        cx="18"
-                        cy="18"
-                        r="15.915"
-                        fill="none"
-                        className={seg.stroke}
-                        strokeWidth="3.6"
-                        strokeDasharray={dash}
-                        strokeDashoffset={-offset}
-                      />
-                    );
-                    offset += seg.pct;
-                    return el;
-                  });
-                })()}
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-3xl font-bold tabular-nums text-trust-600 dark:text-trust-100">
-                  95%
-                </div>
-                <div className="text-xs text-gray-500">
-                  {t("public.transparency.alloc.centerLabel")}
-                </div>
-              </div>
-            </div>
-            <ul className="mt-5 flex flex-col gap-2.5">
-              {allocation.map((seg) => (
-                <li key={seg.label} className="flex items-center gap-2.5 text-sm">
-                  <span aria-hidden="true" className={`h-3 w-3 rounded-sm ${seg.swatch}`} />
-                  <span className="flex-1 text-gray-700 dark:text-gray-300">
-                    {t(`public.transparency.alloc.${seg.label}`)}
-                  </span>
-                  <span className="font-semibold tabular-nums text-gray-900 dark:text-gray-100">
-                    {seg.pct}%
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs leading-relaxed text-gray-500">
-              {t("public.transparency.alloc.footer")}
-            </p>
-          </aside>
         </div>
-      </Section>
+      </section>
 
-      {/* ANNUAL REPORTS (pending) */}
-      <Section labelledBy="reports-title">
-        <SectionHead
-          id="reports-title"
-          eyebrow={t("public.transparency.reports.eyebrow")}
-          title={t("public.transparency.reports.title")}
-          titleAccent={t("public.transparency.reports.titleAccent")}
-          lede={t("public.transparency.reports.lede")}
-        />
-        <div className="grid gap-4 sm:grid-cols-3">
-          {[2023, 2024, 2025].map((year) => (
-            <article
-              key={year}
-              className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <div className="font-mono text-2xl font-semibold tabular-nums text-gray-900 dark:text-gray-100">
-                  {year}
-                </div>
-                <span className="rounded-full bg-warning-50 px-2.5 py-1 text-[11px] font-medium text-warning-700">
-                  {t("public.transparency.reports.pending")}
-                </span>
-              </div>
-              <p className="text-sm leading-relaxed text-gray-500">
-                {t("public.transparency.reports.pendingNote")}
-              </p>
-            </article>
-          ))}
-        </div>
-      </Section>
-
-      {/* COMMITMENTS */}
-      <Section labelledBy="commitments-title" className="bg-white dark:bg-gray-800/40">
-        <SectionHead
-          id="commitments-title"
-          eyebrow={t("public.transparency.commitments.eyebrow")}
-          title={t("public.transparency.commitments.title")}
-          titleAccent={t("public.transparency.commitments.titleAccent")}
-        />
-        <div className="grid gap-4 sm:grid-cols-3">
-          {commitments.map(({ t: tt, d, Icon }) => (
-            <article
-              key={tt}
-              className="rounded-2xl border border-gray-200 bg-snow-100 p-6 dark:border-gray-700 dark:bg-gray-900"
-            >
-              <div className="mb-3.5 flex h-12 w-12 items-center justify-center rounded-lg bg-tranquil-200 text-trust-600 dark:bg-gray-700">
-                <Icon className="h-6 w-6" />
-              </div>
-              <h3 className="mb-1.5 font-semibold text-gray-900 dark:text-gray-100">
-                {t(`public.transparency.commitments.${tt}`)}
-              </h3>
-              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-                {t(`public.transparency.commitments.${d}`)}
-              </p>
-            </article>
-          ))}
-        </div>
-      </Section>
-
-      {/* OPEN SOURCE STRIP */}
-      <Section labelledBy="os-strip-title">
-        <div className="rounded-3xl bg-gray-900 p-8 sm:p-10">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
+      {/* ── MAIN GRID: feed + allocation ── */}
+      <section className="tr-main-grid-section" aria-labelledby="tr-feed-title">
+        <div className="tr-container">
+          <div className="tr-main-grid">
+            {/* Transfer feed — honest placeholder, never fabricated.
+                TODO(backend): wire to a future public "recent transfers"
+                endpoint. /public/stats exposes aggregates only — never
+                row-level transactions. */}
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-tranquil-200">
-                <CodeIcon className="h-3.5 w-3.5" />
-                {t("public.transparency.os.eyebrow")}
-              </span>
-              <h2
-                id="os-strip-title"
-                className="mt-3 text-2xl font-semibold leading-snug text-white"
-              >
-                {t("public.transparency.os.title")}
-              </h2>
-              <p className="mt-2 max-w-xl leading-relaxed text-white/75">
-                {t("public.transparency.os.subtitle")}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href={REPO_URL}
-                  rel="noopener"
-                  target="_blank"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-mono text-sm font-medium text-gray-900 transition hover:bg-tranquil-100"
-                >
-                  <CodeIcon className="h-4 w-4" />
-                  {t("public.transparency.os.repoButton")}
-                </a>
+              <div className="tr-feed-card">
+                <div className="tr-feed-head">
+                  <span className="tr-feed-title">
+                    <CreditCardIcon className="tr-icon tr-icon-sm" />
+                    <h2 id="tr-feed-title" style={{ font: "inherit" }}>
+                      {t("public.transparency.feed.title")}
+                    </h2>
+                  </span>
+                  <span className="tr-feed-live">
+                    <span className="tr-pulse" aria-hidden="true" />
+                    {t("public.transparency.feed.live")}
+                  </span>
+                </div>
+                <div className="tr-feed-empty">
+                  <CreditCardIcon className="tr-icon tr-icon-lg" />
+                  <p>{t("public.transparency.feed.empty")}</p>
+                </div>
+                <div className="tr-feed-footer">{t("public.transparency.feed.footer")}</div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              {(["stars", "forks", "contributors", "commits"] as const).map((s) => (
-                <div key={s} className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-                  <div className="font-mono text-lg font-semibold text-white">MIT</div>
-                  <div className="mt-0.5 text-[11px] text-gray-400">
-                    {t(`public.transparency.os.${s}`)}
+
+            {/* Allocation donut — stated 95/3/2 policy. */}
+            <aside>
+              <div className="tr-alloc-card">
+                <div className="tr-alloc-head">
+                  <span className="tr-alloc-title">
+                    <BarChartIcon className="tr-icon tr-icon-sm" />
+                    {t("public.transparency.alloc.title")}
+                  </span>
+                  <span className="tr-alloc-period">{t("public.transparency.alloc.period")}</span>
+                </div>
+
+                <div className="tr-donut">
+                  <svg
+                    viewBox="0 0 36 36"
+                    role="img"
+                    aria-label={`${t("public.transparency.alloc.title")}: ${allocation
+                      .map((s) => `${t(`public.transparency.alloc.${s.label}`)} ${s.pct}%`)
+                      .join(", ")}`}
+                  >
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="15.915"
+                      fill="none"
+                      stroke="var(--tranquil-100)"
+                      strokeWidth="3.6"
+                    />
+                    {(() => {
+                      let offset = 0;
+                      return allocation.map((seg) => {
+                        const el = (
+                          <circle
+                            key={seg.label}
+                            cx="18"
+                            cy="18"
+                            r="15.915"
+                            fill="none"
+                            stroke={seg.stroke}
+                            strokeWidth="3.6"
+                            strokeDasharray={`${seg.pct} ${100 - seg.pct}`}
+                            strokeDashoffset={-offset}
+                          />
+                        );
+                        offset += seg.pct;
+                        return el;
+                      });
+                    })()}
+                  </svg>
+                  <div className="tr-donut-center" aria-hidden="true">
+                    <div className="tr-donut-center-num tr-latin">
+                      95<span className="tr-pct">%</span>
+                    </div>
+                    <div className="tr-donut-center-label">
+                      {t("public.transparency.alloc.centerLabel")}
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                <div className="tr-alloc-legend">
+                  {allocation.map((seg) => (
+                    <div key={seg.label} className="tr-legend-row">
+                      <span className={`tr-legend-swatch ${seg.swatch}`} aria-hidden="true" />
+                      <span className="tr-legend-label">
+                        {t(`public.transparency.alloc.${seg.label}`)}
+                      </span>
+                      <span className="tr-legend-value tr-latin">{seg.pct}%</span>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="tr-alloc-footer">{t("public.transparency.alloc.footer")}</p>
+              </div>
+            </aside>
           </div>
         </div>
-        <p className="sr-only">{t("public.transparency.feed.todo")}</p>
-      </Section>
-    </>
+      </section>
+
+      {/* ── ANNUAL REPORTS ── */}
+      <section className="tr-reports" aria-labelledby="tr-reports-title">
+        <div className="tr-container">
+          <div className="tr-section-head-center">
+            <span className="tr-eyebrow">{t("public.transparency.reports.eyebrow")}</span>
+            <h2 className="tr-section-title" id="tr-reports-title">
+              {t("public.transparency.reports.title")}{" "}
+              <span className="tr-accent-color">
+                {t("public.transparency.reports.titleAccent")}
+              </span>
+            </h2>
+            <p className="tr-section-lede">{t("public.transparency.reports.lede")}</p>
+          </div>
+
+          <div className="tr-reports-grid">
+            {[2023, 2024, 2025].map((year) => (
+              <article key={year} className="tr-report-card">
+                <div className="tr-report-head">
+                  <div className="tr-report-year">{year}</div>
+                  <span className="tr-report-status tr-upcoming">
+                    {t("public.transparency.reports.pending")}
+                  </span>
+                </div>
+                {/* TODO(backend): no per-year audited financial figures are
+                    exposed by /public/stats — figures shown as placeholders. */}
+                <div className="tr-report-figures">
+                  <div>
+                    <div className="tr-report-figure-label">
+                      {t("public.transparency.reports.figureDonations")}
+                    </div>
+                    <div className="tr-report-figure-value tr-latin">{PLACEHOLDER}</div>
+                  </div>
+                  <div>
+                    <div className="tr-report-figure-label">
+                      {t("public.transparency.reports.figureSponsored")}
+                    </div>
+                    <div className="tr-report-figure-value tr-latin">{PLACEHOLDER}</div>
+                  </div>
+                </div>
+                <p className="tr-report-note">{t("public.transparency.reports.pendingNote")}</p>
+                <div className="tr-report-actions">
+                  <span className="tr-report-btn" aria-disabled="true">
+                    <ClockIcon className="tr-icon tr-icon-sm" />
+                    {t("public.transparency.reports.soon")}
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── INDEPENDENT AUDITOR ── */}
+      <section className="tr-auditor" aria-labelledby="tr-auditor-title">
+        <div className="tr-container">
+          <div className="tr-section-head-center">
+            <span className="tr-eyebrow">{t("public.transparency.auditor.eyebrow")}</span>
+            <h2 className="tr-section-title" id="tr-auditor-title">
+              {t("public.transparency.auditor.title")}{" "}
+              <span className="tr-accent-color">
+                {t("public.transparency.auditor.titleAccent")}
+              </span>
+            </h2>
+          </div>
+
+          {/* TODO(backend): the audit firm identity / licence are not exposed
+              by any endpoint and we don't fabricate a real org name. */}
+          <article className="tr-auditor-card">
+            <div className="tr-auditor-logo" aria-hidden="true">
+              {PLACEHOLDER}
+            </div>
+            <div>
+              <div className="tr-auditor-label">{t("public.transparency.auditor.label")}</div>
+              <div className="tr-auditor-name">{t("public.transparency.auditor.namePending")}</div>
+              <p className="tr-auditor-cert">{t("public.transparency.auditor.cert")}</p>
+              <div className="tr-auditor-tags">
+                <span className="tr-auditor-tag">
+                  <CheckIcon className="tr-icon tr-icon-sm" />
+                  {t("public.transparency.auditor.tagIndependent")}
+                </span>
+                <span className="tr-auditor-tag">
+                  <CheckIcon className="tr-icon tr-icon-sm" />
+                  {t("public.transparency.auditor.tagStandards")}
+                </span>
+                <span className="tr-auditor-tag">
+                  <CheckIcon className="tr-icon tr-icon-sm" />
+                  {t("public.transparency.auditor.tagAnnual")}
+                </span>
+              </div>
+            </div>
+            <span className="tr-btn tr-btn-secondary tr-btn-lg" aria-disabled="true">
+              {t("public.transparency.auditor.cta")}
+              <ArrowEndIcon className="tr-icon tr-icon-sm" />
+            </span>
+          </article>
+        </div>
+      </section>
+
+      {/* ── COMMITMENTS (sr-only group; rendered as auditor tags above are
+          policy; the three commitments back the headline claims) ── */}
+      <h2 className="tr-sr-only">{t("public.transparency.commitments.title")}</h2>
+      <ul className="tr-sr-only">
+        {commitments.map(({ tt, d }) => (
+          <li key={tt}>
+            {t(`public.transparency.commitments.${tt}`)}: {t(`public.transparency.commitments.${d}`)}
+          </li>
+        ))}
+      </ul>
+
+      {/* ── OPEN SOURCE STRIP ── */}
+      <section className="tr-osstrip" aria-labelledby="tr-os-title">
+        <div className="tr-container">
+          <div className="tr-osstrip-card">
+            <div className="tr-osstrip-grid">
+              <div className="tr-osstrip-head">
+                <span className="tr-osstrip-eyebrow">
+                  <CodeIcon className="tr-icon tr-icon-sm" />
+                  {t("public.transparency.os.eyebrow")}
+                </span>
+                <h2 className="tr-osstrip-title" id="tr-os-title">
+                  {t("public.transparency.os.title")}
+                </h2>
+                <p className="tr-osstrip-sub">{t("public.transparency.os.subtitle")}</p>
+                <div className="tr-osstrip-cta">
+                  <a
+                    className="tr-btn-os-primary"
+                    href={REPO_URL}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    <GithubIcon className="tr-icon tr-icon-sm" />
+                    {t("public.transparency.os.repoButton")}
+                  </a>
+                </div>
+              </div>
+
+              {/* TODO(backend): no live GitHub repo metrics endpoint —
+                  honest placeholders, never fabricated counts. */}
+              <div className="tr-osstrip-stats">
+                {osStats.map((s) => (
+                  <div key={s} className="tr-osstat">
+                    <div className="tr-osstat-icon">{osIcons[s]}</div>
+                    <div className="tr-osstat-value tr-latin">{PLACEHOLDER}</div>
+                    <div className="tr-osstat-label">{t(`public.transparency.os.${s}`)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <p className="tr-sr-only">{t("public.transparency.feed.todo")}</p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function KpiCard({
+  icon,
+  value,
+  label,
+  meta,
+  loading,
+}: {
+  icon: ReactNode;
+  value: string;
+  label: string;
+  meta: string;
+  loading?: boolean;
+}) {
+  return (
+    <div className="tr-kpi-card" aria-label={`${label}: ${loading ? "…" : value}`}>
+      <div className="tr-kpi-head">
+        <div className="tr-kpi-icon">{icon}</div>
+      </div>
+      <div className="tr-kpi-value tr-latin">{loading ? "…" : value}</div>
+      <div className="tr-kpi-label">{label}</div>
+      <div className="tr-kpi-meta">{meta}</div>
+    </div>
   );
 }

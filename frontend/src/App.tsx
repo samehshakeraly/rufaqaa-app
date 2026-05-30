@@ -19,7 +19,7 @@ import { PublicLayout } from "./components/layout/PublicLayout";
 
 // Public marketing pages (W-02..W-06)
 import { AboutPage } from "./pages/AboutPage";
-import { ContactPage } from "./pages/ContactPage";
+import { ContactFAQPage } from "./pages/ContactFAQPage";
 import { HowItWorksPage } from "./pages/HowItWorksPage";
 import { PublicPartnersPage } from "./pages/PublicPartnersPage";
 import { TransparencyPage } from "./pages/TransparencyPage";
@@ -97,21 +97,21 @@ export function App() {
       <Route path="/verify-email" element={<VerifyEmailPendingPage />} />
       <Route path="/verify-email/confirm" element={<VerifyEmailConfirmPage />} />
 
-      {/* ── Public surface (landing + browse + signup) ─────────── */}
+      {/* ── Public surface (browse + signup) — centered column ─── */}
       <Route element={<PublicLayout />}>
-        <Route index element={<LandingPage />} />
         <Route path="/orphans" element={<PublicOrphansPage />} />
         <Route path="/orphans/:code" element={<PublicOrphanDetailPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Route>
 
-      {/* ── Public marketing site (W-02..W-06) — full-bleed, no auth ── */}
+      {/* ── Public marketing site (W-01..W-06) — full-bleed, no auth ── */}
       <Route element={<PublicSiteLayout />}>
+        <Route index element={<LandingPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/transparency" element={<TransparencyPage />} />
         <Route path="/partners" element={<PublicPartnersPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/contact" element={<ContactFAQPage />} />
       </Route>
 
       {/* ── Donor authenticated area ────────────────────────────── */}

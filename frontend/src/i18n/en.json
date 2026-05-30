@@ -149,7 +149,9 @@
         "name": "Sameh Abdulaziz",
         "titleLine": "Software engineer · interested in digital endowments",
         "bio1": "Sameh is a software engineer building technical tools that serve charitable and Islamic work. He started Rufaqaa as a tool for a single charity, then decided to turn it into an open-source digital endowment whose reward, God willing, keeps flowing.",
-        "bio2": "Sameh takes no financial compensation for developing the platform, treating it as an ongoing charity in software form — on behalf of his parents and the orphans they knew."
+        "bio2": "Sameh takes no financial compensation for developing the platform, treating it as an ongoing charity in software form — on behalf of his parents and the orphans they knew.",
+        "initials": "SA",
+        "linkSeries": "Digital endowments series"
       },
       "team": {
         "badge": "Team forming — volunteer cards are being filled in gradually",
@@ -163,7 +165,8 @@
         "role2": "Shariah review",
         "role3": "Partner support",
         "role4": "Translation & localization",
-        "role5": "Content & copy"
+        "role5": "Content & copy",
+        "leadInitials": "SA"
       },
       "cta": {
         "eyebrow": "Join as a contributor",
@@ -327,7 +330,14 @@
         "sponsored": "Orphans sponsored",
         "available": "Awaiting sponsorship",
         "donors": "Donors",
-        "countries": "Countries served"
+        "countries": "Countries served",
+        "donationsMonth": "Total donations this month",
+        "donationsMonthMeta": "A public revenue total is not exposed yet",
+        "sponsoredMeta": "Currently active sponsorships",
+        "avgDuration": "Average sponsorship duration",
+        "avgDurationMeta": "A duration aggregate is not exposed yet",
+        "transferRatio": "Share transferred to orphans",
+        "transferRatioMeta": "After payment-gateway and operating costs"
       },
       "alloc": {
         "title": "How every dollar is split",
@@ -342,7 +352,8 @@
         "title": "Latest transfers",
         "live": "Live updating",
         "empty": "The live transfers feed is being prepared — it will appear here (anonymized, without names) as soon as a dedicated public endpoint is available.",
-        "todo": "TODO: wire to a public 'recent transfers' endpoint (not exposed by /public/stats today)."
+        "todo": "TODO: wire to a public 'recent transfers' endpoint (not exposed by /public/stats today).",
+        "footer": "This list shows the most recent transfers (anonymized, without names) once a public endpoint is available."
       },
       "reports": {
         "eyebrow": "Annual reports",
@@ -350,7 +361,10 @@
         "titleAccent": "published openly",
         "lede": "We commit to publishing an independently audited annual financial report — with full financial statements and the auditor's opinion. Reports will appear here as soon as they are issued.",
         "pending": "In preparation",
-        "pendingNote": "The audited report will be published here"
+        "pendingNote": "The audited report will be published here",
+        "figureDonations": "Total donations",
+        "figureSponsored": "Orphans sponsored",
+        "soon": "Coming soon"
       },
       "commitments": {
         "eyebrow": "Transparency commitments",
@@ -373,6 +387,18 @@
         "forks": "Forks",
         "contributors": "Contributors",
         "commits": "Commits"
+      },
+      "auditor": {
+        "eyebrow": "Independent auditor",
+        "title": "Who",
+        "titleAccent": "audits our accounts?",
+        "label": "Audit firm",
+        "namePending": "To be announced",
+        "cert": "We commit to appointing a licensed, independent chartered accounting firm to audit Rufaqaa's accounts annually. The auditor's identity and opinion will be published here once the first audit is issued.",
+        "tagIndependent": "Financially and administratively independent",
+        "tagStandards": "IFRS standards",
+        "tagAnnual": "Annual review",
+        "cta": "View audit certificate"
       }
     },
     "partners": {
@@ -444,6 +470,20 @@
         "lede": "If you represent a licensed charity working with orphans, we welcome reviewing your request. The contact form takes no more than 10 minutes.",
         "join": "Join form",
         "question": "I have a question — contact us"
+      },
+      "map": {
+        "title": "Geographic distribution (schematic)",
+        "legendHigh": "More than 4 organizations",
+        "legendMid": "2–4 organizations",
+        "legendLow": "One organization",
+        "c1": "Region 1",
+        "c2": "Region 2",
+        "c3": "Region 3",
+        "c4": "Region 4",
+        "c5": "Region 5",
+        "c6": "Region 6",
+        "c7": "Region 7",
+        "c8": "Region 8"
       }
     },
     "contact": {
@@ -559,7 +599,10 @@
         "g4q2": "Do you have a mobile app?",
         "g4a2": "The platform is optimized for mobile via the browser. iOS and Android apps are on the roadmap.",
         "g4q3": "How do I contribute to the code or report a bug?",
-        "g4a3": "We welcome any contribution! Start from the repository on GitHub and read the CONTRIBUTING file. For bugs, open a new Issue; for features, start a Discussion."
+        "g4a3": "We welcome any contribution! Start from the repository on GitHub and read the CONTRIBUTING file. For bugs, open a new Issue; for features, start a Discussion.",
+        "catAll": "All",
+        "noResults": "No questions match your search.",
+        "searchPlaceholder": "Search the FAQ..."
       },
       "note": {
         "title": "Didn't find your answer?",
@@ -573,19 +616,147 @@
       "title": "Sponsor an orphan, change a life.",
       "subtitle": "Every donation goes directly to the children — fully transparent, fully tracked.",
       "browse": "Browse orphans",
-      "signup": "Create an account"
+      "signup": "Create an account",
+      "eyebrow": "Open source · Fully transparent · MIT licensed",
+      "titleAccent": "the Prophet's companion",
+      "trustPayments": "Encrypted payments via MyFatoorah",
+      "trustAudit": "Independent annual financial audit",
+      "trustCountries": "{{count}} countries",
+      "chip1Title": "New sponsorship just now",
+      "chip1Sub": "A sponsor → an orphan abroad",
+      "chip2Title": "“May God reward you”",
+      "chip2Sub": "A message from a guardian"
     },
     "stats": {
       "available": "Waiting for sponsorship",
       "sponsored": "Currently sponsored",
       "donors": "Donors who care",
-      "countries": "Countries served"
+      "countries": "Countries served",
+      "srTitle": "Rufaqaa's live numbers",
+      "pulse": "Numbers updated live from Rufaqaa's database",
+      "sponsoredLabel": "Orphans sponsored",
+      "sponsoredMeta": "across {{count}} verified partner organizations",
+      "donorsLabel": "Active sponsors",
+      "donorsMeta": "{{count}} joined this month",
+      "countriesLabel": "Countries worldwide",
+      "countriesMeta": "From Kuwait and Palestine to Sudan"
     },
     "howItWorks": {
-      "title": "How it works",
-      "step1": "Browse the orphans waiting for sponsorship.",
-      "step2": "Create a free donor account in under a minute.",
-      "step3": "Pay securely through MyFatoorah — your card stays with them, never us."
+      "title": "Three simple steps",
+      "step1": {
+        "title": "Browse",
+        "desc": "Explore the orphans available for sponsorship, read their profiles, and choose whose story touches your heart — no pressure, no account required first."
+      },
+      "step2": {
+        "title": "Pay",
+        "desc": "Pay your monthly sponsorship securely through MyFatoorah — card, Apple Pay, or bank transfer. No mandatory subscription and no hidden fees."
+      },
+      "step3": {
+        "title": "Follow along",
+        "desc": "Receive verified monthly reports, approved photos, and messages from the guardian — and connect with your orphan if you wish, overseen by the platform team."
+      },
+      "eyebrow": "How it works",
+      "titleAccent": "that connect you to an orphan",
+      "lede": "The platform is deliberately simple — because sponsorship is a decision of the heart, not a matter of complexity. Three steps stand between you and becoming an orphan's companion."
+    },
+    "meta": {
+      "title": "Sponsor an orphan, change a life",
+      "description": "A global, open-source digital-endowment platform connecting sponsors with orphans everywhere — fully transparent, with dignity preserved."
+    },
+    "partners": {
+      "eyebrow": "Partner organizations",
+      "title": "Verified charities",
+      "titleAccent": "that receive the sponsorships",
+      "lede": "Rufaqaa does not collect money on anyone's behalf — transfers go directly to licensed charities in the orphan's country, after full verification.",
+      "orphanCount": "{{count}} orphans",
+      "footerCount": "A total of {{orgs}} verified partner organizations across {{countries}} countries · ",
+      "footerLink": "Meet all our partners",
+      "p1": {
+        "mark": "P1",
+        "name": "Partner organization 1",
+        "country": "Kuwait"
+      },
+      "p2": {
+        "mark": "P2",
+        "name": "Partner organization 2",
+        "country": "Egypt"
+      },
+      "p3": {
+        "mark": "P3",
+        "name": "Partner organization 3",
+        "country": "Palestine"
+      },
+      "p4": {
+        "mark": "P4",
+        "name": "Partner organization 4",
+        "country": "Sudan"
+      }
+    },
+    "testimonials": {
+      "sampleBadge": "Illustrative samples — to be replaced with real testimonials later",
+      "title": "From the hearts of sponsors",
+      "titleAccent": "and families",
+      "t1": {
+        "text": "Every time a new monthly report about Ahmad arrives, I feel I have been granted a second son. I see that God has given him to me in the face of a child I share no blood with — only the mercy of God.",
+        "initials": "A.M",
+        "name": "Abu Muhammad",
+        "meta": "Sponsor from Kuwait · 3 years on the platform"
+      },
+      "t2": {
+        "text": "My daughter Layla always asks, “When will my uncle write me a letter?” This sponsorship is not just money — it is a hand extended with dignity, making us feel we are not alone in this life.",
+        "initials": "U.L",
+        "name": "Umm Layla",
+        "meta": "Mother of a sponsored orphan · Jordan — Zarqa"
+      },
+      "t3": {
+        "text": "What I loved is the transparency. I know where every riyal goes, I see the transfers in real time, and I read the approved reports. This is what I had been looking for in charity work for years.",
+        "initials": "A.A",
+        "name": "Abu Abdulaziz",
+        "meta": "Sponsor from Saudi Arabia · 14 months"
+      }
+    },
+    "transparency": {
+      "eyebrow": "Transparency first",
+      "title": "Transparency without flattery,",
+      "titleAccent": "and audited from outside",
+      "lede": "Rufaqaa is a digital endowment, not a for-profit organization. Every riyal that enters is recorded, audited, and reaches an orphan. The code is open, the accounts are open, and the decisions are written down.",
+      "t1": {
+        "title": "Full financial transparency — 100%",
+        "desc": "Every donation carries a traceable serial number — from the sponsor's card to the organization that delivers it to the orphan."
+      },
+      "t2": {
+        "title": "Fully open source — MIT licensed",
+        "desc": "Any organization in the world can copy, deploy, and modify the code for free. No lock-in and no monopoly."
+      },
+      "t3": {
+        "title": "Independent annual audit",
+        "desc": "Rufaqaa's accounts are audited every year by an external certified accounting firm, and the results are published openly."
+      }
+    },
+    "allocation": {
+      "title": "How every 100 riyals is allocated",
+      "ariaLabel": "Funds allocation: 95% to orphans, 3% operations, 2% reserve",
+      "period": "Fiscal year 2025",
+      "toOrphans": "Directly to orphans",
+      "operations": "Platform operations",
+      "reserve": "Emergency reserve"
+    },
+    "hadith": {
+      "srTitle": "A hadith on the virtue of sponsoring an orphan",
+      "text": "I and the one who sponsors an orphan will be in Paradise like this",
+      "source": "Sahih al-Bukhari",
+      "narrator": "Narrated by Sahl ibn Sa'd (may God be pleased with him)"
+    },
+    "finalCta": {
+      "eyebrow": "Begin your journey with Rufaqaa",
+      "title": "Start your sponsorship journey today —",
+      "titleSoft": "one orphan is waiting for you.",
+      "lede": "The first step takes only minutes. Browse among {{count}} available orphans, choose the one who touches your heart, and be their companion in this life before the next.",
+      "browse": "Browse available orphans",
+      "partner": "I'm a partner organization — how do we join?",
+      "meta1": "No subscription fees",
+      "meta2": "Cancel anytime",
+      "meta3": "Annual zakat receipt"
     }
   },
   "signup": {
