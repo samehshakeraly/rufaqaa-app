@@ -10,7 +10,7 @@ const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? "admin12345";
 test("admin can sign in and reach the admin dashboard", async ({ page }) => {
   await page.goto("/login");
   await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
-  await page.getByLabel(/password/i).fill(ADMIN_PASSWORD);
+  await page.locator("#login-password").fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: /(sign in|دخول)/i }).click();
 
   await expect(page).toHaveURL(/\/admin\/dashboard$/);
@@ -22,7 +22,7 @@ test("admin can sign in and reach the admin dashboard", async ({ page }) => {
 test("invalid credentials show an error and stay on /login", async ({ page }) => {
   await page.goto("/login");
   await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
-  await page.getByLabel(/password/i).fill("definitely-wrong-password");
+  await page.locator("#login-password").fill("definitely-wrong-password");
   await page.getByRole("button", { name: /(sign in|دخول)/i }).click();
 
   await expect(page).toHaveURL(/\/login$/);
