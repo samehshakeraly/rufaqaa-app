@@ -73,6 +73,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { SponsorCheckoutPage } from "./pages/SponsorCheckoutPage";
 import { SponsorshipsPage } from "./pages/SponsorshipsPage";
 import { UsersPage } from "./pages/UsersPage";
+import { BusinessRulesPage } from "./pages/BusinessRulesPage";
 import { VerifyEmailConfirmPage } from "./pages/VerifyEmailConfirmPage";
 import { VerifyEmailPendingPage } from "./pages/VerifyEmailPendingPage";
 import { WalkInCheckoutPage } from "./pages/WalkInCheckoutPage";
@@ -256,6 +257,14 @@ export function App() {
           element={
             <AdminRoute>
               <UsersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="business-rules"
+          element={
+            <AdminRoute>
+              <BusinessRulesPage />
             </AdminRoute>
           }
         />
