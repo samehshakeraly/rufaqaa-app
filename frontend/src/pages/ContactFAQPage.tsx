@@ -466,7 +466,7 @@ function FaqSection({ fmt }: { fmt: (n: number) => string }) {
                     </h3>
                     <div className="cf-faq-list">
                       {group.visible.map((q) => (
-                        <FaqItem key={q} q={q} />
+                        <FaqItem key={q} q={q} defaultOpen={q === FAQ_GROUPS[0].items[0]} />
                       ))}
                     </div>
                   </div>
@@ -479,11 +479,11 @@ function FaqSection({ fmt }: { fmt: (n: number) => string }) {
   );
 }
 
-function FaqItem({ q }: { q: string }) {
+function FaqItem({ q, defaultOpen = false }: { q: string; defaultOpen?: boolean }) {
   const { t } = useTranslation();
   const a = q.replace("q", "a");
   const panelId = useId();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <div className={`cf-faq-item${open ? " cf-open" : ""}`}>
