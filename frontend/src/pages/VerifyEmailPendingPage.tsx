@@ -3,8 +3,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { resendVerification, verifyEmail } from "@/lib/donorAuth";
 import { useAuthStore } from "@/store/auth";
+
+import { BrandMark, ChevronStart, MailIcon } from "./verifyEmailChrome";
+import "./VerifyEmailPage.css";
 
 /**
  * After signup the user lands here. They expect to receive an email
@@ -51,49 +55,74 @@ export function VerifyEmailPendingPage() {
   }, []);
 
   return (
-    <div className="mx-auto mt-12 max-w-md">
-      <div className="card space-y-4 text-center">
-        <div className="text-5xl">📧</div>
-        <h1 className="text-2xl font-bold text-slate-900">
-          {t("verifyPending.title")}
-        </h1>
-        <p className="text-sm text-slate-600">{t("verifyPending.body")}</p>
+    <div className="ve-root">
+      <div className="ve-lang">
+        <LanguageSwitcher />
+      </div>
 
-        {serverError && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-            {serverError}
-          </p>
-        )}
-
-        <div className="space-y-2 rounded-lg border border-sky bg-snow p-3 text-left">
-          <p className="text-xs font-medium text-slate-500">
-            {t("verifyPending.didntGet")}
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="email"
-              className="input flex-1"
-              placeholder={t("auth.email")}
-              value={resendEmail}
-              onChange={(e) => setResendEmail(e.target.value)}
-            />
-            <button
-              type="button"
-              className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
-              onClick={() => resendMut.mutate()}
-              disabled={!resendEmail || resendMut.isPending}
-            >
-              {t("verifyPending.resend")}
-            </button>
+      <div className="ve-page">
+        {/* ═══ Brand row ═══ */}
+        <div className="ve-brand-row">
+          <div className="ve-brand">
+            <BrandMark />
+            <div className="ve-brand-info">
+              <h1>{t("auth.login.brandName")}</h1>
+              <p>{t("auth.login.brandTagline")}</p>
+            </div>
           </div>
-          {resendMut.isSuccess && (
-            <p className="text-xs text-slate-600">{t("verifyPending.resentNote")}</p>
-          )}
+          <Link to="/" className="ve-brand-link">
+            {t("public.nav.toHome")}
+            <ChevronStart />
+          </Link>
         </div>
 
-        <Link to="/" className="block text-sm text-trust underline">
-          ← {t("public.nav.toHome")}
-        </Link>
+        <div className="ve-card">
+          <div className="ve-status">
+            <div
+              className="ve-status-icon ve-status-icon--info"
+              aria-hidden="true"
+            >
+              <MailIcon />
+            </div>
+            <h1>{t("verifyPending.title")}</h1>
+            <p>{t("verifyPending.body")}</p>
+
+            {serverError && (
+              <p className="ve-form-error" role="alert">
+                {serverError}
+              </p>
+            )}
+
+            <div className="ve-resend">
+              <p className="ve-resend-label">{t("verifyPending.didntGet")}</p>
+              <div className="ve-resend-row">
+                <input
+                  type="email"
+                  className="ve-input ve-latin"
+                  placeholder={t("auth.email")}
+                  autoComplete="email"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="ve-btn ve-btn-secondary"
+                  onClick={() => resendMut.mutate()}
+                  disabled={!resendEmail || resendMut.isPending}
+                >
+                  {resendMut.isPending
+                    ? t("auth.submitting")
+                    : t("verifyPending.resend")}
+                </button>
+              </div>
+              {resendMut.isSuccess && (
+                <p className="ve-resent-note" role="status">
+                  {t("verifyPending.resentNote")}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

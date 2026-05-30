@@ -1,0 +1,426 @@
+/* ═══════════════════════════════════════════════════════════════
+   Email verification — scoped styles
+   No dedicated mockup exists; this matches the established auth chrome
+   from A-02 (Donor Registration) / A-03 (Password Reset): the same
+   radial-gradient backdrop, brand-mark row, and centered card as the
+   signup/login/reset flows. All values are design-system tokens
+   (rufaqaa v0.1); no ad-hoc hex outside the token block. Selectors are
+   scoped under `.ve-root` and prefixed `ve-` so they never collide with
+   app-wide component classes (.card / .input / .btn-primary) or the
+   other auth pages (`sg-` / `lg-`). Physical left/right are written as
+   logical (inline-start/-end) so the layout flips correctly when the
+   language switcher toggles between RTL and LTR.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ve-root {
+  /* Design-system tokens (rufaqaa v0.1) */
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08), 0 2px 4px -1px rgba(11, 30, 51, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.3);
+
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  min-height: 100vh;
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(214, 230, 242, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 90%, rgba(214, 230, 242, 0.3) 0%, transparent 50%),
+    var(--snow-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ve-root *,
+  .ve-root *::before,
+  .ve-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.ve-root .ve-latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  letter-spacing: 0.02em;
+  font-feature-settings: "tnum" 1;
+}
+
+.ve-root :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-sm);
+}
+
+/* ═══ Language switcher (top inline-start) ═══ */
+.ve-lang {
+  position: absolute;
+  top: 24px;
+  inset-inline-start: 24px;
+  z-index: 5;
+}
+
+/* ═══ Page ═══ */
+.ve-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 36px 24px 64px;
+}
+
+.ve-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.ve-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ve-brand-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--trust-300);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.ve-brand-info h1 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--gray-900);
+}
+
+.ve-brand-info p {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.ve-brand-link {
+  font-size: 13.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.ve-brand-link:hover {
+  color: var(--trust-700);
+  text-decoration: underline;
+}
+
+/* The chevron points "back"; flip it to follow text direction. */
+[dir="ltr"] .ve-brand-link svg {
+  transform: scaleX(-1);
+}
+
+/* ═══ Card ═══ */
+.ve-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  padding: 40px 32px;
+}
+
+@media (max-width: 480px) {
+  .ve-card {
+    padding: 32px 20px;
+  }
+}
+
+/* ═══ Status block (verifying / success / error / pending) ═══ */
+.ve-status {
+  text-align: center;
+  animation: veStatusIn 240ms ease;
+}
+
+@keyframes veStatusIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ve-status-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  position: relative;
+}
+
+.ve-status-icon::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0.35;
+}
+
+.ve-status-icon--info {
+  background: var(--snow-200);
+  color: var(--trust-500);
+}
+
+.ve-status-icon--success {
+  background: var(--success-50);
+  color: var(--success-600);
+}
+
+.ve-status-icon--error {
+  background: var(--danger-50);
+  color: var(--danger-600);
+}
+
+.ve-status h1,
+.ve-status h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.ve-status p {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.65;
+}
+
+.ve-status-email {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+/* ═══ Spinner (verifying state) ═══ */
+.ve-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--sky-200);
+  border-top-color: var(--trust-500);
+  animation: veSpin 720ms linear infinite;
+}
+
+@keyframes veSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ═══ Resend block ═══ */
+.ve-resend {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--snow-200);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-md);
+  text-align: start;
+}
+
+.ve-resend-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+}
+
+.ve-resend-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ve-input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+
+.ve-input:focus {
+  outline: none;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+
+.ve-input::placeholder {
+  color: var(--gray-400);
+}
+
+.ve-resent-note {
+  font-size: 12.5px;
+  color: var(--success-700);
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* ═══ Buttons ═══ */
+.ve-btn {
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.ve-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ve-btn-primary {
+  background: var(--trust-400);
+  color: white;
+  border-color: var(--trust-400);
+  width: 100%;
+  margin-top: 24px;
+}
+
+.ve-btn-primary:hover:not(:disabled) {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  box-shadow: var(--shadow-sm);
+}
+
+.ve-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+  white-space: nowrap;
+}
+
+.ve-btn-secondary:hover:not(:disabled) {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+/* ═══ Inline messages ═══ */
+.ve-form-error {
+  margin-top: 18px;
+  border-radius: var(--radius-md);
+  background: var(--danger-50);
+  border: 1px solid var(--danger-600);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--danger-700);
+}
+
+.ve-link {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 13.5px;
+  color: var(--trust-500);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.ve-link:hover {
+  color: var(--trust-700);
+  text-decoration: underline;
+}
+
+/* ═══ Icons ═══ */
+.ve-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.ve-icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 540px) {
+  .ve-page {
+    padding: 24px 16px 48px;
+  }
+  .ve-lang {
+    top: 16px;
+    inset-inline-start: 16px;
+  }
+}
