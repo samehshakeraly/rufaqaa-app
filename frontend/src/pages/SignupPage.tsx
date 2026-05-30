@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
 import { donorSignup, resendVerification } from "@/lib/donorAuth";
 
 import "./SignupPage.css";
@@ -57,9 +58,6 @@ export function SignupPage() {
     }),
     [password],
   );
-  const score = Object.values(checks).filter(Boolean).length;
-  const STRENGTH_CLASS = ["", "weak", "ok", "good", "strong"] as const;
-  const STRENGTH_KEY = ["", "weak", "ok", "good", "strong"] as const;
 
   const mut = useMutation({
     mutationFn: () =>
