@@ -891,6 +891,45 @@
       "meta": "Distribution of orphans across countries"
     }
   },
+  "psDash": {
+    "title": "Staff dashboard",
+    "greeting": "Hello {{name}}, blessed day",
+    "greetingSubtitle": "You have {{reports}} reports awaiting review and {{pending}} cases pending approval.",
+    "registerCta": "New orphan",
+    "comingSoon": "Coming soon",
+    "comingSoonBody": "This view will light up once its data source is connected.",
+    "kpi": {
+      "activeOrphans": "Active orphans",
+      "activeOrphansUnit": "orphans",
+      "activeOrphansFoot": "Across all your cases",
+      "pendingApproval": "Pending approval",
+      "pendingApprovalUnit": "cases",
+      "pendingApprovalFoot": "Awaiting a manager's decision",
+      "reportsReceived": "Reports received",
+      "reportsReceivedUnit": "reports",
+      "reportsReceivedFoot": "In your review queue",
+      "photosReview": "Photos to review",
+      "photosReviewUnit": "photos"
+    },
+    "tasks": {
+      "title": "Your tasks today"
+    },
+    "newOrphans": {
+      "title": "Recently registered",
+      "viewAll": "View all",
+      "empty": "No orphans registered yet",
+      "yearsOld_one": "{{count}} yr",
+      "yearsOld_other": "{{count}} yrs"
+    },
+    "performance": {
+      "title": "Your performance this month"
+    },
+    "reportsQueue": {
+      "title": "Reports to review",
+      "inbox": "Reports inbox",
+      "empty": "Nothing in the review queue"
+    }
+  },
   "orphans": {
     "title": "Orphans",
     "addNew": "Add orphan",

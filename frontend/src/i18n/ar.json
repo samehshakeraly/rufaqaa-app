@@ -891,6 +891,45 @@
       "meta": "توزيع الأيتام على الدول"
     }
   },
+  "psDash": {
+    "title": "لوحة الموظّف",
+    "greeting": "أهلاً {{name}}، يوم مبارك",
+    "greetingSubtitle": "لديك {{reports}} تقارير بانتظار المراجعة، و {{pending}} حالات قيد الاعتماد.",
+    "registerCta": "يتيم جديد",
+    "comingSoon": "قريباً",
+    "comingSoonBody": "سيُفعَّل هذا القسم بمجرّد ربط مصدر بياناته.",
+    "kpi": {
+      "activeOrphans": "الأيتام النشطون",
+      "activeOrphansUnit": "يتيماً",
+      "activeOrphansFoot": "في جميع حالاتك",
+      "pendingApproval": "قيد الاعتماد",
+      "pendingApprovalUnit": "حالة",
+      "pendingApprovalFoot": "بانتظار قرار المدير",
+      "reportsReceived": "تقارير وردتك",
+      "reportsReceivedUnit": "تقريراً",
+      "reportsReceivedFoot": "في قائمة مراجعتك",
+      "photosReview": "صور للمراجعة",
+      "photosReviewUnit": "صورة"
+    },
+    "tasks": {
+      "title": "مهامّك اليوم"
+    },
+    "newOrphans": {
+      "title": "سُجّلوا حديثاً",
+      "viewAll": "عرض الكل",
+      "empty": "لا يوجد أيتام مسجّلون بعد",
+      "yearsOld_one": "سنة واحدة",
+      "yearsOld_other": "{{count}} سنوات"
+    },
+    "performance": {
+      "title": "أداؤك هذا الشهر"
+    },
+    "reportsQueue": {
+      "title": "تقارير للمراجعة",
+      "inbox": "صندوق التقارير",
+      "empty": "لا شيء في قائمة المراجعة"
+    }
+  },
   "orphans": {
     "title": "الأيتام",
     "addNew": "إضافة يتيم",
