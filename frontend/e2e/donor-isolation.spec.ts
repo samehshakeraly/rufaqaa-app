@@ -17,11 +17,24 @@ test("donor A and donor B see different profiles; donor cannot reach /admin", as
   async function signupAndVerify(page: import("@playwright/test").Page) {
     const email = `iso-${Date.now()}-${Math.floor(Math.random() * 1e9)}@example.com`;
     await page.goto("/signup");
-    await page.getByLabel(/(full name|الاسم)/i).fill(`Iso ${email.slice(0, 6)}`);
-    await page.getByLabel(/(email|البريد)/i).fill(email);
-    await page.getByLabel(/(password|كلمة المرور)/i).fill("longenoughpw1");
-    await page.getByRole("checkbox").check();
-    await page.getByRole("button", { name: /(sign up|إنشاء)/i }).click();
+    // Step 1 — account
+    await page.locator("#sg-email").fill(email);
+    await page.locator("#sg-password").fill("longenoughpw1");
+    await page.locator("#sg-confirm").fill("longenoughpw1");
+    await page.getByRole("button", { name: /(next|التالي)/i }).click();
+    // Step 2 — personal info + terms
+    await page.locator("#sg-first").fill("Iso");
+    await page.locator("#sg-last").fill(email.slice(0, 6));
+    await page.getByRole("checkbox").click();
+    await page
+      .getByRole("button", { name: /(create account|إنشاء الحساب)/i })
+      .click();
+    // Step 3 — proceed to verification, which auto-verifies in dev.
+    await page
+      .getByRole("button", {
+        name: /(go to verification page|الذهاب لصفحة التحقّق)/i,
+      })
+      .click();
     await page.waitForURL(/\/donor\/dashboard$/, { timeout: 15_000 });
     return email;
   }

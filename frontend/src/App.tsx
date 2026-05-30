@@ -97,12 +97,14 @@ export function App() {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/verify-email" element={<VerifyEmailPendingPage />} />
       <Route path="/verify-email/confirm" element={<VerifyEmailConfirmPage />} />
+      {/* A-02 is a full-bleed auth page with its own brand row + gradient
+          (like /login), so it sits outside the constrained PublicLayout. */}
+      <Route path="/signup" element={<SignupPage />} />
 
-      {/* ── Public surface (browse + signup) — centered column ─── */}
+      {/* ── Public surface (browse) — centered column ─── */}
       <Route element={<PublicLayout />}>
         <Route path="/orphans" element={<PublicOrphansPage />} />
         <Route path="/orphans/:code" element={<PublicOrphanDetailPage />} />
-        <Route path="/signup" element={<SignupPage />} />
       </Route>
 
       {/* ── Public marketing site (W-01..W-06) — full-bleed, no auth ── */}

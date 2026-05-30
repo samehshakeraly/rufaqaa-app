@@ -38,12 +38,22 @@ test("anon → signup → checkout redirects to MyFatoorah", async ({
     .click();
   await expect(page).toHaveURL(/\/signup\?intent=sponsor:/);
 
-  // 3. Sign up
-  await page.getByLabel(/(full name|الاسم الكامل)/i).fill("Pay E2E");
-  await page.getByLabel(/(email|البريد)/i).fill(email);
-  await page.getByLabel(/(password|كلمة المرور)/i).fill("longenoughpw1");
-  await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /(sign up|إنشاء الحساب)/i }).click();
+  // 3. Sign up — walk the A-02 wizard (intent rides along in the URL).
+  await page.locator("#sg-email").fill(email);
+  await page.locator("#sg-password").fill("longenoughpw1");
+  await page.locator("#sg-confirm").fill("longenoughpw1");
+  await page.getByRole("button", { name: /(next|التالي)/i }).click();
+  await page.locator("#sg-first").fill("Pay");
+  await page.locator("#sg-last").fill("E2E");
+  await page.getByRole("checkbox").click();
+  await page
+    .getByRole("button", { name: /(create account|إنشاء الحساب)/i })
+    .click();
+  await page
+    .getByRole("button", {
+      name: /(go to verification page|الذهاب لصفحة التحقّق)/i,
+    })
+    .click();
 
   // 4. Verification flow auto-runs in dev mode; should arrive on checkout
   await expect(page).toHaveURL(/\/sponsor\/[A-Z0-9-]+\/checkout$/, {
