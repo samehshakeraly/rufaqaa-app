@@ -767,7 +767,8 @@
     "registerOrphan": "Register orphan",
     "finance": "Finance",
     "financeOverdue": "Overdue",
-    "financeReports": "Financial Reports"
+    "financeReports": "Financial Reports",
+    "businessRules": "Business Rules"
   },
   "auth": {
     "loginTitle": "Sign in",
@@ -1051,7 +1052,8 @@
       "quarterly": "Quarterly",
       "annual": "Annual",
       "special": "Special",
-      "incident": "Incident"
+      "incident": "Incident",
+      "financial": "Financial"
     },
     "statuses": {
       "draft": "Draft",
@@ -1072,10 +1074,155 @@
       "rejectSubmit": "Reject report",
       "rejected": "Report rejected",
       "success": "Report updated"
+    },
+    "centerTitle": "Reports Center",
+    "emptyDesc": "No reports found for the selected filter.",
+    "filterAll": "All",
+    "filterByType": "Filter by report type",
+    "builderAriaLabel": "Report Builder",
+    "builderTitle": "Drag-and-Drop Report Builder",
+    "builderDesc": "Build a custom report by dragging fields and choosing your period, channels, and partners. See a live preview instantly, then export, save, or schedule for automatic delivery.",
+    "myTemplates": "My Templates",
+    "startReport": "Start a Report",
+    "seasonTemplates": "Seasonal Reports",
+    "seasonTemplatesDesc": "Auto-renewed according to the Hijri calendar",
+    "readyTemplates": "Ready Reports",
+    "readyTemplatesDesc": "Ready for immediate export — customisable before exporting",
+    "allReports": "All Reports",
+    "scheduledReports": "Scheduled Reports",
+    "addSchedule": "Add Schedule",
+    "recentExports": "Recent Exports",
+    "colReport": "Report",
+    "colCadence": "Cadence",
+    "colRecipients": "Recipients",
+    "colNextRun": "Next Run",
+    "colLastRun": "Last Run",
+    "exportPdf": "Export PDF",
+    "exportExcel": "Export Excel",
+    "download": "Download",
+    "shareFile": "Share",
+    "fileSize": "File size",
+    "cadence": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annual": "Annual",
+      "weekly": "Weekly"
+    },
+    "tmpl": {
+      "fields": "Report fields",
+      "thisMonth": "This Month",
+      "lastRun": "Last run {{days}} days ago",
+      "ramadan": {
+        "name": "Annual Ramadan Report",
+        "desc": "Total new sponsors, Zakat, largest donations, highest-impact channels during Ramadan 1446.",
+        "f1": "New Sponsors",
+        "f2": "Zakat",
+        "f3": "Channels",
+        "f4": "Daily",
+        "period": "Ramadan"
+      },
+      "zakat": {
+        "name": "Annual Zakat Report",
+        "desc": "Detailed aggregation of Zakat received and how it was disbursed for orphans, with print-ready Sharia certificates.",
+        "f1": "Zakat Received",
+        "f2": "Disbursements",
+        "f3": "Sharia Certificates"
+      },
+      "donors": {
+        "name": "Annual Donor Report",
+        "desc": "Donor count, geographic distribution, retention, donation patterns, and top 50 most impactful sponsors.",
+        "f1": "Count + Retention",
+        "f2": "Geographic",
+        "f3": "Referral Channels"
+      },
+      "orphans": {
+        "name": "Annual Orphans Report",
+        "desc": "Full orphan census, sponsorship rates, age groups, new and graduated cases, and average sponsorship duration.",
+        "f1": "Total",
+        "f2": "Sponsored",
+        "f3": "Transitions"
+      },
+      "finance": {
+        "name": "Financial Performance Report",
+        "desc": "Revenue, expenses, partner transfers, orphan balances, and cash flow — detailed in a unified currency.",
+        "f1": "Revenue",
+        "f2": "Transfers",
+        "f3": "Balances"
+      },
+      "partners": {
+        "name": "Partner Organisation Performance",
+        "desc": "Comparison across partner organisations: orphan counts, compliance, processing time, acceptance/rejection rate.",
+        "f1": "Full Comparison",
+        "f2": "Processing Time",
+        "f3": "Compliance"
+      },
+      "marketing": {
+        "name": "Marketing Channel Performance",
+        "desc": "Conversion rate per channel, cost per sponsor, sponsor lifetime value, and top-performing channels.",
+        "f3": "Conversion"
+      },
+      "late": {
+        "name": "Late Payers Report",
+        "desc": "Late payers classified by 1, 2, or 3 months overdue — with contact or suspension recommendations.",
+        "f1": "Time Classification",
+        "f2": "Blocked Value",
+        "f3": "Recommendations"
+      }
+    },
+    "sched": {
+      "finance": {
+        "name": "Monthly Financial Report",
+        "sub": "CEO + Finance + Auditors",
+        "cadence": "Monthly · 1st of month"
+      },
+      "partners": {
+        "name": "Partner Organisation Performance",
+        "sub": "Partner managers + Org admin",
+        "cadence": "Monthly · end of month"
+      },
+      "marketing": {
+        "name": "Marketing Channel Performance",
+        "sub": "Marketing team only",
+        "cadence": "Weekly · Sunday"
+      },
+      "zakat": {
+        "name": "Zakat Receipts",
+        "sub": "All Zakat donors (automatic)",
+        "cadence": "Annual · 1 Muharram"
+      },
+      "late": {
+        "name": "Late Payers",
+        "sub": "Finance team + Org guardian",
+        "cadence": "Monthly · 15th"
+      },
+      "paused": "Temporarily paused"
+    },
+    "schedAction": {
+      "settings": "Settings",
+      "runNow": "Run now",
+      "disable": "Disable"
+    },
+    "recent": {
+      "r1": {
+        "name": "Quarterly Financial Report · Q3 — 1446",
+        "meta": "Sameh Abdelaziz · 3 hours ago · 22 pages"
+      },
+      "r2": {
+        "name": "Partner Organisation Performance — 1–20 Dhu al-Qa'dah",
+        "meta": "Dr. Khaled al-Mutairi · 2 days ago · 12 sheets"
+      },
+      "r3": {
+        "name": "Gulf WhatsApp Channel Sponsors · Shawwal",
+        "meta": "Layla al-Mansour · 3 days ago · 896 rows"
+      },
+      "r4": {
+        "name": "Zakat Receipt — Sponsor DON-2718",
+        "meta": "System (automatic) · 1 week ago · 2 pages"
+      }
     }
   },
   "settings": {
-    "title": "Settings",
+    "title": "Organization Settings",
     "changePassword": "Change password",
     "currentPassword": "Current password",
     "newPassword": "New password",
@@ -1107,10 +1254,138 @@
       "whatsapp": "WhatsApp",
       "weekly_digest": "Weekly digest",
       "marketing": "Marketing & updates"
+    },
+    "pageSubtitle": "Organization identity, regional settings, integrations, and developer tools",
+    "exportSettings": "Export settings",
+    "tabs": {
+      "general": "General",
+      "regional": "Regional & languages",
+      "integrations": "Integrations",
+      "webhooks": "Webhooks",
+      "api": "API keys",
+      "danger": "Danger zone"
+    },
+    "identity": {
+      "title": "Organization identity",
+      "description": "Basic information shown to partner organizations and sponsors on all pages, receipts, and reports.",
+      "officialName": "Official name",
+      "officialNameHint": "Arabic and English names are used in official receipts",
+      "namePlaceholderAr": "Name in Arabic",
+      "namePlaceholderEn": "Name in English",
+      "namePlaceholderShort": "Short name (for headings)",
+      "logo": "Logo",
+      "logoHint": "PNG/SVG · max 2 MB",
+      "logoReplace": "Replace",
+      "logoDelete": "Delete",
+      "primaryColor": "Primary brand colour",
+      "primaryColorHint": "Used in main buttons, links, and email headers",
+      "colorTrust": "Trust",
+      "colorSerenity": "Serenity",
+      "colorSakina": "Sakina",
+      "colorWaqar": "Waqar",
+      "colorCustom": "Custom colour",
+      "tagline": "Tagline",
+      "taglineHint": "Short phrase reflecting the spirit of the organization",
+      "taglinePlaceholder": "e.g. Guardian of the orphan, companion of the Prophet ﷺ",
+      "contactDetails": "Official contact details",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "website": "Website URL",
+      "address": "Headquarters address"
+    },
+    "about": {
+      "title": "About the organization",
+      "description": "Description shown on the public \"About us\" page and in annual reports.",
+      "bioAr": "Arabic description",
+      "bioEn": "English description",
+      "charCount": "{{current}} / {{max}} characters"
+    },
+    "regional": {
+      "title": "Languages & timezone",
+      "description": "These settings control default system behaviour. Each user can customize their preferences in personal settings.",
+      "defaultLanguage": "Default language",
+      "defaultLanguageHint": "Language the app opens in for new visitors before sign-in",
+      "supportedLanguages": "Supported languages",
+      "addLanguage": "Add language",
+      "langAr": "Arabic",
+      "langEn": "English",
+      "timezone": "Timezone",
+      "calendar": "Display calendar",
+      "calHijriPrimary": "Hijri — primary",
+      "calGregorianPrimary": "Gregorian — primary",
+      "calBoth": "Both",
+      "currency": "Default currency",
+      "currencyHint": "Sponsors also see their preferred currency — auto-converted at daily exchange rates",
+      "numberFormat": "Number format",
+      "firstDayOfWeek": "First day of week",
+      "daySunday": "Sunday",
+      "daySaturday": "Saturday",
+      "dayMonday": "Monday"
+    },
+    "integrations": {
+      "title": "Available integrations",
+      "description": "Connect Rufaqaa to payment, messaging, and storage tools. Each integration keeps its settings separately.",
+      "browseAll": "Browse all integrations",
+      "manageSettings": "Manage settings →",
+      "upgradePackage": "Upgrade package →",
+      "connected": "Connected",
+      "warning": "Limit near",
+      "since": "Since {{n}} months",
+      "officialApi": "Official API"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "URLs called automatically when events occur in Rufaqaa. Delivered as POST with HMAC signature for source verification.",
+      "addWebhook": "Add webhook",
+      "colUrl": "URL",
+      "colEvents": "Events",
+      "colStatus": "Status",
+      "colLastCall": "Last call",
+      "statusHealthy": "Healthy",
+      "statusFailing": "{{n}} failed attempts",
+      "actionView": "View",
+      "actionRetry": "Retry",
+      "actionDelete": "Delete"
+    },
+    "api": {
+      "title": "API keys",
+      "description": "Keys for programmatic access. Never share a secret key over plain email — use a password manager.",
+      "createKey": "Create key",
+      "scopeRead": "read",
+      "scopeWrite": "write",
+      "scopeTestOnly": "test only",
+      "actionCopy": "Copy",
+      "actionView": "View",
+      "actionRevoke": "Revoke"
+    },
+    "danger": {
+      "title": "Danger zone",
+      "description": "Actions that cannot easily be undone. Each action requires double confirmation + logging in the audit trail.",
+      "exportTitle": "Full data export",
+      "exportDesc": "A JSON + CSV file containing all orphan, sponsor, and transaction data. Takes a few minutes to generate, then sent to your email.",
+      "exportAction": "Request export",
+      "freezeTitle": "Temporarily freeze the organization",
+      "freezeDesc": "Stops accepting new donations but keeps reports and media running. Useful during major maintenance or legal reviews.",
+      "freezeAction": "Freeze",
+      "transferTitle": "Transfer the organization to a new owner",
+      "transferDesc": "Transfer ownership to another administrator. Requires a signature from the current guardian + platform manager + legal documentation.",
+      "transferAction": "Start transfer",
+      "deleteTitle": "Delete the organization from Rufaqaa",
+      "deleteDesc": "A legal copy of the data is retained for {{n}} years (regulatory requirement) then destroyed. This action is irreversible.",
+      "deleteAction": "Permanently delete"
+    },
+    "cardFoot": {
+      "savedAgo": "Saved {{time}} ago",
+      "revert": "Revert",
+      "saveChanges": "Save changes"
+    },
+    "myAccount": {
+      "title": "My Account",
+      "subtitle": "Personal security and notification settings"
     }
   },
   "partners": {
-    "title": "Partners",
+    "title": "Partner Organisations",
     "addNew": "Add partner",
     "code": "Code",
     "name": "Name",
@@ -1122,47 +1397,274 @@
     "statuses": {
       "active": "Active",
       "suspended": "Suspended",
-      "archived": "Archived"
-    }
+      "archived": "Archived",
+      "pending": "Under review"
+    },
+    "subtitle": "Manage the associations and local organisations that work with Rufaqaa",
+    "export": "Export",
+    "exportCsv": "Export CSV",
+    "exportComingSoon": "Export coming soon",
+    "filterComingSoon": "Filter coming soon",
+    "statsSummary": "Partners summary",
+    "stats": {
+      "total": "Total organisations",
+      "active": "Active",
+      "underReview": "Under review",
+      "orphans": "Orphans in their care",
+      "countries": "Countries"
+    },
+    "filterByStatus": "Filter by status",
+    "tabs": {
+      "all": "All",
+      "active": "Active",
+      "underReview": "Under review",
+      "suspended": "Suspended"
+    },
+    "toolbarLabel": "Search and filter tools",
+    "searchLabel": "Search partners",
+    "searchPlaceholder": "Search by name, country or registration number…",
+    "filterCountry": "Filter by country",
+    "countryAll": "Country: All",
+    "sortLabel": "Sort",
+    "sortOrphans": "Sort: Orphan count",
+    "viewToggle": "View mode",
+    "viewGrid": "Cards",
+    "viewList": "Table",
+    "viewMap": "Map",
+    "gridLabel": "Partner organisations list",
+    "statsLabel": "Partner statistics",
+    "stat": {
+      "orphans": "Orphans",
+      "potentialOrphans": "Est. orphans",
+      "sponsored": "Sponsored",
+      "documents": "Documents",
+      "staff": "Staff",
+      "reviewers": "Reviewers",
+      "compliance": "Compliance",
+      "fileCompletion": "File completion"
+    },
+    "moreOptions": "More options for {{name}}",
+    "action": {
+      "open": "Open",
+      "review": "Review"
+    },
+    "emptyTitle": "No partners found",
+    "emptyBody": "Try adjusting your search or filter, or add a new partner organisation.",
+    "showing": "Showing",
+    "of": "of",
+    "entities": "organisations",
+    "paginationLabel": "Pagination",
+    "pagePrev": "Previous",
+    "pageNext": "Next"
   },
   "audit": {
-    "title": "Audit log",
+    "title": "Audit Log",
     "allTypes": "All types",
     "when": "When",
     "action": "Action",
     "entity": "Entity",
     "entityId": "ID",
-    "details": "Details"
+    "details": "Details",
+    "subtitle": "Every sensitive operation on the platform — fully traced by who, when, what, and how",
+    "h1": "Audit Log",
+    "stats": {
+      "events24h": "Events last 24 h",
+      "activeUsers": "Active users",
+      "approvals": "Approvals",
+      "securityAlerts": "Security alerts",
+      "failedAttempts": "Failed attempts"
+    },
+    "filters": {
+      "searchPlaceholder": "Search: actor:khalid  action:update  entity:business_rules …",
+      "action": "Action",
+      "actor": "Actor",
+      "entity": "Entity",
+      "rangeLabel": "Time range",
+      "lastHour": "Last hour",
+      "last24h": "Last 24 h",
+      "last7d": "7 days",
+      "last30d": "30 days",
+      "custom": "Custom…"
+    },
+    "table": {
+      "severity": "Severity",
+      "time": "Time",
+      "actor": "Actor",
+      "action": "Action",
+      "entity": "Entity",
+      "summary": "Summary",
+      "source": "Source"
+    },
+    "actions": {
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete",
+      "read": "Read",
+      "login": "Login",
+      "logout": "Logout",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rule": "Rule change",
+      "auth": "Auth"
+    },
+    "actor": {
+      "system": "System",
+      "unknown": "Unknown"
+    },
+    "source": {
+      "system": "system",
+      "webhook": "webhook"
+    },
+    "pagination": {
+      "showing": "Showing {{from}}–{{to}} of {{total}} events",
+      "first": "First page",
+      "prev": "Previous page",
+      "next": "Next page"
+    },
+    "loading": "Loading audit log…",
+    "empty": "No events found",
+    "error": "Could not load audit log",
+    "export": "Export CSV",
+    "liveStream": "Live stream"
   },
   "users": {
-    "title": "Users",
-    "allRoles": "All roles",
-    "name": "Name",
+    "title": "Users Management",
+    "allRoles": "All Roles",
+    "name": "Full Name",
     "email": "Email",
     "role": "Role",
-    "status": "Status",
-    "twofa": "2FA",
-    "lastLogin": "Last sign-in",
+    "status": {
+      "active": "Active",
+      "invited": "Invitation Pending",
+      "disabled": "Disabled",
+      "locked": "Security Locked"
+    },
+    "twofa": {
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "notEnabled": "Not enabled",
+      "notYet": "Not yet enabled",
+      "optional": "Optional"
+    },
+    "lastLogin": "Last Login",
     "suspend": "Suspend",
     "reactivate": "Reactivate",
     "suspended": "User suspended",
     "reactivated": "User reactivated",
     "roles": {
-      "super_admin": "Super admin",
-      "org_admin": "Organisation admin",
-      "partner_manager": "Partner manager",
-      "partner_staff": "Partner staff",
-      "marketing_manager": "Marketing manager",
+      "super_admin": "Super Admin",
+      "org_admin": "Org Admin",
+      "partner_manager": "Partner Manager",
+      "partner_staff": "Partner Staff",
+      "marketing_manager": "Marketing Manager",
       "finance": "Finance",
       "donor": "Donor",
       "guardian": "Guardian",
-      "viewer": "Viewer"
+      "viewer": "Viewer",
+      "case_manager": "Case Manager",
+      "finance_officer": "Finance Officer"
     },
     "staff": {
-      "title": "Partner staff",
-      "invite": "Invite user",
-      "invitePartnerStaff": "Invitation sent"
-    }
+      "title": "Partner Staff",
+      "invite": "Invite User",
+      "invitePartnerStaff": "Invited"
+    },
+    "subtitle": "Manage the team and their permissions within the organisation",
+    "exportCsv": "Export CSV",
+    "inviteUser": "Invite User",
+    "searchPlaceholder": "Search by name, email or phone…",
+    "allStatuses": "Status: All",
+    "allOrgs": "Organisation: All",
+    "moreFilters": "More Filters",
+    "advancedFilters": "Advanced Filters",
+    "usersTable": "Users Table",
+    "usersSummary": "Users Summary",
+    "stats": {
+      "total": "Total Users",
+      "active": "Active",
+      "pendingInvitations": "Pending Invitations",
+      "twoFactor": "Two-Factor Auth",
+      "twoFactorEnabled": "enabled",
+      "lastLogin": "Last Login"
+    },
+    "bulk": {
+      "selected": "selected",
+      "changeRole": "Change Role",
+      "disable": "Disable",
+      "resendInvite": "Resend Invite",
+      "clearSelection": "Clear Selection"
+    },
+    "cols": {
+      "user": "User",
+      "rolePerms": "Role & Permissions",
+      "status": "Status",
+      "twoFactor": "Two-Factor Auth",
+      "lastActivity": "Last Activity",
+      "actions": "Actions"
+    },
+    "youLabel": "(you)",
+    "noSelfEdit": "You cannot edit yourself",
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "users": "users",
+      "rowsPerPage": "Rows:"
+    },
+    "invite": {
+      "title": "Invite a New User",
+      "subtitle": "The email will receive a link valid for {{days}} days.",
+      "emailLabel": "Email Address",
+      "emailHelp": "You may enter multiple addresses separated by commas for a bulk invite.",
+      "fullNameLabel": "Full Name",
+      "fullNameOptional": "— optional",
+      "roleLabel": "Role",
+      "accessScopeLabel": "Access Scope",
+      "accessScopeOptional": "— for Finance role",
+      "settingsLabel": "Settings",
+      "require2fa": "Require Two-Factor Authentication",
+      "require2faHelp": "Will be prompted on first login",
+      "sendWelcome": "Send Custom Welcome Email",
+      "sendWelcomeHelp": "With a message from {{name}}",
+      "permissionsNote": "You can review permissions later.",
+      "send": "Send Invitation",
+      "roleCards": {
+        "org_admin": "Org Admin",
+        "org_adminDesc": "Full access to everything",
+        "finance": "Finance",
+        "financeDesc": "Transfers, payments, reports",
+        "marketing": "Marketing",
+        "marketingDesc": "Manage channels and campaigns",
+        "partner_manager": "Partner Manager",
+        "partner_managerDesc": "Oversight of partner organisations",
+        "partner_staff": "Partner Staff",
+        "partner_staffDesc": "Requires selecting an organisation",
+        "viewer": "Viewer",
+        "viewerDesc": "View reports only"
+      }
+    },
+    "drawer": {
+      "details": "Details",
+      "permissions": "Permissions",
+      "activityLog": "Activity Log",
+      "accountInfo": "Account Information",
+      "createdBy": "Created By",
+      "createdAt": "Created At",
+      "lastLogin": "Last Login",
+      "twoFactor": "Two-Factor Auth",
+      "activeSessions": "Active Sessions",
+      "resetPassword": "Reset Password",
+      "saveChanges": "Save Changes",
+      "disableUser": "Disable"
+    },
+    "actions": {
+      "editProfile": "Edit Profile",
+      "changeRole": "Change Role",
+      "resetPassword": "Reset Password",
+      "viewActivity": "View Activity Log",
+      "sendNotification": "Send Notification",
+      "disable": "Disable User"
+    },
+    "empty": "No users found"
   },
   "marketingChannels": {
     "title": "Marketing channels",
@@ -1450,6 +1952,143 @@
       "deadline": "Assignment deadline",
       "release": "Release to available",
       "releaseDone": "Orphan released to the available pool"
+    },
+    "title": "Marketing Channels",
+    "subtitle": "The channels that introduce sponsors to Rufaqaa — track each channel's performance and goals",
+    "pageLabel": "Performance summary",
+    "yearLabel": "Hijri year",
+    "prevYear": "Previous year",
+    "nextYear": "Next year",
+    "monthlyReport": "Monthly report",
+    "createChannel": "Create new channel",
+    "activeChannels": "Active channels",
+    "pausedChannels": "Paused channels",
+    "searchPlaceholder": "Search by channel name or type…",
+    "filterStatus": "Status: active",
+    "filterSort": "Sort: goal progress",
+    "viewCards": "Cards",
+    "viewTable": "Table",
+    "openChannel": "Open channel",
+    "reactivate": "Reactivate",
+    "archiveBtn": "Archive",
+    "reviewBtn": "Review",
+    "topPerformer": "Top performer",
+    "createNew": "Create new channel",
+    "createNewDesc": "Create a channel for every marketing source you want to track with separate goals and performance",
+    "referralCode": "Referral code",
+    "orphanCount": "Orphans assigned",
+    "noReferralCode": "—",
+    "loading": "Loading channels…",
+    "loadError": "Could not load marketing channels",
+    "empty": "No channels yet",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "This metric will be available once connected to the backend",
+    "kpi": {
+      "activeChannels": "Active channels",
+      "activeChannelsUnit": "channel",
+      "orphansAssigned": "Orphans assigned",
+      "conversionRate": "Conversion rate",
+      "conversionSub": "visitor → sponsor",
+      "avgSponsorDuration": "Avg. sponsorship duration",
+      "avgSponsorDurationUnit": "months",
+      "avgTimeToSponsor": "Avg. time to sponsor",
+      "avgTimeToSponsorUnit": "minutes",
+      "expiredOrphans": "Expired-slot orphans",
+      "expiredOrphansSub": "needs reassignment",
+      "annualTotal": "Sponsors acquired this year",
+      "annualTotalUnit": "sponsor",
+      "annualGoal": "Annual goal of",
+      "annualGoalUnit": "sponsors",
+      "thisMonth": "this month",
+      "monthsRemaining": "months remaining",
+      "pctOfGoal": "% of goal",
+      "waitingForSponsor": "waiting for a sponsor",
+      "yearRetention": "Annual retention",
+      "fromOpenToPayment": "from page-open to payment"
+    },
+    "card": {
+      "annualGoal": "Annual goal",
+      "campaignGoal": "Campaign goal",
+      "newSponsors": "new sponsors",
+      "ofGoal": "of goal",
+      "remainingMonths": "months remaining",
+      "weeks": "weeks remaining",
+      "lastUpdated": "Last updated",
+      "nextNewsletter": "Next newsletter",
+      "lastPost": "Last post",
+      "expires": "Expires in",
+      "days": "days",
+      "lastReferral": "Last referral",
+      "nextEvent": "Next event",
+      "goalExceeded": "Exceeded goal",
+      "onTrack": "On track",
+      "slightDelay": "Slight delay",
+      "needsReview": "Needs review",
+      "conversionRate": "Conversion rate",
+      "orphansAssigned": "Orphans assigned",
+      "annualRetention": "Annual retention",
+      "openRate": "Open rate",
+      "clickRate": "Sponsorship clicks",
+      "costPerSponsor": "Cost per sponsor",
+      "views": "Views",
+      "sponsorValue": "Sponsor value",
+      "conversionRateShort": "Conversion",
+      "acceptanceRate": "Acceptance rate",
+      "engagement": "Engagement",
+      "postsPerMonth": "Posts/month",
+      "attendance": "Attendees/event",
+      "cpa": "CPA",
+      "ctr": "CTR",
+      "lastPerformance": "Last performance before pause",
+      "lowPerformance": "Low performance",
+      "pausedAdmin": "Administrative pause",
+      "awaitingDecision": "Awaiting decision",
+      "strategicReview": "Strategic review",
+      "partnerOrgs": "partner orgs",
+      "followers": "followers",
+      "upcomingEvents": "upcoming events",
+      "monthlyBudget": "Monthly budget",
+      "seasonal": "Seasonal",
+      "sponsorToSponsor": "Sponsor-to-sponsor referral"
+    },
+    "types": {
+      "digital_marketing": "Digital marketing",
+      "committee": "Committee",
+      "website": "Website",
+      "branch": "Branch",
+      "social_media": "Social media",
+      "partnership": "Partnership",
+      "other": "Other",
+      "email": "Email",
+      "influencer": "Influencer",
+      "events": "Events",
+      "referral": "Referral",
+      "tv": "TV",
+      "search": "Paid search"
+    },
+    "statuses": {
+      "active": "Active",
+      "suspended": "Paused",
+      "archived": "Archived"
+    },
+    "modal": {
+      "title": "Create new marketing channel",
+      "subtitle": "Channel performance will be automatically tracked via UTM parameters",
+      "close": "Close",
+      "cancel": "Cancel",
+      "create": "Create channel",
+      "channelName": "Channel name",
+      "channelNamePlaceholder": "e.g. Eid al-Fitr campaign — TikTok",
+      "channelNameHelp": "A descriptive name that distinguishes this channel from others",
+      "channelType": "Channel type",
+      "annualGoal": "Annual goal",
+      "annualGoalSuffix": "(number of sponsors)",
+      "annualGoalPlaceholder": "500",
+      "owner": "Owner",
+      "ownerPlaceholder": "Select owner…",
+      "utmParams": "UTM parameters",
+      "utmSuffix": "(auto-generated)",
+      "utmHelp": "Add this link to any URLs you publish in this channel to track them"
     }
   },
   "orphanNav": {
@@ -1649,5 +2288,218 @@
         }
       }
     }
+  },
+  "businessRules": {
+    "title": "Business Rules",
+    "subtitle": "Settings that control how the system operates within the organisation",
+    "lastEdit": "Last edited {{days}} days ago by {{name}}",
+    "viewLog": "View log",
+    "infoBanner": "These rules apply to the entire organisation (<strong>{{orgName}}</strong>). Each partner organisation may request a limited exception with your approval. Any change takes effect immediately after saving and is recorded in the <strong>Audit log</strong>.",
+    "unsavedFlag": "Unsaved change",
+    "toc": {
+      "heading": "Sections",
+      "assign": "Orphan assignment",
+      "payment": "Payment delays",
+      "orphan": "Orphan lifecycle",
+      "report": "Report requirements",
+      "approval": "Approval rules",
+      "visibility": "Guardian visibility",
+      "custom": "Custom rules"
+    },
+    "assign": {
+      "heading": "Orphan assignment to marketing channels",
+      "desc": "How long an orphan stays reserved for a marketing channel before returning to the available pool, and who decides to return them manually.",
+      "defaultDuration": {
+        "title": "Default channel assignment duration",
+        "desc": "Maximum period a channel may hold a specific orphan before they return to the available pool.",
+        "was": "Was: {{old}} days",
+        "now": "Now: {{new}} days",
+        "unit": "days"
+      },
+      "expiryWarning": {
+        "title": "Expiry warning notifications",
+        "desc": "Days before deadline to send a reminder to the channel manager.",
+        "at": "At {{n}}"
+      },
+      "autoReturn": {
+        "title": "Auto-return after deadline",
+        "desc": "If the orphan is not sponsored before the deadline, they automatically return to the available pool for all channels. When off, a manual decision from the org admin is required."
+      },
+      "multiChannel": {
+        "title": "Allow assigning an orphan to multiple channels",
+        "desc": "When enabled, multiple channels can market the same orphan simultaneously. Recommended to keep off to avoid conflicts."
+      },
+      "preview": "Summary after change: each channel will have <code>{{days}} days</code> to promote the orphan, with a reminder at <code>{{warn}} days remaining</code>, then automatic return to the available pool."
+    },
+    "payment": {
+      "heading": "Sponsor payment delays",
+      "desc": "When a sponsor is considered overdue, when sponsorship is automatically suspended, and how to gently remind late payers.",
+      "mildThreshold": {
+        "title": "\"Mildly late\" threshold",
+        "desc": "Days after the due date before classifying a sponsor as \"mildly late\". Only a friendly reminder is sent.",
+        "unit": "days"
+      },
+      "moderateThreshold": {
+        "title": "\"Moderately late\" threshold",
+        "desc": "A second reminder is sent offering help updating the payment method or suggesting a deferral.",
+        "unit": "days"
+      },
+      "suspendThreshold": {
+        "title": "Auto-suspension threshold",
+        "desc": "After this period, the orphan automatically moves to \"awaiting new sponsor\" status. The sponsor's file remains open for resuming later.",
+        "pillSensitive": "Sensitive",
+        "unit": "days"
+      },
+      "reminderChannels": {
+        "title": "Late-payment reminder channels",
+        "desc": "Channels used to send reminders. Only those available for each sponsor's preferences are used.",
+        "email": "Email",
+        "whatsapp": "WhatsApp",
+        "sms": "SMS",
+        "call": "Call"
+      },
+      "deferral": {
+        "title": "Allow one payment deferral per year",
+        "desc": "The sponsor can self-defer one payment per year with a click, no org approval needed, max <strong>30 days</strong>."
+      }
+    },
+    "orphan": {
+      "heading": "Orphan lifecycle",
+      "desc": "Graduation age, transition states, and when an orphan becomes an adult managing their own account.",
+      "minAge": {
+        "title": "Minimum age for independent orphan account",
+        "desc": "The age at which an orphan can log in independently and view their own page.",
+        "was": "Was: {{old}} years",
+        "now": "Now: {{new}} years",
+        "unit": "years"
+      },
+      "graduationAge": {
+        "title": "Default graduation age",
+        "desc": "The age at which the orphan automatically transitions to \"graduated\" status and their sponsorship ends. Can be extended manually for university students.",
+        "unit": "years"
+      },
+      "universityExtension": {
+        "title": "Allow sponsorship extension for university students",
+        "desc": "Extend sponsorship up to age 24 upon submission of a university enrollment proof."
+      },
+      "graduationNotice": {
+        "title": "Graduation advance notice",
+        "desc": "Months before graduation when notifications are sent to the sponsor and guardian to coordinate the transition.",
+        "3months": "3 months",
+        "6months": "6 months",
+        "9months": "9 months",
+        "1year": "1 year"
+      }
+    },
+    "report": {
+      "heading": "Report requirements from guardians",
+      "desc": "Report frequency, mandatory fields, and reminders.",
+      "frequency": {
+        "title": "Mandatory report frequency",
+        "desc": "How many times per year a report must be submitted for each orphan.",
+        "monthly": "Every month",
+        "bimonthly": "Every 2 months",
+        "quarterly": "Every 3 months",
+        "semiannual": "Every 6 months"
+      },
+      "photo": {
+        "title": "Require photo with report",
+        "desc": "When enabled, a report is not accepted without at least one photo within the approved privacy settings."
+      },
+      "reminder": {
+        "title": "Guardian reminder for due report",
+        "desc": "Days before the due date to send the first reminder via WhatsApp.",
+        "unit": "days before"
+      },
+      "voice": {
+        "title": "Accept voice recording instead of text",
+        "desc": "Allows the guardian to send a voice recording up to <strong>60 seconds</strong> instead of writing a summary."
+      },
+      "notifyDonor": {
+        "title": "Automatically notify sponsor of approved report",
+        "desc": "The report summary is sent to the sponsor as soon as it is approved by the organisation, with no extra click."
+      }
+    },
+    "approval": {
+      "heading": "Approval rules",
+      "desc": "Determine whether sensitive operations require single approval (staff) or dual approval (staff + manager).",
+      "newOrphan": {
+        "title": "Approve new orphan file",
+        "desc": "Who approves a new orphan file after it is registered by a staff member.",
+        "pillSensitive": "Sensitive",
+        "staffOnly": "Partner staff only",
+        "staffManager": "Staff + partner manager",
+        "staffManagerOrg": "Staff + partner manager + org admin"
+      },
+      "monthlyReports": {
+        "title": "Approve monthly reports",
+        "desc": "Who reviews reports before sending them to sponsors.",
+        "staffOnly": "Partner staff only",
+        "staffManager": "Staff + partner manager"
+      },
+      "media": {
+        "title": "Approve media (photos/video)",
+        "desc": "Approval is completed after automatic AI screening + human review.",
+        "aiOnly": "AI only",
+        "aiStaff": "AI + staff",
+        "aiStaffManager": "AI + staff + manager"
+      },
+      "bankTransfers": {
+        "title": "Approve bank transfers",
+        "desc": "Who approves monthly transfers to partner organisations before execution.",
+        "pillSensitive": "Sensitive",
+        "financeManager": "Finance officer + finance manager",
+        "financeManagerOrg": "Finance officer + finance manager + org admin"
+      },
+      "donorMessages": {
+        "title": "Sponsor messages to guardians",
+        "desc": "Before the message reaches the guardian.",
+        "aiAuto": "Automatic after AI screening",
+        "aiStaff": "AI + staff review"
+      }
+    },
+    "visibility": {
+      "heading": "Guardian visibility in the app",
+      "desc": "What the guardian can see in the orphan's file. The golden rule: <strong>no financial figures, no donor name</strong>.",
+      "amount": {
+        "title": "View sponsorship amount",
+        "desc": "The sponsorship amount must always remain hidden from the guardian. Changing this requires confirmation from the org admin + a sharia signature.",
+        "pill": "Golden rule"
+      },
+      "donorName": {
+        "title": "Show sponsor name to guardian",
+        "desc": "Only \"Sponsor of [orphan name]\" is shown — even if the sponsor consents to showing their name, platform-level privacy is preserved.",
+        "pill": "Golden rule"
+      },
+      "nationality": {
+        "title": "Show sponsor nationality or country",
+        "desc": "When enabled, the guardian can see the sponsor's country (without their name) — useful for directed prayer."
+      },
+      "duration": {
+        "title": "Show \"how long have they sponsored\"",
+        "desc": "Shows \"has sponsored your child for 3 years\" without exact dates."
+      },
+      "reportDetail": {
+        "title": "Report detail level shown to guardian",
+        "desc": "How much of the previous record the guardian can see for the same orphan.",
+        "all": "All reports",
+        "last6": "Last 6 reports",
+        "last1": "Last report only",
+        "none": "Not shown"
+      }
+    },
+    "custom": {
+      "heading": "Custom rules (advanced editor)",
+      "desc": "Additional rules in JSON format for specifics not covered by the sections above. Applied at the entire organisation level.",
+      "fileName": "business_rules.custom.json",
+      "validJson": "Valid JSON",
+      "format": "Format",
+      "validate": "Validate",
+      "fullscreen": "Fullscreen",
+      "note": "Editing this section is restricted to the <strong>org admin</strong> only. The complete JSON file is saved when you press save, and a previous version can be restored from the <strong>Audit log</strong>."
+    },
+    "sensitive": "Sensitive",
+    "on": "On",
+    "off": "Off"
   }
 }
