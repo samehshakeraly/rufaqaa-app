@@ -813,7 +813,8 @@
     "next": "Next"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Executive dashboard",
+    "subtitle": "A complete view of your organization's activity this month",
     "accountInfo": "Account info",
     "name": "Name",
     "email": "Email",
@@ -828,7 +829,66 @@
     "payments30d": "Payments (30d)",
     "paymentsChart": "Monthly payments (last 12 months)",
     "sponsorshipsByStatus": "Sponsorships by status",
-    "donationsByPartner": "Donations by partner (last {{days}} days)"
+    "donationsByPartner": "Donations by partner (last {{days}} days)",
+    "greeting": "Welcome, {{name}}",
+    "greetingSubtitle": "A complete view of your organization's activity. These figures are live from the database.",
+    "lastUpdated": "Last updated: {{time}}",
+    "comingSoonTitle": "Data coming soon",
+    "comingSoonBody": "No backend data source is wired for this section yet.",
+    "kpi": {
+      "revenue": "Monthly revenue",
+      "activeSponsorships": "Active sponsorships",
+      "activeDonors": "Active donors",
+      "registeredOrphans": "Registered orphans",
+      "zakatRate": "Zakat share of revenue",
+      "availableForSponsorship": "available",
+      "underReview": "under review"
+    },
+    "revenue": {
+      "title": "Monthly revenue",
+      "legendActual": "Total revenue",
+      "legendZakat": "of which Zakat",
+      "legendTarget": "Monthly target",
+      "yearTotal": "Last 12 months total",
+      "monthlyAvg": "Monthly average",
+      "fromRamadan": "Ramadan alone",
+      "empty": "No payments recorded yet"
+    },
+    "alerts": {
+      "title": "Alerts that need your attention",
+      "count": "{{count}} alerts",
+      "overdueTitle": "{{count}} overdue sponsorships",
+      "overdueMeta": "Need follow-up with donors",
+      "review": "Review",
+      "empty": "No critical alerts right now",
+      "criticalOnly": "Critical alerts only",
+      "viewAll": "View all"
+    },
+    "movement": {
+      "title": "Sponsorship movement — last 12 months",
+      "new": "New",
+      "renewals": "Renewals",
+      "cancellations": "Cancellations"
+    },
+    "channels": {
+      "title": "Top 5 marketing channels",
+      "meta": "By sponsorships this month",
+      "unit": "sponsorships",
+      "manage": "Manage channels"
+    },
+    "topDonors": {
+      "title": "Top 5 donors — this month",
+      "meta": "Aliases shown for anyone who asked to stay anonymous",
+      "colDonor": "Donor",
+      "colOrphans": "Orphans",
+      "colTotal": "Total",
+      "colType": "Type",
+      "viewAll": "View all"
+    },
+    "geo": {
+      "title": "Orphans by country",
+      "meta": "Distribution of orphans across countries"
+    }
   },
   "orphans": {
     "title": "Orphans",

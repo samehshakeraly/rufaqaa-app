@@ -813,7 +813,8 @@
     "next": "التالي"
   },
   "dashboard": {
-    "title": "الرئيسية",
+    "title": "اللوحة التنفيذيّة",
+    "subtitle": "نظرة شاملة على نشاط المؤسسة هذا الشهر",
     "accountInfo": "معلومات الحساب",
     "name": "الاسم",
     "email": "البريد",
@@ -828,7 +829,66 @@
     "payments30d": "مدفوعات آخر 30 يوم",
     "paymentsChart": "المدفوعات الشهرية (آخر 12 شهر)",
     "sponsorshipsByStatus": "الكفالات حسب الحالة",
-    "donationsByPartner": "التبرعات حسب الشريك (آخر {{days}} يوم)"
+    "donationsByPartner": "التبرعات حسب الشريك (آخر {{days}} يوم)",
+    "greeting": "أهلاً {{name}}،",
+    "greetingSubtitle": "نظرة شاملة على نشاط المؤسسة. هذه الأرقام مُحدّثة من قاعدة البيانات.",
+    "lastUpdated": "آخر تحديث: {{time}}",
+    "comingSoonTitle": "ستتوفّر هذه البيانات قريباً",
+    "comingSoonBody": "لا يوجد مصدر بيانات لهذا القسم في الخادم بعد.",
+    "kpi": {
+      "revenue": "الإيرادات الشهرية",
+      "activeSponsorships": "الكفالات النشطة",
+      "activeDonors": "المتبرعون النشطون",
+      "registeredOrphans": "الأيتام المعتمدون",
+      "zakatRate": "معدّل الزكاة من الإيراد",
+      "availableForSponsorship": "متاحون للكفالة",
+      "underReview": "قيد المراجعة"
+    },
+    "revenue": {
+      "title": "الإيرادات الشهرية",
+      "legendActual": "إجمالي الإيرادات",
+      "legendZakat": "منها زكاة",
+      "legendTarget": "الهدف الشهري",
+      "yearTotal": "إجمالي آخر ١٢ شهراً",
+      "monthlyAvg": "متوسّط شهري",
+      "fromRamadan": "من رمضان وحده",
+      "empty": "لا توجد مدفوعات مُسجّلة بعد"
+    },
+    "alerts": {
+      "title": "تنبيهات تستحقّ انتباهك",
+      "count": "{{count}} تنبيه",
+      "overdueTitle": "{{count}} كفالة متأخّرة عن السداد",
+      "overdueMeta": "تحتاج إلى متابعة مع المتبرّعين",
+      "review": "مراجعة",
+      "empty": "لا توجد تنبيهات حرجة الآن",
+      "criticalOnly": "التنبيهات الحرجة فقط",
+      "viewAll": "عرض الكل"
+    },
+    "movement": {
+      "title": "حركة الكفالات — آخر ١٢ شهراً",
+      "new": "كفالات جديدة",
+      "renewals": "تجديدات",
+      "cancellations": "إلغاءات"
+    },
+    "channels": {
+      "title": "أعلى ٥ قنوات تسويقية",
+      "meta": "حسب الكفالات هذا الشهر",
+      "unit": "كفالة",
+      "manage": "إدارة القنوات"
+    },
+    "topDonors": {
+      "title": "أعلى ٥ متبرّعين — هذا الشهر",
+      "meta": "أسماء مستعارة لمن طلب إخفاء اسمه",
+      "colDonor": "المتبرّع",
+      "colOrphans": "عدد الأيتام",
+      "colTotal": "المجموع",
+      "colType": "النوع",
+      "viewAll": "عرض الكل"
+    },
+    "geo": {
+      "title": "الأيتام حسب الدولة",
+      "meta": "توزيع الأيتام على الدول"
+    }
   },
   "orphans": {
     "title": "الأيتام",
