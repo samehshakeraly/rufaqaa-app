@@ -1,0 +1,573 @@
+/* ═══════════════════════════════════════════════════════════════
+   PS-04 Orphan Detail (Staff) — scoped styles
+   Ported from docs/design/screens/partner-staff/PS-04 Orphan Detail
+   (Staff).html. Tokens only; scoped under `.ps-detail`, prefixed
+   `ps-`. Physical left/right rewritten as logical for RTL-first.
+   The shared OrphanPhotoUpload / DocumentUploadCard components keep
+   their own markup; only this page's chrome is restyled.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ps-detail {
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-700: #1d4ed8;
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-700: #6d28d9;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.ps-detail .latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ───────────── Breadcrumb ───────────── */
+.ps-crumb {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.ps-crumb a:hover {
+  color: var(--trust-500);
+}
+.ps-crumb svg {
+  color: var(--gray-300);
+}
+.ps-crumb-current {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+
+/* ───────────── Buttons ───────────── */
+.ps-btn {
+  padding: 8px 14px;
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+.ps-btn:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.ps-btn-primary {
+  background: var(--trust-400);
+  color: white;
+  border-color: var(--trust-400);
+}
+.ps-btn-primary:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  color: white;
+}
+.ps-btn-success {
+  background: var(--success-600);
+  color: white;
+  border-color: var(--success-600);
+}
+.ps-btn-success:hover {
+  background: var(--success-700);
+  border-color: var(--success-700);
+  color: white;
+}
+.ps-btn-danger {
+  background: white;
+  color: var(--danger-600);
+  border-color: var(--danger-100);
+}
+.ps-btn-danger:hover {
+  background: var(--danger-50);
+  border-color: var(--danger-600);
+  color: var(--danger-600);
+}
+.ps-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ───────────── Hero ───────────── */
+.ps-hero {
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .ps-hero {
+    grid-template-columns: 64px 1fr;
+  }
+  .ps-hero-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+}
+.ps-hero-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--snow-200) 0,
+    var(--snow-200) 8px,
+    var(--tranquil-100) 8px,
+    var(--tranquil-100) 16px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--trust-700);
+  border: 3px solid white;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+.ps-hero-text {
+  min-width: 0;
+}
+.ps-hero-code {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 2px 8px;
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+}
+.ps-hero-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.ps-hero-meta {
+  font-size: 13px;
+  color: var(--gray-600);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.ps-hero-meta .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+.ps-hero-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.ps-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.ps-badge .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ps-badge.review {
+  background: var(--info-50);
+  color: var(--info-700);
+  border: 1px solid var(--info-100);
+}
+.ps-badge.active {
+  background: var(--success-50);
+  color: var(--success-700);
+  border: 1px solid var(--success-100);
+}
+.ps-badge.pending {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-100);
+}
+.ps-badge.archived {
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+}
+.ps-badge.partner {
+  background: var(--tranquil-100);
+  color: var(--trust-600);
+  border: 1px solid var(--sky-200);
+}
+.ps-hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+/* ───────────── Pending review banner ───────────── */
+.ps-pending-banner {
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.ps-pending-banner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid var(--info-100);
+  color: var(--info-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ps-pending-banner-text {
+  flex: 1;
+  min-width: 200px;
+}
+.ps-pending-banner-text h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--info-700);
+  margin-bottom: 2px;
+}
+.ps-pending-banner-text p {
+  font-size: 12.5px;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+.ps-pending-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ───────────── Two-column layout ───────────── */
+.ps-col-2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .ps-col-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.ps-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* ───────────── Info / section blocks ───────────── */
+.ps-info-block {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.ps-info-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+.ps-info-block-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.ps-info-block-title svg {
+  color: var(--trust-400);
+}
+.ps-info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+}
+.ps-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 13px;
+}
+.ps-info-row-label {
+  color: var(--gray-600);
+}
+.ps-info-row-value {
+  color: var(--gray-900);
+  font-weight: 500;
+}
+
+/* ───────────── Reports list ───────────── */
+.ps-report-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.ps-report-row:last-child {
+  border-bottom: none;
+}
+.ps-report-row:hover {
+  background: var(--snow-200);
+}
+.ps-report-type {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.ps-report-period {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-inline-start: 8px;
+}
+.ps-report-status {
+  font-size: 11px;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ───────────── Timeline (audit-style) ───────────── */
+.ps-timeline {
+  padding: 6px 16px 14px;
+}
+.ps-audit-row {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--gray-100);
+  font-size: 12.5px;
+}
+.ps-audit-row:last-child {
+  border-bottom: none;
+}
+.ps-audit-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--trust-300);
+  margin-top: 5px;
+}
+.ps-audit-dot.sponsorship {
+  background: var(--trust-400);
+}
+.ps-audit-dot.payment {
+  background: var(--success-500);
+}
+.ps-audit-dot.report {
+  background: var(--warning-700);
+}
+.ps-audit-dot.media {
+  background: var(--sky-300);
+}
+.ps-audit-body {
+  min-width: 0;
+}
+.ps-audit-summary {
+  color: var(--gray-900);
+}
+.ps-audit-meta {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ps-audit-kind {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--trust-600);
+  background: var(--tranquil-100);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+.ps-audit-amount {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 12px;
+  color: var(--gray-700);
+  white-space: nowrap;
+}
+
+/* ───────────── Pending media moderation ───────────── */
+.ps-media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 14px 16px;
+}
+.ps-media-card {
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: var(--snow-200);
+}
+.ps-media-card img {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ps-media-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+}
+.ps-media-mini {
+  flex: 1;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  color: white;
+}
+.ps-media-mini.ok {
+  background: var(--success-600);
+}
+.ps-media-mini.ok:hover {
+  background: var(--success-700);
+}
+.ps-media-mini.no {
+  background: var(--danger-600);
+}
+.ps-media-mini.no:hover {
+  background: var(--danger-700);
+}
+.ps-media-mini:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ───────────── Shared component slots ───────────── */
+.ps-detail .card {
+  border-radius: var(--radius-lg);
+}
+
+/* ───────────── States ───────────── */
+.ps-detail-msg {
+  font-size: 13px;
+  color: var(--gray-500);
+  padding: 14px 0;
+}
+.ps-detail-error {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--danger-50);
+  color: var(--danger-700);
+  font-size: 13px;
+}
+
+/* ───────────── Icons ───────────── */
+.ps-detail .ps-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ps-detail .ps-icon-sm {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}

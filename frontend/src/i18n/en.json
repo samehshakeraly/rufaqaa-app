@@ -966,6 +966,9 @@
     "subtitle": {
       "approvals": "Cases awaiting your approval"
     },
+    "detail": {
+      "approverHint": "Review the case details, documents, and photos before approving, rejecting, or releasing this case."
+    },
     "actions": {
       "approve": "Approve",
       "reject": "Reject",
