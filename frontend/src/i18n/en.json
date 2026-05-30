@@ -2588,5 +2588,176 @@
     "sensitive": "Sensitive",
     "on": "On",
     "off": "Off"
+  },
+  "partner": {
+    "portalName": "Partner organization portal",
+    "portalBadge": "Manager portal",
+    "tenantShort": "ORG",
+    "tenantName": "Partner organization",
+    "managerShort": "Manager",
+    "managerRole": "Branch manager",
+    "managerPermissions": "Manager permissions",
+    "nav": {
+      "section": "Management",
+      "opsSection": "Operations",
+      "approvals": "Approval center",
+      "staff": "Staff",
+      "transfers": "Incoming transfers",
+      "performance": "Performance reports",
+      "allOrphans": "All orphans",
+      "reports": "Reports"
+    },
+    "approvals": {
+      "title": "Approval center",
+      "subtitle": "Items awaiting your approval as branch manager.",
+      "tabs": {
+        "orphans": "Orphans pending review",
+        "reports": "Reports — dual approval",
+        "media": "Sensitive media",
+        "bank": "Bank transfers"
+      },
+      "reportApproved": "Report approved.",
+      "reportRejected": "Report rejected.",
+      "rejectReportTitle": "Why are you rejecting this report?",
+      "approvePartner": "Approve (partner)",
+      "bankRowTitle": "Transfer from parent organization",
+      "awaitingApproval": "Awaiting your approval",
+      "empty": {
+        "orphansTitle": "No orphans awaiting review",
+        "orphansBody": "New cases sent for approval will appear here.",
+        "reportsTitle": "No reports awaiting approval",
+        "reportsBody": "Reports submitted by staff will appear here for partner approval.",
+        "bankTitle": "No bank transfers awaiting approval",
+        "bankBody": "Pending transfers from the parent organization will appear here.",
+        "mediaTitle": "Media moderation not available yet",
+        "mediaBody": "A media moderation queue is not exposed by the API yet. It will appear here once available."
+      }
+    },
+    "transfers": {
+      "title": "Incoming transfers from the parent organization",
+      "subtitle": "Monthly payments for the branch's orphans · confirm receipt within the agreed window.",
+      "export": "Export",
+      "notifyPolicy": "Notification policy",
+      "accountLabel": "Branch bank account for incoming transfers",
+      "accountNamePlaceholder": "Branch bank account",
+      "accountNumber": "Account",
+      "beneficiary": "Beneficiary",
+      "accumulatedBalance": "Accumulated balance awaiting confirmation",
+      "unitTransfers": "transfers",
+      "period": "Period",
+      "reference": "Reference",
+      "issuedAt": "Issued",
+      "kpi": {
+        "awaiting": "Awaiting your confirmation",
+        "awaitingFoot": "Executed by the parent organization.",
+        "confirmed": "Confirmed",
+        "confirmedFoot": "Receipt acknowledged.",
+        "scheduled": "Scheduled",
+        "scheduledFoot": "Not yet executed.",
+        "avgTime": "Avg. confirmation time",
+        "avgTimeFoot": "Not available yet."
+      },
+      "tabs": {
+        "awaiting": "Awaiting confirmation",
+        "confirmed": "Confirmed",
+        "scheduled": "Scheduled"
+      },
+      "status": {
+        "received": "Received",
+        "scheduled": "Scheduled",
+        "awaiting": "Awaiting confirmation"
+      },
+      "empty": {
+        "title": "Nothing here",
+        "body": "No transfers in this bucket right now."
+      }
+    },
+    "staff": {
+      "title": "Branch staff",
+      "subtitle": "Manage the staff in your branch and their permissions.",
+      "export": "Export",
+      "invite": "Invite new staff",
+      "inviteHint": "Staff invitations are managed by the organization admin on the Users screen.",
+      "inviteSub": "Enter their email and set permissions. A secure invitation is sent within seconds.",
+      "forbiddenNotice": "Staff management is restricted to the organization admin. Ask your org admin to add or change branch staff from the Users screen.",
+      "searchPlaceholder": "Search by name or email…",
+      "disableConfirm": "Disable this account?",
+      "neverSeen": "Never signed in",
+      "lastSeen": "Last seen",
+      "inviteSent": "Invitation sent",
+      "invitePending": "Invitation pending",
+      "accountDisabled": "Account disabled",
+      "kpi": {
+        "active": "Active staff",
+        "ofTotal": "of {{total}}",
+        "activeFoot": "Currently active accounts.",
+        "online": "Online now",
+        "onlineFoot": "Not available yet.",
+        "weekTx": "Transactions this week",
+        "weekTxFoot": "Not available yet.",
+        "avgTime": "Avg. processing time",
+        "avgTimeFoot": "Not available yet."
+      },
+      "roles": {
+        "all": "All",
+        "managers": "Managers",
+        "staff": "Case staff",
+        "finance": "Finance",
+        "disabled": "Disabled"
+      },
+      "rolePills": {
+        "manager": "Manager",
+        "staff": "Case staff",
+        "finance": "Finance officer",
+        "reviewer": "Reviewer"
+      },
+      "stats": {
+        "transactions": "Transactions",
+        "orphans": "Orphans",
+        "tenure": "Tenure"
+      },
+      "empty": {
+        "title": "No staff found",
+        "body": "No staff match the current filter."
+      }
+    },
+    "performance": {
+      "title": "Branch performance",
+      "subtitle": "Continuous measurement of the branch against targets and sister branches.",
+      "period": "Period",
+      "exportPdf": "Export PDF",
+      "fullReport": "Full monthly report",
+      "unitOrphans": "orphans",
+      "unitSponsorships": "sponsorships",
+      "comingSoon": "Coming soon",
+      "kpi": {
+        "orphans": "Total orphans",
+        "orphansBench": "Managed by this branch.",
+        "sponsorRate": "Sponsorship rate",
+        "sponsoredOf": "{{sponsored}} of {{total}} sponsored",
+        "activeSponsorships": "Active sponsorships",
+        "overdue": "{{count}} overdue",
+        "noOverdue": "None overdue.",
+        "satisfaction": "Parent satisfaction",
+        "satisfactionBench": "Not available yet."
+      },
+      "trendTitle": "Branch performance — last 6 months",
+      "trendMeta": "Monthly payments",
+      "trendEmpty": "No payment history to chart yet.",
+      "legendActual": "Actual",
+      "legendTarget": "Monthly target",
+      "regionTitle": "Geographic distribution of orphans",
+      "regionEmpty": "A by-region breakdown is not exposed by the API yet.",
+      "workloadTitle": "Workload distribution",
+      "workloadEmpty": "A workload breakdown is not exposed by the API yet.",
+      "slaTitle": "SLA compliance",
+      "slaEmpty": "SLA metrics are not exposed by the API yet.",
+      "healthTitle": "Health flags",
+      "health": {
+        "overdue": "{{count}} sponsorships are overdue and need follow-up.",
+        "good": "Healthy — no overdue sponsorships right now.",
+        "available": "{{count}} orphans are available for sponsorship."
+      }
+    }
   }
 }

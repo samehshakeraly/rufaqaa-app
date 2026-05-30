@@ -6,12 +6,14 @@ import { FinanceRoute } from "./components/FinanceRoute";
 import { MarketingRoute } from "./components/MarketingRoute";
 import { OrphanRoute } from "./components/OrphanRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
+import { PartnerRoute } from "./components/PartnerRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { SuperAdminRoute } from "./components/SuperAdminRoute";
 import { PublicSiteLayout } from "./components/public/PublicSiteLayout";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
 import { OrphanLayout } from "./components/layout/OrphanLayout";
+import { PartnerLayout } from "./components/layout/PartnerLayout";
 import { PlatformLayout } from "./components/layout/PlatformLayout";
 import { PublicLayout } from "./components/layout/PublicLayout";
 
@@ -52,6 +54,11 @@ import { OrphanLoginPage } from "./pages/OrphanLoginPage";
 import { OrphanMessagesPage } from "./pages/OrphanMessagesPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
+// Partner-manager portal (PM-01..PM-04)
+import { PartnerApprovalsPage } from "./pages/partner/PartnerApprovalsPage";
+import { PartnerStaffPage } from "./pages/partner/PartnerStaffPage";
+import { PartnerTransfersPage } from "./pages/partner/PartnerTransfersPage";
+import { PartnerPerformancePage } from "./pages/partner/PartnerPerformancePage";
 import { RegisterOrphanPage } from "./pages/RegisterOrphanPage";
 import { PartnerDetailPage } from "./pages/PartnerDetailPage";
 import { PartnersPage } from "./pages/PartnersPage";
@@ -269,6 +276,29 @@ export function App() {
           }
         />
         <Route path="settings" element={<SettingsPage />} />
+      </Route>
+
+      {/* ── Partner-manager portal (PM-01..PM-04) ───────────────────
+          Distinct PartnerLayout chrome ("بوابة الجهة الشريكة"). Gated
+          to the partner-approver roles (super_admin, org_admin,
+          partner_manager) by PartnerRoute; partner_staff is redirected
+          home. Reuses the shared orphan/report/bank-transfer endpoints —
+          the org-admin /admin/* screens are left untouched. */}
+      <Route
+        path="/partner"
+        element={
+          <ProtectedRoute>
+            <PartnerRoute>
+              <PartnerLayout />
+            </PartnerRoute>
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="approvals" replace />} />
+        <Route path="approvals" element={<PartnerApprovalsPage />} />
+        <Route path="staff" element={<PartnerStaffPage />} />
+        <Route path="transfers" element={<PartnerTransfersPage />} />
+        <Route path="performance" element={<PartnerPerformancePage />} />
       </Route>
 
       {/* ── Super-admin platform portal (SA-01..SA-04) ──────────────

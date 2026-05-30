@@ -2588,5 +2588,176 @@
     "sensitive": "حسّاس",
     "on": "مفعّل",
     "off": "موقوف"
+  },
+  "partner": {
+    "portalName": "بوابة الجهة الشريكة",
+    "portalBadge": "بوابة المدير",
+    "tenantShort": "جهة",
+    "tenantName": "الجهة الشريكة",
+    "managerShort": "مدير",
+    "managerRole": "مدير الفرع",
+    "managerPermissions": "صلاحيات المدير",
+    "nav": {
+      "section": "الإدارة",
+      "opsSection": "العمليّات",
+      "approvals": "مركز الاعتمادات",
+      "staff": "الموظّفون",
+      "transfers": "التحويلات الواردة",
+      "performance": "تقارير الأداء",
+      "allOrphans": "كل الأيتام",
+      "reports": "التقارير"
+    },
+    "approvals": {
+      "title": "مركز الاعتمادات",
+      "subtitle": "عناصر تنتظر اعتمادك بصفتك مدير الفرع.",
+      "tabs": {
+        "orphans": "أيتام قيد الاعتماد",
+        "reports": "تقارير اعتماد مزدوج",
+        "media": "وسائط حسّاسة",
+        "bank": "تحويلات بنكيّة"
+      },
+      "reportApproved": "تم اعتماد التقرير.",
+      "reportRejected": "تم رفض التقرير.",
+      "rejectReportTitle": "ما سبب رفض هذا التقرير؟",
+      "approvePartner": "اعتماد (الشريك)",
+      "bankRowTitle": "تحويل من المنظّمة الأم",
+      "awaitingApproval": "ينتظر اعتمادك",
+      "empty": {
+        "orphansTitle": "لا أيتام قيد الاعتماد",
+        "orphansBody": "ستظهر الحالات الجديدة المُرسَلة للاعتماد هنا.",
+        "reportsTitle": "لا تقارير تنتظر الاعتماد",
+        "reportsBody": "ستظهر التقارير التي يرسلها الموظّفون هنا لاعتماد الشريك.",
+        "bankTitle": "لا تحويلات بنكيّة تنتظر الاعتماد",
+        "bankBody": "ستظهر التحويلات المعلّقة من المنظّمة الأم هنا.",
+        "mediaTitle": "مراجعة الوسائط غير متاحة بعد",
+        "mediaBody": "لا تتيح واجهة البرمجة قائمة مراجعة وسائط بعد. ستظهر هنا فور توفّرها."
+      }
+    },
+    "transfers": {
+      "title": "التحويلات الواردة من المنظّمة الأم",
+      "subtitle": "الدفعات الشهريّة لأيتام الفرع · أكّد الاستلام خلال المهلة المتّفق عليها.",
+      "export": "تصدير",
+      "notifyPolicy": "سياسة الإشعارات",
+      "accountLabel": "حساب الفرع البنكي للتحويلات الواردة",
+      "accountNamePlaceholder": "حساب الفرع البنكي",
+      "accountNumber": "الحساب",
+      "beneficiary": "المستفيد",
+      "accumulatedBalance": "رصيد متراكم بانتظار التأكيد",
+      "unitTransfers": "تحويلات",
+      "period": "الفترة",
+      "reference": "المرجع",
+      "issuedAt": "صدر",
+      "kpi": {
+        "awaiting": "تنتظر تأكيدك",
+        "awaitingFoot": "نُفّذت من المنظّمة الأم.",
+        "confirmed": "مؤكّدة",
+        "confirmedFoot": "تمّ تأكيد الاستلام.",
+        "scheduled": "مجدولة",
+        "scheduledFoot": "لم تُنفَّذ بعد.",
+        "avgTime": "متوسّط زمن التأكيد",
+        "avgTimeFoot": "غير متاح بعد."
+      },
+      "tabs": {
+        "awaiting": "تنتظر التأكيد",
+        "confirmed": "مؤكّدة",
+        "scheduled": "مجدولة"
+      },
+      "status": {
+        "received": "مستلَمة",
+        "scheduled": "مجدولة",
+        "awaiting": "تنتظر التأكيد"
+      },
+      "empty": {
+        "title": "لا شيء هنا",
+        "body": "لا تحويلات في هذه الفئة حاليّاً."
+      }
+    },
+    "staff": {
+      "title": "الموظّفون في الفرع",
+      "subtitle": "أدِر موظّفي فرعك وصلاحيّاتهم.",
+      "export": "تصدير",
+      "invite": "دعوة موظّف جديد",
+      "inviteHint": "تُدار دعوات الموظّفين من مدير المؤسسة في شاشة المستخدمين.",
+      "inviteSub": "أدخل بريده الإلكتروني وحدّد الصلاحيّات. تصل دعوة آمنة في غضون ثوانٍ.",
+      "forbiddenNotice": "إدارة الموظّفين محصورة بمدير المؤسسة. اطلب من مدير مؤسستك إضافة موظّفي الفرع أو تعديلهم من شاشة المستخدمين.",
+      "searchPlaceholder": "بحث بالاسم أو البريد…",
+      "disableConfirm": "تعطيل هذا الحساب؟",
+      "neverSeen": "لم يسجّل الدخول بعد",
+      "lastSeen": "آخر ظهور",
+      "inviteSent": "دعوة مُرسَلة",
+      "invitePending": "دعوة بانتظار القبول",
+      "accountDisabled": "حساب معطّل",
+      "kpi": {
+        "active": "الموظّفون النشطون",
+        "ofTotal": "من {{total}}",
+        "activeFoot": "حسابات نشطة حاليّاً.",
+        "online": "متّصلون الآن",
+        "onlineFoot": "غير متاح بعد.",
+        "weekTx": "معاملات هذا الأسبوع",
+        "weekTxFoot": "غير متاح بعد.",
+        "avgTime": "متوسّط زمن المعالجة",
+        "avgTimeFoot": "غير متاح بعد."
+      },
+      "roles": {
+        "all": "الكل",
+        "managers": "المدراء",
+        "staff": "موظفو شؤون",
+        "finance": "الماليون",
+        "disabled": "المعطّلون"
+      },
+      "rolePills": {
+        "manager": "مدير",
+        "staff": "موظّف شؤون أيتام",
+        "finance": "مسؤول مالي",
+        "reviewer": "مراجع"
+      },
+      "stats": {
+        "transactions": "معاملة",
+        "orphans": "يتيم",
+        "tenure": "المدّة"
+      },
+      "empty": {
+        "title": "لا موظّفين",
+        "body": "لا موظّفين يطابقون التصفية الحاليّة."
+      }
+    },
+    "performance": {
+      "title": "تقارير أداء الفرع",
+      "subtitle": "قياس مستمرّ لمستوى الفرع مقارنة بالمعايير ومقارنة بالفروع الشقيقة.",
+      "period": "الفترة",
+      "exportPdf": "تصدير PDF",
+      "fullReport": "تقرير شهري كامل",
+      "unitOrphans": "يتيم",
+      "unitSponsorships": "كفالة",
+      "comingSoon": "قريباً",
+      "kpi": {
+        "orphans": "إجمالي الأيتام",
+        "orphansBench": "تحت إدارة هذا الفرع.",
+        "sponsorRate": "نسبة الكفالة",
+        "sponsoredOf": "{{sponsored}} من {{total}} مكفول",
+        "activeSponsorships": "الكفالات النشطة",
+        "overdue": "{{count}} متأخّرة",
+        "noOverdue": "لا متأخّرات.",
+        "satisfaction": "رضا أولياء الأمر",
+        "satisfactionBench": "غير متاح بعد."
+      },
+      "trendTitle": "أداء الفرع — آخر 6 شهور",
+      "trendMeta": "المدفوعات الشهريّة",
+      "trendEmpty": "لا سجلّ مدفوعات لعرضه بعد.",
+      "legendActual": "الأداء الفعلي",
+      "legendTarget": "الهدف الشهري",
+      "regionTitle": "توزّع الأيتام جغرافيّاً",
+      "regionEmpty": "لا تتيح واجهة البرمجة تفصيلاً حسب المنطقة بعد.",
+      "workloadTitle": "توزّع العمل",
+      "workloadEmpty": "لا تتيح واجهة البرمجة تفصيل توزّع العمل بعد.",
+      "slaTitle": "التزام الـ SLA",
+      "slaEmpty": "لا تتيح واجهة البرمجة مؤشّرات الـ SLA بعد.",
+      "healthTitle": "إشارات صحّية",
+      "health": {
+        "overdue": "{{count}} كفالة متأخّرة وتحتاج متابعة.",
+        "good": "وضع سليم — لا كفالات متأخّرة حاليّاً.",
+        "available": "{{count}} يتيماً متاحون للكفالة."
+      }
+    }
   }
 }

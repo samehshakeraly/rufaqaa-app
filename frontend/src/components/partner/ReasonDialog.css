@@ -1,0 +1,72 @@
+/* Reason dialog — scoped, self-contained (tokens fall back to literal
+   values so the dialog renders correctly even though it is portalled
+   into the document body, outside the `.pm-app` token scope). */
+.pm-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(11, 30, 51, 0.4);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+.pm-dialog {
+  width: 100%;
+  max-width: 32rem;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 40px -8px rgba(11, 30, 51, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pm-dialog-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #161a1f;
+}
+.pm-dialog-textarea {
+  width: 100%;
+  border: 1px solid #e7ebef;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+.pm-dialog-textarea:focus-visible {
+  outline: none;
+  border-color: #9cc3de;
+  box-shadow: 0 0 0 3px rgba(118, 159, 205, 0.25);
+}
+.pm-dialog-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.pm-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.pm-dialog-danger {
+  padding: 8px 14px;
+  background: #dc2626;
+  color: white;
+  border: 1px solid #dc2626;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.pm-dialog-danger:hover {
+  background: #b91c1c;
+}
+.pm-dialog-danger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
