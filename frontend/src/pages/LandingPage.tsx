@@ -24,6 +24,22 @@ import "./LandingPage.css";
 
 const PLACEHOLDER = "—";
 
+// Home paths that are actually mounted in the router (see App.tsx). The
+// logged-in dispatch below redirects ONLY to one of these. This guards
+// against ever sending a user to a not-yet-built portal (e.g. /guardian),
+// which would bounce off the catch-all `<Route path="*">` back to "/" and
+// create an infinite <Navigate> loop ("Maximum update depth exceeded").
+const KNOWN_HOME_PATHS = new Set([
+  "/platform",
+  "/admin/dashboard",
+  "/partner/approvals",
+  "/admin/orphans",
+  "/admin/finance",
+  "/admin/marketing-channels",
+  "/donor/dashboard",
+  "/orphan",
+]);
+
 // Locale-aware number formatting (tabular figures rendered via the
 // `.latin` helper). Mirrors DashboardPage's useFormatters.
 function useFormatNumber() {
@@ -73,8 +89,10 @@ export function LandingPage() {
 
   // Authenticated visitors: send them to their area as soon as role is
   // known. We can't redirect before /me resolves because we don't know
-  // the role yet — render the landing in the meantime.
-  if (token && role !== undefined && homePath !== "/") {
+  // the role yet — render the landing in the meantime. We only dispatch
+  // to a route we know is mounted; roles without a portal yet (e.g.
+  // guardian) fall through and stay on the landing rather than looping.
+  if (token && role !== undefined && KNOWN_HOME_PATHS.has(homePath)) {
     return <Navigate to={homePath} replace />;
   }
 
