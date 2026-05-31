@@ -2421,7 +2421,31 @@
       "reminderNotTracked": "Reminder history is not tracked yet.",
       "bulkReminder": "Bulk reminder",
       "totalOverdue": "Total overdue across {{count}} donors",
-      "daysBadge": "{{n}} days"
+      "daysBadge": "{{n}} days",
+      "sortBy": "Sort",
+      "country": "Country",
+      "allCountries": "All countries",
+      "selected": "selected",
+      "bulkWhatsapp": "Remind via WhatsApp",
+      "bulkEmail": "Remind via email",
+      "clearSelection": "Clear",
+      "selectAll": "Select all",
+      "selectRow": "Select {{name}}",
+      "actions": "Actions",
+      "actRemindFriendly": "Friendly reminder",
+      "actRemindWhatsapp": "WhatsApp reminder",
+      "actSuggestPostpone": "Suggest postponement",
+      "actSuspend": "Suspend sponsorship",
+      "actCall": "Call",
+      "bandLightAdvice": "A gentle reminder",
+      "bandMediumAdvice": "Call + suggest postponement",
+      "bandLongAdvice": "Personal follow-up",
+      "bandCriticalAdvice": "Review the sponsorship",
+      "sort": {
+        "daysDesc": "Most overdue first",
+        "daysAsc": "Least overdue first",
+        "amountDesc": "Highest amount first"
+      }
     },
     "reports": {
       "title": "Financial Reports",

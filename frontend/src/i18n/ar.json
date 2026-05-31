@@ -2421,7 +2421,31 @@
       "reminderNotTracked": "سجلّ التذكيرات غير مُتتبَّع بعد.",
       "bulkReminder": "تذكير جماعي",
       "totalOverdue": "إجمالي المتأخّر لدى {{count}} متبرّع",
-      "daysBadge": "{{n}} يوماً"
+      "daysBadge": "{{n}} يوماً",
+      "sortBy": "ترتيب",
+      "country": "الدولة",
+      "allCountries": "كل الدول",
+      "selected": "محدّد",
+      "bulkWhatsapp": "تذكير عبر واتساب",
+      "bulkEmail": "تذكير عبر البريد",
+      "clearSelection": "مسح",
+      "selectAll": "تحديد الكل",
+      "selectRow": "تحديد {{name}}",
+      "actions": "إجراءات",
+      "actRemindFriendly": "تذكير ودّي",
+      "actRemindWhatsapp": "تذكير واتساب",
+      "actSuggestPostpone": "اقتراح تأجيل",
+      "actSuspend": "إيقاف الكفالة",
+      "actCall": "مكالمة",
+      "bandLightAdvice": "تذكير ودّي",
+      "bandMediumAdvice": "مكالمة + اقتراح تأجيل",
+      "bandLongAdvice": "متابعة شخصية",
+      "bandCriticalAdvice": "مراجعة الكفالة",
+      "sort": {
+        "daysDesc": "الأكثر تأخّراً أولاً",
+        "daysAsc": "الأقل تأخّراً أولاً",
+        "amountDesc": "الأعلى قيمةً أولاً"
+      }
     },
     "reports": {
       "title": "التقارير المالية",
