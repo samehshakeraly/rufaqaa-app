@@ -33,9 +33,11 @@ from datetime import date
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
+import structlog
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import or_, select, text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
@@ -50,6 +52,8 @@ from app.models.user import User
 from app.services.audit import record_audit
 
 router = APIRouter()
+
+_log = structlog.get_logger("rufaqaa.orphan_self")
 
 # Minimum age (years) to access the self-portal. Under this, the account
 # may exist but the portal is refused — see `_resolve_orphan_or_403`.
@@ -273,14 +277,37 @@ async def get_orphan_sponsor(db: DbSession, user: CurrentUser) -> OrphanSponsorV
     if sponsorship is None:
         return OrphanSponsorView(has_sponsor=False)
 
-    display_name = DEFAULT_SPONSOR_DISPLAY_NAME
-    if await _show_donor_first_name_to_orphan(db, orphan.organization_id):
-        # Only the first name — never the full name, and only when opted in.
-        full_name = await db.scalar(select(Donor.full_name).where(Donor.id == sponsorship.donor_id))
-        if full_name:
-            display_name = str(full_name).split(" ", 1)[0]
-
+    # Snapshot every ORM attribute we still need into plain locals *now*,
+    # before the optional lookup below. A failure there triggers a
+    # rollback, which expires the `orphan` / `sponsorship` instances —
+    # touching any of their attributes afterwards would fire a lazy reload
+    # outside the async greenlet and raise all over again.
     since_year: int | None = sponsorship.start_date.year if sponsorship.start_date else None
+    donor_id = sponsorship.donor_id
+    organization_id = orphan.organization_id
+    orphan_id_str = str(orphan.id)
+
+    # Resolving the donor's first name is an OPTIONAL, opt-in enhancement
+    # that reaches the `business_rules` table (raw SQL) and the donors
+    # table. None of that must be allowed to 500 the whole sponsor view:
+    # a failure here (e.g. a not-yet-migrated `business_rules` column, an
+    # unreadable donor row) previously surfaced as an unhandled 500 that
+    # bypassed CORS and looked like a CORS error in the browser. On ANY
+    # such failure we degrade to the generic, privacy-safe display name.
+    # CHILD-SAFETY: the fallback NEVER reveals donor identity.
+    display_name = DEFAULT_SPONSOR_DISPLAY_NAME
+    try:
+        if await _show_donor_first_name_to_orphan(db, organization_id):
+            # Only the first name — never the full name, and only when opted in.
+            full_name = await db.scalar(select(Donor.full_name).where(Donor.id == donor_id))
+            if full_name:
+                display_name = str(full_name).split(" ", 1)[0]
+    except SQLAlchemyError:
+        # Reset the (now aborted) transaction and fall back safely.
+        await db.rollback()
+        _log.warning("sponsor_display_name_fallback", orphan_id=orphan_id_str)
+        display_name = DEFAULT_SPONSOR_DISPLAY_NAME
+
     return OrphanSponsorView(
         has_sponsor=True,
         display_name=display_name,
