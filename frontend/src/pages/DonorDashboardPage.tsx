@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useRole } from "@/hooks/useRole";
 import {
   getDonorMe,
   listMyDonorPayments,
@@ -13,14 +14,25 @@ import {
 export function DonorDashboardPage() {
   const { t } = useTranslation();
   const { data: me } = useCurrentUser();
-  const profile = useQuery({ queryKey: ["donor", "me"], queryFn: getDonorMe });
+  // Donor self-service endpoints 403 for any non-donor role. DonorRoute
+  // already redirects staff away, but gate the queries on role too so a
+  // /donor/* request can never fire during a role transition (e.g. an
+  // org_admin briefly mounting this tree).
+  const { isDonor } = useRole();
+  const profile = useQuery({
+    queryKey: ["donor", "me"],
+    queryFn: getDonorMe,
+    enabled: isDonor,
+  });
   const sponsorships = useQuery({
     queryKey: ["donor", "me", "sponsorships"],
     queryFn: listMyDonorSponsorships,
+    enabled: isDonor,
   });
   const payments = useQuery({
     queryKey: ["donor", "me", "payments"],
     queryFn: listMyDonorPayments,
+    enabled: isDonor,
   });
 
   return (

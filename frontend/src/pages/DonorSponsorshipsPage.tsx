@@ -3,13 +3,18 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
+import { useRole } from "@/hooks/useRole";
 import { listMyDonorSponsorships } from "@/lib/donorAuth";
 
 export function DonorSponsorshipsPage() {
   const { t } = useTranslation();
+  // Donor-only endpoint — gate on role (defence-in-depth alongside
+  // DonorRoute) so it can never 403 for a non-donor.
+  const { isDonor } = useRole();
   const q = useQuery({
     queryKey: ["donor", "me", "sponsorships"],
     queryFn: listMyDonorSponsorships,
+    enabled: isDonor,
   });
 
   return (

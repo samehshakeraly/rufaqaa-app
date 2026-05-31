@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 
 import { Skeleton } from "@/components/Skeleton";
+import { useRole } from "@/hooks/useRole";
 import { createMyDonorSponsorship, getDonorMe } from "@/lib/donorAuth";
 import { getPublicOrphan } from "@/lib/public";
 import { toast } from "@/store/toasts";
@@ -43,6 +44,7 @@ export function DonorSponsorshipWizardPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { code = "" } = useParams<{ code: string }>();
+  const { isDonor } = useRole();
 
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState("25.00");
@@ -57,7 +59,13 @@ export function DonorSponsorshipWizardPage() {
     queryFn: () => getPublicOrphan(code),
     enabled: !!code,
   });
-  const meQ = useQuery({ queryKey: ["donor", "me"], queryFn: getDonorMe });
+  // Donor-only endpoint — gate on role (defence-in-depth alongside
+  // DonorRoute) so it can never 403 for a non-donor.
+  const meQ = useQuery({
+    queryKey: ["donor", "me"],
+    queryFn: getDonorMe,
+    enabled: isDonor,
+  });
 
   // Seed the currency from the donor's preference once it loads.
   const preferredCurrency = meQ.data?.preferred_currency ?? "KWD";

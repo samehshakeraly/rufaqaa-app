@@ -2,13 +2,21 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { useRole } from "@/hooks/useRole";
 import { getDonorMe, patchDonorMe } from "@/lib/donorAuth";
 import { toast } from "@/store/toasts";
 
 export function DonorProfilePage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const q = useQuery({ queryKey: ["donor", "me"], queryFn: getDonorMe });
+  // Gate the donor-only endpoint on role so it never fires for staff
+  // (DonorRoute redirects them, but this is defence-in-depth).
+  const { isDonor } = useRole();
+  const q = useQuery({
+    queryKey: ["donor", "me"],
+    queryFn: getDonorMe,
+    enabled: isDonor,
+  });
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");

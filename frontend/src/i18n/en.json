@@ -1022,7 +1022,29 @@
     "finance": "Finance",
     "financeOverdue": "Overdue",
     "financeReports": "Financial Reports",
-    "businessRules": "Business Rules"
+    "businessRules": "Business Rules",
+    "brandSubtitle": "Organization admin",
+    "primary": "Primary navigation",
+    "skipToContent": "Skip to content",
+    "tenantRegion": "Current organization",
+    "userFallback": "User",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "soon": "Soon",
+    "executiveDashboard": "Executive dashboard",
+    "fullReports": "Comprehensive reports",
+    "transparency": "Transparency screen",
+    "approvalsCenter": "Approvals center",
+    "notifications": "Notifications",
+    "assistant": "Rufaqaa assistant",
+    "help": "Help center",
+    "section": {
+      "executive": "Executive",
+      "management": "Administration",
+      "finance": "Finance",
+      "oversight": "Oversight",
+      "system": "System"
+    }
   },
   "auth": {
     "loginTitle": "Sign in",

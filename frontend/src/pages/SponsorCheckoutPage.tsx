@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
+import { useRole } from "@/hooks/useRole";
 import { getDonorMe } from "@/lib/donorAuth";
 import { initiatePayment } from "@/lib/payments";
 import { getPublicOrphan } from "@/lib/public";
@@ -27,6 +28,7 @@ import { getPublicOrphan } from "@/lib/public";
 export function SponsorCheckoutPage() {
   const { t, i18n } = useTranslation();
   const { code = "" } = useParams<{ code: string }>();
+  const { isDonor } = useRole();
   const [amount, setAmount] = useState("25.00");
   const [currency, setCurrency] = useState("KWD");
   const [serverError, setServerError] = useState<string | null>(null);
@@ -36,9 +38,12 @@ export function SponsorCheckoutPage() {
     queryFn: () => getPublicOrphan(code),
     enabled: !!code,
   });
+  // Donor-only endpoint — gate on role (defence-in-depth alongside
+  // DonorRoute) so it can never 403 for a non-donor.
   const meQ = useQuery({
     queryKey: ["donor", "me"],
     queryFn: getDonorMe,
+    enabled: isDonor,
   });
 
   const mut = useMutation({
