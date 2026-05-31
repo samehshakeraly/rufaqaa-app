@@ -33,6 +33,9 @@ x-backend-env: &backend-env
   SECRET_KEY: ${SECRET_KEY}
   JWT_SECRET_KEY: ${JWT_SECRET_KEY}
   CORS_ORIGINS: https://${PUBLIC_HOST}
+  # Empty in production: rely solely on the explicit CORS_ORIGINS allow-list.
+  # The localhost-port regex default is a dev-only convenience.
+  CORS_ORIGIN_REGEX: ""
   LOG_FORMAT: json
   LOG_LEVEL: INFO
 
