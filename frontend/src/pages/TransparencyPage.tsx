@@ -387,6 +387,15 @@ export function TransparencyPage() {
                     <GithubIcon className="tr-icon tr-icon-sm" />
                     {t("public.transparency.os.repoButton")}
                   </a>
+                  <a
+                    className="tr-btn-os-outline"
+                    href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    {t("public.transparency.os.contributing")}
+                    <ArrowEndIcon className="tr-icon tr-icon-sm" />
+                  </a>
                 </div>
               </div>
 
