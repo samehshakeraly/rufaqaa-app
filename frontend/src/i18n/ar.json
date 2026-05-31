@@ -1422,7 +1422,27 @@
     "statRefunded": "مُستردّة",
     "showing": "عرض {{from}}–{{to}} من {{total}}",
     "noResults": "لا توجد مدفوعات مطابقة لهذا الفلتر.",
-    "donor": "المتبرّع"
+    "donor": "المتبرّع",
+    "range": "النطاق الزمني",
+    "ranges": {
+      "all": "الكل",
+      "today": "اليوم",
+      "month": "هذا الشهر",
+      "90d": "٩٠ يوماً",
+      "year": "هذه السنة"
+    },
+    "allMethods": "كل الطرق",
+    "allCurrencies": "كل العملات",
+    "currency": "العملة",
+    "selected": "محدّدة",
+    "bulkReconcile": "مطابقة",
+    "bulkReceipts": "إرسال إيصالات",
+    "clearSelection": "مسح",
+    "orphan": "اليتيم",
+    "type": "النوع",
+    "selectAll": "تحديد كل ما في الصفحة",
+    "selectRow": "تحديد الدفعة {{code}}",
+    "perPage": "لكل صفحة"
   },
   "reports": {
     "title": "التقارير",

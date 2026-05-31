@@ -1422,7 +1422,27 @@
     "statRefunded": "Refunded",
     "showing": "Showing {{from}}–{{to}} of {{total}}",
     "noResults": "No payments match this filter.",
-    "donor": "Donor"
+    "donor": "Donor",
+    "range": "Date range",
+    "ranges": {
+      "all": "All",
+      "today": "Today",
+      "month": "This month",
+      "90d": "90 days",
+      "year": "This year"
+    },
+    "allMethods": "All methods",
+    "allCurrencies": "All currencies",
+    "currency": "Currency",
+    "selected": "selected",
+    "bulkReconcile": "Reconcile",
+    "bulkReceipts": "Send receipts",
+    "clearSelection": "Clear",
+    "orphan": "Orphan",
+    "type": "Type",
+    "selectAll": "Select all on page",
+    "selectRow": "Select payment {{code}}",
+    "perPage": "Per page"
   },
   "reports": {
     "title": "Reports",
