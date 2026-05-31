@@ -42,6 +42,16 @@ function isPrimitive(v: unknown): v is Primitive {
   return typeof v === "boolean" || typeof v === "string" || typeof v === "number";
 }
 
+// Seed the editable form from known flags + whatever primitives the backend
+// returns. Used both on load and to revert unsaved changes.
+function buildForm(settings: Record<string, unknown>): Record<string, Primitive> {
+  const merged: Record<string, Primitive> = { ...KNOWN_FLAGS };
+  for (const [k, v] of Object.entries(settings)) {
+    if (isPrimitive(v)) merged[k] = v;
+  }
+  return merged;
+}
+
 function Icon({
   children,
   className = "sa-icon sa-icon-sm",
@@ -104,11 +114,7 @@ export function PlatformSettingsPage() {
 
   useEffect(() => {
     if (!data) return;
-    const merged: Record<string, Primitive> = { ...KNOWN_FLAGS };
-    for (const [k, v] of Object.entries(data.settings)) {
-      if (isPrimitive(v)) merged[k] = v;
-    }
-    setForm(merged);
+    setForm(buildForm(data.settings));
   }, [data]);
 
   const save = useMutation({
@@ -151,6 +157,14 @@ export function PlatformSettingsPage() {
           <p>{t("platform.settings.subtitle")}</p>
         </div>
         <div className="sa-topbar-actions">
+          <button
+            type="button"
+            className="sa-btn sa-btn-secondary"
+            onClick={() => data && setForm(buildForm(data.settings))}
+            disabled={save.isPending || !data}
+          >
+            {t("platform.settings.cancelChanges")}
+          </button>
           <button
             type="button"
             className="sa-btn sa-btn-primary"

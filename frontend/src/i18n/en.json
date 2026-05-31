@@ -2863,6 +2863,7 @@
       "advancedHint": "Complex values are read-only from the platform server.",
       "saved": "Settings saved",
       "saveAll": "Save all",
+      "cancelChanges": "Cancel changes",
       "dangerZone": "Danger zone",
       "dangerHint": "Operations that can affect the whole platform. Proceed with care.",
       "keys": {
