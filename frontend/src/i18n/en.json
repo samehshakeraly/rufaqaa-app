@@ -2818,12 +2818,15 @@
     },
     "achievements": {
       "title": "Well done! These are your achievements",
-      "subtitle": "We're proud of you, and so is your sponsor.",
+      "headerTitle": "Amazing work,",
+      "subtitle": "These are your achievements — we're proud of you, and so is your sponsor.",
       "empty": "Your achievements will appear here once your guardian adds them.",
       "education": "School",
       "quran": "Qur'an",
       "activities": "My activities",
-      "noHighlights": "No details for this period yet."
+      "noHighlights": "No details for this period yet.",
+      "celebrateTitle": "You should be proud",
+      "celebrateBody": "Every achievement here, big or small, we see it and celebrate it. Your sponsor prays for you, and your teachers believe in you."
     }
   },
   "platform": {

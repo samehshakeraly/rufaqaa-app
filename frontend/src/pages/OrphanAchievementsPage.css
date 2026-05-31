@@ -1,0 +1,311 @@
+/* ═══════════════════════════════════════════════════════════════
+   O-04 Achievements — scoped styles
+   Ported from docs/design/screens/orphan/O-04-Achievements.html.
+   Tokens only (rufaqaa v0.1); scoped under `.oach-root`, prefixed
+   `oach-`. Physical left/right rewritten as logical (inline-start/
+   -end) for RTL. The top bar + nav are provided by OrphanLayout.
+
+   CHILD-FACING. Content comes only from PUBLISHED reports, projected
+   to progress fields and flattened defensively to readable highlight
+   lines — never raw JSON, technical keys, financial figures, or any
+   identifying data. Structured fields the design shows (exact grade,
+   teacher quote) are only rendered if the data actually contains a
+   readable value; nothing is fabricated.
+   ═══════════════════════════════════════════════════════════════ */
+
+.oach-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --snow-300: #e2eef3;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-200: #e7ebef;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-700: #b91c1c;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --transition: 200ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oach-root *,
+  .oach-root *::before,
+  .oach-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.oach-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ═══ Page header ═══ */
+.oach-header {
+  text-align: center;
+}
+.oach-emoji {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 12px;
+  display: inline-block;
+  animation: oach-float 3s ease-in-out infinite;
+}
+@keyframes oach-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.oach-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.oach-title .oach-name {
+  color: var(--trust-700);
+}
+.oach-sub {
+  font-size: 17px;
+  color: var(--gray-600);
+  max-width: 480px;
+  margin: 0 auto;
+}
+@media (max-width: 540px) {
+  .oach-emoji {
+    font-size: 52px;
+  }
+  .oach-title {
+    font-size: 26px;
+  }
+}
+
+/* ═══ Report block ═══ */
+.oach-report {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.oach-period {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--trust-600);
+  text-align: center;
+}
+
+/* ═══ Section ═══ */
+.oach-section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.oach-section-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.oach-section-icon svg {
+  width: 26px;
+  height: 26px;
+}
+.oach-section-icon.education {
+  background: var(--tranquil-200);
+  color: var(--trust-600);
+}
+.oach-section-icon.quran {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+.oach-section-icon.activities {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.oach-section-title {
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.01em;
+}
+
+.oach-card {
+  border-radius: 20px;
+  padding: 22px;
+}
+.oach-card.education {
+  background: white;
+  border: 1.5px solid var(--sky-200);
+}
+.oach-card.quran {
+  background: white;
+  border: 1.5px solid var(--success-100);
+}
+.oach-card.activities {
+  background: white;
+  border: 1.5px solid var(--warning-100);
+}
+
+.oach-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.oach-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+.oach-card.education .oach-item,
+.oach-card.quran .oach-item {
+  background: var(--success-50);
+  border: 1.5px solid var(--success-100);
+}
+.oach-card.activities .oach-item {
+  background: var(--warning-50);
+}
+.oach-check {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--success-500);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.oach-card.activities .oach-check {
+  background: var(--warning-700);
+}
+.oach-check svg {
+  width: 18px;
+  height: 18px;
+}
+.oach-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-900);
+  line-height: 1.6;
+}
+.oach-none {
+  font-size: 15px;
+  color: var(--gray-500);
+}
+
+/* ═══ Empty ═══ */
+.oach-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  color: var(--gray-600);
+  font-size: 16px;
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 40px 24px;
+}
+.oach-empty-emoji {
+  font-size: 48px;
+}
+.oach-error {
+  background: var(--danger-50);
+  color: var(--danger-700);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+/* ═══ Celebrate banner ═══ */
+.oach-celebrate {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-700) 100%);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.oach-celebrate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-size: 24px 24px;
+  opacity: 0.5;
+}
+.oach-celebrate-emoji {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 10px;
+  position: relative;
+}
+.oach-celebrate-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+  position: relative;
+}
+.oach-celebrate-text {
+  font-size: 15.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.oach-icon {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}

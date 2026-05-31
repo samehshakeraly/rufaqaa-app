@@ -3,69 +3,84 @@ import { useTranslation } from "react-i18next";
 
 import { Skeleton } from "@/components/Skeleton";
 import {
+  getOrphanMe,
   listOrphanAchievements,
   type OrphanAchievement,
 } from "@/lib/orphanSelf";
+
+import "./OrphanAchievementsPage.css";
 
 /** O-04 — a warm timeline of the orphan's published achievements.
  *
  * Backend returns only published reports, projected to progress fields.
  * The JSON blobs are free-form, so we flatten them to readable highlight
- * lines defensively (no raw JSON, no technical keys, no financial data). */
+ * lines defensively (no raw JSON, technical keys, or financial data) and
+ * present them in the O-04 visual language. */
 export function OrphanAchievementsPage() {
   const { t, i18n } = useTranslation();
+  const profile = useQuery({ queryKey: ["orphan", "me"], queryFn: getOrphanMe });
   const q = useQuery({
     queryKey: ["orphan", "me", "achievements"],
     queryFn: () => listOrphanAchievements(20),
   });
 
   const items = q.data ?? [];
+  const name = profile.data?.first_name ?? "";
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t("orphan.achievements.title")}
-        </h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-          {t("orphan.achievements.subtitle")}
-        </p>
-      </header>
-
-      {q.isLoading && <Skeleton className="h-40 w-full" />}
-
-      {q.error && (
-        <p
-          role="alert"
-          className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700 dark:bg-danger-500/10 dark:text-danger-100"
-        >
-          {t("common.loadError")}
-        </p>
-      )}
-
-      {q.data && items.length === 0 && (
-        <div className="card flex flex-col items-center gap-3 text-center">
-          <span aria-hidden="true" className="text-4xl">
-            🌱
+    <div className="oach-root">
+      <div className="oach-stack">
+        <header className="oach-header">
+          <span className="oach-emoji" aria-hidden="true">
+            🌟
           </span>
-          <p className="text-gray-600 dark:text-gray-300">
-            {t("orphan.achievements.empty")}
-          </p>
-        </div>
-      )}
+          <h1 className="oach-title">
+            {t("orphan.achievements.headerTitle")}{" "}
+            {name && <span className="oach-name">{name}</span>}
+          </h1>
+          <p className="oach-sub">{t("orphan.achievements.subtitle")}</p>
+        </header>
 
-      {items.length > 0 && (
-        <ul className="space-y-4">
-          {items.map((a) => (
-            <AchievementCard key={a.id} item={a} lang={i18n.language} />
-          ))}
-        </ul>
-      )}
+        {q.isLoading && <Skeleton className="h-40 w-full" />}
+
+        {q.error && (
+          <p className="oach-error" role="alert">
+            {t("common.loadError")}
+          </p>
+        )}
+
+        {q.data && items.length === 0 && (
+          <div className="oach-empty">
+            <span className="oach-empty-emoji" aria-hidden="true">
+              🌱
+            </span>
+            <p>{t("orphan.achievements.empty")}</p>
+          </div>
+        )}
+
+        {items.map((a) => (
+          <AchievementReport key={a.id} item={a} lang={i18n.language} />
+        ))}
+
+        {items.length > 0 && (
+          <div className="oach-celebrate">
+            <div className="oach-celebrate-emoji" aria-hidden="true">
+              🎉
+            </div>
+            <h2 className="oach-celebrate-title">
+              {t("orphan.achievements.celebrateTitle")}
+            </h2>
+            <p className="oach-celebrate-text">
+              {t("orphan.achievements.celebrateBody")}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-function AchievementCard({
+function AchievementReport({
   item,
   lang,
 }: {
@@ -74,58 +89,69 @@ function AchievementCard({
 }) {
   const { t } = useTranslation();
 
-  const groups: { emoji: string; label: string; highlights: string[] }[] = [
+  const groups: {
+    key: "education" | "quran" | "activities";
+    label: string;
+    icon: React.ReactNode;
+    highlights: string[];
+  }[] = [
     {
-      emoji: "📚",
+      key: "education" as const,
       label: t("orphan.achievements.education"),
+      icon: <SchoolIcon />,
       highlights: collectHighlights(item.educational_progress),
     },
     {
-      emoji: "🕌",
+      key: "quran" as const,
       label: t("orphan.achievements.quran"),
+      icon: <QuranIcon />,
       highlights: collectHighlights(item.quran_progress),
     },
     {
-      emoji: "🎨",
+      key: "activities" as const,
       label: t("orphan.achievements.activities"),
+      icon: <ActivityIcon />,
       highlights: collectHighlights(item.activities),
     },
   ].filter((g) => g.highlights.length > 0);
 
   return (
-    <li className="card space-y-4">
-      <p className="text-sm font-medium text-trust-600 dark:text-trust-100">
+    <div className="oach-report">
+      <p className="oach-period">
         {formatPeriod(item.period_start, item.period_end, lang)}
       </p>
 
       {groups.length === 0 ? (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {t("orphan.achievements.noHighlights")}
-        </p>
+        <p className="oach-none">{t("orphan.achievements.noHighlights")}</p>
       ) : (
-        <div className="space-y-4">
-          {groups.map((g) => (
-            <div key={g.label} className="space-y-2">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                <span aria-hidden="true">{g.emoji}</span>
+        groups.map((g) => (
+          <section key={g.key} aria-labelledby={`oach-${item.id}-${g.key}`}>
+            <div className="oach-section-head">
+              <span className={`oach-section-icon ${g.key}`} aria-hidden="true">
+                {g.icon}
+              </span>
+              <h2 className="oach-section-title" id={`oach-${item.id}-${g.key}`}>
                 {g.label}
-              </h3>
-              <ul className="space-y-1.5">
+              </h2>
+            </div>
+            <div className={`oach-card ${g.key}`}>
+              <ul className="oach-list">
                 {g.highlights.map((h, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200"
-                  >
-                    <CheckIcon />
-                    <span>{h}</span>
+                  <li key={i} className="oach-item">
+                    <span className="oach-check" aria-hidden="true">
+                      <svg className="oach-icon" viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span className="oach-text">{h}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          ))}
-        </div>
+          </section>
+        ))
       )}
-    </li>
+    </div>
   );
 }
 
@@ -166,19 +192,27 @@ function formatPeriod(start: string, end: string, lang: string): string {
   return s === e ? s : `${s} – ${e}`;
 }
 
-function CheckIcon() {
+function SchoolIcon() {
   return (
-    <svg
-      className="mt-0.5 h-4 w-4 shrink-0 text-success-600"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="20 6 9 17 4 12" />
+    <svg className="oach-icon" viewBox="0 0 24 24">
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+      <path d="M6 12v5c3 3 9 3 12 0v-5" />
+    </svg>
+  );
+}
+function QuranIcon() {
+  return (
+    <svg className="oach-icon" viewBox="0 0 24 24">
+      <path d="M3 21h18M5 21V7l7-4 7 4v14" />
+      <path d="M9 21V12h6v9" />
+    </svg>
+  );
+}
+function ActivityIcon() {
+  return (
+    <svg className="oach-icon" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
 }
