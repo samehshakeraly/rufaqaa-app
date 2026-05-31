@@ -2515,7 +2515,23 @@
       "pdf": "PDF",
       "excel": "Excel",
       "generateUnavailable": "لا يمكن توليد هذا التقرير بعد.",
-      "byPartnerEmpty": "لا توجد تبرّعات للشركاء في هذه الفترة."
+      "byPartnerEmpty": "لا توجد تبرّعات للشركاء في هذه الفترة.",
+      "repCustom": "تقرير مخصّص",
+      "repCustomDesc": "ابنِ تقريراً بحقولك الخاصّة عبر مولّد السحب والإفلات",
+      "flagDragDrop": "سحب وإفلات",
+      "flagSchedulable": "قابل للجدولة",
+      "customSavedNote": "التقارير المخصّصة المحفوظة",
+      "customStart": "ابدأ",
+      "recentRuns": "آخر التشغيلات",
+      "recentRunsEmpty": "ستظهر التقارير المُولَّدة هنا.",
+      "runReport": "التقرير",
+      "runPeriod": "الفترة",
+      "runSigner": "الموقِّع",
+      "runSize": "الحجم",
+      "runTime": "الوقت",
+      "closeTitle": "الإقفال السنوي",
+      "closeDesc": "جدوِل التقارير المُدقَّقة واحجز موعد المدقّق الخارجي قبل الإقفال السنوي.",
+      "closeSchedule": "خطّة الإقفال"
     }
   },
   "marketing": {

@@ -2515,7 +2515,23 @@
       "pdf": "PDF",
       "excel": "Excel",
       "generateUnavailable": "This report cannot be generated yet.",
-      "byPartnerEmpty": "No partner donations in this window."
+      "byPartnerEmpty": "No partner donations in this window.",
+      "repCustom": "Custom report",
+      "repCustomDesc": "Build a report with your own fields via the drag-and-drop generator",
+      "flagDragDrop": "Drag & drop",
+      "flagSchedulable": "Schedulable",
+      "customSavedNote": "Saved custom reports",
+      "customStart": "Start",
+      "recentRuns": "Recent runs",
+      "recentRunsEmpty": "Generated reports will appear here.",
+      "runReport": "Report",
+      "runPeriod": "Period",
+      "runSigner": "Signer",
+      "runSize": "Size",
+      "runTime": "Time",
+      "closeTitle": "Annual close",
+      "closeDesc": "Schedule the audited reports and book the external auditor ahead of the annual close.",
+      "closeSchedule": "Close schedule"
     }
   },
   "marketing": {
