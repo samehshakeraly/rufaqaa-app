@@ -1422,7 +1422,27 @@
     "statRefunded": "مُستردّة",
     "showing": "عرض {{from}}–{{to}} من {{total}}",
     "noResults": "لا توجد مدفوعات مطابقة لهذا الفلتر.",
-    "donor": "المتبرّع"
+    "donor": "المتبرّع",
+    "range": "النطاق الزمني",
+    "ranges": {
+      "all": "الكل",
+      "today": "اليوم",
+      "month": "هذا الشهر",
+      "90d": "٩٠ يوماً",
+      "year": "هذه السنة"
+    },
+    "allMethods": "كل الطرق",
+    "allCurrencies": "كل العملات",
+    "currency": "العملة",
+    "selected": "محدّدة",
+    "bulkReconcile": "مطابقة",
+    "bulkReceipts": "إرسال إيصالات",
+    "clearSelection": "مسح",
+    "orphan": "اليتيم",
+    "type": "النوع",
+    "selectAll": "تحديد كل ما في الصفحة",
+    "selectRow": "تحديد الدفعة {{code}}",
+    "perPage": "لكل صفحة"
   },
   "reports": {
     "title": "التقارير",
@@ -2185,7 +2205,23 @@
     "metaBank": "البنك",
     "metaCreated": "أُنشئ",
     "noneInStage": "لا توجد تحويلات في هذه المرحلة.",
-    "filterAll": "كلّ المراحل"
+    "filterAll": "كلّ المراحل",
+    "tabPipeline": "خطّ المعالجة",
+    "tabCreate": "إنشاء تحويل",
+    "sortBy": "ترتيب",
+    "viewPdf": "PDF",
+    "quickPrevMonth": "الشهر السابق",
+    "quickThisMonth": "الشهر الحالي",
+    "quickQuarter": "الربع الحالي",
+    "fxBanner": "سعر الصرف عند التنفيذ",
+    "railTotal": "إجمالي التحويل",
+    "railSummary": "ملخّص",
+    "railApprovalNote": "اعتماد مزدوج مطلوب: بعد حفظ المسوّدة، يحتاج التحويل اعتماداً قبل التنفيذ.",
+    "sort": {
+      "oldest": "الأقدم أوّلاً",
+      "newest": "الأحدث أوّلاً",
+      "amountDesc": "الأعلى قيمةً أوّلاً"
+    }
   },
   "media": {
     "moderate": {
@@ -2367,7 +2403,11 @@
       "orphanBalTitle": "المدفوعات حسب الجهة الشريكة",
       "orphanBalSub": "التبرّعات المكتملة المنسوبة لكلّ جهة",
       "fxNote": "أسعار الصرف اللحظيّة غير متاحة من الخادم حالياً.",
-      "adminOnlyTransfers": "التحويلات مرئيّة للمدير فقط."
+      "adminOnlyTransfers": "التحويلات مرئيّة للمدير فقط.",
+      "fxTitle": "أسعار الصرف",
+      "balAmount": "الرصيد",
+      "balCount": "المعاملات",
+      "dueUnknown": "تاريخ الاستحقاق —"
     },
     "overdue": {
       "title": "المتبرعون المتأخرون",
@@ -2397,7 +2437,31 @@
       "reminderNotTracked": "سجلّ التذكيرات غير مُتتبَّع بعد.",
       "bulkReminder": "تذكير جماعي",
       "totalOverdue": "إجمالي المتأخّر لدى {{count}} متبرّع",
-      "daysBadge": "{{n}} يوماً"
+      "daysBadge": "{{n}} يوماً",
+      "sortBy": "ترتيب",
+      "country": "الدولة",
+      "allCountries": "كل الدول",
+      "selected": "محدّد",
+      "bulkWhatsapp": "تذكير عبر واتساب",
+      "bulkEmail": "تذكير عبر البريد",
+      "clearSelection": "مسح",
+      "selectAll": "تحديد الكل",
+      "selectRow": "تحديد {{name}}",
+      "actions": "إجراءات",
+      "actRemindFriendly": "تذكير ودّي",
+      "actRemindWhatsapp": "تذكير واتساب",
+      "actSuggestPostpone": "اقتراح تأجيل",
+      "actSuspend": "إيقاف الكفالة",
+      "actCall": "مكالمة",
+      "bandLightAdvice": "تذكير ودّي",
+      "bandMediumAdvice": "مكالمة + اقتراح تأجيل",
+      "bandLongAdvice": "متابعة شخصية",
+      "bandCriticalAdvice": "مراجعة الكفالة",
+      "sort": {
+        "daysDesc": "الأكثر تأخّراً أولاً",
+        "daysAsc": "الأقل تأخّراً أولاً",
+        "amountDesc": "الأعلى قيمةً أولاً"
+      }
     },
     "reports": {
       "title": "التقارير المالية",
@@ -2451,7 +2515,23 @@
       "pdf": "PDF",
       "excel": "Excel",
       "generateUnavailable": "لا يمكن توليد هذا التقرير بعد.",
-      "byPartnerEmpty": "لا توجد تبرّعات للشركاء في هذه الفترة."
+      "byPartnerEmpty": "لا توجد تبرّعات للشركاء في هذه الفترة.",
+      "repCustom": "تقرير مخصّص",
+      "repCustomDesc": "ابنِ تقريراً بحقولك الخاصّة عبر مولّد السحب والإفلات",
+      "flagDragDrop": "سحب وإفلات",
+      "flagSchedulable": "قابل للجدولة",
+      "customSavedNote": "التقارير المخصّصة المحفوظة",
+      "customStart": "ابدأ",
+      "recentRuns": "آخر التشغيلات",
+      "recentRunsEmpty": "ستظهر التقارير المُولَّدة هنا.",
+      "runReport": "التقرير",
+      "runPeriod": "الفترة",
+      "runSigner": "الموقِّع",
+      "runSize": "الحجم",
+      "runTime": "الوقت",
+      "closeTitle": "الإقفال السنوي",
+      "closeDesc": "جدوِل التقارير المُدقَّقة واحجز موعد المدقّق الخارجي قبل الإقفال السنوي.",
+      "closeSchedule": "خطّة الإقفال"
     }
   },
   "marketing": {
@@ -3322,6 +3402,30 @@
     "reconPartial": "مطابقة جزئيّة",
     "reconUnmatched": "بدون مطابقة",
     "reconDup": "مكرّرة",
-    "awaitingData": "بانتظار الخادم"
+    "awaitingData": "بانتظار الخادم",
+    "bankKfh": "بيت التمويل الكويتي",
+    "bankNbk": "بنك الكويت الوطني",
+    "bankGulf": "بنك الخليج",
+    "bankAhli": "البنك الأهلي الكويتي",
+    "bankBoubyan": "بنك بوبيان",
+    "bankCustom": "بنك مخصّص",
+    "bankFormat": "تُكتشف الصيغة عند الرفع",
+    "fileInfoEmpty": "لم يُرفع ملف بعد",
+    "fileRows": "الصفوف",
+    "fileReplace": "استبدال الملف",
+    "fileRemove": "إزالة الملف",
+    "matchBarLabel": "نسبة المطابقة",
+    "tabsLabel": "تصفية النتائج",
+    "tabAll": "الكلّ",
+    "tabMatched": "مطابقة",
+    "tabReview": "يحتاج مراجعة",
+    "tabDup": "مكرّرة",
+    "colDate": "التاريخ",
+    "colAmount": "المبلغ",
+    "colMatch": "المطابقة المقترَحة",
+    "reconEmpty": "تظهر النتائج هنا بعد استيراد كشف.",
+    "footerNote": "ستُسجَّل عمليّة الاستيراد في سجلّ التدقيق.",
+    "footerPrev": "السابق",
+    "footerImport": "استيراد الدفعات"
   }
 }

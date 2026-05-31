@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -12,9 +13,14 @@ import { listPayments } from "@/lib/payments";
 import { fetchDonationsByPartner, fetchPaymentsTimeseries, fetchSummary } from "@/lib/stats";
 
 import "./finance.css";
+import "./FinanceDashboardPage.css";
 import { FIN_ICONS, FinIcon } from "./financeIcons";
 
 const DASH = "—";
+
+// FX pairs the mockup displays. Values stay placeholders until a rates
+// endpoint exists — we never invent or hard-code a live number.
+const FX_PAIRS = ["USD/KWD", "SAR/KWD", "EGP/KWD", "AED/KWD"] as const;
 
 function useFmt() {
   const { i18n } = useTranslation();
@@ -31,6 +37,10 @@ export function FinanceDashboardPage() {
   const { t } = useTranslation();
   const fmt = useFmt();
   const { isAdmin } = useRole();
+  // Partner-breakdown view: real amount vs. real transaction count. The mockup
+  // offers an "orphan count" view, but that metric isn't in the API — we expose
+  // the available transaction count instead, labelled accurately.
+  const [balMode, setBalMode] = useState<"amount" | "count">("amount");
 
   const { data: summary } = useQuery({ queryKey: ["stats", "summary"], queryFn: fetchSummary });
   const { data: org } = useQuery({ queryKey: ["organization"], queryFn: fetchOrganization });
@@ -140,6 +150,9 @@ export function FinanceDashboardPage() {
               <CashChart months={timeseries.months} fmt={fmt} />
             )}
             {timeseries && timeseries.months.length > 0 && (
+              // TODO(backend): only the inflow (donations) series exists. The
+              // outflow (transfers) bars and the net figure stay em-dash
+              // placeholders so the picture is never misread as net-of-outflow.
               <div className="fin-cash-legend">
                 <span>
                   <span className="dot" style={{ background: "#fcd34d" }} />
@@ -149,6 +162,13 @@ export function FinanceDashboardPage() {
                       timeseries.months.reduce((s, m) => s + Number(m.payments_total), 0),
                     )}
                   </strong>
+                </span>
+                <span>
+                  <span className="dot" style={{ background: "#fca5a5" }} />
+                  {t("finance.dashboard.legendOut")} <span className="fin-ph">{DASH}</span>
+                </span>
+                <span className="net">
+                  {t("finance.dashboard.legendNet")} <span className="fin-ph">{DASH}</span>
                 </span>
               </div>
             )}
@@ -329,6 +349,11 @@ export function FinanceDashboardPage() {
                     <div className="fin-tr-amt">
                       <Money amount={tx.amount} currency={tx.currency} />
                     </div>
+                    {/* TODO(backend): BankTransfer has no due_date — the due-status
+                        chip renders the layout with a placeholder, never a fake date. */}
+                    <span className="fin-due-chip fin-ph" title={t("finance.dashboard.dueUnknown")}>
+                      {t("finance.dashboard.dueUnknown")}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -344,6 +369,24 @@ export function FinanceDashboardPage() {
             <h2>{t("finance.dashboard.orphanBalTitle")}</h2>
             <p>{t("finance.dashboard.orphanBalSub")}</p>
           </div>
+          <div className="fin-obal-toggle" role="group" aria-label={t("finance.dashboard.orphanBalTitle")}>
+            <button
+              type="button"
+              className={balMode === "amount" ? "active" : ""}
+              aria-pressed={balMode === "amount"}
+              onClick={() => setBalMode("amount")}
+            >
+              {t("finance.dashboard.balAmount")}
+            </button>
+            <button
+              type="button"
+              className={balMode === "count" ? "active" : ""}
+              aria-pressed={balMode === "count"}
+              onClick={() => setBalMode("count")}
+            >
+              {t("finance.dashboard.balCount")}
+            </button>
+          </div>
         </header>
         {!byPartner ? (
           <div className="fin-card-body">
@@ -355,9 +398,11 @@ export function FinanceDashboardPage() {
             <div className="fin-empty-title">{t("common.empty")}</div>
           </div>
         ) : (
-          <div className="fin-orph-bal">
+          <div className={`fin-orph-bal${balMode === "count" ? " alt" : ""}`}>
             {(() => {
-              const max = Math.max(...byPartner.items.map((p) => Number(p.payments_total)), 1);
+              const metric = (p: (typeof byPartner.items)[number]) =>
+                balMode === "amount" ? Number(p.payments_total) : p.payments_count;
+              const max = Math.max(...byPartner.items.map(metric), 1);
               return byPartner.items.map((p) => (
                 <div className="fin-bal-row" key={p.partner_id}>
                   <div className="lab">
@@ -365,13 +410,14 @@ export function FinanceDashboardPage() {
                     {p.partner_name}
                   </div>
                   <div className="bar">
-                    <div
-                      className="fill"
-                      style={{ inlineSize: `${(Number(p.payments_total) / max) * 100}%` }}
-                    />
+                    <div className="fill" style={{ inlineSize: `${(metric(p) / max) * 100}%` }} />
                   </div>
                   <div className="num">
-                    <Money amount={p.payments_total} currency={currency} />
+                    {balMode === "amount" ? (
+                      <Money amount={p.payments_total} currency={currency} />
+                    ) : (
+                      <span className="fin-latin">{fmt.int(p.payments_count)}</span>
+                    )}
                   </div>
                 </div>
               ));
@@ -380,11 +426,21 @@ export function FinanceDashboardPage() {
         )}
       </section>
 
-      {/* TODO(backend): live FX rates have no endpoint yet. */}
-      <div className="fin-notice">
-        <FinIcon>{FIN_ICONS.info}</FinIcon>
-        {t("finance.dashboard.fxNote")}
-      </div>
+      {/* TODO(backend): no FX-rates endpoint yet. The strip renders the design
+          layout with em-dash placeholders — never a hard-coded/fake live rate. */}
+      <section className="fin-fx-row" aria-label={t("finance.dashboard.fxTitle")}>
+        <span className="fx-cap">{t("finance.dashboard.fxTitle")}</span>
+        {FX_PAIRS.map((pair) => (
+          <span className="fx" key={pair}>
+            <span className="pair fin-latin">{pair}</span>
+            <span className="val fin-ph">{DASH}</span>
+          </span>
+        ))}
+        <span className="refresh">
+          <FinIcon>{FIN_ICONS.info}</FinIcon>
+          {t("finance.dashboard.fxNote")}
+        </span>
+      </section>
     </div>
   );
 }
@@ -452,33 +508,45 @@ function QuickAction({
   );
 }
 
-// Monthly inflow area chart from the real payments timeseries. Wrapped in a
-// dir="ltr" container so time reads oldest→newest, consistent with labels.
+// Dual in/out cash-flow chart (F-01). Inflow (donations) bars are drawn above
+// the zero line from the real monthly timeseries. The outflow (transfers) band
+// below the zero line is intentionally left empty — there is no outflow
+// timeseries endpoint, so we render the design's layout (zero line + reserved
+// band) without fabricating bars. Wrapped in dir="ltr" so months read
+// oldest→newest regardless of UI direction.
 function CashChart({ months, fmt }: { months: { month: string; payments_total: string }[]; fmt: Fmt }) {
   const { t } = useTranslation();
   const W = 600;
-  const H = 150;
+  const H = 180;
+  const ZERO = 130; // zero line — inflow above, outflow band below
   const vals = months.map((m) => Number(m.payments_total));
   const max = Math.max(...vals, 1);
   const n = months.length;
-  const x = (i: number) => (n === 1 ? W / 2 : (i / (n - 1)) * W);
-  const y = (v: number) => 10 + (1 - v / max) * (H - 20);
-  const pts = vals.map((v, i) => `${x(i)},${y(v)}`);
-  const line = `M${pts.join(" L")}`;
-  const area = `M${x(0)},${H} L${pts.join(" L")} L${x(n - 1)},${H} Z`;
+  const slot = W / n;
+  const bw = Math.min(18, slot * 0.6);
 
   return (
     <>
-      <div className="fin-cash-chart" dir="ltr" role="img" aria-label={t("finance.dashboard.cashflowTitle")}>
+      <div
+        className="fin-cash-chart fin-cf2"
+        dir="ltr"
+        role="img"
+        aria-label={t("finance.dashboard.cashflowTitle")}
+      >
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="fin-cash-grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#fcd34d" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#fcd34d" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={area} fill="url(#fin-cash-grad)" />
-          <path d={line} stroke="#fcd34d" strokeWidth="2.2" fill="none" strokeLinejoin="round" />
+          {/* grid */}
+          <line x1="0" y1="30" x2={W} y2="30" className="cf-grid" />
+          <line x1="0" y1="80" x2={W} y2="80" className="cf-grid" />
+          {/* inflow (donations) — real bars above the zero line */}
+          {months.map((m, i) => {
+            const h = (Number(m.payments_total) / max) * (ZERO - 24);
+            const x = i * slot + (slot - bw) / 2;
+            return <rect key={m.month} x={x} y={ZERO - h} width={bw} height={h} rx="2" className="cf-in" />;
+          })}
+          {/* TODO(backend): outflow (transfers) timeseries not available — the
+              band below the zero line is reserved, never populated with fake bars. */}
+          {/* zero line */}
+          <line x1="0" y1={ZERO} x2={W} y2={ZERO} className="cf-zero" />
         </svg>
       </div>
       <div className="fin-cash-axis" dir="ltr">

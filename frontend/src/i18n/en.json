@@ -1422,7 +1422,27 @@
     "statRefunded": "Refunded",
     "showing": "Showing {{from}}–{{to}} of {{total}}",
     "noResults": "No payments match this filter.",
-    "donor": "Donor"
+    "donor": "Donor",
+    "range": "Date range",
+    "ranges": {
+      "all": "All",
+      "today": "Today",
+      "month": "This month",
+      "90d": "90 days",
+      "year": "This year"
+    },
+    "allMethods": "All methods",
+    "allCurrencies": "All currencies",
+    "currency": "Currency",
+    "selected": "selected",
+    "bulkReconcile": "Reconcile",
+    "bulkReceipts": "Send receipts",
+    "clearSelection": "Clear",
+    "orphan": "Orphan",
+    "type": "Type",
+    "selectAll": "Select all on page",
+    "selectRow": "Select payment {{code}}",
+    "perPage": "Per page"
   },
   "reports": {
     "title": "Reports",
@@ -2185,7 +2205,23 @@
     "metaBank": "Bank",
     "metaCreated": "Created",
     "noneInStage": "No transfers in this stage.",
-    "filterAll": "All stages"
+    "filterAll": "All stages",
+    "tabPipeline": "Pending pipeline",
+    "tabCreate": "Create transfer",
+    "sortBy": "Sort",
+    "viewPdf": "PDF",
+    "quickPrevMonth": "Previous month",
+    "quickThisMonth": "This month",
+    "quickQuarter": "This quarter",
+    "fxBanner": "Exchange rate at execution",
+    "railTotal": "Transfer total",
+    "railSummary": "Summary",
+    "railApprovalNote": "Dual approval required: after you save the draft, the transfer needs an approver before execution.",
+    "sort": {
+      "oldest": "Oldest first",
+      "newest": "Newest first",
+      "amountDesc": "Highest amount first"
+    }
   },
   "media": {
     "moderate": {
@@ -2367,7 +2403,11 @@
       "orphanBalTitle": "Donations by partner",
       "orphanBalSub": "Completed donations attributed to each partner",
       "fxNote": "Live FX rates are not available from the backend yet.",
-      "adminOnlyTransfers": "Transfers are visible to admins only."
+      "adminOnlyTransfers": "Transfers are visible to admins only.",
+      "fxTitle": "Exchange rates",
+      "balAmount": "Balance",
+      "balCount": "Transactions",
+      "dueUnknown": "Due date —"
     },
     "overdue": {
       "title": "Overdue Donors",
@@ -2397,7 +2437,31 @@
       "reminderNotTracked": "Reminder history is not tracked yet.",
       "bulkReminder": "Bulk reminder",
       "totalOverdue": "Total overdue across {{count}} donors",
-      "daysBadge": "{{n}} days"
+      "daysBadge": "{{n}} days",
+      "sortBy": "Sort",
+      "country": "Country",
+      "allCountries": "All countries",
+      "selected": "selected",
+      "bulkWhatsapp": "Remind via WhatsApp",
+      "bulkEmail": "Remind via email",
+      "clearSelection": "Clear",
+      "selectAll": "Select all",
+      "selectRow": "Select {{name}}",
+      "actions": "Actions",
+      "actRemindFriendly": "Friendly reminder",
+      "actRemindWhatsapp": "WhatsApp reminder",
+      "actSuggestPostpone": "Suggest postponement",
+      "actSuspend": "Suspend sponsorship",
+      "actCall": "Call",
+      "bandLightAdvice": "A gentle reminder",
+      "bandMediumAdvice": "Call + suggest postponement",
+      "bandLongAdvice": "Personal follow-up",
+      "bandCriticalAdvice": "Review the sponsorship",
+      "sort": {
+        "daysDesc": "Most overdue first",
+        "daysAsc": "Least overdue first",
+        "amountDesc": "Highest amount first"
+      }
     },
     "reports": {
       "title": "Financial Reports",
@@ -2451,7 +2515,23 @@
       "pdf": "PDF",
       "excel": "Excel",
       "generateUnavailable": "This report cannot be generated yet.",
-      "byPartnerEmpty": "No partner donations in this window."
+      "byPartnerEmpty": "No partner donations in this window.",
+      "repCustom": "Custom report",
+      "repCustomDesc": "Build a report with your own fields via the drag-and-drop generator",
+      "flagDragDrop": "Drag & drop",
+      "flagSchedulable": "Schedulable",
+      "customSavedNote": "Saved custom reports",
+      "customStart": "Start",
+      "recentRuns": "Recent runs",
+      "recentRunsEmpty": "Generated reports will appear here.",
+      "runReport": "Report",
+      "runPeriod": "Period",
+      "runSigner": "Signer",
+      "runSize": "Size",
+      "runTime": "Time",
+      "closeTitle": "Annual close",
+      "closeDesc": "Schedule the audited reports and book the external auditor ahead of the annual close.",
+      "closeSchedule": "Close schedule"
     }
   },
   "marketing": {
@@ -3322,6 +3402,30 @@
     "reconPartial": "Partial",
     "reconUnmatched": "Unmatched",
     "reconDup": "Duplicate",
-    "awaitingData": "Awaiting backend"
+    "awaitingData": "Awaiting backend",
+    "bankKfh": "Kuwait Finance House",
+    "bankNbk": "National Bank of Kuwait",
+    "bankGulf": "Gulf Bank",
+    "bankAhli": "Al Ahli Bank of Kuwait",
+    "bankBoubyan": "Boubyan Bank",
+    "bankCustom": "Custom bank",
+    "bankFormat": "Format detected on upload",
+    "fileInfoEmpty": "No file selected yet",
+    "fileRows": "Rows",
+    "fileReplace": "Replace file",
+    "fileRemove": "Remove file",
+    "matchBarLabel": "Match ratio",
+    "tabsLabel": "Filter results",
+    "tabAll": "All",
+    "tabMatched": "Matched",
+    "tabReview": "Needs review",
+    "tabDup": "Duplicates",
+    "colDate": "Date",
+    "colAmount": "Amount",
+    "colMatch": "Suggested match",
+    "reconEmpty": "Results appear here after a statement is imported.",
+    "footerNote": "The import will be recorded in the audit log.",
+    "footerPrev": "Previous",
+    "footerImport": "Import payments"
   }
 }

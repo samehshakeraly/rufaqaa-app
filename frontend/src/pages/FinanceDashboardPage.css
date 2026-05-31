@@ -1,0 +1,135 @@
+/* ═══════════════════════════════════════════════════════════════════
+   F-01 Finance Dashboard — alignment-pass styles
+   New structure added to close residual gaps vs the mockup: the FX
+   exchange-rate strip, the dual in/out cash-flow bar chart (zero line),
+   the partner-balance Balance/Count toggle, and the transfer due-status
+   chip. Scoped under `.fin-page` so it inherits the finance token block
+   (no re-declared tokens, no ad-hoc hex beyond the mockup's hard-coded
+   chart swatches). RTL-logical; figures use tabular-nums.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Dual in/out cash-flow chart (lives inside the dark treasury hero) ── */
+.fin-page .fin-cf2 {
+  height: 180px;
+}
+.fin-page .fin-cf2 .cf-grid {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+.fin-page .fin-cf2 .cf-zero {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1;
+}
+.fin-page .fin-cf2 .cf-in {
+  fill: #fcd34d; /* mockup inflow swatch */
+}
+.fin-page .fin-cash-legend .net {
+  margin-inline-start: auto;
+  font-weight: 600;
+}
+
+/* ── FX exchange-rate strip ─────────────────────────────────────────── */
+.fin-fx-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  font-size: 12px;
+  color: var(--gray-600);
+}
+.fin-fx-row .fx-cap {
+  font-size: 11px;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+.fin-fx-row .fx {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fin-fx-row .fx .pair {
+  font-weight: 600;
+  color: var(--gray-800);
+}
+.fin-fx-row .fx .val {
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray-900);
+}
+.fin-fx-row .refresh {
+  color: var(--gray-400);
+  margin-inline-start: auto;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fin-fx-row .refresh svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── Partner-balance Balance/Count toggle ───────────────────────────── */
+.fin-obal-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+}
+.fin-obal-toggle button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.fin-obal-toggle button:hover {
+  color: var(--gray-700);
+}
+.fin-obal-toggle button.active {
+  background: white;
+  color: var(--fin-700);
+  box-shadow: var(--shadow-sm);
+}
+.fin-obal-toggle button:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 2px;
+}
+/* Count view uses the trust/info ramp so the two metrics read distinctly. */
+.fin-orph-bal.alt .fin-bal-row .fill {
+  background: var(--trust-400);
+}
+
+/* ── Transfer due-status chip (placeholder until backend exposes dates) ── */
+.fin-due-chip {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--gray-100);
+  color: var(--gray-500);
+}
+
+@media (max-width: 540px) {
+  .fin-fx-row {
+    gap: 10px 14px;
+  }
+  .fin-fx-row .refresh {
+    margin-inline-start: 0;
+  }
+}

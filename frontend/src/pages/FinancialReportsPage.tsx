@@ -7,14 +7,11 @@ import { Money } from "@/components/Money";
 import { Skeleton } from "@/components/Skeleton";
 import { fetchOrganization } from "@/lib/organization";
 import { exportPaymentsCsv } from "@/lib/payments";
-import {
-  fetchDonationsByPartner,
-  fetchPaymentsTimeseries,
-  fetchSummary,
-} from "@/lib/stats";
+import { fetchDonationsByPartner, fetchPaymentsTimeseries } from "@/lib/stats";
 import { toast } from "@/store/toasts";
 
 import "./finance.css";
+import "./FinancialReportsPage.css";
 import { FIN_ICONS, FinIcon } from "./financeIcons";
 
 function firstOfYearISO(): string {
@@ -31,7 +28,6 @@ export function FinancialReportsPage() {
   const [to, setTo] = useState(todayISO());
 
   const { data: org } = useQuery({ queryKey: ["organization"], queryFn: fetchOrganization });
-  const { data: summary } = useQuery({ queryKey: ["stats", "summary"], queryFn: fetchSummary });
   const { data: timeseries } = useQuery({
     queryKey: ["stats", "payments-timeseries"],
     queryFn: fetchPaymentsTimeseries,
@@ -141,10 +137,10 @@ export function FinancialReportsPage() {
               ) : null
             }
           />
-          <HeroStat
-            label={t("finance.reports.statZakat")}
-            value={summary ? summary.donors_total.toLocaleString(lang) : null}
-          />
+          {/* TODO(backend): no zakat total is exposed by the API. We never show
+              a mislabeled figure here (it previously rendered a donor count) —
+              the slot stays a placeholder until a real zakat figure exists. */}
+          <HeroStat label={t("finance.reports.statZakat")} value={<span className="fin-ph">—</span>} />
         </div>
       </section>
 
@@ -244,6 +240,32 @@ export function FinancialReportsPage() {
           flags={[["qtr", t("finance.reports.flagQuarterly")], ["req", t("finance.reports.flagRequired")]]}
           onGenerate={comingSoon}
         />
+
+        {/* Custom report builder card. TODO(backend): no builder endpoint. */}
+        <article className="fin-rep-card fin-rep-custom">
+          <span className="fin-rep-stripe cust" />
+          <header className="fin-rep-head">
+            <div className="fin-rep-icon cust">
+              <FinIcon className="fin-icon">{FIN_ICONS.plus}</FinIcon>
+            </div>
+            <div className="fin-rep-info">
+              <div className="nm">{t("finance.reports.repCustom")}</div>
+              <div className="ds">{t("finance.reports.repCustomDesc")}</div>
+            </div>
+          </header>
+          <div className="fin-rep-body">
+            <div className="fin-rep-flags">
+              <span className="fin-flag custom">{t("finance.reports.flagDragDrop")}</span>
+              <span className="fin-flag info">{t("finance.reports.flagSchedulable")}</span>
+            </div>
+          </div>
+          <footer className="fin-rep-foot">
+            <span className="last">{t("finance.reports.customSavedNote")}</span>
+            <button type="button" className="fin-dl-btn" onClick={comingSoon}>
+              {t("finance.reports.customStart")}
+            </button>
+          </footer>
+        </article>
       </section>
 
       {/* ── Payments by partner (real) ─────────────────────────────── */}
@@ -306,6 +328,61 @@ export function FinancialReportsPage() {
           </div>
         )}
       </section>
+
+      {/* ── Recent report runs (header + empty state) ──────────────── */}
+      <div className="fin-section-h">
+        <div className="ttl">
+          <FinIcon className="fin-icon">{FIN_ICONS.clock}</FinIcon>
+          {t("finance.reports.recentRuns")}
+        </div>
+      </div>
+      <section className="fin-tbl-card">
+        <div className="fin-tbl-scroll">
+          <table className="fin-runs-table">
+            <caption className="sr-only">{t("finance.reports.recentRuns")}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t("finance.reports.runReport")}</th>
+                <th scope="col">{t("finance.reports.runPeriod")}</th>
+                <th scope="col">{t("finance.reports.runSigner")}</th>
+                <th scope="col" className="num-h">
+                  {t("finance.reports.runSize")}
+                </th>
+                <th scope="col">{t("finance.reports.runTime")}</th>
+                <th scope="col" aria-hidden="true" />
+              </tr>
+            </thead>
+            <tbody>
+              {/* TODO(backend): no report-generation history endpoint — the
+                  table renders its header and an empty state, no fake rows. */}
+              <tr>
+                <td colSpan={6}>
+                  <div className="fin-empty">
+                    <FinIcon className="fin-icon">{FIN_ICONS.inbox}</FinIcon>
+                    <div className="fin-empty-title">{t("finance.reports.recentRunsEmpty")}</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ── Annual close banner ────────────────────────────────────── */}
+      <div className="fin-close-banner">
+        <div className="ic">
+          <FinIcon className="fin-icon">{FIN_ICONS.star}</FinIcon>
+        </div>
+        <div className="text">
+          <div className="ttl">{t("finance.reports.closeTitle")}</div>
+          <div className="ds">{t("finance.reports.closeDesc")}</div>
+        </div>
+        {/* TODO(backend): no close-schedule endpoint yet. */}
+        <button type="button" className="fin-btn-secondary" onClick={comingSoon}>
+          <FinIcon>{FIN_ICONS.calendar}</FinIcon>
+          {t("finance.reports.closeSchedule")}
+        </button>
+      </div>
 
       <p className="fin-card-note">{t("finance.reports.exportNote")}</p>
     </div>

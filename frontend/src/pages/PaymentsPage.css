@@ -1,0 +1,236 @@
+/* ═══════════════════════════════════════════════════════════════════
+   F-02 Incoming Payments — alignment-pass styles
+   New structure: the date-range segmented control + method/currency
+   filter pills, the bulk-selection bar, row checkboxes, and the
+   numbered pager. Scoped under `.fin-page` (inherits the finance token
+   block — no re-declared tokens, no ad-hoc hex). RTL-logical; all
+   figures use tabular-nums.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Filter bar: date-range segmented control ───────────────────────── */
+.fin-range-strip {
+  display: flex;
+  gap: 4px;
+  background: var(--gray-100);
+  padding: 4px;
+  border-radius: var(--radius-md);
+}
+.fin-range-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.fin-range-btn:hover {
+  color: var(--gray-900);
+}
+.fin-range-btn.active {
+  background: white;
+  color: var(--fin-700);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+.fin-range-btn:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 1px;
+}
+
+/* ── Filter pills (method / currency selects) ───────────────────────── */
+.fin-fpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+.fin-fpill:focus-within {
+  border-color: var(--fin-300);
+}
+.fin-fpill svg {
+  width: 13px;
+  height: 13px;
+  color: var(--gray-400);
+}
+.fin-fpill select {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--gray-800);
+  cursor: pointer;
+  padding-inline-end: 2px;
+}
+.fin-fpill select:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Bulk selection bar ─────────────────────────────────────────────── */
+.fin-bulkbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--fin-700);
+  color: white;
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.fin-bulkbar-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+.fin-bulkbar-info .count-pill {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.fin-bulkbar-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.fin-bulkbar .bulk-btn {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  font-size: 12.5px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.fin-bulkbar .bulk-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.fin-bulkbar .bulk-btn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 1px;
+}
+.fin-bulkbar .bulk-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ── Row checkboxes + secondary cell text ───────────────────────────── */
+.fin-pay-table .fin-chk-col {
+  width: 36px;
+  text-align: center;
+}
+.fin-check-wrap {
+  display: inline-flex;
+  cursor: pointer;
+}
+.fin-check-wrap input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--fin-700);
+  cursor: pointer;
+}
+.fin-pay-table tbody tr.selected {
+  background: var(--fin-50);
+}
+.fin-cell-sub {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+/* ── Numbered pager ─────────────────────────────────────────────────── */
+.fin-pager {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.fin-pagesize {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.fin-pagesize select {
+  appearance: none;
+  border: 1px solid var(--gray-200);
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--gray-800);
+  cursor: pointer;
+}
+.fin-pages {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.fin-page-btn {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  font-size: 12.5px;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-700);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+.fin-page-btn:hover:not(:disabled) {
+  border-color: var(--fin-300);
+  color: var(--fin-700);
+}
+.fin-page-btn.active {
+  background: var(--fin-700);
+  border-color: var(--fin-700);
+  color: white;
+  font-weight: 600;
+}
+.fin-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.fin-page-btn:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 1px;
+}
+.fin-page-gap {
+  color: var(--gray-400);
+  padding: 0 2px;
+}
+
+@media (max-width: 768px) {
+  .fin-tbl-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
