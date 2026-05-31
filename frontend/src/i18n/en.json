@@ -2367,7 +2367,11 @@
       "orphanBalTitle": "Donations by partner",
       "orphanBalSub": "Completed donations attributed to each partner",
       "fxNote": "Live FX rates are not available from the backend yet.",
-      "adminOnlyTransfers": "Transfers are visible to admins only."
+      "adminOnlyTransfers": "Transfers are visible to admins only.",
+      "fxTitle": "Exchange rates",
+      "balAmount": "Balance",
+      "balCount": "Transactions",
+      "dueUnknown": "Due date —"
     },
     "overdue": {
       "title": "Overdue Donors",
