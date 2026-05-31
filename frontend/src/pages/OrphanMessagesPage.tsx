@@ -10,14 +10,17 @@ import {
 } from "@/lib/orphanSelf";
 import { toast } from "@/store/toasts";
 
+import "./OrphanMessagesPage.css";
+
 const MESSAGES_KEY = ["orphan", "me", "messages"];
 const MAX_LEN = 4000;
 
 /** O-03 — compose a thank-you note to your sponsor + see the thread.
  *
- * Messages are reviewed before they reach the sponsor; we say so warmly
- * ("on its way") and never use the word "moderation". Senders are shown
- * by first name only (backend projection). */
+ * Messages go through the EXISTING moderation flow only — there is no
+ * direct/un-moderated channel to the donor. We say so warmly ("on its
+ * way") and the do/don't tips steer the child away from sharing personal
+ * data. Senders are shown by first name only (backend projection). */
 export function OrphanMessagesPage() {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
@@ -43,96 +46,194 @@ export function OrphanMessagesPage() {
   const messages = q.data ?? [];
   const trimmed = content.trim();
   const canSend = trimmed.length > 0 && !send.isPending;
+  const counterWarn = content.length > MAX_LEN * 0.9;
+
+  const suggestions = [
+    t("orphan.messages.suggestion1"),
+    t("orphan.messages.suggestion2"),
+    t("orphan.messages.suggestion3"),
+    t("orphan.messages.suggestion4"),
+  ];
+  const doItems = [
+    t("orphan.messages.doItem1"),
+    t("orphan.messages.doItem2"),
+    t("orphan.messages.doItem3"),
+    t("orphan.messages.doItem4"),
+  ];
+  const dontItems = [
+    t("orphan.messages.dontItem1"),
+    t("orphan.messages.dontItem2"),
+    t("orphan.messages.dontItem3"),
+    t("orphan.messages.dontItem4"),
+  ];
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t("orphan.messages.title")}
-        </h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-          {t("orphan.messages.subtitle")}
-        </p>
-      </header>
+    <div className="omsg-root">
+      <div className="omsg-stack">
+        {/* Intro */}
+        <div className="omsg-intro">
+          <span className="omsg-intro-emoji" aria-hidden="true">
+            💌
+          </span>
+          <div className="omsg-intro-text">
+            <h1>{t("orphan.messages.introTitle")}</h1>
+            <p>{t("orphan.messages.introSub")}</p>
+          </div>
+        </div>
 
-      {/* Compose */}
-      <section className="card space-y-3" aria-labelledby="orphan-compose-title">
-        <h2
-          id="orphan-compose-title"
-          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
-        >
-          {t("orphan.messages.composeTitle")}
-        </h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             if (canSend) send.mutate(trimmed);
           }}
-          className="space-y-3"
+          className="omsg-stack"
         >
-          <label className="block">
-            <span className="sr-only">{t("orphan.messages.composeTitle")}</span>
+          {/* Compose */}
+          <section className="omsg-compose-card" aria-labelledby="omsg-compose-label">
+            <label className="omsg-compose-label" id="omsg-compose-label" htmlFor="omsg-textarea">
+              <span>{t("orphan.messages.composeLabel")}</span>
+              <span className={`omsg-counter ${counterWarn ? "warn" : ""}`}>
+                <span className="omsg-latin">{content.length}</span> /{" "}
+                <span className="omsg-latin">{MAX_LEN}</span>
+              </span>
+            </label>
             <textarea
+              id="omsg-textarea"
+              className="omsg-textarea"
               value={content}
               onChange={(e) => setContent(e.target.value.slice(0, MAX_LEN))}
-              rows={6}
               maxLength={MAX_LEN}
+              rows={7}
               placeholder={t("orphan.messages.placeholder")}
-              className="input min-h-40 resize-y leading-relaxed"
             />
-          </label>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">
-              {content.length}/{MAX_LEN}
+          </section>
+
+          {/* Suggestions — clicking fills the box */}
+          <section className="omsg-suggestions" aria-label={t("orphan.messages.suggestionsTitle")}>
+            <div className="omsg-sug-head">
+              <svg className="omsg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              {t("orphan.messages.suggestionsTitle")}
+            </div>
+            <div className="omsg-sug-list">
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="omsg-sug-item"
+                  onClick={() => setContent(s.slice(0, MAX_LEN))}
+                >
+                  <span className="omsg-sug-bullet" aria-hidden="true">
+                    •
+                  </span>
+                  <span>{s}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Moderation note (existing flow — never a direct channel) */}
+          <section className="omsg-warning" role="note">
+            <span className="omsg-warning-icon" aria-hidden="true">
+              <svg className="omsg-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
             </span>
-            <button type="submit" className="btn-primary" disabled={!canSend}>
-              {send.isPending
-                ? t("orphan.messages.sending")
-                : t("orphan.messages.send")}
+            <p className="omsg-warning-text">
+              <strong>{t("orphan.messages.moderationTitle")}</strong>
+              {t("orphan.messages.moderationBody")}
+            </p>
+          </section>
+
+          {/* Do / Don't tips */}
+          <section className="omsg-tips" aria-label={t("orphan.messages.tipDoTitle")}>
+            <div className="omsg-tip do">
+              <div className="omsg-tip-head">
+                <span className="omsg-tip-head-icon" aria-hidden="true">
+                  <svg className="omsg-icon omsg-icon-sm" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
+                {t("orphan.messages.tipDoTitle")}
+              </div>
+              <ul className="omsg-tip-list">
+                {doItems.map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="omsg-tip dont">
+              <div className="omsg-tip-head">
+                <span className="omsg-tip-head-icon" aria-hidden="true">
+                  <svg className="omsg-icon omsg-icon-sm" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </span>
+                {t("orphan.messages.tipDontTitle")}
+              </div>
+              <ul className="omsg-tip-list">
+                {dontItems.map((it, i) => (
+                  <li key={i}>{it}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* Actions */}
+          <div className="omsg-actions">
+            <button type="submit" className="omsg-btn" disabled={!canSend}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+              {send.isPending ? t("orphan.messages.sending") : t("orphan.messages.send")}
+            </button>
+            <button
+              type="button"
+              className="omsg-btn-secondary"
+              onClick={() => setContent("")}
+              disabled={content.length === 0 || send.isPending}
+            >
+              {t("orphan.messages.clear")}
             </button>
           </div>
         </form>
-      </section>
 
-      {/* Thread */}
-      <section className="space-y-3" aria-labelledby="orphan-thread-title">
-        <h2
-          id="orphan-thread-title"
-          className="text-lg font-semibold text-gray-900 dark:text-gray-100"
-        >
-          {t("orphan.messages.threadTitle")}
-        </h2>
+        {/* Thread */}
+        <section aria-labelledby="omsg-thread-title">
+          <h2 className="omsg-thread-title" id="omsg-thread-title">
+            {t("orphan.messages.threadTitle")}
+          </h2>
 
-        {q.isLoading && <Skeleton className="h-32 w-full" />}
-
-        {q.error && (
-          <p
-            role="alert"
-            className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700 dark:bg-danger-500/10 dark:text-danger-100"
-          >
-            {t("common.loadError")}
-          </p>
-        )}
-
-        {q.data && messages.length === 0 && (
-          <div className="card flex flex-col items-center gap-3 text-center">
-            <span aria-hidden="true" className="text-4xl">
-              ✉️
-            </span>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t("orphan.messages.empty")}
+          {q.isLoading && <Skeleton className="h-32 w-full" />}
+          {q.error && (
+            <p className="omsg-error" role="alert">
+              {t("common.loadError")}
             </p>
-          </div>
-        )}
-
-        {messages.length > 0 && (
-          <ul className="space-y-3">
-            {messages.map((m) => (
-              <MessageItem key={m.id} message={m} lang={i18n.language} />
-            ))}
-          </ul>
-        )}
-      </section>
+          )}
+          {q.data && messages.length === 0 && (
+            <div className="omsg-empty">
+              <span className="omsg-empty-emoji" aria-hidden="true">
+                ✉️
+              </span>
+              <p>{t("orphan.messages.empty")}</p>
+            </div>
+          )}
+          {messages.length > 0 && (
+            <ul className="omsg-thread-list">
+              {messages.map((m) => (
+                <MessageItem key={m.id} message={m} lang={i18n.language} />
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
@@ -149,33 +250,19 @@ function MessageItem({
   const isPending = m.is_mine && m.moderation_status === "pending";
 
   return (
-    <li
-      className={`card space-y-2 ${
-        m.is_mine ? "border-s-4 border-s-trust-300" : ""
-      }`}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-          {senderName}
-        </p>
-        <div className="flex items-center gap-2">
-          {isPending && (
-            <span className="rounded-full bg-warning-100 px-2 py-0.5 text-xs font-medium text-warning-700 dark:bg-warning-500/15 dark:text-warning-100">
-              {t("orphan.messages.onTheWay")}
-            </span>
-          )}
+    <li className={`omsg-msg ${m.is_mine ? "mine" : ""}`}>
+      <div className="omsg-msg-head">
+        <span className="omsg-msg-sender">{senderName}</span>
+        <span className="omsg-msg-side">
+          {isPending && <span className="omsg-pending">{t("orphan.messages.onTheWay")}</span>}
           {m.created_at && (
-            <time className="text-xs text-gray-500" dateTime={m.created_at}>
+            <time className="omsg-msg-time" dateTime={m.created_at}>
               {new Date(m.created_at).toLocaleDateString(lang)}
             </time>
           )}
-        </div>
+        </span>
       </div>
-      {m.content && (
-        <p className="whitespace-pre-line text-sm leading-relaxed text-gray-800 dark:text-gray-200">
-          {m.content}
-        </p>
-      )}
+      {m.content && <p className="omsg-msg-body">{m.content}</p>}
     </li>
   );
 }

@@ -1,0 +1,482 @@
+/* ═══════════════════════════════════════════════════════════════
+   O-03 Send Message — scoped styles
+   Ported from docs/design/screens/orphan/O-03-SendMessage.html.
+   Tokens only (rufaqaa v0.1); scoped under `.omsg-root`, prefixed
+   `omsg-`. Physical left/right rewritten as logical (inline-start/
+   -end) for RTL. The top bar + nav are provided by OrphanLayout.
+
+   CHILD-FACING. The message goes through the EXISTING moderation flow
+   only — there is no direct/un-moderated channel to the donor. The
+   warning card and "on the way" badge reaffirm moderation warmly. The
+   do/don't tips steer the child away from sharing personal data.
+   ═══════════════════════════════════════════════════════════════ */
+
+.omsg-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-700: #b91c1c;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --shadow-focus: 0 0 0 4px rgba(118, 159, 205, 0.3);
+  --transition: 200ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .omsg-root *,
+  .omsg-root *::before,
+  .omsg-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.omsg-root .omsg-latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.omsg-root :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-lg);
+}
+
+.omsg-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ═══ Intro ═══ */
+.omsg-intro {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.omsg-intro-emoji {
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--tranquil-200) 0%, var(--sky-200) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  flex-shrink: 0;
+}
+.omsg-intro-text h1 {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.omsg-intro-text p {
+  font-size: 15.5px;
+  color: var(--gray-600);
+}
+
+/* ═══ Compose card ═══ */
+.omsg-compose-card {
+  background: white;
+  border: 1.5px solid var(--sky-200);
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: var(--shadow-sm);
+}
+.omsg-compose-label {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.omsg-counter {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 500;
+  background: var(--gray-100);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.omsg-counter.warn {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.omsg-textarea {
+  width: 100%;
+  min-height: 200px;
+  background: var(--snow-100);
+  border: 2px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 20px 22px;
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--gray-900);
+  resize: vertical;
+  transition: var(--transition);
+}
+.omsg-textarea:focus {
+  outline: none;
+  border-color: var(--trust-400);
+  background: white;
+  box-shadow: var(--shadow-focus);
+}
+.omsg-textarea::placeholder {
+  color: var(--gray-400);
+}
+
+/* ═══ Suggestions ═══ */
+.omsg-suggestions {
+  background: var(--tranquil-100);
+  border: 1.5px solid var(--sky-200);
+  border-radius: 20px;
+  padding: 22px 24px;
+}
+.omsg-sug-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--trust-700);
+}
+.omsg-sug-head svg {
+  color: var(--trust-500);
+}
+.omsg-sug-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.omsg-sug-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: white;
+  border: 1.5px solid var(--sky-200);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: start;
+  font-size: 16px;
+  color: var(--gray-800);
+  line-height: 1.65;
+  width: 100%;
+}
+.omsg-sug-item:hover {
+  border-color: var(--trust-300);
+  background: var(--snow-100);
+}
+.omsg-sug-bullet {
+  color: var(--trust-500);
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ═══ Warning / moderation note ═══ */
+.omsg-warning {
+  background: var(--warning-50);
+  border: 1.5px solid var(--warning-100);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.omsg-warning-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  color: var(--warning-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.omsg-warning-text {
+  font-size: 15px;
+  color: var(--gray-800);
+  line-height: 1.7;
+}
+.omsg-warning-text strong {
+  color: var(--warning-700);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* ═══ Do / Don't tips ═══ */
+.omsg-tips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 540px) {
+  .omsg-tips {
+    grid-template-columns: 1fr;
+  }
+}
+.omsg-tip {
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.omsg-tip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.omsg-tip.do .omsg-tip-head {
+  color: var(--success-700);
+}
+.omsg-tip.dont .omsg-tip-head {
+  color: var(--warning-700);
+}
+.omsg-tip-head-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.omsg-tip.do .omsg-tip-head-icon {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+.omsg-tip.dont .omsg-tip-head-icon {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.omsg-tip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.85;
+}
+.omsg-tip-list li {
+  padding: 3px 0;
+  padding-inline-start: 16px;
+  position: relative;
+}
+.omsg-tip-list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+
+/* ═══ Actions ═══ */
+.omsg-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+@media (max-width: 480px) {
+  .omsg-actions {
+    grid-template-columns: 1fr;
+  }
+}
+.omsg-btn,
+.omsg-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 18px 28px;
+  border-radius: 14px;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  cursor: pointer;
+  min-height: 60px;
+}
+.omsg-btn {
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  color: white;
+  border-color: var(--trust-500);
+  box-shadow: 0 4px 12px rgba(66, 109, 159, 0.25);
+}
+.omsg-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66, 109, 159, 0.35);
+}
+.omsg-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.omsg-btn svg {
+  width: 22px;
+  height: 22px;
+}
+.omsg-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border-color: var(--gray-200);
+}
+.omsg-btn-secondary:hover:not(:disabled) {
+  background: var(--gray-100);
+  border-color: var(--gray-300);
+}
+.omsg-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ═══ Thread ═══ */
+.omsg-thread-title {
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+.omsg-thread-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.omsg-msg {
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.omsg-msg.mine {
+  border-inline-start: 4px solid var(--trust-300);
+}
+.omsg-msg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.omsg-msg-sender {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.omsg-msg-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.omsg-pending {
+  background: var(--warning-100);
+  color: var(--warning-700);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.omsg-msg-time {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.omsg-msg-body {
+  font-size: 16px;
+  color: var(--gray-800);
+  line-height: 1.85;
+  white-space: pre-line;
+}
+
+.omsg-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--gray-600);
+  font-size: 16px;
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 28px 20px;
+}
+.omsg-empty-emoji {
+  font-size: 40px;
+}
+.omsg-error {
+  background: var(--danger-50);
+  color: var(--danger-700);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+.omsg-icon {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.omsg-icon-sm {
+  width: 16px;
+  height: 16px;
+}

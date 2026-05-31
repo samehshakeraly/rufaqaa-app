@@ -1,0 +1,422 @@
+/* ═══════════════════════════════════════════════════════════════
+   O-01 Orphan Login — scoped styles
+   Ported from docs/design/screens/orphan/O-01-Login.html. Tokens
+   only (rufaqaa v0.1); scoped under `.olg-root`, prefixed `olg-`.
+   Physical left/right rewritten as logical (inline-start/-end) for
+   the RTL-first layout.
+
+   CHILD-FACING: this portal serves 12–17 year-olds. Type is large,
+   touch targets are ≥ 56px, language is warm and simple. Recovery is
+   routed through the guardian — no financial, donor, or identity
+   data appears here. Auth itself is unchanged (email + password).
+   ═══════════════════════════════════════════════════════════════ */
+
+.olg-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-500: #10b981;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --shadow-focus: 0 0 0 4px rgba(118, 159, 205, 0.3);
+  --transition: 200ms ease;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--snow-100);
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .olg-root *,
+  .olg-root *::before,
+  .olg-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.olg-root .olg-latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.olg-root :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-lg);
+}
+
+.olg-page {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+@media (max-width: 980px) {
+  .olg-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══ Illustration panel ═══ */
+.olg-illu {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(118, 159, 205, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(150, 183, 214, 0.3) 0%, transparent 50%),
+    linear-gradient(160deg, var(--tranquil-100) 0%, var(--snow-200) 50%, var(--tranquil-200) 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 56px;
+}
+@media (max-width: 980px) {
+  .olg-illu {
+    display: none;
+  }
+}
+.olg-illu-art {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto 32px;
+}
+.olg-illu-art svg {
+  width: 100%;
+  height: auto;
+}
+.olg-illu-greeting {
+  text-align: center;
+}
+.olg-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--trust-600);
+  font-weight: 500;
+  padding: 6px 14px;
+  background: white;
+  border: 1px solid var(--sky-200);
+  border-radius: 999px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.olg-eyebrow-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success-500);
+}
+.olg-illu-title {
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 14px;
+}
+.olg-illu-accent {
+  color: var(--trust-700);
+}
+.olg-illu-sub {
+  font-size: 18px;
+  color: var(--gray-700);
+  line-height: 1.9;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* ═══ Form panel ═══ */
+.olg-form-panel {
+  background: var(--snow-100);
+  display: flex;
+  flex-direction: column;
+  padding: 48px 56px;
+}
+@media (max-width: 980px) {
+  .olg-form-panel {
+    padding: 32px 24px;
+  }
+}
+
+.olg-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: auto;
+}
+.olg-brand-mark {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(66, 109, 159, 0.3);
+}
+.olg-brand-text h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.1;
+}
+.olg-brand-text p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.olg-form-inner {
+  max-width: 480px;
+  width: 100%;
+  margin: 28px 0;
+}
+.olg-form-head {
+  margin-bottom: 28px;
+}
+.olg-form-title {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+.olg-form-sub {
+  font-size: 17px;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+.olg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.olg-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.olg-input-wrap {
+  position: relative;
+}
+.olg-input {
+  width: 100%;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 18px 56px 18px 22px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gray-900);
+  transition: var(--transition);
+  height: 64px;
+}
+/* Password leaves room on the inline-end side for the eye toggle. */
+.olg-input--password {
+  padding-inline-end: 56px;
+}
+.olg-input:focus {
+  outline: none;
+  border-color: var(--trust-400);
+  box-shadow: var(--shadow-focus);
+}
+.olg-input::placeholder {
+  color: var(--gray-400);
+  font-weight: 400;
+}
+.olg-input-icon {
+  position: absolute;
+  inset-inline-start: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+  display: flex;
+}
+.olg-input:focus ~ .olg-input-icon {
+  color: var(--trust-500);
+}
+.olg-toggle-pw {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+}
+.olg-toggle-pw:hover {
+  color: var(--trust-500);
+  background: var(--snow-200);
+}
+
+.olg-error {
+  font-size: 14px;
+  color: var(--danger-600);
+}
+.olg-form-error {
+  background: var(--danger-50);
+  border: 1.5px solid var(--danger-600);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: var(--danger-700);
+  margin-bottom: 20px;
+}
+
+.olg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 18px 28px;
+  border-radius: 14px;
+  transition: var(--transition);
+  border: 2px solid var(--trust-500);
+  cursor: pointer;
+  height: 64px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(66, 109, 159, 0.25);
+}
+.olg-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66, 109, 159, 0.35);
+}
+.olg-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.olg-btn svg {
+  width: 22px;
+  height: 22px;
+}
+/* Arrow points "into" the portal; flip to follow text direction. */
+[dir="ltr"] .olg-btn svg {
+  transform: scaleX(-1);
+}
+
+.olg-help-card {
+  background: var(--warning-50);
+  border: 1.5px solid var(--warning-100);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.olg-help-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  color: var(--warning-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.olg-help-text {
+  font-size: 15px;
+  color: var(--gray-800);
+  line-height: 1.6;
+}
+.olg-help-text strong {
+  color: var(--warning-700);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.olg-help-line {
+  font-size: 15px;
+  color: var(--gray-600);
+  text-align: center;
+  margin-top: 20px;
+}
+.olg-help-line a {
+  color: var(--trust-500);
+  font-weight: 600;
+  text-decoration: none;
+}
+.olg-help-line a:hover {
+  text-decoration: underline;
+}
+
+.olg-footer {
+  margin-top: auto;
+  padding-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--gray-500);
+}
+
+.olg-icon {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.olg-icon-sm {
+  width: 18px;
+  height: 18px;
+}

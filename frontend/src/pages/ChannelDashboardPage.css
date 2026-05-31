@@ -1,0 +1,588 @@
+/* ═══════════════════════════════════════════════════════════════
+   MM-01 Channel Dashboard — scoped styles
+   Ported from docs/design/screens/marketing/MM-01 Channel
+   Dashboard.html. Tokens only (rufaqaa v0.1); scoped under
+   `.mmd-root`, prefixed `mmd-`. Physical left/right rewritten as
+   logical (inline-start/-end) for the RTL-first layout. The app
+   shell (sidebar / topbar) is provided by AppLayout, so only the
+   page content is styled here.
+
+   Channel-scoped: this view never shows cross-channel or cross-org
+   data, donor identities, or orphan balances. Metrics that the API
+   does not yet expose (acquisition funnel, geo, send-time heatmap,
+   per-orphan engagement) are rendered as neutral "coming soon"
+   placeholders — never fabricated. See // TODO(backend) markers.
+   ═══════════════════════════════════════════════════════════════ */
+
+.mmd-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+  --trust-800: #142e4d;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-500: #3b82f6;
+  --info-700: #1d4ed8;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(11, 30, 51, 0.04);
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
+  --transition-fast: 150ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mmd-root *,
+  .mmd-root *::before,
+  .mmd-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.mmd-root .mmd-num {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.mmd-root :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-md);
+}
+
+.mmd-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ═══ Page header ═══ */
+.mmd-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.mmd-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+.mmd-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+.mmd-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+.mmd-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.mmd-status.active {
+  background: var(--success-50);
+  color: var(--success-700);
+}
+.mmd-status.suspended {
+  background: var(--warning-50);
+  color: var(--warning-700);
+}
+.mmd-status.archived {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.mmd-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.mmd-btn,
+.mmd-btn-secondary {
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.mmd-btn {
+  background: var(--trust-600);
+  color: white;
+  border: 1px solid var(--trust-600);
+}
+.mmd-btn:hover {
+  background: var(--trust-700);
+}
+.mmd-btn-secondary {
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+}
+.mmd-btn-secondary:hover {
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+
+/* ═══ Hero — goal ═══ */
+.mmd-hero {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-700) 100%);
+  color: white;
+  border-radius: var(--radius-2xl);
+  padding: 26px 30px;
+  position: relative;
+  overflow: hidden;
+}
+.mmd-hero::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -60px;
+  top: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+.mmd-hero-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 980px) {
+  .mmd-hero-row {
+    grid-template-columns: 1fr;
+  }
+}
+.mmd-hero-label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+  letter-spacing: 0.04em;
+}
+.mmd-hero-num {
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.05;
+  margin: 6px 0 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.02em;
+}
+.mmd-hero-num .mmd-of {
+  font-size: 22px;
+  opacity: 0.7;
+  font-weight: 500;
+}
+.mmd-hero-sub {
+  font-size: 14px;
+  opacity: 0.92;
+  line-height: 1.55;
+}
+.mmd-hero-delta {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-family: "IBM Plex Sans", sans-serif;
+  margin-inline-start: 4px;
+}
+.mmd-progress {
+  margin-top: 18px;
+}
+.mmd-progress-track {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.mmd-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #fcd34d);
+  border-radius: var(--radius-full);
+  transition: width 600ms ease;
+}
+.mmd-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  margin-top: 8px;
+  opacity: 0.9;
+}
+.mmd-progress-meta strong {
+  color: white;
+  font-weight: 600;
+}
+
+/* Hero right — monthly snapshot */
+.mmd-hero-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.16);
+  padding-inline-start: 28px;
+}
+@media (max-width: 980px) {
+  .mmd-hero-right {
+    border-inline-start: none;
+    padding-inline-start: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    padding-top: 18px;
+  }
+}
+
+/* ═══ KPI strip ═══ */
+.mmd-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 980px) {
+  .mmd-kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 540px) {
+  .mmd-kpi-strip {
+    grid-template-columns: 1fr;
+  }
+}
+.mmd-kpi {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mmd-kpi-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+.mmd-kpi-head svg {
+  width: 14px;
+  height: 14px;
+  color: var(--gray-400);
+}
+.mmd-kpi-val {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.mmd-kpi-val .mmd-unit {
+  font-size: 14px;
+  color: var(--gray-500);
+  font-weight: 500;
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  margin-inline-start: 4px;
+}
+.mmd-kpi-foot {
+  padding-top: 6px;
+  border-top: 1px solid var(--gray-100);
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+/* ═══ Grid + cards ═══ */
+.mmd-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 980px) {
+  .mmd-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.mmd-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.mmd-card-head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.mmd-card-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mmd-count-pill {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+  color: var(--gray-600);
+  font-weight: 600;
+}
+.mmd-card-head p {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 3px;
+}
+.mmd-head-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--trust-600);
+  white-space: nowrap;
+}
+.mmd-head-link:hover {
+  color: var(--trust-700);
+  text-decoration: underline;
+}
+.mmd-card-body {
+  padding: 14px 18px 18px;
+}
+
+/* Assigned-orphans list */
+.mmd-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mmd-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.mmd-row:last-child {
+  border-bottom: none;
+}
+.mmd-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--trust-400), var(--trust-600));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 13px;
+}
+.mmd-info {
+  min-width: 0;
+  flex: 1;
+}
+.mmd-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.mmd-meta {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mmd-code {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 11px;
+  color: var(--gray-500);
+}
+
+/* Action card — needs attention */
+.mmd-action-card {
+  background: linear-gradient(180deg, var(--warning-50), white);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-xl);
+  padding: 16px 18px;
+}
+.mmd-action-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.mmd-action-ic {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--warning-100);
+  color: var(--warning-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mmd-action-ttl {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.mmd-action-sub {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+.mmd-action-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mmd-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  background: white;
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  color: var(--gray-800);
+}
+.mmd-action-row.danger {
+  background: var(--danger-50);
+  border-color: var(--danger-100);
+}
+.mmd-action-at {
+  flex: 1;
+  min-width: 0;
+}
+.mmd-deadline {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  font-size: 11px;
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+.mmd-deadline.urgent {
+  color: var(--danger-600);
+  font-weight: 600;
+}
+.mmd-action-empty {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  padding: 8px 2px;
+}
+
+/* Coming-soon placeholder (data not yet exposed by the API) */
+.mmd-coming {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--info-50);
+  border: 1px dashed var(--info-100);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+.mmd-coming svg {
+  color: var(--info-700);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.mmd-coming strong {
+  color: var(--gray-800);
+  font-weight: 600;
+}
+
+.mmd-empty {
+  font-size: 13px;
+  color: var(--gray-500);
+  padding: 6px 2px;
+}
+
+/* Icons */
+.mmd-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}

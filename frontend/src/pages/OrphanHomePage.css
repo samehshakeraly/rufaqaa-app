@@ -1,0 +1,448 @@
+/* ═══════════════════════════════════════════════════════════════
+   O-02 Orphan Home — scoped styles
+   Ported from docs/design/screens/orphan/O-02-Home.html. Tokens only
+   (rufaqaa v0.1); scoped under `.ohm-root`, prefixed `ohm-`. Physical
+   left/right rewritten as logical (inline-start/-end) for RTL. The
+   warm top bar + nav are provided by OrphanLayout; only page content
+   is styled here.
+
+   CHILD-FACING: serves 12–17 year-olds. No financial figures, no donor
+   identity (the sponsor appears only as "كفيلك" / a first name when the
+   org opts in), no location or contact details. Messages shown have
+   already passed moderation; a note reaffirms that for the child.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ohm-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-200: #e7ebef;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --transition: 200ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ohm-root *,
+  .ohm-root *::before,
+  .ohm-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.ohm-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* ═══ Welcome ═══ */
+.ohm-welcome {
+  background: linear-gradient(160deg, var(--tranquil-100) 0%, white 100%);
+  border: 1.5px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+.ohm-welcome::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  inset-inline-end: -50px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(118, 159, 205, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.ohm-welcome-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.ohm-welcome-emoji {
+  font-size: 52px;
+  line-height: 1;
+}
+.ohm-welcome-text h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.ohm-welcome-text .ohm-name {
+  color: var(--trust-700);
+}
+.ohm-welcome-text p {
+  font-size: 16px;
+  color: var(--gray-600);
+}
+@media (max-width: 540px) {
+  .ohm-welcome {
+    padding: 24px;
+  }
+  .ohm-welcome-emoji {
+    font-size: 42px;
+  }
+  .ohm-welcome-text h1 {
+    font-size: 23px;
+  }
+}
+
+/* ═══ Section heading ═══ */
+.ohm-section-title {
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ohm-section-title svg {
+  color: var(--trust-500);
+  width: 26px;
+  height: 26px;
+}
+
+/* ═══ Sponsor card ═══ */
+.ohm-sponsor-card {
+  background: white;
+  border: 2px solid var(--sky-200);
+  border-radius: var(--radius-2xl);
+  padding: 26px;
+  position: relative;
+  overflow: hidden;
+}
+.ohm-sponsor-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.ohm-sponsor-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--tranquil-100) 0,
+    var(--tranquil-100) 8px,
+    var(--tranquil-200) 8px,
+    var(--tranquil-200) 16px
+  );
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px var(--sky-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-700);
+  flex-shrink: 0;
+}
+.ohm-sponsor-avatar svg {
+  width: 36px;
+  height: 36px;
+}
+.ohm-sponsor-text h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gray-500);
+  margin-bottom: 6px;
+}
+.ohm-sponsor-name {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.5;
+}
+.ohm-sponsor-since {
+  font-size: 14px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+.ohm-msg-btn {
+  width: 100%;
+  min-height: 60px;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  color: white;
+  border-radius: var(--radius-xl);
+  font-size: 17px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(66, 109, 159, 0.25);
+  transition: var(--transition);
+}
+.ohm-msg-btn:hover {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66, 109, 159, 0.35);
+}
+.ohm-msg-btn svg {
+  width: 22px;
+  height: 22px;
+}
+.ohm-no-sponsor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--tranquil-100);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  font-size: 16px;
+  color: var(--gray-700);
+  line-height: 1.65;
+}
+.ohm-no-sponsor .ohm-emoji {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+@media (max-width: 540px) {
+  .ohm-sponsor-card {
+    padding: 22px;
+  }
+  .ohm-sponsor-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .ohm-sponsor-avatar {
+    width: 76px;
+    height: 76px;
+  }
+}
+
+/* ═══ White content card (achievements / messages) ═══ */
+.ohm-card {
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 26px;
+}
+
+/* Achievements preview */
+.ohm-ach-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ohm-ach-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--success-50);
+  border: 1.5px solid var(--success-100);
+  border-radius: 14px;
+}
+.ohm-ach-check {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--success-500);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ohm-ach-check svg {
+  width: 20px;
+  height: 20px;
+}
+.ohm-ach-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-900);
+}
+.ohm-more {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px;
+  background: white;
+  color: var(--trust-600);
+  border: 2px dashed var(--sky-300);
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+.ohm-more:hover {
+  background: var(--tranquil-100);
+  border-color: var(--trust-300);
+}
+.ohm-more svg {
+  width: 18px;
+  height: 18px;
+}
+[dir="ltr"] .ohm-more svg,
+[dir="ltr"] .ohm-msg-action svg {
+  transform: scaleX(-1);
+}
+
+/* Messages preview */
+.ohm-msg-bubble {
+  background: linear-gradient(160deg, var(--snow-200) 0%, white 100%);
+  border: 1.5px solid var(--sky-200);
+  border-radius: 20px;
+  padding: 20px 22px;
+}
+.ohm-msg-text {
+  font-size: 17px;
+  color: var(--gray-800);
+  line-height: 1.9;
+  white-space: pre-line;
+}
+.ohm-msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--gray-200);
+  font-size: 14px;
+  color: var(--gray-500);
+}
+.ohm-msg-from {
+  color: var(--trust-600);
+  font-weight: 600;
+}
+.ohm-from-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.ohm-msg-action {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px;
+  background: var(--snow-100);
+  color: var(--gray-700);
+  border: 1.5px solid var(--gray-200);
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+.ohm-msg-action:hover {
+  background: white;
+  border-color: var(--trust-300);
+  color: var(--trust-600);
+}
+.ohm-msg-action svg {
+  width: 18px;
+  height: 18px;
+}
+.ohm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--gray-600);
+  font-size: 16px;
+  padding: 8px 0;
+}
+.ohm-empty .ohm-emoji {
+  font-size: 40px;
+}
+
+/* Privacy note */
+.ohm-privacy {
+  background: var(--tranquil-100);
+  border: 1.5px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.ohm-privacy-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  color: var(--trust-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ohm-privacy-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.ohm-privacy-text {
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.65;
+}
+.ohm-privacy-text strong {
+  color: var(--trust-700);
+  font-weight: 600;
+}
+
+.ohm-icon {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
