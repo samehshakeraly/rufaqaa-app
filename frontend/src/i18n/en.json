@@ -1821,7 +1821,8 @@
       "all": "All",
       "active": "Active",
       "underReview": "Under review",
-      "suspended": "Suspended"
+      "suspended": "Suspended",
+      "unverified": "Unverified"
     },
     "toolbarLabel": "Search and filter tools",
     "searchLabel": "Search partners",

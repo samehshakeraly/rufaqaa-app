@@ -1821,7 +1821,8 @@
       "all": "الكل",
       "active": "نشطة",
       "underReview": "قيد المراجعة",
-      "suspended": "معلّقة"
+      "suspended": "معلّقة",
+      "unverified": "غير موثّقة"
     },
     "toolbarLabel": "أدوات البحث والفرز",
     "searchLabel": "بحث في الجهات",
