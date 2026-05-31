@@ -314,29 +314,34 @@ export function MarketingChannelsPage() {
 
   return (
     <div className="oa-channels">
-      {/* Single semantic h1 — visually hidden; visible title lives in the
-          app topbar above this component. */}
-      <h1 className="sr-only">{t("marketing.title")}</h1>
-
-      {/* ── Topbar actions row ─────────────────────────────────────── */}
-      <div className="oa-topbar-actions" style={{ marginBottom: 18 }}>
-        <button
-          type="button"
-          className="oa-btn-secondary"
-          aria-label={t("marketing.monthlyReport")}
-        >
-          <Icon>{ICONS.file}</Icon>
-          {t("marketing.monthlyReport")}
-        </button>
-        <button
-          type="button"
-          className="oa-btn-primary"
-          onClick={() => setShowModal(true)}
-          aria-label={t("marketing.createChannel")}
-        >
-          <Icon>{ICONS.plus}</Icon>
-          {t("marketing.createChannel")}
-        </button>
+      {/* ── Topbar: title + actions (matches OA-04 mockup) ─────────── */}
+      <div className="oa-channels-topbar">
+        <div className="oa-channels-topbar-title">
+          {/* Single semantic h1 — visually hidden so the visible heading
+              can use h2 chrome matching sibling org-admin pages. */}
+          <h1 className="sr-only">{t("marketing.title")}</h1>
+          <h2>{t("marketing.title")}</h2>
+          <p>{t("marketing.subtitle")}</p>
+        </div>
+        <div className="oa-topbar-actions">
+          <button
+            type="button"
+            className="oa-btn-secondary"
+            aria-label={t("marketing.monthlyReport")}
+          >
+            <Icon>{ICONS.file}</Icon>
+            {t("marketing.monthlyReport")}
+          </button>
+          <button
+            type="button"
+            className="oa-btn-primary"
+            onClick={() => setShowModal(true)}
+            aria-label={t("marketing.createChannel")}
+          >
+            <Icon>{ICONS.plus}</Icon>
+            {t("marketing.createChannel")}
+          </button>
+        </div>
       </div>
 
       {/* ── Page head: performance label + year bar ────────────────── */}
