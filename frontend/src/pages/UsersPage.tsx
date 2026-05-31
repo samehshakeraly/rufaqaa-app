@@ -531,6 +531,33 @@ export function UsersPage() {
             {t("users.roles.finance")}
           </button>
           <button
+            className={`oa-users-role-tab${role === "marketing_manager" ? " active" : ""}`}
+            role="tab"
+            aria-selected={role === "marketing_manager"}
+            type="button"
+            onClick={() => onRoleChange("marketing_manager")}
+          >
+            {t("users.roles.marketing_manager")}
+          </button>
+          <button
+            className={`oa-users-role-tab${role === "partner_manager" ? " active" : ""}`}
+            role="tab"
+            aria-selected={role === "partner_manager"}
+            type="button"
+            onClick={() => onRoleChange("partner_manager")}
+          >
+            {t("users.roles.partner_manager")}
+          </button>
+          <button
+            className={`oa-users-role-tab${role === "partner_staff" ? " active" : ""}`}
+            role="tab"
+            aria-selected={role === "partner_staff"}
+            type="button"
+            onClick={() => onRoleChange("partner_staff")}
+          >
+            {t("users.roles.partner_staff")}
+          </button>
+          <button
             className={`oa-users-role-tab${role === "viewer" ? " active" : ""}`}
             role="tab"
             aria-selected={role === "viewer"}
