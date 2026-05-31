@@ -21,9 +21,13 @@ import { listPartners } from "@/lib/partners";
 import { toast } from "@/store/toasts";
 
 import "./finance.css";
+import "./BankTransfersPage.css";
 import { FIN_ICONS, FinIcon } from "./financeIcons";
 
 const QK = ["bank-transfers"] as const;
+
+type TransferSort = "oldest" | "newest" | "amountDesc";
+const SORTS: TransferSort[] = ["oldest", "newest", "amountDesc"];
 
 // Pipeline stages → which transfer statuses fall under each, and the chip
 // tone used on the card. Mirrors the F-05 stage tabs.
@@ -55,10 +59,13 @@ function trailProgress(tx: BankTransfer): number {
 export function BankTransfersPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
-  const [showForm, setShowForm] = useState(false);
+  // The single route hosts both F-05 (pending pipeline) and F-04 (create) via
+  // explicit tabs. Pipeline is the default so the list/actions stay reachable.
+  const [view, setView] = useState<"pipeline" | "create">("pipeline");
   const [confirmTarget, setConfirmTarget] = useState<string | null>(null);
   const [activeStage, setActiveStage] = useState<StageKey | null>(null);
   const [query, setQuery] = useState("");
+  const [sortKey, setSortKey] = useState<TransferSort>("oldest");
 
   const transfersQ = useQuery({ queryKey: QK, queryFn: () => listBankTransfers() });
   const partnersQ = useQuery({
@@ -122,9 +129,11 @@ export function BankTransfersPage() {
     return acc;
   }, [items]);
 
+  // TODO(backend): server-side filtering/sorting — search, stage filter and
+  // sort all run client-side over the loaded list.
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return items.filter((tx) => {
+    const list = items.filter((tx) => {
       if (activeStage && !STAGE_STATUSES[activeStage].includes(tx.status)) return false;
       if (!q) return true;
       return (
@@ -133,9 +142,16 @@ export function BankTransfersPage() {
         (tx.bank_reference ?? "").toLowerCase().includes(q)
       );
     });
+    const sorted = [...list];
+    sorted.sort((a, b) => {
+      if (sortKey === "amountDesc") return (Number(b.amount) || 0) - (Number(a.amount) || 0);
+      const cmp = a.created_at.localeCompare(b.created_at);
+      return sortKey === "newest" ? -cmp : cmp;
+    });
+    return sorted;
     // partnerName depends on partnersQ; recompute when either changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, activeStage, query, partnersQ.data]);
+  }, [items, activeStage, query, sortKey, partnersQ.data]);
 
   const pipelineTotal = items.reduce((s, tx) => s + (Number(tx.amount) || 0), 0);
   const pipelineCurrency = items[0]?.currency ?? null;
@@ -148,13 +164,54 @@ export function BankTransfersPage() {
           <p>{t("bankTransfers.subtitle")}</p>
         </div>
         <div className="fin-head-actions">
-          <button type="button" className="fin-btn-primary" onClick={() => setShowForm((v) => !v)}>
+          <button
+            type="button"
+            className="fin-btn-primary"
+            onClick={() => setView(view === "create" ? "pipeline" : "create")}
+          >
             <FinIcon>{FIN_ICONS.plus}</FinIcon>
-            {showForm ? t("common.cancel") : t("bankTransfers.addNew")}
+            {view === "create" ? t("common.cancel") : t("bankTransfers.addNew")}
           </button>
         </div>
       </div>
 
+      {/* ── F-04 / F-05 split — explicit tabs on the one route ───────── */}
+      <nav className="fin-bt-tabs" aria-label={t("bankTransfers.title")}>
+        <button
+          type="button"
+          className={view === "pipeline" ? "active" : ""}
+          aria-pressed={view === "pipeline"}
+          onClick={() => setView("pipeline")}
+        >
+          <FinIcon>{FIN_ICONS.clock}</FinIcon>
+          {t("bankTransfers.tabPipeline")}
+        </button>
+        <button
+          type="button"
+          className={view === "create" ? "active" : ""}
+          aria-pressed={view === "create"}
+          onClick={() => setView("create")}
+        >
+          <FinIcon>{FIN_ICONS.plus}</FinIcon>
+          {t("bankTransfers.tabCreate")}
+        </button>
+      </nav>
+
+      {view === "create" ? (
+        partnersQ.data ? (
+          <NewTransferForm
+            partners={partnersQ.data.items}
+            onCreated={async () => {
+              await qc.invalidateQueries({ queryKey: QK });
+              setView("pipeline");
+            }}
+            onCancel={() => setView("pipeline")}
+          />
+        ) : (
+          <Skeleton className="h-64 w-full" />
+        )
+      ) : (
+        <>
       {/* ── Pipeline header ────────────────────────────────────────── */}
       <section className="fin-wf-bar">
         <div className="ic">
@@ -200,18 +257,7 @@ export function BankTransfersPage() {
         ))}
       </section>
 
-      {/* ── Create form (F-04, simplified to available fields) ─────── */}
-      {showForm && partnersQ.data && (
-        <NewTransferForm
-          partners={partnersQ.data.items}
-          onCreated={async () => {
-            await qc.invalidateQueries({ queryKey: QK });
-            setShowForm(false);
-          }}
-        />
-      )}
-
-      {/* ── Search ─────────────────────────────────────────────────── */}
+      {/* ── Search + sort ──────────────────────────────────────────── */}
       <section className="fin-filter-bar">
         <div className="fin-search">
           <FinIcon>{FIN_ICONS.search}</FinIcon>
@@ -223,6 +269,17 @@ export function BankTransfersPage() {
             aria-label={t("bankTransfers.searchPlaceholder")}
           />
         </div>
+        <label className="fin-fpill">
+          <span className="sr-only">{t("bankTransfers.sortBy")}</span>
+          <FinIcon>{FIN_ICONS.bars}</FinIcon>
+          <select value={sortKey} onChange={(e) => setSortKey(e.target.value as TransferSort)} aria-label={t("bankTransfers.sortBy")}>
+            {SORTS.map((s) => (
+              <option key={s} value={s}>
+                {t(`bankTransfers.sort.${s}`)}
+              </option>
+            ))}
+          </select>
+        </label>
       </section>
 
       {transfersQ.isLoading && <Skeleton className="h-40 w-full" />}
@@ -265,6 +322,8 @@ export function BankTransfersPage() {
             />
           ))}
         </section>
+      )}
+        </>
       )}
     </div>
   );
@@ -361,9 +420,26 @@ function TransferCard({
           })}
         </div>
 
-        {/* Actions — labels preserved for the bank-transfer E2E. */}
+        {/* Actions — primary labels preserved for the bank-transfer E2E. */}
         <div className="fin-tr-actions">
           <div className="sec">
+            {/* TODO(backend): no details view / PDF export endpoint yet. */}
+            <button
+              type="button"
+              className="fin-action secondary"
+              onClick={() => toast.info(t("common.comingSoon"))}
+            >
+              <FinIcon>{FIN_ICONS.fileText}</FinIcon>
+              {t("bankTransfers.viewDetails")}
+            </button>
+            <button
+              type="button"
+              className="fin-action secondary"
+              onClick={() => toast.info(t("common.comingSoon"))}
+            >
+              <FinIcon>{FIN_ICONS.download}</FinIcon>
+              {t("bankTransfers.viewPdf")}
+            </button>
             {canCancel && (
               <button type="button" className="fin-action danger" onClick={onCancel} disabled={busy}>
                 <FinIcon>{FIN_ICONS.x}</FinIcon>
@@ -409,9 +485,11 @@ function Meta({ label, value, mono }: { label: string; value: string; mono?: boo
 function NewTransferForm({
   partners,
   onCreated,
+  onCancel,
 }: {
   partners: { id: string; name_ar: string; name_en: string | null }[];
   onCreated: () => void | Promise<void>;
+  onCancel: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const empty: BankTransferCreateInput = {
@@ -441,10 +519,33 @@ function NewTransferForm({
     },
   });
 
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  const setMonth = (offset: number) => {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+    setV((prev) => ({ ...prev, period_start: iso(first), period_end: iso(last) }));
+  };
+  const setQuarter = () => {
+    const now = new Date();
+    const q = Math.floor(now.getMonth() / 3);
+    setV((prev) => ({
+      ...prev,
+      period_start: iso(new Date(now.getFullYear(), q * 3, 1)),
+      period_end: iso(new Date(now.getFullYear(), q * 3 + 3, 0)),
+    }));
+  };
+
+  const partnerLabel = (() => {
+    const p = partners.find((p) => p.id === v.partner_organization_id);
+    if (!p) return "—";
+    return i18n.language === "ar" ? p.name_ar : p.name_en ?? p.name_ar;
+  })();
+
   return (
+    <div className="fin-bt-create">
     <form
       className="fin-card"
-      style={{ marginBottom: 14 }}
       onSubmit={(e) => {
         e.preventDefault();
         setServerError(null);
@@ -522,6 +623,20 @@ function NewTransferForm({
             />
           </label>
         </div>
+
+        {/* Period quick-set buttons fill the date inputs above. */}
+        <div className="fin-bt-quick" role="group" aria-label={t("bankTransfers.period")}>
+          <button type="button" onClick={() => setMonth(-1)}>
+            {t("bankTransfers.quickPrevMonth")}
+          </button>
+          <button type="button" onClick={() => setMonth(0)}>
+            {t("bankTransfers.quickThisMonth")}
+          </button>
+          <button type="button" onClick={setQuarter}>
+            {t("bankTransfers.quickQuarter")}
+          </button>
+        </div>
+
         <label className="fin-field" style={{ marginTop: 14 }}>
           <span className="fin-field-label">{t("bankTransfers.notes")}</span>
           <textarea
@@ -531,18 +646,72 @@ function NewTransferForm({
             placeholder={t("bankTransfers.notesPlaceholder")}
           />
         </label>
+
+        {/* TODO(backend): no live FX endpoint — banner renders with a
+            placeholder rate, never a fabricated number. */}
+        <div className="fin-bt-fxbanner" role="note">
+          <FinIcon>{FIN_ICONS.info}</FinIcon>
+          <span>{t("bankTransfers.fxBanner")}</span>
+          <span className="rate fin-ph">—</span>
+        </div>
+
         <p className="fin-card-note">{t("bankTransfers.createItemizedNote")}</p>
         {serverError && (
           <p className="fin-error" style={{ marginTop: 12 }}>
             {serverError}
           </p>
         )}
-        <div style={{ marginTop: 14 }}>
+        <div className="fin-bt-formfoot">
+          <button type="button" className="fin-btn-secondary" onClick={onCancel}>
+            {t("common.cancel")}
+          </button>
           <button type="submit" className="fin-btn-primary" disabled={mut.isPending}>
             {mut.isPending ? t("common.saving") : t("common.save")}
           </button>
         </div>
       </div>
     </form>
+
+    {/* Right summary rail — running totals from the form's own fields. */}
+    <aside className="fin-bt-rail">
+      <div className="fin-bt-rail-card">
+        <div className="sm-h">{t("bankTransfers.railTotal")}</div>
+        <div className="sm-big">
+          {v.amount ? (
+            <Money amount={v.amount || "0"} currency={v.currency || "KWD"} />
+          ) : (
+            <span className="fin-ph">—</span>
+          )}
+        </div>
+
+        <div className="sm-divider" />
+
+        <div className="sm-h">{t("bankTransfers.railSummary")}</div>
+        <div className="sm-list">
+          <div className="sm-row">
+            <span className="k">{t("bankTransfers.partner")}</span>
+            <span className="v">{partnerLabel}</span>
+          </div>
+          <div className="sm-row">
+            <span className="k">{t("bankTransfers.period")}</span>
+            <span className="v fin-latin">
+              {v.period_start && v.period_end ? `${v.period_start} → ${v.period_end}` : "—"}
+            </span>
+          </div>
+          <div className="sm-row">
+            <span className="k">{t("bankTransfers.bankName")}</span>
+            <span className="v">{v.bank_name || "—"}</span>
+          </div>
+          {/* TODO(backend): orphan/sponsor counts & bank fees aren't on the
+              create payload — omitted rather than shown as fake figures. */}
+        </div>
+
+        <div className="fin-bt-approval" role="note">
+          <FinIcon>{FIN_ICONS.info}</FinIcon>
+          <span>{t("bankTransfers.railApprovalNote")}</span>
+        </div>
+      </div>
+    </aside>
+    </div>
   );
 }

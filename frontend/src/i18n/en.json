@@ -2205,7 +2205,23 @@
     "metaBank": "Bank",
     "metaCreated": "Created",
     "noneInStage": "No transfers in this stage.",
-    "filterAll": "All stages"
+    "filterAll": "All stages",
+    "tabPipeline": "Pending pipeline",
+    "tabCreate": "Create transfer",
+    "sortBy": "Sort",
+    "viewPdf": "PDF",
+    "quickPrevMonth": "Previous month",
+    "quickThisMonth": "This month",
+    "quickQuarter": "This quarter",
+    "fxBanner": "Exchange rate at execution",
+    "railTotal": "Transfer total",
+    "railSummary": "Summary",
+    "railApprovalNote": "Dual approval required: after you save the draft, the transfer needs an approver before execution.",
+    "sort": {
+      "oldest": "Oldest first",
+      "newest": "Newest first",
+      "amountDesc": "Highest amount first"
+    }
   },
   "media": {
     "moderate": {

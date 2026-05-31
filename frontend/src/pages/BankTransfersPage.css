@@ -1,0 +1,238 @@
+/* ═══════════════════════════════════════════════════════════════════
+   F-04 + F-05 Bank Transfers — alignment-pass styles
+   New structure: the explicit F-04/F-05 tab switch, the F-05 sort pill,
+   and the F-04 create layout — form + sticky right summary rail, period
+   quick-buttons, FX banner, and dual-approval notice. Scoped under
+   `.fin-page` (inherits the finance token block). RTL-logical; figures
+   use tabular-nums.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── F-04 / F-05 tab switch ─────────────────────────────────────────── */
+.fin-bt-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+.fin-bt-tabs button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-500);
+  padding: 7px 16px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.fin-bt-tabs button svg {
+  width: 14px;
+  height: 14px;
+}
+.fin-bt-tabs button:hover {
+  color: var(--gray-700);
+}
+.fin-bt-tabs button.active {
+  background: white;
+  color: var(--fin-700);
+  box-shadow: var(--shadow-sm);
+}
+.fin-bt-tabs button:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 2px;
+}
+
+/* ── F-05 sort pill (filter bar) ────────────────────────────────────── */
+.fin-fpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+.fin-fpill:focus-within {
+  border-color: var(--fin-300);
+}
+.fin-fpill svg {
+  width: 13px;
+  height: 13px;
+  color: var(--gray-400);
+}
+.fin-fpill select {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--gray-800);
+  cursor: pointer;
+}
+.fin-fpill select:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── F-04 create layout: form + summary rail ────────────────────────── */
+.fin-bt-create {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .fin-bt-create {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Period quick-buttons */
+.fin-bt-quick {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.fin-bt-quick button {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 5px 10px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+.fin-bt-quick button:hover {
+  border-color: var(--fin-200);
+  color: var(--fin-700);
+}
+.fin-bt-quick button:focus-visible {
+  outline: 2px solid var(--fin-500);
+  outline-offset: 1px;
+}
+
+/* FX banner (placeholder rate) */
+.fin-bt-fxbanner {
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--info-700);
+}
+.fin-bt-fxbanner svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--info-700);
+}
+.fin-bt-fxbanner .rate {
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: white;
+  border-radius: 999px;
+  margin-inline-start: auto;
+}
+
+.fin-bt-formfoot {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* Summary rail */
+.fin-bt-rail {
+  position: sticky;
+  top: 92px;
+  align-self: start;
+}
+@media (max-width: 1100px) {
+  .fin-bt-rail {
+    position: static;
+  }
+}
+.fin-bt-rail-card {
+  background: linear-gradient(180deg, var(--fin-50), white);
+  border: 1px solid var(--fin-100);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+}
+.fin-bt-rail-card .sm-h {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+.fin-bt-rail-card .sm-big {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-top: 4px;
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+.fin-bt-rail-card .sm-divider {
+  height: 1px;
+  background: var(--fin-100);
+  margin: 16px 0;
+}
+.fin-bt-rail-card .sm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.fin-bt-rail-card .sm-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+}
+.fin-bt-rail-card .sm-row .k {
+  color: var(--gray-500);
+}
+.fin-bt-rail-card .sm-row .v {
+  color: var(--gray-900);
+  font-weight: 600;
+  text-align: end;
+}
+.fin-bt-approval {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--warning-700);
+  line-height: 1.5;
+}
+.fin-bt-approval svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}

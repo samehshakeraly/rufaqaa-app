@@ -2205,7 +2205,23 @@
     "metaBank": "البنك",
     "metaCreated": "أُنشئ",
     "noneInStage": "لا توجد تحويلات في هذه المرحلة.",
-    "filterAll": "كلّ المراحل"
+    "filterAll": "كلّ المراحل",
+    "tabPipeline": "خطّ المعالجة",
+    "tabCreate": "إنشاء تحويل",
+    "sortBy": "ترتيب",
+    "viewPdf": "PDF",
+    "quickPrevMonth": "الشهر السابق",
+    "quickThisMonth": "الشهر الحالي",
+    "quickQuarter": "الربع الحالي",
+    "fxBanner": "سعر الصرف عند التنفيذ",
+    "railTotal": "إجمالي التحويل",
+    "railSummary": "ملخّص",
+    "railApprovalNote": "اعتماد مزدوج مطلوب: بعد حفظ المسوّدة، يحتاج التحويل اعتماداً قبل التنفيذ.",
+    "sort": {
+      "oldest": "الأقدم أوّلاً",
+      "newest": "الأحدث أوّلاً",
+      "amountDesc": "الأعلى قيمةً أوّلاً"
+    }
   },
   "media": {
     "moderate": {
