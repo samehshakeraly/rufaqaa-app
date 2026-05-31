@@ -236,7 +236,7 @@ export function PlatformDashboardPage() {
               </span>
             </div>
             {!timeseries ? (
-              <div className="sa-skeleton" style={{ height: 200 }} />
+              <div className="sa-skeleton" style={{ height: 160 }} />
             ) : timeseries.months.length === 0 ? (
               <EmptyState
                 title={t("platform.dashboard.growth.empty")}

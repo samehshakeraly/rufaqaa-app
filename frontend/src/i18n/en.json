@@ -2863,6 +2863,7 @@
       "advancedHint": "Complex values are read-only from the platform server.",
       "saved": "Settings saved",
       "saveAll": "Save all",
+      "cancelChanges": "Cancel changes",
       "dangerZone": "Danger zone",
       "dangerHint": "Operations that can affect the whole platform. Proceed with care.",
       "keys": {
@@ -3230,6 +3231,7 @@
         "all": "All",
         "managers": "Managers",
         "staff": "Case staff",
+        "reviewers": "Reviewers",
         "finance": "Finance",
         "disabled": "Disabled"
       },
@@ -3274,6 +3276,8 @@
       "trendEmpty": "No payment history to chart yet.",
       "legendActual": "Actual",
       "legendTarget": "Monthly target",
+      "leaderboardTitle": "Staff ranking this month",
+      "leaderboardEmpty": "Per-staff ranking by transactions and acceptance rate is not exposed by the API yet.",
       "regionTitle": "Geographic distribution of orphans",
       "regionEmpty": "A by-region breakdown is not exposed by the API yet.",
       "workloadTitle": "Workload distribution",

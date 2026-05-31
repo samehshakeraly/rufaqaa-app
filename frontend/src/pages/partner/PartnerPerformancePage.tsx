@@ -134,6 +134,23 @@ export function PartnerPerformancePage() {
               </div>
             </div>
 
+            {/* Staff leaderboard — TODO(backend): no per-staff ranking
+                (transactions + acceptance rate) endpoint. Styled
+                empty-state placeholder. */}
+            <div className="pm-perf-card">
+              <div className="pm-perf-card-head">
+                <h3>
+                  <Icon>{PM_ICONS.star}</Icon>
+                  {t("partner.performance.leaderboardTitle")}
+                </h3>
+              </div>
+              <div className="pm-empty neutral">
+                <Icon className="pm-icon">{PM_ICONS.star}</Icon>
+                <h3>{t("partner.performance.comingSoon")}</h3>
+                <p>{t("partner.performance.leaderboardEmpty")}</p>
+              </div>
+            </div>
+
             {/* Region table — TODO(backend): no orphans-by-region
                 aggregation endpoint. Styled empty-state placeholder. */}
             <div className="pm-perf-card">
