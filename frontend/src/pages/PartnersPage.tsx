@@ -197,7 +197,7 @@ function cardVariant(status: string): string {
 // ─────────────────────────────────────────────────────────────────
 // Status tab filter values
 // ─────────────────────────────────────────────────────────────────
-type TabFilter = "all" | "active" | "pending" | "suspended";
+type TabFilter = "all" | "active" | "pending" | "suspended" | "unverified";
 
 // ─────────────────────────────────────────────────────────────────
 // Page size constant
@@ -242,6 +242,8 @@ export function PartnersPage() {
       (activeTab === "active" && p.status === "active") ||
       (activeTab === "pending" && p.status !== "active" && p.status !== "suspended") ||
       (activeTab === "suspended" && p.status === "suspended");
+    // Note: "unverified" tab matches nothing until a verification flag exists
+    // on Partner (see unverifiedCount TODO above).
 
     const q = search.trim().toLowerCase();
     const matchesSearch =
@@ -272,6 +274,8 @@ export function PartnersPage() {
     (p) => p.status !== "active" && p.status !== "suspended",
   ).length;
   const suspendedCount = allPartners.filter((p) => p.status === "suspended").length;
+  // TODO(backend): no `is_verified` flag on Partner yet — always 0 for now.
+  const unverifiedCount = 0;
   const countryCount = new Set(allPartners.map((p) => p.country_code)).size;
 
   // Reset to page 1 when filter/search changes
@@ -430,6 +434,18 @@ export function PartnersPage() {
             onClick={() => handleTabChange("suspended")}
           >
             {t("partners.tabs.suspended")}
+          </TabButton>
+          {/* TODO(backend): Partner has no `is_verified` flag yet, so this
+              tab always shows 0 and filters to an empty list (OA-03 mockup
+              shows the same empty "Unverified" tab). */}
+          <TabButton
+            id="tab-unverified"
+            active={activeTab === "unverified"}
+            count={isLoading ? null : unverifiedCount}
+            countClass=""
+            onClick={() => handleTabChange("unverified")}
+          >
+            {t("partners.tabs.unverified")}
           </TabButton>
         </div>
 

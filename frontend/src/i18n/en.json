@@ -1821,7 +1821,8 @@
       "all": "All",
       "active": "Active",
       "underReview": "Under review",
-      "suspended": "Suspended"
+      "suspended": "Suspended",
+      "unverified": "Unverified"
     },
     "toolbarLabel": "Search and filter tools",
     "searchLabel": "Search partners",
@@ -2935,7 +2936,8 @@
       "expiryWarning": {
         "title": "Expiry warning notifications",
         "desc": "Days before deadline to send a reminder to the channel manager.",
-        "at": "At {{n}}"
+        "at": "At {{n}}",
+        "pill": "Notifications"
       },
       "autoReturn": {
         "title": "Auto-return after deadline",
