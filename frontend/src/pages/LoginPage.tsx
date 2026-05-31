@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { type ReactElement, useState } from "react";
+import { type ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { login } from "@/lib/auth";
-import { useAuthStore } from "@/store/auth";
+import { isTokenValid, useAuthStore } from "@/store/auth";
 
 import "./LoginPage.css";
 
@@ -59,6 +59,7 @@ export function LoginPage() {
   const { t } = useTranslation();
   const token = useAuthStore((s) => s.accessToken);
   const setTokens = useAuthStore((s) => s.setTokens);
+  const clearTokens = useAuthStore((s) => s.clear);
   const [serverError, setServerError] = useState<string | null>(null);
   const [role, setRole] = useState<Role>("donor");
   const [showPassword, setShowPassword] = useState(false);
@@ -91,7 +92,18 @@ export function LoginPage() {
     },
   });
 
-  if (token) {
+  // A persisted token is only a reason to redirect if it's actually
+  // usable. A stale/expired token must NOT bounce the login page (the bug
+  // this guards against): proactively clear it so the form renders and
+  // api.ts doesn't need a 401 round-trip to discard it.
+  const hasValidToken = isTokenValid(token);
+  useEffect(() => {
+    if (token && !hasValidToken) {
+      clearTokens();
+    }
+  }, [token, hasValidToken, clearTokens]);
+
+  if (hasValidToken) {
     return <Navigate to="/" replace />;
   }
 

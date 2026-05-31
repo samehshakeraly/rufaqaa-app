@@ -18,7 +18,7 @@ import {
 } from "@/components/public/icons";
 import { useRole } from "@/hooks/useRole";
 import { getPublicStats } from "@/lib/public";
-import { useAuthStore } from "@/store/auth";
+import { isTokenValid, useAuthStore } from "@/store/auth";
 
 import "./LandingPage.css";
 
@@ -92,7 +92,9 @@ export function LandingPage() {
   // the role yet — render the landing in the meantime. We only dispatch
   // to a route we know is mounted; roles without a portal yet (e.g.
   // guardian) fall through and stay on the landing rather than looping.
-  if (token && role !== undefined && KNOWN_HOME_PATHS.has(homePath)) {
+  // Only an unexpired token drives the dispatch — a stale/expired token
+  // must never trigger a redirect (it would loop against the login guard).
+  if (isTokenValid(token) && role !== undefined && KNOWN_HOME_PATHS.has(homePath)) {
     return <Navigate to={homePath} replace />;
   }
 
