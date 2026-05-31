@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { HeartIcon } from "@/components/public/icons";
 import { useRole } from "@/hooks/useRole";
-import { useAuthStore } from "@/store/auth";
+import { isTokenValid, useAuthStore } from "@/store/auth";
 
 import { CONTAINER } from "./ui";
 
@@ -13,8 +13,11 @@ import { CONTAINER } from "./ui";
  * and used across every public page (W-01..W-06). Sticky, translucent
  * header with the brand mark, links to all public routes, a language
  * toggle (Arabic ↔ English — these pages target international donors),
- * and a "donate now" CTA. Auth-aware: logged-in donors/staff get a
- * "go to my area" link instead of login/donate.
+ * and a "donate now" CTA. Auth-aware: any logged-in user (every role)
+ * gets a "go to my area" link plus a log-out button instead of the
+ * login/donate CTAs. Roles whose portal isn't built yet (homePath stays
+ * "/", e.g. guardian) see a disabled "coming soon" chip so they still
+ * have a clear log-out path rather than being stranded.
  */
 
 /** The six public marketing routes surfaced in the primary nav. */
@@ -29,8 +32,22 @@ const NAV_LINKS: { to: string; key: string; end?: boolean }[] = [
 
 export function PublicNav() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const token = useAuthStore((s) => s.accessToken);
-  const { homePath, isDonor, isStaff } = useRole();
+  const { homePath } = useRole();
+
+  // Mirror the LoginPage/LandingPage guards: treat the user as logged-in
+  // only when the persisted token is present AND not expired, so a stale
+  // token doesn't surface a broken "my area" link.
+  const isLoggedIn = isTokenValid(token);
+  // Roles whose dashboard isn't built yet fall back to "/" in useRole.
+  // For them we show a disabled "coming soon" chip instead of a link.
+  const hasArea = homePath !== "/";
+
+  const handleLogout = () => {
+    useAuthStore.getState().clear();
+    navigate("/login");
+  };
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `rounded-lg px-3 py-2 text-sm font-medium transition ${
@@ -72,7 +89,7 @@ export function PublicNav() {
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          {!token && (
+          {!isLoggedIn && (
             <>
               <Link
                 to="/login"
@@ -89,13 +106,33 @@ export function PublicNav() {
               </Link>
             </>
           )}
-          {token && (isDonor || isStaff) && (
-            <Link
-              to={homePath}
-              className="inline-flex items-center rounded-lg bg-gradient-to-bl from-trust-400 to-trust-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:from-trust-500 hover:to-trust-600"
-            >
-              {t("public.nav.toMyArea")}
-            </Link>
+          {isLoggedIn && (
+            <>
+              {hasArea ? (
+                <Link
+                  to={homePath}
+                  className="inline-flex items-center rounded-lg bg-gradient-to-bl from-trust-400 to-trust-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:from-trust-500 hover:to-trust-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 focus-visible:ring-offset-2"
+                >
+                  {t("public.nav.toMyArea")}
+                </Link>
+              ) : (
+                <span
+                  className="inline-flex cursor-default items-center rounded-lg bg-tranquil-100 px-4 py-2 text-sm font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                  aria-disabled="true"
+                  title={t("common.comingSoon")}
+                >
+                  {`${t("public.nav.toMyArea")} (${t("common.comingSoon")})`}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleLogout}
+                aria-label={t("public.nav.logout")}
+                className="inline-flex items-center rounded-lg border border-sky-200 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-tranquil-100 hover:text-trust-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 focus-visible:ring-offset-2 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
+              >
+                {t("public.nav.logout")}
+              </button>
+            </>
           )}
         </div>
       </div>
