@@ -550,7 +550,7 @@ export function BusinessRulesPage() {
             <RuleRow
               title={t("assign.expiryWarning.title")}
               desc={t("assign.expiryWarning.desc")}
-              pill={t("toc.report")}
+              pill={t("assign.expiryWarning.pill")}
               control={
                 // TODO(backend): expiry-warning-days not in /organization
                 <ChoiceStrip
