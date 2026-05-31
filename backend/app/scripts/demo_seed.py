@@ -61,6 +61,9 @@ GUARDIAN_USERS = [
     {"email": "guardian2@dev.rufaqaa.app", "password": "guardian12345"},
 ]
 ORPHAN_USER = {"email": "orphan1@dev.rufaqaa.app", "password": "orphan12345"}
+# Marketing manager — org-scoped, so it can reach every demo marketing
+# channel (MM-01 / MM-03) without a per-channel ownership link.
+MARKETING_USER = {"email": "marketing1@dev.rufaqaa.app", "password": "marketing12345"}
 # Two donors get login accounts so donor↔guardian messages have a
 # resolvable from/to user (messages.from_user_id is NOT NULL).
 DONOR_USERS = [
@@ -72,6 +75,7 @@ DONOR_USERS = [
 DEMO_USER_EMAILS = [
     *(u["email"] for u in GUARDIAN_USERS),
     ORPHAN_USER["email"],
+    MARKETING_USER["email"],
     *(u["email"] for u in DONOR_USERS),
 ]
 
@@ -425,13 +429,25 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
         orphan_user_row = _make_user(
             ORPHAN_USER["email"], ORPHAN_USER["password"], "orphan", "Demo", "Orphan"
         )
+        marketing_user_row = _make_user(
+            MARKETING_USER["email"],
+            MARKETING_USER["password"],
+            "marketing_manager",
+            "Demo",
+            "Marketing",
+        )
         donor_user_rows = [
             _make_user(u["email"], u["password"], "donor", "Demo", f"Donor {i + 1}")
             for i, u in enumerate(DONOR_USERS)
         ]
-        for u in (*guardian_user_rows, orphan_user_row, *donor_user_rows):
+        for u in (
+            *guardian_user_rows,
+            orphan_user_row,
+            marketing_user_row,
+            *donor_user_rows,
+        ):
             db.add(u)
-        counts["users"] = len(guardian_user_rows) + 1 + len(donor_user_rows)
+        counts["users"] = len(guardian_user_rows) + 2 + len(donor_user_rows)
 
         # ── Partners (PS / EG / YE) ──────────────────────────────────────
         partners: list[PartnerOrganization] = []
@@ -940,6 +956,7 @@ async def main(force: bool) -> None:
     for u in GUARDIAN_USERS:
         print(f"  guardian  → {u['email']} / {u['password']}")
     print(f"  orphan    → {ORPHAN_USER['email']} / {ORPHAN_USER['password']}")
+    print(f"  marketing → {MARKETING_USER['email']} / {MARKETING_USER['password']}")
     for u in DONOR_USERS:
         print(f"  donor     → {u['email']} / {u['password']}")
 
