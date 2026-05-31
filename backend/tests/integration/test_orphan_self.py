@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import uuid
 
+import pytest
 from httpx import AsyncClient
 from sqlalchemy import text
 
@@ -365,6 +366,40 @@ async def test_sponsor_view_no_sponsor(api: AsyncClient, auth_headers: dict[str,
     r = await api.get("/api/v1/orphan/me/sponsor", headers=headers)
     assert r.status_code == 200, r.text
     assert r.json() == {"has_sponsor": False, "display_name": None, "since_year": None}
+
+
+async def test_sponsor_view_degrades_when_business_rules_lookup_fails(
+    api: AsyncClient,
+    auth_headers: dict[str, str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An active sponsor exists, but the optional donor-first-name lookup
+    blows up (e.g. an unmigrated `business_rules` column). The view must
+    still return 200 with the generic, privacy-safe name — NOT a 500 that
+    bypasses CORS and masquerades as a CORS error in the browser.
+    """
+    from sqlalchemy.exc import ProgrammingError
+
+    from app.api.v1 import orphan_self
+
+    org_id = await _org_id(api, auth_headers)
+    orphan_id, _, headers = await _create_orphan_with_user(api, auth_headers)
+    await _create_active_sponsorship(org_id, orphan_id, donor_first_name="Khalid")
+
+    async def _boom(*_args: object, **_kwargs: object) -> bool:
+        raise ProgrammingError("SELECT ...", {}, Exception("column does not exist"))
+
+    monkeypatch.setattr(orphan_self, "_show_donor_first_name_to_orphan", _boom)
+
+    r = await api.get("/api/v1/orphan/me/sponsor", headers=headers)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["has_sponsor"] is True
+    # Falls back to the generic name — never leaks the donor's identity.
+    assert body["display_name"] == "كفيلك"
+    assert body["since_year"] == 2024
+    assert "Khalid" not in r.text
+    assert "Al-Secret" not in r.text
 
 
 # ── Achievements ───────────────────────────────────────────────────────

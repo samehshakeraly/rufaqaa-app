@@ -8,6 +8,7 @@ from app import __version__
 from app.api.v1 import api_router
 from app.core.config import settings
 from app.core.database import engine
+from app.core.errors import CatchAllExceptionMiddleware
 from app.core.logging import RequestLogMiddleware, configure_logging
 from app.core.ratelimit import RateLimitMiddleware
 from app.core.sentry import init_sentry
@@ -42,10 +43,18 @@ app = FastAPI(
 # ("No 'Access-Control-Allow-Origin' header"). With CORS outermost, every
 # response (success, 401, 429, error) carries CORS headers and preflight
 # requests are answered before any inner middleware runs.
+#
+# CatchAllExceptionMiddleware is added just *before* CORS so it sits one
+# layer in: Starlette's own ServerErrorMiddleware lives outside ALL user
+# middleware, so without this an unhandled 500 would skip CORS and look
+# like a CORS error in the browser. By turning unhandled exceptions into a
+# JSON 500 here — inside CORS — even genuine 500s carry CORS headers.
 if settings.RATE_LIMIT_ENABLED:
     app.add_middleware(RateLimitMiddleware)
 
 app.add_middleware(RequestLogMiddleware)
+
+app.add_middleware(CatchAllExceptionMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
