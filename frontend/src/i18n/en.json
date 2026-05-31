@@ -2748,9 +2748,17 @@
       "body": "You can use this app once you turn 12. Until then, your guardian keeps up with all your wonderful news."
     },
     "login": {
-      "title": "Welcome 🌟",
+      "title": "Sign in 🌟",
       "subtitle": "Sign in to see your news and messages from your sponsor.",
-      "submit": "Sign in"
+      "submit": "Sign in",
+      "enter": "Enter my portal",
+      "eyebrow": "Orphan portal",
+      "illTitle": "Welcome to",
+      "illTitleAccent": "your own portal",
+      "illSub": "This is your space — see your achievements, read messages from your sponsor, and write back.",
+      "helpTitle": "Forgot your password?",
+      "helpBody": "Ask your guardian — they’re the only one who can help you change it.",
+      "secureFooter": "© {{year}} Rufaqaa · Secure portal"
     },
     "home": {
       "greeting": "Hi {{name}}",
