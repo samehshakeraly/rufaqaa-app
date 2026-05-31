@@ -1134,6 +1134,7 @@
     "cancel": "Cancel",
     "add": "Add",
     "empty": "No data yet",
+    "noResults": "No matching results",
     "loadError": "Could not load data",
     "createError": "Could not save",
     "required": "This field is required",
@@ -2568,6 +2569,7 @@
     },
     "orphans": {
       "title": "Channel Orphans",
+      "subtitle": "Orphans assigned to your channel to market to sponsors — each has a limited deadline",
       "assignmentStatus": "Assignment status",
       "statuses": {
         "active": "Active",
@@ -2575,9 +2577,23 @@
         "all": "All"
       },
       "age": "Age",
-      "deadline": "Assignment deadline",
+      "ageYears": "{{n}} yrs",
+      "deadline": "Time remaining",
+      "assignedSince": "Assigned since",
+      "statusColumn": "Status",
       "release": "Release to available",
-      "releaseDone": "Orphan released to the available pool"
+      "releaseDone": "Orphan released to the available pool",
+      "urgentTitle": "{{n}} orphan(s) approaching their assignment deadline",
+      "urgentBody": "If not sponsored in time, they return automatically to the available pool for all channels. Focus on these first.",
+      "searchPlaceholder": "Search by name or code…",
+      "filtersLabel": "Filters",
+      "sortLabel": "Sort",
+      "sortDeadline": "Sort: deadline soonest",
+      "sortRecent": "Sort: recently assigned",
+      "daysAgo": "{{n}}d ago",
+      "daysLeft": "{{n}} days",
+      "expired": "Deadline passed",
+      "dataNote": "Columns are limited to the data available to a channel manager. Partner organisation, country, and per-orphan engagement will be available once wired to the backend."
     },
     "title": "Marketing Channels",
     "subtitle": "The channels that introduce sponsors to Rufaqaa — track each channel's performance and goals",
