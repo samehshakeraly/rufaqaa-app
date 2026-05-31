@@ -17,7 +17,7 @@ import { toast } from "@/store/toasts";
 
 import "./PartnerStaffPage.css";
 
-type RoleFilter = "" | "manager" | "staff" | "finance" | "disabled";
+type RoleFilter = "" | "manager" | "staff" | "reviewer" | "finance" | "disabled";
 
 const QK = ["users", { scope: "pm-staff" }] as const;
 
@@ -93,13 +93,14 @@ export function PartnerStaffPage() {
   const users = useMemo(() => usersQ.data?.items ?? [], [usersQ.data]);
 
   const counts = useMemo(() => {
-    const c = { all: users.length, manager: 0, staff: 0, finance: 0, disabled: 0 };
+    const c = { all: users.length, manager: 0, staff: 0, reviewer: 0, finance: 0, disabled: 0 };
     for (const u of users) {
       if (u.status === "suspended" || u.status === "disabled") c.disabled++;
       const p = rolePill(u.role).key;
       if (p === "manager") c.manager++;
       else if (p === "finance") c.finance++;
       else if (p === "staff") c.staff++;
+      else if (p === "reviewer") c.reviewer++;
     }
     return c;
   }, [users]);
@@ -211,6 +212,7 @@ export function PartnerStaffPage() {
                 <RoleTab active={roleFilter === ""} onClick={() => setRoleFilter("")} label={t("partner.staff.roles.all")} count={counts.all} />
                 <RoleTab active={roleFilter === "manager"} onClick={() => setRoleFilter("manager")} label={t("partner.staff.roles.managers")} count={counts.manager} />
                 <RoleTab active={roleFilter === "staff"} onClick={() => setRoleFilter("staff")} label={t("partner.staff.roles.staff")} count={counts.staff} />
+                <RoleTab active={roleFilter === "reviewer"} onClick={() => setRoleFilter("reviewer")} label={t("partner.staff.roles.reviewers")} count={counts.reviewer} />
                 <RoleTab active={roleFilter === "finance"} onClick={() => setRoleFilter("finance")} label={t("partner.staff.roles.finance")} count={counts.finance} />
                 <RoleTab active={roleFilter === "disabled"} onClick={() => setRoleFilter("disabled")} label={t("partner.staff.roles.disabled")} count={counts.disabled} />
               </div>
