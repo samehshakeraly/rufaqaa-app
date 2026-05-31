@@ -3276,6 +3276,8 @@
       "trendEmpty": "No payment history to chart yet.",
       "legendActual": "Actual",
       "legendTarget": "Monthly target",
+      "leaderboardTitle": "Staff ranking this month",
+      "leaderboardEmpty": "Per-staff ranking by transactions and acceptance rate is not exposed by the API yet.",
       "regionTitle": "Geographic distribution of orphans",
       "regionEmpty": "A by-region breakdown is not exposed by the API yet.",
       "workloadTitle": "Workload distribution",
