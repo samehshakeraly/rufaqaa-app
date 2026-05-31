@@ -2762,16 +2762,24 @@
     },
     "home": {
       "greeting": "مرحباً {{name}}",
-      "subtitle": "سعداء برؤيتك اليوم!",
+      "greetingPre": "أهلاً",
+      "subtitle": "هذا ما ينتظرك اليوم في بوّابتك — كلّ شيء بخير، الحمد لله",
       "profileTitle": "ملفّي",
       "age": "العمر: {{age}} سنة",
       "completion": "اكتمل ملفّك بنسبة {{percent}}٪",
       "sponsorTitle": "كفيلي",
+      "sponsorHeading": "كفيلك يحبّك ويدعو لك",
       "sendMessage": "أرسل رسالة",
+      "writeThanks": "اكتب له رسالة شكر 💌",
       "noSponsor": "قريباً إن شاء الله سيكون لك كفيل يهتمّ بك ويدعو لك.",
       "sponsorFallback": "كفيلك",
       "sponsorCaring": "كفيلك يدعو لك كلّ يوم.",
-      "sponsorSince": "منذ {{years}} سنوات"
+      "sponsorSince": "منذ {{years}} سنوات",
+      "viewAllAchievements": "عرض جميع إنجازاتي",
+      "messagesTitle": "رسائل من كفيلي",
+      "readAllMessages": "قراءة جميع الرسائل",
+      "noMessages": "لا توجد رسائل من كفيلك بعد.",
+      "privacyNote": "كلّ رسالة من كفيلك تمرّ بالمراجعة قبل أن تصلك — حمايةً لك."
     },
     "messages": {
       "title": "رسائلي",

@@ -2762,16 +2762,24 @@
     },
     "home": {
       "greeting": "Hi {{name}}",
-      "subtitle": "Great to see you today!",
+      "greetingPre": "Hi",
+      "subtitle": "Here's what's waiting for you today — all is well, alhamdulillah.",
       "profileTitle": "My profile",
       "age": "Age: {{age}}",
       "completion": "Your profile is {{percent}}% complete",
       "sponsorTitle": "My sponsor",
+      "sponsorHeading": "Your sponsor cares for you and prays for you",
       "sendMessage": "Send a message",
+      "writeThanks": "Write a thank-you message 💌",
       "noSponsor": "Soon, you'll have a sponsor who cares about you and prays for you.",
       "sponsorFallback": "Your sponsor",
       "sponsorCaring": "Your sponsor prays for you every day.",
-      "sponsorSince": "For {{years}} years"
+      "sponsorSince": "For {{years}} years",
+      "viewAllAchievements": "See all my achievements",
+      "messagesTitle": "Messages from my sponsor",
+      "readAllMessages": "Read all messages",
+      "noMessages": "No messages from your sponsor yet.",
+      "privacyNote": "Every message from your sponsor is reviewed before it reaches you — to keep you safe."
     },
     "messages": {
       "title": "My messages",
