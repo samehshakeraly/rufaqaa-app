@@ -1022,7 +1022,29 @@
     "finance": "المالية",
     "financeOverdue": "المتأخرات",
     "financeReports": "التقارير المالية",
-    "businessRules": "قواعد العمل"
+    "businessRules": "قواعد العمل",
+    "brandSubtitle": "إدارة المؤسسة",
+    "primary": "التنقّل الرئيسي",
+    "skipToContent": "تخطٍّ إلى المحتوى",
+    "tenantRegion": "المؤسسة الحالية",
+    "userFallback": "المستخدم",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "soon": "قريباً",
+    "executiveDashboard": "اللوحة التنفيذيّة",
+    "fullReports": "التقارير الشاملة",
+    "transparency": "شاشة الشفافيّة",
+    "approvalsCenter": "مركز الاعتمادات",
+    "notifications": "الإشعارات",
+    "assistant": "مساعد رفقاء",
+    "help": "مركز المساعدة",
+    "section": {
+      "executive": "التنفيذية",
+      "management": "الإدارة",
+      "finance": "المالية",
+      "oversight": "الرقابة",
+      "system": "النظام"
+    }
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
