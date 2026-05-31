@@ -15,6 +15,27 @@ test("forgot → reset → login with new password", async ({ page, context }) =
   const token = "dev-token-abc";
   let tokenConsumed = false;
 
+  // The login guards (LoginPage / LandingPage) treat a persisted token as
+  // usable only if it decodes to an unexpired JWT — a stale/expired token
+  // no longer drives a redirect. So the mocked /auth/login must return a
+  // realistic, unexpired JWT (matching the real backend), not an opaque
+  // string, or the post-login role dispatch won't fire. We only need the
+  // payload's `exp`; the signature is never verified client-side.
+  const makeJwt = (claims: Record<string, unknown>) => {
+    const b64 = (o: unknown) =>
+      Buffer.from(JSON.stringify(o)).toString("base64url");
+    return `${b64({ alg: "HS256", typ: "JWT" })}.${b64(claims)}.sig`;
+  };
+  const accessToken = makeJwt({
+    sub: "u1",
+    role: "org_admin",
+    exp: Math.floor(Date.now() / 1000) + 3600,
+  });
+  const refreshToken = makeJwt({
+    sub: "u1",
+    exp: Math.floor(Date.now() / 1000) + 86_400,
+  });
+
   await context.route("**/api/v1/auth/forgot", async (route) => {
     await route.fulfill({
       status: 200,
@@ -38,8 +59,8 @@ test("forgot → reset → login with new password", async ({ page, context }) =
         status: 200,
         contentType: "application/json",
         body: JSON.stringify({
-          access_token: "tok",
-          refresh_token: "ref",
+          access_token: accessToken,
+          refresh_token: refreshToken,
           token_type: "bearer",
           user: {
             id: "u1",
