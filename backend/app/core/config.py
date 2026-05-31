@@ -44,6 +44,11 @@ class Settings(BaseSettings):
     LOGIN_LOCKOUT_MINUTES: int = 15
 
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    # OR-ed with CORS_ORIGINS by the CORS middleware. Defaults to any
+    # localhost / 127.0.0.1 port so local dev (frontend :3000, Vite :5173,
+    # …) works out of the box. Set to "" in production to rely solely on
+    # the explicit CORS_ORIGINS allow-list.
+    CORS_ORIGIN_REGEX: str = r"https?://(localhost|127\.0\.0\.1)(:\d+)?"
 
     RATE_LIMIT_PUBLIC: int = 60  # per minute, anonymous
     RATE_LIMIT_AUTHENTICATED: int = 300  # per minute, with Bearer token
