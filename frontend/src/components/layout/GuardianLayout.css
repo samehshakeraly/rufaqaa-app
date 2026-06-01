@@ -1,0 +1,241 @@
+/* ═══════════════════════════════════════════════════════════════
+   Guardian portal chrome — scoped styles
+   Ported from docs/design/screens/guardian/*. Tokens only (rufaqaa
+   v0.1); scoped under `.glay-root`, prefixed `glay-`. Physical
+   left/right are written as logical (inline-start/-end) for RTL.
+
+   CHILD-DATA SENSITIVITY: the chrome shows no financial figures or
+   donor identity — only the guardian's own name + portal nav.
+   ═══════════════════════════════════════════════════════════════ */
+
+.glay-root {
+  --snow-100: #f7fbfc;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --transition: 200ms ease;
+
+  min-height: 100vh;
+  background: var(--snow-100);
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.dark .glay-root {
+  background: #0b1220;
+  color: #e7ebef;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glay-root *,
+  .glay-root *::before,
+  .glay-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ═══ Header ═══ */
+.glay-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.dark .glay-header {
+  background: #111a2e;
+  border-color: #23304a;
+}
+
+.glay-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 32px;
+  flex-wrap: wrap;
+}
+
+.glay-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.glay-brand-mark {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.glay-brand-info h1 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.glay-brand-info p {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+/* ═══ Nav ═══ */
+.glay-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.glay-nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.dark .glay-nav-item {
+  color: #c2cbd6;
+}
+.glay-nav-item:hover {
+  background: var(--tranquil-100);
+  color: var(--trust-700);
+}
+.dark .glay-nav-item:hover {
+  background: #1b2740;
+}
+.glay-nav-item--active {
+  background: var(--trust-500);
+  color: white;
+}
+.glay-nav-item--active:hover {
+  background: var(--trust-500);
+  color: white;
+}
+.glay-nav-icon {
+  display: inline-flex;
+}
+.glay-nav-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ═══ Account actions ═══ */
+.glay-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.glay-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px 5px 5px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+.dark .glay-chip {
+  background: #1b2740;
+  border-color: #23304a;
+}
+.glay-chip-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+.glay-chip-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+.dark .glay-chip-name {
+  color: #c2cbd6;
+}
+.glay-logout {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--sky-200);
+  background: white;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.dark .glay-logout {
+  background: transparent;
+  border-color: #23304a;
+  color: #c2cbd6;
+}
+.glay-logout:hover {
+  background: var(--tranquil-100);
+  border-color: var(--sky-300);
+  color: var(--trust-700);
+}
+.glay-root :focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(118, 159, 205, 0.4);
+  border-radius: var(--radius-md);
+}
+
+/* ═══ Main ═══ */
+.glay-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+@media (max-width: 768px) {
+  .glay-header-inner {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .glay-main {
+    padding: 20px 16px;
+  }
+  .glay-chip-name {
+    display: none;
+  }
+  .glay-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+}
