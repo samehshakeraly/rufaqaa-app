@@ -1341,6 +1341,12 @@
       "subtitle": "Add a new case to your organization's register. The case is submitted for a manager's approval.",
       "sectionBasic": "Basic details",
       "sectionBasicDesc": "Enter the orphan's core identity details. You can add documents and photos from the case page after saving.",
+      "sectionName": "Name",
+      "sectionPersonal": "Personal information",
+      "sectionOrg": "Organization",
+      "nationalityHint": "Two-letter country code (e.g. KW).",
+      "submit": "Submit for approval",
+      "privacyNote": "Until a manager approves it, this case stays in review — it is not shown to any donor, and no one outside your organization can see it.",
       "duplicate": "Possible duplicate — this case looks similar to an existing record",
       "viewExisting": "View existing record",
       "back": "Back to orphans"
