@@ -1,0 +1,387 @@
+/* ═══════════════════════════════════════════════════════════════
+   G-02 Guardian Home — scoped styles
+   Ported from docs/design/screens/guardian/
+   rufaqaa-guardian-portal-screens-1-2.html (Home). Tokens only
+   (rufaqaa v0.1); scoped under `.ghm-root`, prefixed `ghm-`. Logical
+   properties for RTL. The top bar/nav come from GuardianLayout; only
+   page content is styled here.
+
+   CHILD-DATA SENSITIVITY: cards show only privacy-safe fields (name,
+   age, status). No money, balance, or donor identity.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ghm-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-700: #1e4068;
+  --trust-800: #142e4d;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-700: #b45309;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(11, 30, 51, 0.08);
+  --transition: 200ms ease;
+
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghm-root *,
+  .ghm-root *::before,
+  .ghm-root *::after {
+    transition: none !important;
+  }
+}
+
+/* ═══ Greeting ═══ */
+.ghm-greeting {
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-2xl);
+  padding: 40px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.ghm-greeting::before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  top: -150px;
+  inset-inline-start: -100px;
+}
+.ghm-greeting-content {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+}
+.ghm-greeting-eyebrow {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+.ghm-greeting-title {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+.ghm-greeting-sub {
+  font-size: 16px;
+  opacity: 0.92;
+  line-height: 1.7;
+}
+.ghm-greeting-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+.ghm-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ghm-summary-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ghm-summary-value {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+}
+.ghm-summary-label {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* ═══ Section title ═══ */
+.ghm-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ghm-section-meta {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+/* ═══ Orphan grid ═══ */
+.ghm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.ghm-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.ghm-card:hover {
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.ghm-card-header {
+  padding: 24px 24px 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.ghm-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--tranquil-200);
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.ghm-card-identity {
+  min-width: 0;
+}
+.ghm-card-name {
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.ghm-card-meta {
+  font-size: 14px;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ghm-meta-dot {
+  width: 3px;
+  height: 3px;
+  background: var(--gray-300);
+  border-radius: 50%;
+}
+
+.ghm-card-status {
+  padding: 0 24px 18px;
+}
+.ghm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--success-50);
+  color: var(--success-700);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 20px;
+}
+.ghm-pill--muted {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+.ghm-pill-dot {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.ghm-card-actions {
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--gray-100);
+  background: var(--gray-50);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ghm-btn {
+  padding: 11px 12px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+.ghm-btn--primary {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  color: white;
+}
+.ghm-btn--primary:hover {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+}
+.ghm-btn--secondary {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-500);
+}
+.ghm-btn--secondary:hover {
+  background: var(--snow-200);
+  border-color: var(--trust-300);
+}
+
+/* ═══ States ═══ */
+.ghm-state {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--gray-600);
+  font-size: 15px;
+}
+.ghm-state--error {
+  background: var(--warning-50);
+  border-color: var(--warning-700);
+  color: var(--warning-700);
+}
+.ghm-state-emoji {
+  display: block;
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+/* ═══ Help ═══ */
+.ghm-help {
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.ghm-help-icon {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--trust-500);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+.ghm-help-content {
+  flex: 1;
+}
+.ghm-help-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--trust-800);
+  margin-bottom: 4px;
+}
+.ghm-help-content p {
+  font-size: 14px;
+  color: var(--trust-700);
+  line-height: 1.6;
+}
+.ghm-help-btn {
+  padding: 11px 20px;
+  background: var(--trust-500);
+  border: 1px solid var(--trust-500);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+.ghm-help-btn:hover {
+  background: var(--trust-700);
+  border-color: var(--trust-700);
+}
+
+.ghm-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.ghm-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+.ghm-icon-lg {
+  width: 28px;
+  height: 28px;
+}
+
+@media (max-width: 768px) {
+  .ghm-greeting {
+    padding: 28px 24px;
+  }
+  .ghm-greeting-title {
+    font-size: 24px;
+  }
+  .ghm-help {
+    flex-direction: column;
+    text-align: center;
+  }
+}
