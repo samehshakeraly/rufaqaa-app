@@ -76,11 +76,9 @@ export function useRole() {
                   ? "/donor/dashboard"
                   : isOrphan
                     ? "/orphan"
-                    : // Guardian (and any unrecognised role) lands on the
-                      // public landing for now. The guardian portal (/guardian)
-                      // is not built yet; dispatching there would bounce off the
-                      // catch-all back to "/" and loop. Keep them on "/" until
-                      // the portal ships.
-                      "/",
+                    : isGuardian
+                      ? "/guardian"
+                      : // Any unrecognised role lands on the public landing.
+                        "/",
   };
 }

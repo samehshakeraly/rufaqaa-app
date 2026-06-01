@@ -1,0 +1,417 @@
+/* ═══════════════════════════════════════════════════════════════
+   G-01 Guardian Login — scoped styles
+   Ported from docs/design/screens/guardian/
+   rufaqaa-guardian-portal-screens-1-2.html. Tokens only (rufaqaa
+   v0.1); scoped under `.glog-root`, prefixed `glog-`. Physical
+   left/right rewritten as logical (inline-start/-end) for RTL.
+
+   Auth itself is the shared email + password flow. No financial,
+   donor, or child-identity data appears on this screen.
+   ═══════════════════════════════════════════════════════════════ */
+
+.glog-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+  --trust-800: #142e4d;
+
+  --gray-50: #fafbfc;
+  --gray-200: #e7ebef;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-800: #2a3038;
+  --gray-900: #161a1f;
+
+  --success-500: #10b981;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(11, 30, 51, 0.08);
+  --shadow-focus: 0 0 0 4px rgba(118, 159, 205, 0.3);
+  --transition: 200ms ease;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--snow-100);
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glog-root *,
+  .glog-root *::before,
+  .glog-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.glog-root :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-lg);
+}
+
+.glog-page {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  min-height: 100vh;
+}
+@media (max-width: 980px) {
+  .glog-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══ Illustration panel ═══ */
+.glog-illu {
+  background: linear-gradient(135deg, var(--tranquil-200) 0%, var(--sky-200) 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 48px;
+}
+@media (max-width: 980px) {
+  .glog-illu {
+    display: none;
+  }
+}
+.glog-illu::before {
+  content: "";
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  top: -200px;
+  inset-inline-start: -180px;
+}
+.glog-illu::after {
+  content: "";
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  bottom: -150px;
+  inset-inline-end: -140px;
+}
+.glog-illu-content {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  text-align: center;
+}
+.glog-quote {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-2xl);
+  padding: 44px 36px;
+  box-shadow: var(--shadow-lg);
+}
+.glog-quote-mark {
+  display: block;
+  font-size: 56px;
+  line-height: 0.5;
+  color: var(--trust-300);
+  margin-bottom: 18px;
+}
+.glog-quote-text {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--trust-800);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.glog-quote-source {
+  font-size: 14px;
+  font-style: normal;
+  color: var(--trust-600);
+}
+
+/* ═══ Form panel ═══ */
+.glog-form-panel {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  padding: 48px 56px;
+}
+@media (max-width: 980px) {
+  .glog-form-panel {
+    padding: 32px 24px;
+  }
+}
+
+.glog-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: auto;
+}
+.glog-brand-mark {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--trust-300) 0%, var(--trust-500) 100%);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(66, 109, 159, 0.3);
+}
+.glog-brand-text h1 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.glog-brand-text p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.glog-form-inner {
+  max-width: 440px;
+  width: 100%;
+  margin: 28px 0;
+}
+.glog-form-head {
+  margin-bottom: 28px;
+}
+.glog-form-title {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+.glog-form-sub {
+  font-size: 16px;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+.glog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.glog-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.glog-input-wrap {
+  position: relative;
+}
+.glog-input {
+  width: 100%;
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 16px 52px 16px 20px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-900);
+  transition: var(--transition);
+  height: 58px;
+}
+.glog-input--password {
+  padding-inline-end: 52px;
+}
+.glog-input:focus {
+  outline: none;
+  border-color: var(--trust-400);
+  background: white;
+  box-shadow: var(--shadow-focus);
+}
+.glog-input::placeholder {
+  color: var(--gray-400);
+  font-weight: 400;
+}
+.glog-input-icon {
+  position: absolute;
+  inset-inline-start: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+  display: flex;
+}
+.glog-input:focus ~ .glog-input-icon {
+  color: var(--trust-500);
+}
+.glog-toggle-pw {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+}
+.glog-toggle-pw:hover {
+  color: var(--trust-500);
+  background: var(--snow-200);
+}
+
+.glog-error {
+  font-size: 14px;
+  color: var(--danger-600);
+}
+.glog-form-error {
+  background: var(--danger-50);
+  border: 1.5px solid var(--danger-600);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: var(--danger-700);
+  margin-bottom: 18px;
+}
+
+.glog-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 16px 28px;
+  border-radius: 14px;
+  transition: var(--transition);
+  border: 2px solid var(--trust-500);
+  cursor: pointer;
+  height: 58px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--trust-400) 0%, var(--trust-500) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(66, 109, 159, 0.25);
+}
+.glog-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--trust-500) 0%, var(--trust-600) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(66, 109, 159, 0.35);
+}
+.glog-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.glog-btn svg {
+  width: 22px;
+  height: 22px;
+}
+/* Arrow points "into" the portal; flip to follow text direction. */
+[dir="ltr"] .glog-btn svg {
+  transform: scaleX(-1);
+}
+
+.glog-help-card {
+  background: var(--snow-200);
+  border: 1.5px solid var(--sky-200);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-top: 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.glog-help-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: white;
+  color: var(--trust-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.glog-help-text {
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+.glog-help-text strong {
+  color: var(--gray-800);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.glog-help-line {
+  font-size: 15px;
+  color: var(--gray-600);
+  text-align: center;
+  margin-top: 20px;
+}
+.glog-help-line a {
+  color: var(--trust-500);
+  font-weight: 600;
+  text-decoration: none;
+}
+.glog-help-line a:hover {
+  text-decoration: underline;
+}
+
+.glog-footer {
+  margin-top: auto;
+  padding-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13.5px;
+  color: var(--gray-500);
+}
+
+.glog-icon {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.glog-icon-sm {
+  width: 18px;
+  height: 18px;
+}
