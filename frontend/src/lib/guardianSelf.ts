@@ -1,5 +1,6 @@
 import { api } from "./api";
 import type { DocumentRead, DocumentType } from "./documents";
+import type { OrphanCreateInput } from "./orphans";
 
 /**
  * Guardian self-service API client.
@@ -110,6 +111,30 @@ export async function getGuardianMe(): Promise<GuardianProfile> {
 
 export async function listGuardianOrphans(): Promise<GuardianOrphan[]> {
   const { data } = await api.get<GuardianOrphan[]>("/guardian/me/orphans");
+  return data;
+}
+
+/** POST /guardian/me/orphans — a guardian registers a new orphan (G-06).
+ *
+ * The orphan lands in `case_status='pending_review'`, exactly like a
+ * staff-created record, and surfaces in the same supervisor approval queue.
+ * The partner organisation, family and org are derived server-side from the
+ * guardian — the API rejects them in the body — so we send only the core
+ * identity fields (`father_name` is required). The backend 409s on the
+ * canonical no-duplicate rule. */
+export async function createMyOrphan(payload: OrphanCreateInput): Promise<GuardianOrphan> {
+  const body = {
+    first_name: payload.first_name,
+    family_name: payload.family_name,
+    date_of_birth: payload.date_of_birth,
+    gender: payload.gender,
+    father_name: payload.father_name,
+    ...(payload.nationality ? { nationality: payload.nationality } : {}),
+    ...(payload.middle_name ? { middle_name: payload.middle_name } : {}),
+    ...(payload.full_name_en ? { full_name_en: payload.full_name_en } : {}),
+    ...(payload.father_death_date ? { father_death_date: payload.father_death_date } : {}),
+  };
+  const { data } = await api.post<GuardianOrphan>("/guardian/me/orphans", body);
   return data;
 }
 

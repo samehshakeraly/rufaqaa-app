@@ -119,6 +119,7 @@ async def test_public_orphan_detail_hides_pending_review(
             "date_of_birth": "2018-01-01",
             "gender": "M",
             "nationality": "KW",
+            "father_name": "Test Father",
             "partner_organization_id": partner_id,
         },
         headers=auth_headers,

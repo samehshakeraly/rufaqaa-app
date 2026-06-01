@@ -315,3 +315,195 @@ async def test_guardian_cannot_list_reports_for_another_family(
         headers=headers_a,
     )
     assert r.status_code == 403
+
+
+# ── /guardian/me/orphans (create — G-06) ───────────────────────────────
+
+
+async def _link_family_to_partner(family_id: str, partner_id: str) -> None:
+    """Attach a partner org to a family so the guardian create-orphan path can
+    derive partner_organization_id (families are otherwise created without
+    one in this suite)."""
+    async with make_session() as db:
+        await db.execute(
+            text("UPDATE families SET partner_organization_id = :pid WHERE id = :fid"),
+            {"pid": partner_id, "fid": family_id},
+        )
+        await db.commit()
+
+
+def _orphan_payload(nickname: str = "n") -> dict[str, str]:
+    suffix = uuid.uuid4().hex[:6]
+    return {
+        "first_name": f"{nickname}-{suffix}",
+        "family_name": "Guarded",
+        "date_of_birth": "2016-03-12",
+        "gender": "M",
+        "nationality": "KW",
+        "father_name": f"father-{suffix}",
+    }
+
+
+async def test_guardian_creates_orphan_pending_review_in_own_family(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Happy path: a guardian registers a child; it lands pending_review,
+    is linked to the guardian's OWN family + the family's partner org
+    (derived server-side), and shows up in the guardian's own list."""
+    partner_id = await _seed_partner_id()
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_id, partner_id)
+
+    r = await api.post(
+        "/api/v1/guardian/me/orphans",
+        json=_orphan_payload("new"),
+        headers=headers,
+    )
+    assert r.status_code == 201, r.text
+    created = r.json()
+    assert created["code"].startswith("ORF-")
+    assert created["case_status"] == "pending_review"
+    # Privacy-safe projection: no donor identity / financial fields leak.
+    assert created.get("financials") is None
+    for forbidden in ("current_balance", "is_sponsored", "partner_organization_id"):
+        assert forbidden not in created
+
+    # Linked to the guardian's family + the family's partner org, server-side.
+    async with make_session() as db:
+        row = (
+            await db.execute(
+                text(
+                    "SELECT family_id::text, partner_organization_id::text "
+                    "FROM orphans WHERE id = :id"
+                ),
+                {"id": created["id"]},
+            )
+        ).first()
+    assert row is not None
+    assert row[0] == family_id
+    assert row[1] == partner_id
+
+    # And it surfaces in the guardian's own list with the pending status.
+    r = await api.get("/api/v1/guardian/me/orphans", headers=headers)
+    assert r.status_code == 200
+    mine = {o["id"]: o for o in r.json()}
+    assert created["id"] in mine
+    assert mine[created["id"]]["case_status"] == "pending_review"
+
+
+async def test_guardian_created_orphan_rides_staff_approval_queue(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """No workflow fork: the guardian-created orphan appears in the staff
+    pending_review queue and moves through the existing approve endpoint."""
+    partner_id = await _seed_partner_id()
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_id, partner_id)
+
+    r = await api.post(
+        "/api/v1/guardian/me/orphans", json=_orphan_payload("queue"), headers=headers
+    )
+    assert r.status_code == 201, r.text
+    orphan_id = r.json()["id"]
+
+    r = await api.get("/api/v1/orphans?case_status=pending_review&limit=100", headers=auth_headers)
+    assert r.status_code == 200
+    assert any(o["id"] == orphan_id for o in r.json()["items"])
+
+    r = await api.post(f"/api/v1/orphans/{orphan_id}/approve", headers=auth_headers)
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "approved"
+
+
+async def test_guardian_cannot_create_orphan_for_another_family(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A guardian cannot smuggle family_id / partner_organization_id /
+    organization_id through the body (extra='forbid' → 422), and a clean
+    create only ever lands in the caller's OWN family."""
+    partner_id = await _seed_partner_id()
+    family_a, _, headers_a = await _create_family_and_guardian(api, auth_headers)
+    family_b, _, _ = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_a, partner_id)
+
+    payload = _orphan_payload("evil")
+    payload["family_id"] = family_b
+    payload["partner_organization_id"] = partner_id
+    payload["organization_id"] = "00000000-0000-0000-0000-000000000000"
+    r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers_a)
+    assert r.status_code == 422, r.text
+
+    r = await api.post(
+        "/api/v1/guardian/me/orphans", json=_orphan_payload("clean"), headers=headers_a
+    )
+    assert r.status_code == 201, r.text
+    async with make_session() as db:
+        row = (
+            await db.execute(
+                text("SELECT family_id::text FROM orphans WHERE id = :id"),
+                {"id": r.json()["id"]},
+            )
+        ).first()
+    assert row is not None
+    assert row[0] == family_a
+
+
+async def test_guardian_create_orphan_duplicate_returns_409(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """The canonical idx_orphans_no_duplicate rule is enforced for guardians
+    too: a second identical submission → 409 (not 500), with the existing
+    ORF code surfaced so the UI can link to it."""
+    partner_id = await _seed_partner_id()
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_id, partner_id)
+
+    payload = _orphan_payload("dup")
+    r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers)
+    assert r.status_code == 201, r.text
+    existing_code = r.json()["code"]
+
+    r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers)
+    assert r.status_code == 409, r.text
+    assert existing_code in r.json()["detail"]
+
+
+async def test_guardian_create_orphan_requires_father_name(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """father_name is a required domain field — omitting it is a 422."""
+    partner_id = await _seed_partner_id()
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_id, partner_id)
+
+    payload = _orphan_payload("nofather")
+    del payload["father_name"]
+    r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers)
+    assert r.status_code == 422, r.text
+
+
+async def test_guardian_with_no_partner_linked_family_gets_409(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """If the guardian's family has no partner organization, we never guess a
+    default — the create returns a clear 409 rather than a blank/forged
+    partner."""
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    # Deliberately do NOT link a partner to the family.
+
+    r = await api.post(
+        "/api/v1/guardian/me/orphans", json=_orphan_payload("nopartner"), headers=headers
+    )
+    assert r.status_code == 409, r.text
+
+
+async def test_non_guardian_cannot_create_orphan_via_self_endpoint(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """The seed admin has no Guardian row → 404 (the resource is the gate)."""
+    r = await api.post(
+        "/api/v1/guardian/me/orphans",
+        json=_orphan_payload("admin"),
+        headers=auth_headers,
+    )
+    assert r.status_code == 404, r.text

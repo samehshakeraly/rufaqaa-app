@@ -23,7 +23,7 @@ from app.schemas.common import Page
 from app.schemas.orphan import OrphanCreate, OrphanRead, OrphanUpdate
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
-from app.utils.codes import generate_code
+from app.services.orphans import create_orphan_record
 
 router = APIRouter()
 
@@ -105,35 +105,20 @@ async def create_orphan(
     db: DbSession,
     user: CurrentUser,
 ) -> OrphanRead:
-    orphan = Orphan(
-        organization_id=user.organization_id,
+    """Register an orphan (lands ``pending_review``).
+
+    Delegates to the shared :func:`create_orphan_record`, which is also used by
+    the guardian self-service endpoint — so both obey the same no-duplicate
+    rule (a violation of ``idx_orphans_no_duplicate`` comes back as a 409).
+    """
+    orphan = await create_orphan_record(
+        db,
+        user=user,
+        data=payload,
         partner_organization_id=payload.partner_organization_id,
         family_id=payload.family_id,
-        code=generate_code("ORF"),
-        first_name=payload.first_name,
-        middle_name=payload.middle_name,
-        family_name=payload.family_name,
-        full_name_en=payload.full_name_en,
-        date_of_birth=payload.date_of_birth,
-        gender=payload.gender,
-        nationality=payload.nationality,
-        father_name=payload.father_name,
-        father_death_date=payload.father_death_date,
-        created_by=user.id,
+        via="staff",
     )
-    db.add(orphan)
-    await db.flush()
-    record_audit(
-        db,
-        organization_id=user.organization_id,
-        user_id=user.id,
-        action="orphan.created",
-        entity_type="orphan",
-        entity_id=orphan.id,
-        new_values={"code": orphan.code, "case_status": orphan.case_status},
-    )
-    await db.commit()
-    await db.refresh(orphan)
     return OrphanRead.model_validate(orphan)
 
 

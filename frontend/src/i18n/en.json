@@ -2867,6 +2867,7 @@
     },
     "caseStatus": {
       "active": "Active sponsorship",
+      "pending_review": "Under review",
       "pending": "Under review",
       "inactive": "Inactive",
       "suspended": "Suspended",
@@ -2908,12 +2909,20 @@
       "orphanCount": "{{count}} orphans",
       "ageYears": "{{count}} years",
       "uploadReport": "Upload report",
+      "addOrphan": "Add an orphan",
       "viewPage": "{{name}}'s page",
       "loadError": "Couldn't load your orphans. Please try again later.",
       "empty": "No orphans are linked to your account yet. Please contact the organisation.",
       "helpTitle": "We're always here for you",
       "helpBody": "If you run into any difficulty, reach out and we'll respond as soon as we can.",
       "helpFaq": "FAQ"
+    },
+    "addOrphan": {
+      "back": "Back to home",
+      "title": "Add a new orphan",
+      "subtitle": "Register a new orphan in your family. The case is submitted for the organisation's review before approval.",
+      "pendingNote": "After you submit, the case is reviewed by the organisation before approval. It will appear in your list as \"Under review\".",
+      "success": "{{name}}'s details were submitted — the case is now under review"
     },
     "detail": {
       "breadcrumbLabel": "Breadcrumb",

@@ -732,7 +732,28 @@ export interface paths {
          */
         get: operations["list_my_orphans_api_v1_guardian_me_orphans_get"];
         put?: never;
-        post?: never;
+        /**
+         * Create My Orphan
+         * @description Guardian registers a new orphan in THEIR OWN family (G-06).
+         *
+         *     The orphan lands in ``case_status='pending_review'`` — identical to a
+         *     staff-created record — and surfaces in the very same supervisor approval
+         *     queue (``POST /orphans/{id}/approve|reject``). No workflow fork: this
+         *     delegates to the shared :func:`create_orphan_record`, so the no-duplicate
+         *     rule (409) is identical to the staff path.
+         *
+         *     Ownership is server-derived and non-negotiable: ``organization_id`` from
+         *     the caller (RLS), ``family_id`` = the guardian's own family, and
+         *     ``partner_organization_id`` inherited from that family. The request body
+         *     cannot set any of these (``extra='forbid'``), so a guardian can never
+         *     register a child for another family or partner.
+         *
+         *     Edge cases: a caller with no Guardian row → 404; a guardian not yet linked
+         *     to a family, or whose family has no partner organization → 409 (we never
+         *     guess a partner). The response is the privacy-safe ``GuardianOrphanRead``
+         *     (no donor identity, no financials).
+         */
+        post: operations["create_my_orphan_api_v1_guardian_me_orphans_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1329,7 +1350,14 @@ export interface paths {
          */
         get: operations["list_orphans_api_v1_orphans_get"];
         put?: never;
-        /** Create Orphan */
+        /**
+         * Create Orphan
+         * @description Register an orphan (lands ``pending_review``).
+         *
+         *     Delegates to the shared :func:`create_orphan_record`, which is also used by
+         *     the guardian self-service endpoint — so both obey the same no-duplicate
+         *     rule (a violation of ``idx_orphans_no_duplicate`` comes back as a 409).
+         */
         post: operations["create_orphan_api_v1_orphans_post"];
         delete?: never;
         options?: never;
@@ -3381,6 +3409,42 @@ export interface components {
             whatsapp: string | null;
         };
         /**
+         * GuardianOrphanCreate
+         * @description Body for a guardian-submitted new orphan (G-06).
+         *
+         *     Only the core identity fields (``OrphanCreateFields`` — ``father_name`` is
+         *     required). ``organization_id``, ``family_id`` and
+         *     ``partner_organization_id`` are **derived server-side** from the guardian,
+         *     never accepted from the client — ``extra='forbid'`` rejects them outright
+         *     so a guardian can't register a child for another family or partner.
+         */
+        GuardianOrphanCreate: {
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Family Name */
+            family_name: string;
+            /** Father Death Date */
+            father_death_date?: string | null;
+            /** Father Name */
+            father_name: string;
+            /** First Name */
+            first_name: string;
+            /** Full Name En */
+            full_name_en?: string | null;
+            /**
+             * Gender
+             * @enum {string}
+             */
+            gender: "M" | "F";
+            /** Middle Name */
+            middle_name?: string | null;
+            /** Nationality */
+            nationality?: string | null;
+        };
+        /**
          * GuardianOrphanFinancials
          * @description Only attached when `business_rules.show_financial_to_guardian` is
          *     TRUE for the guardian's org.
@@ -3974,7 +4038,7 @@ export interface components {
             /** Father Death Date */
             father_death_date?: string | null;
             /** Father Name */
-            father_name?: string | null;
+            father_name: string;
             /** First Name */
             first_name: string;
             /** Full Name En */
@@ -6798,6 +6862,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GuardianOrphanRead"][];
+                };
+            };
+        };
+    };
+    create_my_orphan_api_v1_guardian_me_orphans_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardianOrphanCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianOrphanRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

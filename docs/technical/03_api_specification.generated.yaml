@@ -1813,6 +1813,79 @@ components:
       - family
       title: GuardianMeRead
       type: object
+    GuardianOrphanCreate:
+      additionalProperties: false
+      description: 'Body for a guardian-submitted new orphan (G-06).
+
+
+        Only the core identity fields (``OrphanCreateFields`` — ``father_name`` is
+
+        required). ``organization_id``, ``family_id`` and
+
+        ``partner_organization_id`` are **derived server-side** from the guardian,
+
+        never accepted from the client — ``extra=''forbid''`` rejects them outright
+
+        so a guardian can''t register a child for another family or partner.'
+      properties:
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        family_name:
+          maxLength: 100
+          minLength: 1
+          title: Family Name
+          type: string
+        father_death_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Father Death Date
+        father_name:
+          maxLength: 255
+          minLength: 1
+          title: Father Name
+          type: string
+        first_name:
+          maxLength: 100
+          minLength: 1
+          title: First Name
+          type: string
+        full_name_en:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Full Name En
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        middle_name:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Middle Name
+        nationality:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Nationality
+      required:
+      - first_name
+      - family_name
+      - date_of_birth
+      - gender
+      - father_name
+      title: GuardianOrphanCreate
+      type: object
     GuardianOrphanFinancials:
       description: 'Only attached when `business_rules.show_financial_to_guardian` is
 
@@ -2848,11 +2921,10 @@ components:
           - type: 'null'
           title: Father Death Date
         father_name:
-          anyOf:
-          - maxLength: 255
-            type: string
-          - type: 'null'
+          maxLength: 255
+          minLength: 1
           title: Father Name
+          type: string
         first_name:
           maxLength: 100
           minLength: 1
@@ -2892,6 +2964,7 @@ components:
       - family_name
       - date_of_birth
       - gender
+      - father_name
       - partner_organization_id
       title: OrphanCreate
       type: object
@@ -6891,6 +6964,64 @@ paths:
       summary: List My Orphans
       tags:
       - guardian-self
+    post:
+      description: 'Guardian registers a new orphan in THEIR OWN family (G-06).
+
+
+        The orphan lands in ``case_status=''pending_review''`` — identical to a
+
+        staff-created record — and surfaces in the very same supervisor approval
+
+        queue (``POST /orphans/{id}/approve|reject``). No workflow fork: this
+
+        delegates to the shared :func:`create_orphan_record`, so the no-duplicate
+
+        rule (409) is identical to the staff path.
+
+
+        Ownership is server-derived and non-negotiable: ``organization_id`` from
+
+        the caller (RLS), ``family_id`` = the guardian''s own family, and
+
+        ``partner_organization_id`` inherited from that family. The request body
+
+        cannot set any of these (``extra=''forbid''``), so a guardian can never
+
+        register a child for another family or partner.
+
+
+        Edge cases: a caller with no Guardian row → 404; a guardian not yet linked
+
+        to a family, or whose family has no partner organization → 409 (we never
+
+        guess a partner). The response is the privacy-safe ``GuardianOrphanRead``
+
+        (no donor identity, no financials).'
+      operationId: create_my_orphan_api_v1_guardian_me_orphans_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardianOrphanCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianOrphanRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create My Orphan
+      tags:
+      - guardian-self
   /api/v1/guardian/me/orphans/{orphan_id}/documents:
     get:
       description: 'List the documents the guardian (or staff) has on file for one of the
@@ -8220,6 +8351,14 @@ paths:
       tags:
       - orphans
     post:
+      description: 'Register an orphan (lands ``pending_review``).
+
+
+        Delegates to the shared :func:`create_orphan_record`, which is also used by
+
+        the guardian self-service endpoint — so both obey the same no-duplicate
+
+        rule (a violation of ``idx_orphans_no_duplicate`` comes back as a 409).'
       operationId: create_orphan_api_v1_orphans_post
       requestBody:
         content:

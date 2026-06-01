@@ -31,8 +31,11 @@ export interface OrphanCreateInput {
   family_name: string;
   date_of_birth: string;
   gender: "M" | "F";
-  partner_organization_id: string;
-  father_name?: string;
+  /** Required domain field — an orphan is defined by their father. */
+  father_name: string;
+  /** Staff path only. The guardian path derives the partner server-side, so
+   * it is omitted there (and rejected by the API if sent). */
+  partner_organization_id?: string;
   middle_name?: string;
   full_name_en?: string;
   father_death_date?: string;
