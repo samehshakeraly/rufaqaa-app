@@ -13,29 +13,38 @@ Privacy posture, hard-baked:
   - Cross-family access raises 403, not 404, so we don't leak that other
     families exist in the same org.
 
-Updates to the guardian profile itself go through the staff/admin
-endpoints — keeping this surface read-only avoids accidentally letting
-a guardian self-modify their literacy_level or banking info.
+Writes are deliberately limited. A guardian may **submit a monthly report**
+(`POST /me/reports`) and **upload documents** for their own orphans
+(`POST /me/orphans/{id}/documents`); both land in a pending state
+(`pending_partner_approval` / `verification_status='pending'`) and surface in
+the existing staff review workflows — nothing is auto-published, and no donor
+identity is ever exposed. The guardian *profile* itself stays read-only here
+(literacy_level, banking, etc. are edited only via the staff/admin endpoints).
 """
 
 from __future__ import annotations
 
-from datetime import date, datetime
-from typing import Annotated
-from uuid import UUID
+from datetime import UTC, date, datetime
+from typing import Annotated, Any
+from uuid import UUID, uuid4
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.config import settings
 from app.core.exceptions import NotFound
+from app.models.document import Document
 from app.models.family import Guardian
 from app.models.orphan import Orphan
 from app.models.report import OrphanReport
 from app.models.user import User
-from app.schemas.report import ReportRead
+from app.schemas.document import DocumentRead, DocumentType
+from app.schemas.report import ReportRead, ReportType
+from app.services.audit import record_audit
+from app.services.storage import ensure_bucket, put_object
 
 router = APIRouter()
 
@@ -99,6 +108,34 @@ class GuardianOrphanRead(BaseModel):
     financials: GuardianOrphanFinancials | None = None
 
 
+class GuardianReportCreate(BaseModel):
+    """Body for a guardian-submitted monthly report (G-04).
+
+    Lands directly in ``pending_partner_approval`` — the guardian's act of
+    sending IS the submission, so there's no draft round-trip. Text-only for
+    this cut; photo/voice attachments are deferred (they need the media-upload
+    + MediaReview path, which is still a stub).
+    """
+
+    orphan_id: UUID
+    report_type: ReportType = "monthly"
+    period_start: date
+    period_end: date
+    summary: str | None = None
+    educational_progress: dict[str, Any] | None = None
+    quran_progress: dict[str, Any] | None = None
+    activities: dict[str, Any] | None = None
+    health_status: dict[str, Any] | None = None
+    psychological_status: dict[str, Any] | None = None
+
+
+# Guardian-uploadable document MIME allow-list. Kept narrow (mirrors
+# media.ALLOWED_DOCUMENT_TYPES) so the bucket can't become a dumping ground.
+_GUARDIAN_DOC_MIME: frozenset[str] = frozenset(
+    {"application/pdf", "image/jpeg", "image/png", "image/webp"}
+)
+
+
 # ── Helpers ────────────────────────────────────────────────────────────
 
 
@@ -133,6 +170,29 @@ async def _show_financial_to_guardian(db: AsyncSession, organization_id: UUID) -
     if row is None:
         return False
     return bool(row[0])
+
+
+async def _orphan_in_family_or_error(
+    db: AsyncSession, guardian: Guardian, orphan_id: UUID
+) -> Orphan:
+    """Resolve an orphan and assert it belongs to the guardian's family.
+
+    Unknown id → 404; a real orphan in *another* family → 403 (matching the
+    read endpoints — we signal "you can't touch this" loudly rather than 404,
+    which is the module-wide cross-family posture). This is the only ownership
+    gate the write endpoints need: RLS already scopes everything to the org.
+    """
+    orphan = await db.scalar(
+        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+    if guardian.family_id is None or orphan.family_id != guardian.family_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This orphan does not belong to your family",
+        )
+    return orphan
 
 
 # ── Endpoints ──────────────────────────────────────────────────────────
@@ -274,3 +334,157 @@ async def list_my_reports(
         )
     ).all()
     return [ReportRead.model_validate(r) for r in rows]
+
+
+@router.post("/me/reports", response_model=ReportRead, status_code=status.HTTP_201_CREATED)
+async def create_my_report(
+    payload: GuardianReportCreate,
+    db: DbSession,
+    user: CurrentUser,
+) -> ReportRead:
+    """Guardian submits a monthly report for one of their orphans (G-04).
+
+    The report is created **directly in ``pending_partner_approval``** (not
+    draft) with ``submitted_by``/``submitted_at`` set, so it appears at once
+    in the staff ``PartnerReportsReview`` queue and rides the existing
+    approve/reject workflow — no fork. Cross-family orphan → 403; a caller
+    with no Guardian row → 404. The response is the standard ``ReportRead``,
+    which carries no donor identity or financial fields.
+    """
+    guardian = await _load_guardian_or_404(db, user)
+    if payload.period_end < payload.period_start:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="period_end must be on or after period_start",
+        )
+    orphan = await _orphan_in_family_or_error(db, guardian, payload.orphan_id)
+
+    report = OrphanReport(
+        organization_id=user.organization_id,
+        orphan_id=orphan.id,
+        report_type=payload.report_type,
+        period_start=payload.period_start,
+        period_end=payload.period_end,
+        summary=payload.summary,
+        educational_progress=payload.educational_progress,
+        quran_progress=payload.quran_progress,
+        activities=payload.activities,
+        health_status=payload.health_status,
+        psychological_status=payload.psychological_status,
+        status="pending_partner_approval",
+        submitted_by=user.id,
+        submitted_at=datetime.now(UTC),
+    )
+    db.add(report)
+    await db.commit()
+    await db.refresh(report)
+    return ReportRead.model_validate(report)
+
+
+@router.get(
+    "/me/orphans/{orphan_id}/documents",
+    response_model=list[DocumentRead],
+)
+async def list_my_orphan_documents(
+    orphan_id: UUID,
+    db: DbSession,
+    user: CurrentUser,
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> list[DocumentRead]:
+    """List the documents the guardian (or staff) has on file for one of the
+    guardian's orphans, newest first, with their ``verification_status`` so the
+    G-03 UI can show pending → verified/rejected. Cross-family orphan → 403.
+    """
+    guardian = await _load_guardian_or_404(db, user)
+    await _orphan_in_family_or_error(db, guardian, orphan_id)
+    rows = (
+        await db.scalars(
+            select(Document)
+            .where(Document.orphan_id == orphan_id)
+            .order_by(Document.created_at.desc())
+            .limit(limit)
+        )
+    ).all()
+    return [DocumentRead.model_validate(r) for r in rows]
+
+
+@router.post(
+    "/me/orphans/{orphan_id}/documents",
+    response_model=DocumentRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def upload_my_orphan_document(
+    orphan_id: UUID,
+    db: DbSession,
+    user: CurrentUser,
+    file: Annotated[UploadFile, File()],
+    document_type: Annotated[DocumentType, Form()],
+    title: Annotated[str | None, Form()] = None,
+) -> DocumentRead:
+    """Guardian uploads/refreshes a document for their orphan (G-03
+    "تحديث المستندات").
+
+    One call: the bytes are streamed to the private bucket and a ``documents``
+    row is created in ``verification_status='pending'`` — it is **never**
+    auto-verified, and rides the existing staff verification workflow
+    (``POST /documents/{id}/verify``). Ownership is checked *before* any byte
+    is read or stored, so a cross-family attempt (403) or a non-guardian (404)
+    never touches object storage.
+    """
+    guardian = await _load_guardian_or_404(db, user)
+    orphan = await _orphan_in_family_or_error(db, guardian, orphan_id)
+
+    if file.content_type not in _GUARDIAN_DOC_MIME:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Allowed types: {sorted(_GUARDIAN_DOC_MIME)}",
+        )
+    body = await file.read()
+    if len(body) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Empty upload")
+    if len(body) > settings.UPLOAD_MAX_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Max upload is {settings.UPLOAD_MAX_BYTES} bytes",
+        )
+
+    bucket = settings.S3_BUCKET_PRIVATE
+    await ensure_bucket(bucket)
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower() or "bin"
+    key = f"documents/{user.organization_id}/{uuid4().hex}.{ext}"
+    await put_object(
+        bucket, key, body, content_type=file.content_type or "application/octet-stream"
+    )
+
+    doc = Document(
+        organization_id=user.organization_id,
+        orphan_id=orphan.id,
+        family_id=orphan.family_id,
+        document_type=document_type,
+        title=title,
+        file_url=f"s3://{bucket}/{key}",
+        file_name=file.filename,
+        file_size_bytes=len(body),
+        file_mime_type=file.content_type,
+        verification_status="pending",
+        uploaded_by=user.id,
+    )
+    db.add(doc)
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="document.attached",
+        entity_type="document",
+        entity_id=doc.id,
+        new_values={
+            "orphan_id": str(orphan.id),
+            "document_type": doc.document_type,
+            "file_name": doc.file_name,
+            "via": "guardian_self",
+        },
+    )
+    await db.commit()
+    await db.refresh(doc)
+    return DocumentRead.model_validate(doc)

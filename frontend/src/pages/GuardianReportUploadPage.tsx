@@ -1,11 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
-import { listGuardianOrphans } from "@/lib/guardianSelf";
+import { createGuardianReport, listGuardianOrphans } from "@/lib/guardianSelf";
 import { ageFromDob } from "@/lib/orphanSelf";
+import { toast } from "@/store/toasts";
 
 import "./GuardianReportUploadPage.css";
 
@@ -14,16 +16,24 @@ const STEPS = 3;
 
 /** G-04 — monthly report wizard for one of the guardian's orphans.
  *
- * There is NO guardian-facing report-UPLOAD endpoint yet, so this screen is a
- * faithful preview: the steps are interactive locally, but the final submit is
- * disabled with a clear "coming soon" note. Nothing is sent. The read side of
- * reports stays live on the orphan detail page (GET /guardian/me/reports).
+ * The text report is fully wired: on send it POSTs to /guardian/me/reports,
+ * which creates the report in `pending_partner_approval`, so it lands at once
+ * in the staff PartnerReportsReview queue and the guardian sees the
+ * pending→approved/rejected status back on the orphan page.
  *
- * CHILD-DATA SENSITIVITY: no child data is collected or transmitted here. The
- * controls keep state only in component memory for the preview. */
+ * Photo/voice attachments are DEFERRED — they need a guardian media-upload
+ * endpoint + the (still-stubbed) MediaReview queue, so those inputs render
+ * visible-but-disabled with a "coming soon" note. See the
+ * TODO(backend: media upload + MediaReview) in step 2.
+ *
+ * CHILD-DATA SENSITIVITY: only what the guardian types is sent, and only for
+ * their own orphan (the backend 403s otherwise). Nothing is auto-published —
+ * the report is reviewed before any donor sees it. */
 export function GuardianReportUploadPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const [step, setStep] = useState(1);
   const [mood, setMood] = useState<Mood | null>(null);
@@ -36,6 +46,34 @@ export function GuardianReportUploadPage() {
     queryFn: listGuardianOrphans,
   });
   const orphan = orphans.data?.find((o) => o.id === id);
+
+  const submit = useMutation({
+    mutationFn: createGuardianReport,
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["guardian", "me", "reports", id] });
+      toast.success(t("guardian.report.sentSuccess"));
+      navigate(`/guardian/orphans/${id}`);
+    },
+    onError: (err) => {
+      const detail = err instanceof AxiosError ? err.response?.data?.detail : null;
+      toast.error(typeof detail === "string" ? detail : t("guardian.report.sentError"));
+    },
+  });
+
+  function handleSend() {
+    // Current calendar month → the report period. Mood maps to
+    // psychological_status; the star rating + notes to educational_progress.
+    const now = new Date();
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    submit.mutate({
+      orphan_id: id,
+      report_type: "monthly",
+      period_start: iso(new Date(now.getFullYear(), now.getMonth(), 1)),
+      period_end: iso(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
+      psychological_status: { mood, note: moodDetail.trim() },
+      educational_progress: { rating: stars, note: eduNotes.trim() },
+    });
+  }
 
   if (orphans.isLoading) {
     return (
@@ -83,19 +121,6 @@ export function GuardianReportUploadPage() {
           <p>{t("guardian.report.about", { name: `${orphan.first_name} ${orphan.family_name}`.trim() })}</p>
         </div>
       </header>
-
-      {/* Coming-soon banner — submit is not wired to a backend yet */}
-      <div className="gru-soon-banner" role="status">
-        <svg className="gru-icon gru-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-        <span>
-          <strong>{t("guardian.report.soonTitle")}</strong>{" "}
-          {t("guardian.report.soonBody")}
-        </span>
-      </div>
 
       {/* Progress */}
       <div className="gru-progress" aria-label={t("guardian.report.progressLabel")}>
@@ -213,7 +238,38 @@ export function GuardianReportUploadPage() {
                 placeholder={t("guardian.report.eduNotesPlaceholder")}
               />
             </div>
-            <p className="gru-field-hint">{t("guardian.report.photosSoon")}</p>
+            {/* Attachments (photo + voice) are DEFERRED to a later cut. They
+                are rendered visible-but-disabled so the full flow stays
+                discoverable to guardians.
+                TODO(backend: media upload + MediaReview) — wire these to a
+                guardian media-upload endpoint once the staff MediaReview
+                moderation queue exists; they must land moderation_status=
+                'pending' and never auto-publish. */}
+            <div className="gru-attach" aria-label={t("guardian.report.attachTitle")}>
+              <div className="gru-attach-head">
+                <span className="gru-attach-title">{t("guardian.report.attachTitle")}</span>
+                <span className="gru-soon-tag">{t("guardian.report.soonTag")}</span>
+              </div>
+              <div className="gru-attach-row">
+                <button type="button" className="gru-attach-btn" disabled aria-disabled="true">
+                  <svg className="gru-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                  {t("guardian.report.addPhoto")}
+                </button>
+                <button type="button" className="gru-attach-btn" disabled aria-disabled="true">
+                  <svg className="gru-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="23" />
+                    <line x1="8" y1="23" x2="16" y2="23" />
+                  </svg>
+                  {t("guardian.report.addVoice")}
+                </button>
+              </div>
+              <p className="gru-field-hint">{t("guardian.report.attachSoon")}</p>
+            </div>
           </section>
         )}
 
@@ -266,16 +322,13 @@ export function GuardianReportUploadPage() {
             {t("guardian.report.next")}
           </button>
         ) : (
-          // TODO(backend): wire to the guardian report-upload POST endpoint
-          // once it exists. Disabled until then — the portal must never claim
-          // a report was sent when nothing was transmitted.
           <button
             type="button"
             className="gru-foot-btn gru-foot-btn--send"
-            disabled
-            title={t("guardian.report.soonTitle")}
+            onClick={handleSend}
+            disabled={submit.isPending}
           >
-            {t("guardian.report.sendSoon")}
+            {submit.isPending ? t("guardian.report.sending") : t("guardian.report.send")}
           </button>
         )}
       </nav>

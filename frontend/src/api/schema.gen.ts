@@ -739,6 +739,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/guardian/me/orphans/{orphan_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Orphan Documents
+         * @description List the documents the guardian (or staff) has on file for one of the
+         *     guardian's orphans, newest first, with their ``verification_status`` so the
+         *     G-03 UI can show pending → verified/rejected. Cross-family orphan → 403.
+         */
+        get: operations["list_my_orphan_documents_api_v1_guardian_me_orphans__orphan_id__documents_get"];
+        put?: never;
+        /**
+         * Upload My Orphan Document
+         * @description Guardian uploads/refreshes a document for their orphan (G-03
+         *     "تحديث المستندات").
+         *
+         *     One call: the bytes are streamed to the private bucket and a ``documents``
+         *     row is created in ``verification_status='pending'`` — it is **never**
+         *     auto-verified, and rides the existing staff verification workflow
+         *     (``POST /documents/{id}/verify``). Ownership is checked *before* any byte
+         *     is read or stored, so a cross-family attempt (403) or a non-guardian (404)
+         *     never touches object storage.
+         */
+        post: operations["upload_my_orphan_document_api_v1_guardian_me_orphans__orphan_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/guardian/me/reports": {
         parameters: {
             query?: never;
@@ -756,7 +790,18 @@ export interface paths {
          */
         get: operations["list_my_reports_api_v1_guardian_me_reports_get"];
         put?: never;
-        post?: never;
+        /**
+         * Create My Report
+         * @description Guardian submits a monthly report for one of their orphans (G-04).
+         *
+         *     The report is created **directly in ``pending_partner_approval``** (not
+         *     draft) with ``submitted_by``/``submitted_at`` set, so it appears at once
+         *     in the staff ``PartnerReportsReview`` queue and rides the existing
+         *     approve/reject workflow — no fork. Cross-family orphan → 403; a caller
+         *     with no Guardian row → 404. The response is the standard ``ReportRead``,
+         *     which carries no donor identity or financial fields.
+         */
+        post: operations["create_my_report_api_v1_guardian_me_reports_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2628,6 +2673,18 @@ export interface components {
             /** File */
             file: string;
         };
+        /** Body_upload_my_orphan_document_api_v1_guardian_me_orphans__orphan_id__documents_post */
+        Body_upload_my_orphan_document_api_v1_guardian_me_orphans__orphan_id__documents_post: {
+            /**
+             * Document Type
+             * @enum {string}
+             */
+            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other";
+            /** File */
+            file: string;
+            /** Title */
+            title?: string | null;
+        };
         /** Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post */
         Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post: {
             /** File */
@@ -3426,6 +3483,60 @@ export interface components {
             updated_at: string;
             /** Whatsapp */
             whatsapp?: string | null;
+        };
+        /**
+         * GuardianReportCreate
+         * @description Body for a guardian-submitted monthly report (G-04).
+         *
+         *     Lands directly in ``pending_partner_approval`` — the guardian's act of
+         *     sending IS the submission, so there's no draft round-trip. Text-only for
+         *     this cut; photo/voice attachments are deferred (they need the media-upload
+         *     + MediaReview path, which is still a stub).
+         */
+        GuardianReportCreate: {
+            /** Activities */
+            activities?: {
+                [key: string]: unknown;
+            } | null;
+            /** Educational Progress */
+            educational_progress?: {
+                [key: string]: unknown;
+            } | null;
+            /** Health Status */
+            health_status?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /** Psychological Status */
+            psychological_status?: {
+                [key: string]: unknown;
+            } | null;
+            /** Quran Progress */
+            quran_progress?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Report Type
+             * @default monthly
+             * @enum {string}
+             */
+            report_type: "monthly" | "quarterly" | "annual" | "special" | "incident";
+            /** Summary */
+            summary?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -6691,6 +6802,74 @@ export interface operations {
             };
         };
     };
+    list_my_orphan_documents_api_v1_guardian_me_orphans__orphan_id__documents_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_my_orphan_document_api_v1_guardian_me_orphans__orphan_id__documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_my_orphan_document_api_v1_guardian_me_orphans__orphan_id__documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_my_reports_api_v1_guardian_me_reports_get: {
         parameters: {
             query: {
@@ -6711,6 +6890,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReportRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_my_report_api_v1_guardian_me_reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardianReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportRead"];
                 };
             };
             /** @description Validation Error */
