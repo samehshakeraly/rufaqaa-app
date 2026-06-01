@@ -18,6 +18,8 @@ import {
 } from "@/lib/donors";
 import { toast } from "@/store/toasts";
 
+import "./adminEntities.css";
+
 const PAGE_SIZE = 20;
 const donorQueryKey = (offset: number) =>
   ["donors", { limit: PAGE_SIZE, offset }] as const;
@@ -54,18 +56,18 @@ export function DonorsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">{t("donors.title")}</h1>
-        <div className="flex items-center gap-4">
+    <div className="adm">
+      <div className="adm-head">
+        <h1>{t("donors.title")}</h1>
+        <div className="adm-head-actions">
           {data && (
-            <span className="text-sm text-slate-500">
-              {t("common.total")}: {data.total.toLocaleString()}
+            <span className="adm-total">
+              {t("common.total")}: <span className="latin">{data.total.toLocaleString()}</span>
             </span>
           )}
           <button
             type="button"
-            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
+            className="adm-btn"
             onClick={async () => {
               try {
                 const blob = await exportDonorsCsv();
@@ -82,16 +84,12 @@ export function DonorsPage() {
           >
             {t("donors.exportCsv")}
           </button>
-          <button
-            type="button"
-            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil"
-            onClick={() => setShowImport((v) => !v)}
-          >
+          <button type="button" className="adm-btn" onClick={() => setShowImport((v) => !v)}>
             {showImport ? t("common.cancel") : t("donors.importCsv")}
           </button>
           <button
             type="button"
-            className="btn-primary"
+            className="adm-btn adm-btn-primary"
             onClick={() => setShowForm((v) => !v)}
           >
             {showForm ? t("common.cancel") : t("donors.addNew")}
@@ -128,42 +126,47 @@ export function DonorsPage() {
       )}
 
       {isLoading && <TableSkeleton columns={6} />}
-      {error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {t("common.loadError")}
-        </p>
-      )}
+      {error && <p className="adm-error">{t("common.loadError")}</p>}
 
       {data && data.items.length === 0 && (
-        <div className="card text-center text-slate-500">{t("common.empty")}</div>
+        <div className="adm-empty">{t("common.empty")}</div>
       )}
 
       {data && data.items.length > 0 && (
-        <div className="card overflow-x-auto p-0">
-          <table className="min-w-full text-start">
-            <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
-              <tr>
-                <th className="px-4 py-3 font-medium">{t("donors.code")}</th>
-                <th className="px-4 py-3 font-medium">{t("donors.name")}</th>
-                <th className="px-4 py-3 font-medium">{t("donors.email")}</th>
-                <th className="px-4 py-3 font-medium">{t("donors.country")}</th>
-                <th className="px-4 py-3 font-medium">{t("donors.currency")}</th>
-                <th className="px-4 py-3 font-medium">{t("donors.status")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sky/40 text-sm">
-              {data.items.map((d) => (
-                <tr key={d.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">{d.code}</td>
-                  <td className="px-4 py-3">{d.full_name}</td>
-                  <td className="px-4 py-3">{d.email}</td>
-                  <td className="px-4 py-3">{d.country_of_residence ?? "—"}</td>
-                  <td className="px-4 py-3">{d.preferred_currency ?? "—"}</td>
-                  <td className="px-4 py-3">{d.status}</td>
+        <div className="adm-table-card">
+          <div className="adm-table-wrap">
+            <table className="adm-t">
+              <thead>
+                <tr>
+                  <th>{t("donors.code")}</th>
+                  <th>{t("donors.name")}</th>
+                  <th>{t("donors.email")}</th>
+                  <th>{t("donors.country")}</th>
+                  <th>{t("donors.currency")}</th>
+                  <th>{t("donors.status")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.items.map((d) => (
+                  <tr key={d.id}>
+                    <td>
+                      <span className="adm-cell-code">{d.code}</span>
+                    </td>
+                    <td className="adm-cell-strong">{d.full_name}</td>
+                    <td className="latin">{d.email}</td>
+                    <td>{d.country_of_residence ?? "—"}</td>
+                    <td className="latin">{d.preferred_currency ?? "—"}</td>
+                    <td>
+                      <span className={`adm-status${d.status === "active" ? " success" : ""}`}>
+                        <span className="dot" aria-hidden="true" />
+                        {d.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
@@ -209,32 +212,32 @@ function NewDonorForm({ onCreated }: { onCreated: () => void | Promise<void> }) 
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="card space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={handleSubmit(submit)} className="adm-card">
+      <div className="adm-form-grid">
         <Field label={t("donors.name")} error={errors.full_name?.message}>
-          <input className="input" {...register("full_name")} />
+          <input {...register("full_name")} />
         </Field>
         <Field label={t("donors.email")} error={errors.email?.message}>
-          <input type="email" className="input" {...register("email")} />
+          <input type="email" {...register("email")} />
         </Field>
         <Field label={t("donors.phone")}>
-          <input className="input" {...register("phone")} />
+          <input {...register("phone")} />
         </Field>
         <Field label={t("donors.country")}>
-          <input className="input" placeholder="KW" maxLength={2} {...register("country_of_residence")} />
+          <input placeholder="KW" maxLength={2} {...register("country_of_residence")} />
         </Field>
         <Field label={t("donors.currency")}>
-          <input className="input" placeholder="KWD" maxLength={3} {...register("preferred_currency")} />
+          <input placeholder="KWD" maxLength={3} {...register("preferred_currency")} />
         </Field>
       </div>
 
-      {serverError && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{serverError}</p>
-      )}
+      {serverError && <p className="adm-error">{serverError}</p>}
 
-      <button type="submit" className="btn-primary" disabled={isSubmitting}>
-        {isSubmitting ? t("common.saving") : t("common.save")}
-      </button>
+      <div className="adm-form-foot">
+        <button type="submit" className="adm-btn adm-btn-primary" disabled={isSubmitting}>
+          {isSubmitting ? t("common.saving") : t("common.save")}
+        </button>
+      </div>
     </form>
   );
 }
@@ -249,10 +252,10 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>
+    <label className="adm-field">
+      <span>{label}</span>
       {children}
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="adm-field-err">{error}</p>}
     </label>
   );
 }
