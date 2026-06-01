@@ -1,20 +1,25 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
+import type { DocumentType } from "@/lib/documents";
 import {
+  listGuardianOrphanDocuments,
   listGuardianOrphans,
   listGuardianReports,
+  uploadGuardianOrphanDocument,
   type GuardianOrphan,
   type GuardianReport,
 } from "@/lib/guardianSelf";
 import { ageFromDob } from "@/lib/orphanSelf";
+import { toast } from "@/store/toasts";
 
 import "./GuardianOrphanDetailPage.css";
 
-type TabKey = "overview" | "reports" | "photos" | "messages";
+type TabKey = "overview" | "reports" | "documents" | "photos" | "messages";
 
 /** G-03 — detail page for one of the guardian's orphans. Profile facts come
  * from GET /guardian/me/orphans (filtered to this id); the Reports tab reads
@@ -128,6 +133,9 @@ export function GuardianOrphanDetailPage() {
               <TabButton id="reports" current={tab} onSelect={setTab} count={reportList.length}>
                 {t("guardian.detail.tabReports")}
               </TabButton>
+              <TabButton id="documents" current={tab} onSelect={setTab}>
+                {t("guardian.detail.tabDocuments")}
+              </TabButton>
               <TabButton id="photos" current={tab} onSelect={setTab}>
                 {t("guardian.detail.tabPhotos")}
               </TabButton>
@@ -201,6 +209,13 @@ export function GuardianOrphanDetailPage() {
               </div>
             )}
 
+            {tab === "documents" && (
+              <div role="tabpanel" className="god-tab-panel">
+                <h2 className="god-panel-title">{t("guardian.detail.documentsTitle")}</h2>
+                <GuardianDocumentsPanel orphanId={orphan.id} lang={i18n.language} />
+              </div>
+            )}
+
             {tab === "photos" && (
               <div role="tabpanel" className="god-tab-panel">
                 <div className="god-soon">
@@ -262,6 +277,27 @@ export function GuardianOrphanDetailPage() {
                   </span>
                 </span>
               </Link>
+
+              <button
+                type="button"
+                className="god-action"
+                onClick={() => setTab("documents")}
+              >
+                <span className="god-action-icon" aria-hidden="true">
+                  <svg className="god-icon" viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </span>
+                <span className="god-action-text">
+                  <span className="god-action-title">
+                    {t("guardian.detail.actionDocuments")}
+                  </span>
+                  <span className="god-action-sub">
+                    {t("guardian.detail.actionDocumentsSub")}
+                  </span>
+                </span>
+              </button>
 
               <Link to="/guardian/messages" className="god-action">
                 <span className="god-action-icon" aria-hidden="true">
@@ -445,5 +481,159 @@ function ShieldIcon() {
     <svg className="god-icon god-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
+  );
+}
+
+// Guardians may upload any document type for their orphan (staff verify it).
+const DOC_TYPES: DocumentType[] = [
+  "school_certificate",
+  "medical_report",
+  "birth_certificate",
+  "death_certificate",
+  "national_id",
+  "passport",
+  "bank_statement",
+  "photo_id",
+  "family_record",
+  "other",
+];
+
+/** G-03 "تحديث المستندات": upload a document (lands verification_status=
+ * 'pending') and list the orphan's documents with their review status. The
+ * backend enforces family ownership; this is only ever the guardian's own
+ * orphan. */
+function GuardianDocumentsPanel({ orphanId, lang }: { orphanId: string; lang: string }) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [docType, setDocType] = useState<DocumentType>("school_certificate");
+  const [file, setFile] = useState<File | null>(null);
+  const [fileKey, setFileKey] = useState(0);
+
+  const docs = useQuery({
+    queryKey: ["guardian", "me", "documents", orphanId],
+    queryFn: () => listGuardianOrphanDocuments(orphanId),
+  });
+
+  const upload = useMutation({
+    mutationFn: (vars: { file: File; docType: DocumentType }) =>
+      uploadGuardianOrphanDocument(orphanId, vars.file, vars.docType),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["guardian", "me", "documents", orphanId] });
+      toast.success(t("guardian.detail.docUploadSuccess"));
+      setFile(null);
+      setFileKey((k) => k + 1); // reset the <input type=file>
+    },
+    onError: (err) => {
+      const detail = err instanceof AxiosError ? err.response?.data?.detail : null;
+      toast.error(typeof detail === "string" ? detail : t("guardian.detail.docUploadError"));
+    },
+  });
+
+  const list = docs.data ?? [];
+
+  return (
+    <>
+      <div className="god-doc-upload">
+        <div className="god-doc-upload-row">
+          <label className="god-doc-field">
+            <span className="god-doc-field-label">{t("guardian.detail.docType")}</span>
+            <select
+              className="god-doc-select"
+              value={docType}
+              onChange={(e) => setDocType(e.target.value as DocumentType)}
+            >
+              {DOC_TYPES.map((dt) => (
+                <option key={dt} value={dt}>
+                  {t(`guardian.docType.${dt}`, { defaultValue: dt })}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="god-doc-field">
+            <span className="god-doc-field-label">{t("guardian.detail.docFile")}</span>
+            <input
+              key={fileKey}
+              type="file"
+              className="god-doc-file"
+              accept=".pdf,image/jpeg,image/png,image/webp"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            />
+          </label>
+        </div>
+        <button
+          type="button"
+          className="god-doc-upload-btn"
+          disabled={!file || upload.isPending}
+          onClick={() => file && upload.mutate({ file, docType })}
+        >
+          {upload.isPending ? t("guardian.detail.docUploading") : t("guardian.detail.docUpload")}
+        </button>
+        <p className="god-doc-hint">
+          <ShieldIcon />
+          {t("guardian.detail.docReviewNote")}
+        </p>
+      </div>
+
+      {docs.isLoading && <Skeleton className="h-24 w-full" />}
+      {docs.isError && (
+        <div className="god-state god-state--error" role="alert">
+          {t("guardian.detail.docsError")}
+        </div>
+      )}
+      {docs.data && list.length === 0 && (
+        <div className="god-state">
+          <span className="god-state-emoji" aria-hidden="true">
+            📁
+          </span>
+          <p>{t("guardian.detail.noDocs")}</p>
+        </div>
+      )}
+      {list.length > 0 && (
+        <ul className="god-doc-list">
+          {list.map((d) => (
+            <li key={d.id} className="god-doc-card">
+              <span className="god-doc-icon" aria-hidden="true">
+                <svg className="god-icon" viewBox="0 0 24 24">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </span>
+              <div className="god-doc-info">
+                <div className="god-doc-name">
+                  {d.title?.trim() ||
+                    t(`guardian.docType.${d.document_type}`, {
+                      defaultValue: d.document_type,
+                    })}
+                </div>
+                <div className="god-doc-meta">
+                  <span>
+                    {t(`guardian.docType.${d.document_type}`, {
+                      defaultValue: d.document_type,
+                    })}
+                  </span>
+                  <span>{new Date(d.created_at).toLocaleDateString(lang)}</span>
+                </div>
+              </div>
+              <DocStatusBadge status={d.verification_status} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function DocStatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  const modifier =
+    status === "verified"
+      ? "god-doc-badge--ok"
+      : status === "rejected" || status === "expired"
+        ? "god-doc-badge--no"
+        : "god-doc-badge--pending";
+  return (
+    <span className={`god-doc-badge ${modifier}`}>
+      {t(`guardian.docStatus.${status}`, { defaultValue: status })}
+    </span>
   );
 }

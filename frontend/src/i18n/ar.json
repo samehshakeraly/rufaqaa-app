@@ -2955,7 +2955,20 @@
       "yes": "نعم",
       "no": "لا",
       "balance": "الرصيد",
-      "lastReportTitle": "آخر تقرير"
+      "lastReportTitle": "آخر تقرير",
+      "tabDocuments": "المستندات",
+      "documentsTitle": "المستندات",
+      "actionDocuments": "تحديث المستندات",
+      "actionDocumentsSub": "شهادة المدرسة، الميلاد…",
+      "docType": "نوع المستند",
+      "docFile": "الملف (PDF أو صورة)",
+      "docUpload": "رفع",
+      "docUploading": "جارٍ الرفع…",
+      "docUploadSuccess": "تم رفع المستند — ستراجعه الجهة المسؤولة.",
+      "docUploadError": "تعذّر رفع المستند. حاولي مرة أخرى.",
+      "docReviewNote": "تراجع الجهة المسؤولة المستندات قبل اعتمادها.",
+      "docsError": "تعذّر تحميل المستندات.",
+      "noDocs": "لا توجد مستندات بعد."
     },
     "report": {
       "backToOrphan": "صفحة {{name}}",
@@ -3000,7 +3013,16 @@
       "navLabel": "التنقّل بين الخطوات",
       "prev": "السابق",
       "next": "التالي",
-      "sendSoon": "الإرسال قريباً"
+      "sendSoon": "الإرسال قريباً",
+      "send": "أرسلي التقرير",
+      "sending": "جارٍ الإرسال…",
+      "sentSuccess": "وصل تقريرك للمراجعة. ستصلكِ رسالة عند اعتماده.",
+      "sentError": "تعذّر إرسال التقرير. حاولي مرة أخرى.",
+      "attachTitle": "صورة ورسالة صوتية",
+      "soonTag": "قريباً",
+      "addPhoto": "أضيفي صورة",
+      "addVoice": "سجّلي رسالة صوتية",
+      "attachSoon": "إضافة الصورة والتسجيل الصوتي قريباً — تقريرك المكتوب يُرسل الآن."
     },
     "messages": {
       "listLabel": "قائمة المحادثات",
@@ -3015,6 +3037,24 @@
       "composerHint": "ستراجع الجهة المسؤولة رسالتك قبل وصولها للكفيل",
       "composerPlaceholder": "اكتب رسالتك للكفيل…",
       "send": "إرسال"
+    },
+    "docType": {
+      "birth_certificate": "شهادة الميلاد",
+      "death_certificate": "شهادة الوفاة",
+      "national_id": "الهوية الوطنية",
+      "passport": "جواز السفر",
+      "bank_statement": "كشف حساب بنكي",
+      "school_certificate": "الشهادة الدراسية",
+      "medical_report": "تقرير طبي",
+      "photo_id": "صورة إثبات الهوية",
+      "family_record": "سجل العائلة",
+      "other": "أخرى"
+    },
+    "docStatus": {
+      "pending": "بانتظار المراجعة",
+      "verified": "موثّق",
+      "rejected": "مرفوض",
+      "expired": "منتهي الصلاحية"
     }
   },
   "platform": {

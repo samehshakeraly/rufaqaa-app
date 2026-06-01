@@ -2955,7 +2955,20 @@
       "yes": "Yes",
       "no": "No",
       "balance": "Balance",
-      "lastReportTitle": "Last report"
+      "lastReportTitle": "Last report",
+      "tabDocuments": "Documents",
+      "documentsTitle": "Documents",
+      "actionDocuments": "Update documents",
+      "actionDocumentsSub": "School certificate, birth certificate…",
+      "docType": "Document type",
+      "docFile": "File (PDF or image)",
+      "docUpload": "Upload",
+      "docUploading": "Uploading…",
+      "docUploadSuccess": "Document uploaded — the team will review it.",
+      "docUploadError": "Couldn't upload the document. Please try again.",
+      "docReviewNote": "Documents are reviewed by the team before they're verified.",
+      "docsError": "Couldn't load documents.",
+      "noDocs": "No documents yet."
     },
     "report": {
       "backToOrphan": "{{name}}'s page",
@@ -3000,7 +3013,16 @@
       "navLabel": "Step navigation",
       "prev": "Previous",
       "next": "Next",
-      "sendSoon": "Sending coming soon"
+      "sendSoon": "Sending coming soon",
+      "send": "Send report",
+      "sending": "Sending…",
+      "sentSuccess": "Your report was sent for review. You'll be notified when it's approved.",
+      "sentError": "Couldn't send the report. Please try again.",
+      "attachTitle": "Photo & voice note",
+      "soonTag": "Coming soon",
+      "addPhoto": "Add a photo",
+      "addVoice": "Record a voice note",
+      "attachSoon": "Photo and voice attachments are coming soon — your written report is sent now."
     },
     "messages": {
       "listLabel": "Conversations list",
@@ -3015,6 +3037,24 @@
       "composerHint": "The organisation will review your message before it reaches the sponsor",
       "composerPlaceholder": "Write your message to the sponsor…",
       "send": "Send"
+    },
+    "docType": {
+      "birth_certificate": "Birth certificate",
+      "death_certificate": "Death certificate",
+      "national_id": "National ID",
+      "passport": "Passport",
+      "bank_statement": "Bank statement",
+      "school_certificate": "School certificate",
+      "medical_report": "Medical report",
+      "photo_id": "Photo ID",
+      "family_record": "Family record",
+      "other": "Other"
+    },
+    "docStatus": {
+      "pending": "Pending review",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "expired": "Expired"
     }
   },
   "platform": {

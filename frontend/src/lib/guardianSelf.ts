@@ -1,4 +1,5 @@
 import { api } from "./api";
+import type { DocumentRead, DocumentType } from "./documents";
 
 /**
  * Guardian self-service API client.
@@ -121,5 +122,65 @@ export async function listGuardianReports(
   const { data } = await api.get<GuardianReport[]>("/guardian/me/reports", {
     params: { orphan_id: orphanId, limit },
   });
+  return data;
+}
+
+/** Body for POST /guardian/me/reports. Text-only for this cut (G-04): the
+ * wizard maps mood → `psychological_status` and the star rating + notes →
+ * `educational_progress`. Photo/voice attachments are deferred. */
+export interface GuardianReportInput {
+  orphan_id: string;
+  report_type?: ReportType;
+  period_start: string;
+  period_end: string;
+  summary?: string;
+  educational_progress?: Record<string, unknown>;
+  psychological_status?: Record<string, unknown>;
+  quran_progress?: Record<string, unknown>;
+  activities?: Record<string, unknown>;
+  health_status?: Record<string, unknown>;
+}
+
+/** POST /guardian/me/reports — creates a report that lands directly in
+ * `pending_partner_approval`, so it surfaces in the staff review queue and the
+ * guardian sees the pending→approved/rejected status on the orphan page. The
+ * backend 403s if the orphan isn't in the guardian's family. */
+export async function createGuardianReport(
+  body: GuardianReportInput,
+): Promise<GuardianReport> {
+  const { data } = await api.post<GuardianReport>("/guardian/me/reports", body);
+  return data;
+}
+
+/** GET /guardian/me/orphans/{id}/documents — the orphan's documents with their
+ * `verification_status` (pending → verified/rejected) for the G-03 UI. 403 if
+ * the orphan isn't in the guardian's family. */
+export async function listGuardianOrphanDocuments(
+  orphanId: string,
+): Promise<DocumentRead[]> {
+  const { data } = await api.get<DocumentRead[]>(
+    `/guardian/me/orphans/${orphanId}/documents`,
+  );
+  return data;
+}
+
+/** POST /guardian/me/orphans/{id}/documents — single multipart call: stages the
+ * file and registers it as `verification_status='pending'`, so it rides the
+ * existing staff document-verification workflow. Never auto-verified. */
+export async function uploadGuardianOrphanDocument(
+  orphanId: string,
+  file: File,
+  documentType: DocumentType,
+  title?: string,
+): Promise<DocumentRead> {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("document_type", documentType);
+  if (title) form.append("title", title);
+  const { data } = await api.post<DocumentRead>(
+    `/guardian/me/orphans/${orphanId}/documents`,
+    form,
+    { headers: { "Content-Type": "multipart/form-data" } },
+  );
   return data;
 }
