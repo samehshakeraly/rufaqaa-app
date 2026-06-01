@@ -17,6 +17,8 @@ import {
 } from "@/lib/sponsorships";
 import { toast } from "@/store/toasts";
 
+import "./adminEntities.css";
+
 const SP_QUERY = ["sponsorships", { limit: 50, offset: 0 }] as const;
 const ACTIVE = new Set(["active", "paused", "overdue"]);
 const FREQUENCIES = [
@@ -26,6 +28,17 @@ const FREQUENCIES = [
   "annual",
   "one_time",
 ] as const;
+
+// Map a sponsorship status onto a shared status-pill variant.
+const STATUS_VARIANT: Record<string, string> = {
+  active: "success",
+  paused: "warning",
+  overdue: "danger",
+  pending: "info",
+  completed: "purple",
+  cancelled: "",
+  transferred: "",
+};
 
 export function SponsorshipsPage() {
   const { t } = useTranslation();
@@ -54,20 +67,18 @@ export function SponsorshipsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {t("sponsorships.title")}
-        </h1>
-        <div className="flex items-center gap-4">
+    <div className="adm">
+      <div className="adm-head">
+        <h1>{t("sponsorships.title")}</h1>
+        <div className="adm-head-actions">
           {data && (
-            <span className="text-sm text-slate-500">
-              {t("common.total")}: {data.total.toLocaleString()}
+            <span className="adm-total">
+              {t("common.total")}: <span className="latin">{data.total.toLocaleString()}</span>
             </span>
           )}
           <button
             type="button"
-            className="rounded-lg border border-sky px-3 py-2 text-sm text-slate-700 hover:bg-tranquil dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="adm-btn"
             onClick={async () => {
               try {
                 const blob = await exportSponsorshipsCsv();
@@ -86,7 +97,7 @@ export function SponsorshipsPage() {
           </button>
           <button
             type="button"
-            className="btn-primary"
+            className="adm-btn adm-btn-primary"
             onClick={() => setShowForm((v) => !v)}
           >
             {showForm ? t("common.cancel") : t("sponsorships.addNew")}
@@ -105,102 +116,99 @@ export function SponsorshipsPage() {
       )}
 
       {isLoading && <TableSkeleton columns={7} />}
-      {error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {t("common.loadError")}
-        </p>
-      )}
+      {error && <p className="adm-error">{t("common.loadError")}</p>}
 
       {data && data.items.length === 0 && (
-        <div className="card text-center text-slate-500">{t("common.empty")}</div>
+        <div className="adm-empty">{t("common.empty")}</div>
       )}
 
       {data && data.items.length > 0 && (
-        <div className="card overflow-x-auto p-0">
-          <table className="min-w-full text-start">
-            <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
-              <tr>
-                <th className="px-4 py-3 font-medium">{t("sponsorships.code")}</th>
-                <th className="px-4 py-3 font-medium">{t("sponsorships.donor")}</th>
-                <th className="px-4 py-3 font-medium">{t("sponsorships.orphan")}</th>
-                <th className="px-4 py-3 font-medium">
-                  {t("sponsorships.monthlyAmount")}
-                </th>
-                <th className="px-4 py-3 font-medium">
-                  {t("sponsorships.nextPayment")}
-                </th>
-                <th className="px-4 py-3 font-medium">{t("sponsorships.status")}</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sky/40 text-sm">
-              {data.items.map((s) => (
-                <tr key={s.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">{s.code}</td>
-                  <td className="px-4 py-3">
-                    <div>{s.donor_name ?? s.donor_id.slice(0, 8)}</div>
-                    {s.donor_code && (
-                      <div className="font-mono text-xs text-slate-500">
-                        {s.donor_code}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div>{s.orphan_name ?? s.orphan_id.slice(0, 8)}</div>
-                    {s.orphan_code && (
-                      <div className="font-mono text-xs text-slate-500">
-                        {s.orphan_code}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {s.monthly_amount} {s.currency}{" "}
-                    <span className="text-xs text-slate-500">
-                      ({t(`sponsorships.frequencies.${s.payment_frequency}`, s.payment_frequency)})
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">{s.next_payment_date ?? "—"}</td>
-                  <td className="px-4 py-3">
-                    {t(`sponsorships.statuses.${s.status}`, s.status)}
-                  </td>
-                  <td className="px-4 py-3 text-end">
-                    <span className="flex justify-end gap-2">
-                      {s.status === "active" && (
-                        <button
-                          type="button"
-                          className="rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
-                          onClick={() => pauseMut.mutate(s.id)}
-                          disabled={pauseMut.isPending}
-                        >
-                          {t("sponsorships.pause")}
-                        </button>
-                      )}
-                      {s.status === "paused" && (
-                        <button
-                          type="button"
-                          className="rounded-lg border border-trust bg-trust px-2 py-1 text-xs text-white hover:bg-trust/90"
-                          onClick={() => resumeMut.mutate(s.id)}
-                          disabled={resumeMut.isPending}
-                        >
-                          {t("sponsorships.resume")}
-                        </button>
-                      )}
-                      {ACTIVE.has(s.status) && (
-                        <button
-                          type="button"
-                          className="rounded-lg border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
-                          onClick={() => cancelMut.mutate(s.id)}
-                          disabled={cancelMut.isPending}
-                        >
-                          {t("sponsorships.cancel")}
-                        </button>
-                      )}
-                    </span>
-                  </td>
+        <div className="adm-table-card">
+          <div className="adm-table-wrap">
+            <table className="adm-t">
+              <thead>
+                <tr>
+                  <th>{t("sponsorships.code")}</th>
+                  <th>{t("sponsorships.donor")}</th>
+                  <th>{t("sponsorships.orphan")}</th>
+                  <th>{t("sponsorships.monthlyAmount")}</th>
+                  <th>{t("sponsorships.nextPayment")}</th>
+                  <th>{t("sponsorships.status")}</th>
+                  <th className="end">{t("orphans.actionsCol")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.items.map((s) => (
+                  <tr key={s.id}>
+                    <td>
+                      <span className="adm-cell-code">{s.code}</span>
+                    </td>
+                    <td>
+                      <div className="adm-cell-strong">
+                        {s.donor_name ?? s.donor_id.slice(0, 8)}
+                      </div>
+                      {s.donor_code && <div className="adm-cell-sub">{s.donor_code}</div>}
+                    </td>
+                    <td>
+                      <div className="adm-cell-strong">
+                        {s.orphan_name ?? s.orphan_id.slice(0, 8)}
+                      </div>
+                      {s.orphan_code && <div className="adm-cell-sub">{s.orphan_code}</div>}
+                    </td>
+                    <td>
+                      <span className="latin">
+                        {s.monthly_amount} {s.currency}
+                      </span>{" "}
+                      <span className="adm-cell-muted">
+                        ({t(`sponsorships.frequencies.${s.payment_frequency}`, s.payment_frequency)})
+                      </span>
+                    </td>
+                    <td className="latin">{s.next_payment_date ?? "—"}</td>
+                    <td>
+                      <span className={`adm-status ${STATUS_VARIANT[s.status] ?? ""}`}>
+                        <span className="dot" aria-hidden="true" />
+                        {t(`sponsorships.statuses.${s.status}`, s.status)}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="adm-row-actions">
+                        {s.status === "active" && (
+                          <button
+                            type="button"
+                            className="adm-row-btn"
+                            onClick={() => pauseMut.mutate(s.id)}
+                            disabled={pauseMut.isPending}
+                          >
+                            {t("sponsorships.pause")}
+                          </button>
+                        )}
+                        {s.status === "paused" && (
+                          <button
+                            type="button"
+                            className="adm-row-btn primary"
+                            onClick={() => resumeMut.mutate(s.id)}
+                            disabled={resumeMut.isPending}
+                          >
+                            {t("sponsorships.resume")}
+                          </button>
+                        )}
+                        {ACTIVE.has(s.status) && (
+                          <button
+                            type="button"
+                            className="adm-row-btn"
+                            onClick={() => cancelMut.mutate(s.id)}
+                            disabled={cancelMut.isPending}
+                          >
+                            {t("sponsorships.cancel")}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
@@ -248,12 +256,11 @@ function NewSponsorshipForm({ onCreated }: { onCreated: () => void | Promise<voi
         if (!form.donor_id || !form.orphan_id) return;
         mut.mutate();
       }}
-      className="card space-y-4"
+      className="adm-card"
     >
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="adm-form-grid">
         <Field label={t("sponsorships.donor")}>
           <select
-            className="input"
             value={form.donor_id}
             onChange={(e) => setForm({ ...form, donor_id: e.target.value })}
           >
@@ -267,7 +274,6 @@ function NewSponsorshipForm({ onCreated }: { onCreated: () => void | Promise<voi
         </Field>
         <Field label={t("sponsorships.orphan")}>
           <select
-            className="input"
             value={form.orphan_id}
             onChange={(e) => setForm({ ...form, orphan_id: e.target.value })}
           >
@@ -281,7 +287,6 @@ function NewSponsorshipForm({ onCreated }: { onCreated: () => void | Promise<voi
         </Field>
         <Field label={t("sponsorships.monthlyAmount")}>
           <input
-            className="input"
             inputMode="decimal"
             value={form.monthly_amount}
             onChange={(e) => setForm({ ...form, monthly_amount: e.target.value })}
@@ -289,25 +294,20 @@ function NewSponsorshipForm({ onCreated }: { onCreated: () => void | Promise<voi
         </Field>
         <Field label={t("donors.currency")}>
           <input
-            className="input"
             maxLength={3}
             value={form.currency}
-            onChange={(e) =>
-              setForm({ ...form, currency: e.target.value.toUpperCase() })
-            }
+            onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
           />
         </Field>
         <Field label={t("sponsorships.start")}>
           <input
             type="date"
-            className="input"
             value={form.start_date}
             onChange={(e) => setForm({ ...form, start_date: e.target.value })}
           />
         </Field>
         <Field label={t("sponsorships.frequency")}>
           <select
-            className="input"
             value={form.payment_frequency ?? "monthly"}
             onChange={(e) => setForm({ ...form, payment_frequency: e.target.value })}
           >
@@ -320,21 +320,21 @@ function NewSponsorshipForm({ onCreated }: { onCreated: () => void | Promise<voi
         </Field>
       </div>
 
-      {serverError && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{serverError}</p>
-      )}
+      {serverError && <p className="adm-error">{serverError}</p>}
 
-      <button type="submit" className="btn-primary" disabled={mut.isPending}>
-        {mut.isPending ? t("common.saving") : t("common.save")}
-      </button>
+      <div className="adm-form-foot">
+        <button type="submit" className="adm-btn adm-btn-primary" disabled={mut.isPending}>
+          {mut.isPending ? t("common.saving") : t("common.save")}
+        </button>
+      </div>
     </form>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>
+    <label className="adm-field">
+      <span>{label}</span>
       {children}
     </label>
   );
