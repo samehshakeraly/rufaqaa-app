@@ -4,6 +4,7 @@ import { AdminRoute } from "./components/AdminRoute";
 import { ContentRoute } from "./components/ContentRoute";
 import { DonorRoute } from "./components/DonorRoute";
 import { FinanceRoute } from "./components/FinanceRoute";
+import { GuardianRoute } from "./components/GuardianRoute";
 import { MarketingRoute } from "./components/MarketingRoute";
 import { OrphanRoute } from "./components/OrphanRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
@@ -13,6 +14,7 @@ import { SuperAdminRoute } from "./components/SuperAdminRoute";
 import { PublicSiteLayout } from "./components/public/PublicSiteLayout";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
+import { GuardianLayout } from "./components/layout/GuardianLayout";
 import { OrphanLayout } from "./components/layout/OrphanLayout";
 import { PartnerLayout } from "./components/layout/PartnerLayout";
 import { PlatformLayout } from "./components/layout/PlatformLayout";
@@ -45,6 +47,11 @@ import { FamilyDetailPage } from "./pages/FamilyDetailPage";
 import { FinanceDashboardPage } from "./pages/FinanceDashboardPage";
 import { FinancialReportsPage } from "./pages/FinancialReportsPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { GuardianHomePage } from "./pages/GuardianHomePage";
+import { GuardianLoginPage } from "./pages/GuardianLoginPage";
+import { GuardianMessagesPage } from "./pages/GuardianMessagesPage";
+import { GuardianOrphanDetailPage } from "./pages/GuardianOrphanDetailPage";
+import { GuardianReportUploadPage } from "./pages/GuardianReportUploadPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MarketingChannelsPage } from "./pages/MarketingChannelsPage";
@@ -93,6 +100,7 @@ export function App() {
       {/* ── Anonymous-safe + auth pages without chrome ─────────── */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/orphan/login" element={<OrphanLoginPage />} />
+      <Route path="/guardian/login" element={<GuardianLoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/verify-email" element={<VerifyEmailPendingPage />} />
@@ -154,6 +162,31 @@ export function App() {
           path="/orphan/achievements"
           element={<OrphanAchievementsPage />}
         />
+      </Route>
+
+      {/* ── Guardian family portal (G-01..G-05, role=guardian) ────
+          Distinct GuardianLayout chrome ("بوابة ولي الأمر"). Gated by
+          GuardianRoute to role=guardian; staff/donor/orphan are sent to
+          their own home. Reads the live /guardian/me* endpoints; report
+          UPLOAD + messages have no backend yet and degrade to a clear
+          "coming soon" state. */}
+      <Route
+        element={
+          <GuardianRoute>
+            <GuardianLayout />
+          </GuardianRoute>
+        }
+      >
+        <Route path="/guardian" element={<GuardianHomePage />} />
+        <Route
+          path="/guardian/orphans/:id"
+          element={<GuardianOrphanDetailPage />}
+        />
+        <Route
+          path="/guardian/orphans/:id/report"
+          element={<GuardianReportUploadPage />}
+        />
+        <Route path="/guardian/messages" element={<GuardianMessagesPage />} />
       </Route>
 
       {/* ── Admin / staff area ──────────────────────────────────── */}
