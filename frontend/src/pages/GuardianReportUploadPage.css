@@ -1,0 +1,506 @@
+/* ═══════════════════════════════════════════════════════════════
+   G-04 Guardian Monthly Report (preview) — scoped styles
+   Ported from docs/design/screens/guardian/G-04 Monthly Report
+   Upload.html. Tokens only (rufaqaa v0.1); scoped under `.gru-root`,
+   prefixed `gru-`. Logical properties for RTL.
+
+   NO backend upload endpoint exists yet — the final submit is disabled
+   with a clear "coming soon" note and nothing is transmitted.
+   ═══════════════════════════════════════════════════════════════ */
+
+.gru-root {
+  --snow-100: #f7fbfc;
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+  --trust-800: #142e4d;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --transition: 200ms ease;
+
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gru-root *,
+  .gru-root *::before,
+  .gru-root *::after {
+    transition: none !important;
+  }
+}
+
+/* ═══ Header ═══ */
+.gru-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gru-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--trust-500);
+  text-decoration: none;
+  width: fit-content;
+}
+.gru-back:hover {
+  text-decoration: underline;
+}
+.gru-title-area h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.gru-title-area p {
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+/* ═══ Coming-soon banner ═══ */
+.gru-soon-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--warning-700);
+  line-height: 1.6;
+}
+.gru-soon-banner strong {
+  font-weight: 600;
+}
+
+/* ═══ Progress ═══ */
+.gru-progress {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+}
+.gru-progress-head {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+}
+.gru-progress-track {
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.gru-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--trust-400), var(--trust-500));
+  border-radius: 999px;
+  transition: width var(--transition);
+}
+.gru-steps {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  gap: 8px;
+}
+.gru-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  text-align: center;
+}
+.gru-step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.gru-step--active .gru-step-dot {
+  background: var(--trust-500);
+  color: white;
+}
+.gru-step--done .gru-step-dot {
+  background: var(--success-600);
+  color: white;
+}
+.gru-step-label {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.gru-step--active .gru-step-label {
+  color: var(--trust-700);
+  font-weight: 500;
+}
+
+/* ═══ Context ═══ */
+.gru-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+}
+.gru-context-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  color: var(--trust-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.gru-context-text {
+  display: flex;
+  flex-direction: column;
+}
+.gru-context-text strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+.gru-context-text span {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+/* ═══ Stage / steps ═══ */
+.gru-stage {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  min-height: 280px;
+}
+.gru-prompt {
+  margin-bottom: 22px;
+}
+.gru-prompt h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.gru-prompt p {
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+/* Mood */
+.gru-mood-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gru-mood-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+  transition: var(--transition);
+}
+.gru-mood-card:hover {
+  border-color: var(--sky-300);
+}
+.gru-mood-card--selected {
+  border-color: var(--trust-500);
+  background: var(--snow-200);
+}
+.gru-mood-face {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.gru-mood-face svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gru-mood-face--good svg {
+  stroke: var(--success-600);
+}
+.gru-mood-face--okay svg {
+  stroke: var(--trust-500);
+}
+.gru-mood-face--attn svg {
+  stroke: var(--warning-600);
+}
+.gru-mood-text {
+  display: flex;
+  flex-direction: column;
+}
+.gru-mood-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.gru-mood-sub {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* Fields */
+.gru-field {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gru-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+.gru-optional {
+  font-weight: 400;
+  color: var(--gray-400);
+  font-size: 13px;
+}
+.gru-textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--gray-900);
+  background: var(--gray-50);
+  transition: var(--transition);
+}
+.gru-textarea:focus {
+  outline: none;
+  border-color: var(--trust-400);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(118, 159, 205, 0.2);
+}
+.gru-field-hint {
+  font-size: 12.5px;
+  color: var(--gray-500);
+  margin-top: 10px;
+}
+
+/* Stars */
+.gru-stars-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+}
+.gru-stars {
+  display: inline-flex;
+  gap: 8px;
+}
+.gru-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.gru-star svg {
+  width: 40px;
+  height: 40px;
+  fill: var(--gray-200);
+  stroke: var(--gray-300);
+  stroke-width: 1;
+  transition: var(--transition);
+}
+.gru-star--lit svg {
+  fill: var(--warning-600);
+  stroke: var(--warning-700);
+}
+.gru-stars-label {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+/* Review */
+.gru-review {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gru-review-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+}
+.gru-review-label {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.gru-review-value {
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gru-review-extra {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--gray-600);
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+}
+.gru-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  font-size: 13.5px;
+  color: var(--trust-700);
+  line-height: 1.6;
+}
+.gru-privacy svg {
+  color: var(--trust-500);
+}
+
+/* ═══ States ═══ */
+.gru-state {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 36px 24px;
+  text-align: center;
+  color: var(--gray-600);
+}
+.gru-state-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--trust-500);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* ═══ Foot nav ═══ */
+.gru-foot {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.gru-foot-btn {
+  padding: 14px 24px;
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid;
+  transition: var(--transition);
+}
+.gru-foot-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.gru-foot-btn--secondary {
+  background: white;
+  border-color: var(--gray-200);
+  color: var(--gray-700);
+}
+.gru-foot-btn--secondary:not(:disabled):hover {
+  border-color: var(--sky-300);
+}
+.gru-foot-btn--primary {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  color: white;
+  margin-inline-start: auto;
+}
+.gru-foot-btn--primary:not(:disabled):hover {
+  background: var(--trust-600);
+}
+.gru-foot-btn--send {
+  background: var(--gray-200);
+  border-color: var(--gray-200);
+  color: var(--gray-500);
+  margin-inline-start: auto;
+}
+
+.gru-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.gru-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 560px) {
+  .gru-step-label {
+    display: none;
+  }
+}
