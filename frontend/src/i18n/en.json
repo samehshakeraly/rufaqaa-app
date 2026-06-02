@@ -1161,7 +1161,9 @@
     "loadError": "Could not load data",
     "createError": "Could not save",
     "required": "This field is required",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "close": "Close",
+    "viewFullSize": "View full-size"
   },
   "pagination": {
     "page": "Page {{page}} of {{total}}",
@@ -1356,7 +1358,13 @@
       "title": "Photos",
       "uploaded": "Photo uploaded.",
       "tooLarge": "File too large (max 10 MB).",
-      "none": "No photos yet."
+      "none": "No photos yet.",
+      "status": {
+        "pending": "Pending review",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "flagged": "Flagged"
+      }
     },
     "caseStatus": {
       "pending_review": "Pending review",
@@ -2366,6 +2374,12 @@
     "empty": "No documents on record yet.",
     "verify": "Verify",
     "reject": "Reject",
+    "view": "View",
+    "status": {
+      "pending": "Pending review",
+      "verified": "Verified",
+      "rejected": "Rejected"
+    },
     "types": {
       "birth_certificate": "Birth certificate",
       "death_certificate": "Death certificate",

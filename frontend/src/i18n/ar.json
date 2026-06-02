@@ -1161,7 +1161,9 @@
     "loadError": "تعذّر تحميل البيانات",
     "createError": "تعذّر الحفظ",
     "required": "هذا الحقل مطلوب",
-    "comingSoon": "سيُتاح قريباً"
+    "comingSoon": "سيُتاح قريباً",
+    "close": "إغلاق",
+    "viewFullSize": "عرض الصورة بالحجم الكامل"
   },
   "pagination": {
     "page": "صفحة {{page}} من {{total}}",
@@ -1356,7 +1358,13 @@
       "title": "الصور",
       "uploaded": "تم رفع الصورة.",
       "tooLarge": "الملف كبير جداً (الحد الأقصى 10 ميجا).",
-      "none": "لا توجد صور بعد."
+      "none": "لا توجد صور بعد.",
+      "status": {
+        "pending": "قيد المراجعة",
+        "approved": "معتمدة",
+        "rejected": "مرفوضة",
+        "flagged": "موسومة"
+      }
     },
     "caseStatus": {
       "pending_review": "قيد المراجعة",
@@ -2366,6 +2374,12 @@
     "empty": "لا توجد مستندات بعد.",
     "verify": "تأكيد",
     "reject": "رفض",
+    "view": "عرض",
+    "status": {
+      "pending": "قيد المراجعة",
+      "verified": "موثّق",
+      "rejected": "مرفوض"
+    },
     "types": {
       "birth_certificate": "شهادة ميلاد",
       "death_certificate": "شهادة وفاة",

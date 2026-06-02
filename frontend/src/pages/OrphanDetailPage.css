@@ -542,6 +542,15 @@
   object-fit: cover;
   display: block;
 }
+/* Clickable thumbnail → opens the full-size lightbox. */
+.ps-media-card-thumb-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
 .ps-media-card-actions {
   display: flex;
   gap: 6px;

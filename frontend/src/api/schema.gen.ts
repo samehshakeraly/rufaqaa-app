@@ -438,6 +438,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/{document_id}/url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Document Url
+         * @description Return a short-lived presigned URL for a document's stored file.
+         *
+         *     Gated on STAFF_ROLES — the same roles that already *read* documents
+         *     (list_orphan_documents / list_guardian_documents). Viewing is broader than
+         *     verifying, which stays ADMIN_ROLES-only. Org-scoped: RLS plus an explicit
+         *     organization_id filter, so a document outside the caller's org reads as 404.
+         *     Reuses presigned_get_url, which applies #70's browser-reachable host swap.
+         */
+        get: operations["get_document_url_api_v1_documents__document_id__url_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/documents/{document_id}/verify": {
         parameters: {
             query?: never;
@@ -2981,6 +3007,14 @@ export interface components {
             verification_status: "pending" | "verified" | "rejected" | "expired";
             /** Verified At */
             verified_at: string | null;
+        };
+        /**
+         * DocumentUrlRead
+         * @description Short-lived presigned URL for viewing a document's stored file.
+         */
+        DocumentUrlRead: {
+            /** Url */
+            url: string;
         };
         /** DocumentVerify */
         DocumentVerify: {
@@ -6472,6 +6506,37 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_document_url_api_v1_documents__document_id__url_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentUrlRead"];
+                };
             };
             /** @description Validation Error */
             422: {

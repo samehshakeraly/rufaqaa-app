@@ -10,6 +10,7 @@ import {
   type DocumentRead,
   type DocumentType,
   type FileUploadResponse,
+  getDocumentUrl,
   listGuardianDocuments,
   listOrphanDocuments,
   uploadFile,
@@ -103,6 +104,16 @@ export function DocumentUploadCard(props: { target: Target }) {
       verifyDocument(id, status),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey });
+    },
+    onError: (err) => toast.error(extractMsg(err)),
+  });
+
+  // Fetch a short-lived presigned URL and open it in a new tab so reviewers
+  // can inspect the file (often a PDF) before verifying.
+  const viewM = useMutation({
+    mutationFn: (id: string) => getDocumentUrl(id),
+    onSuccess: (url) => {
+      window.open(url, "_blank", "noopener");
     },
     onError: (err) => toast.error(extractMsg(err)),
   });
@@ -273,28 +284,38 @@ export function DocumentUploadCard(props: { target: Target }) {
                 </p>
               </div>
               <VerificationBadge status={d.verification_status} />
-              {d.verification_status === "pending" && (
-                <div className="flex gap-1">
-                  <button
-                    type="button"
-                    className="rounded border border-emerald-300 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50"
-                    onClick={() =>
-                      verifyM.mutate({ id: d.id, status: "verified" })
-                    }
-                  >
-                    {t("documents.verify")}
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
-                    onClick={() =>
-                      verifyM.mutate({ id: d.id, status: "rejected" })
-                    }
-                  >
-                    {t("documents.reject")}
-                  </button>
-                </div>
-              )}
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  className="rounded border border-sky px-2 py-1 text-xs text-slate-700 hover:bg-tranquil"
+                  onClick={() => viewM.mutate(d.id)}
+                  disabled={viewM.isPending && viewM.variables === d.id}
+                >
+                  {t("documents.view")}
+                </button>
+                {d.verification_status === "pending" && (
+                  <>
+                    <button
+                      type="button"
+                      className="rounded border border-emerald-300 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50"
+                      onClick={() =>
+                        verifyM.mutate({ id: d.id, status: "verified" })
+                      }
+                    >
+                      {t("documents.verify")}
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
+                      onClick={() =>
+                        verifyM.mutate({ id: d.id, status: "rejected" })
+                      }
+                    >
+                      {t("documents.reject")}
+                    </button>
+                  </>
+                )}
+              </div>
             </li>
           ))}
         </ul>
@@ -304,6 +325,7 @@ export function DocumentUploadCard(props: { target: Target }) {
 }
 
 function VerificationBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const cls =
     status === "verified"
       ? "bg-emerald-100 text-emerald-800"
@@ -311,7 +333,9 @@ function VerificationBadge({ status }: { status: string }) {
       ? "bg-red-100 text-red-800"
       : "bg-amber-100 text-amber-800";
   return (
-    <span className={`inline-block rounded px-2 py-0.5 text-xs ${cls}`}>{status}</span>
+    <span className={`inline-block rounded px-2 py-0.5 text-xs ${cls}`}>
+      {t(`documents.status.${status}`, { defaultValue: status })}
+    </span>
   );
 }
 

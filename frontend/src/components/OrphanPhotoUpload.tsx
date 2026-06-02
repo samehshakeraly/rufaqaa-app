@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Lightbox } from "@/components/Lightbox";
 import { listOrphanPhotos, uploadOrphanPhoto } from "@/lib/media";
 import { toast } from "@/store/toasts";
 
@@ -14,6 +15,7 @@ export function OrphanPhotoUpload({ orphanId }: { orphanId: string }) {
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   const photosQ = useQuery({
     queryKey: ["orphan", orphanId, "photos"],
@@ -82,17 +84,26 @@ export function OrphanPhotoUpload({ orphanId }: { orphanId: string }) {
               key={p.id}
               className="overflow-hidden rounded-lg border border-sky bg-snow"
             >
-              <img
-                src={p.presigned_url}
-                alt=""
-                className="aspect-square w-full object-cover"
-                loading="lazy"
-              />
-              <p className="px-2 py-1 text-[10px] text-slate-500">
-                {new Date(p.created_at).toLocaleDateString()}
+              <button
+                type="button"
+                className="block w-full cursor-pointer"
+                aria-label={t("common.viewFullSize")}
+                onClick={() => setLightbox(p.presigned_url)}
+              >
+                <img
+                  src={p.presigned_url}
+                  alt=""
+                  className="aspect-square w-full object-cover"
+                  loading="lazy"
+                />
+              </button>
+              <p className="flex flex-wrap items-center gap-1 px-2 py-1 text-[10px] text-slate-500">
+                <span>{new Date(p.created_at).toLocaleDateString()}</span>
                 {p.moderation_status !== "approved" && (
-                  <span className="ms-1 rounded bg-amber-100 px-1 py-0.5 text-amber-800">
-                    {p.moderation_status}
+                  <span className="rounded bg-amber-100 px-1 py-0.5 text-amber-800">
+                    {t(`orphans.photo.status.${p.moderation_status}`, {
+                      defaultValue: p.moderation_status,
+                    })}
                   </span>
                 )}
               </p>
@@ -100,6 +111,8 @@ export function OrphanPhotoUpload({ orphanId }: { orphanId: string }) {
           ))}
         </ul>
       )}
+
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
     </div>
   );
 }
