@@ -22,8 +22,9 @@ from app.models.family import Guardian
 from app.models.orphan import Orphan
 from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.document import DocumentCreate, DocumentRead, DocumentVerify
+from app.schemas.document import DocumentCreate, DocumentRead, DocumentUrlRead, DocumentVerify
 from app.services.audit import record_audit
+from app.services.storage import presigned_get_url
 
 router = APIRouter()
 
@@ -233,6 +234,36 @@ async def create_unattached_document(
     await db.commit()
     await db.refresh(doc)
     return DocumentRead.model_validate(doc)
+
+
+@router.get("/documents/{document_id}/url", response_model=DocumentUrlRead)
+async def get_document_url(
+    document_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> DocumentUrlRead:
+    """Return a short-lived presigned URL for a document's stored file.
+
+    Gated on STAFF_ROLES — the same roles that already *read* documents
+    (list_orphan_documents / list_guardian_documents). Viewing is broader than
+    verifying, which stays ADMIN_ROLES-only. Org-scoped: RLS plus an explicit
+    organization_id filter, so a document outside the caller's org reads as 404.
+    Reuses presigned_get_url, which applies #70's browser-reachable host swap."""
+    doc = await db.scalar(
+        select(Document).where(
+            Document.id == document_id,
+            Document.organization_id == user.organization_id,
+        )
+    )
+    if doc is None:
+        raise NotFound("Document")
+    file_url = doc.file_url
+    if not file_url.startswith("s3://"):
+        return DocumentUrlRead(url=file_url)
+    _, _, rest = file_url.partition("s3://")
+    bucket, _, key = rest.partition("/")
+    url = await presigned_get_url(bucket, key)
+    return DocumentUrlRead(url=url)
 
 
 @router.post("/documents/{document_id}/verify", response_model=DocumentRead)

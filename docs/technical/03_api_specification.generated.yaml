@@ -809,6 +809,16 @@ components:
       - created_at
       title: DocumentRead
       type: object
+    DocumentUrlRead:
+      description: Short-lived presigned URL for viewing a document's stored file.
+      properties:
+        url:
+          title: Url
+          type: string
+      required:
+      - url
+      title: DocumentUrlRead
+      type: object
     DocumentVerify:
       properties:
         notes:
@@ -6795,6 +6805,47 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Delete Document
+      tags:
+      - documents
+  /api/v1/documents/{document_id}/url:
+    get:
+      description: 'Return a short-lived presigned URL for a document''s stored file.
+
+
+        Gated on STAFF_ROLES — the same roles that already *read* documents
+
+        (list_orphan_documents / list_guardian_documents). Viewing is broader than
+
+        verifying, which stays ADMIN_ROLES-only. Org-scoped: RLS plus an explicit
+
+        organization_id filter, so a document outside the caller''s org reads as 404.
+
+        Reuses presigned_get_url, which applies #70''s browser-reachable host swap.'
+      operationId: get_document_url_api_v1_documents__document_id__url_get
+      parameters:
+      - in: path
+        name: document_id
+        required: true
+        schema:
+          format: uuid
+          title: Document Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentUrlRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Document Url
       tags:
       - documents
   /api/v1/documents/{document_id}/verify:

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { DocumentUploadCard } from "@/components/DocumentUploadCard";
+import { Lightbox } from "@/components/Lightbox";
 import {
   EDUCATION_STAGES,
   HEALTH_COVERAGES,
@@ -71,6 +72,7 @@ export function OrphanDetailPage() {
     | { kind: "media"; mediaId: string }
     | null
   >(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   const invalidateOrphan = () =>
     Promise.all([
@@ -388,11 +390,18 @@ export function OrphanDetailPage() {
               <div className="ps-media-grid">
                 {pendingPhotos.map((p) => (
                   <div key={p.id} className="ps-media-card">
-                    <img
-                      src={p.presigned_url}
-                      alt={t("media.review.thumbnailAlt", { id: p.id.slice(0, 8) })}
-                      loading="lazy"
-                    />
+                    <button
+                      type="button"
+                      className="ps-media-card-thumb-btn"
+                      aria-label={t("common.viewFullSize")}
+                      onClick={() => setLightbox(p.presigned_url)}
+                    >
+                      <img
+                        src={p.presigned_url}
+                        alt={t("media.review.thumbnailAlt", { id: p.id.slice(0, 8) })}
+                        loading="lazy"
+                      />
+                    </button>
                     <div className="ps-media-card-actions">
                       <button
                         type="button"
@@ -422,6 +431,8 @@ export function OrphanDetailPage() {
           <DocumentUploadCard target={{ kind: "orphan", orphanId: id }} />
         </div>
       </div>
+
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
 
       {rejectMode && (
         <ReasonDialog

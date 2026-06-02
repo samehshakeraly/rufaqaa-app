@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { Lightbox } from "@/components/Lightbox";
 import { Skeleton } from "@/components/Skeleton";
 import type { DocumentType } from "@/lib/documents";
 import {
@@ -644,6 +645,7 @@ function GuardianPhotosPanel({ orphanId, lang }: { orphanId: string; lang: strin
   const qc = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
   const [fileKey, setFileKey] = useState(0);
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   const photos = useQuery({
     queryKey: ["guardian", "me", "photos", orphanId],
@@ -713,12 +715,19 @@ function GuardianPhotosPanel({ orphanId, lang }: { orphanId: string; lang: strin
         <ul className="god-photo-grid">
           {list.map((p) => (
             <li key={p.id} className="god-photo-card">
-              <img
-                className="god-photo-thumb"
-                src={p.presigned_url}
-                alt={t("guardian.detail.photoAlt")}
-                loading="lazy"
-              />
+              <button
+                type="button"
+                className="god-photo-thumb-btn"
+                aria-label={t("common.viewFullSize")}
+                onClick={() => setLightbox(p.presigned_url)}
+              >
+                <img
+                  className="god-photo-thumb"
+                  src={p.presigned_url}
+                  alt={t("guardian.detail.photoAlt")}
+                  loading="lazy"
+                />
+              </button>
               <div className="god-photo-meta">
                 <span className="god-photo-date">
                   {new Date(p.created_at).toLocaleDateString(lang)}
@@ -729,6 +738,8 @@ function GuardianPhotosPanel({ orphanId, lang }: { orphanId: string; lang: strin
           ))}
         </ul>
       )}
+
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
     </>
   );
 }

@@ -742,6 +742,15 @@ button.god-action {
   object-fit: cover;
   background: var(--gray-100);
 }
+/* Clickable thumbnail → opens the full-size lightbox. */
+.god-photo-thumb-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
 .god-photo-meta {
   display: flex;
   align-items: center;

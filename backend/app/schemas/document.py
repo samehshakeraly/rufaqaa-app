@@ -42,6 +42,12 @@ class DocumentVerify(BaseModel):
     notes: str | None = None
 
 
+class DocumentUrlRead(BaseModel):
+    """Short-lived presigned URL for viewing a document's stored file."""
+
+    url: str
+
+
 class DocumentRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

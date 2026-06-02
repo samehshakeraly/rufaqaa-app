@@ -1,3 +1,5 @@
+import type { components } from "@/api/schema.gen";
+
 import { api } from "./api";
 import type { Page } from "./orphans";
 
@@ -118,6 +120,15 @@ export async function verifyDocument(
 
 export async function deleteDocument(documentId: string): Promise<void> {
   await api.delete(`/documents/${documentId}`);
+}
+
+type DocumentUrlRead = components["schemas"]["DocumentUrlRead"];
+
+/** Short-lived presigned URL for a document's stored file. Documents may be
+ * PDFs, so callers open it in a new tab rather than the image lightbox. */
+export async function getDocumentUrl(documentId: string): Promise<string> {
+  const { data } = await api.get<DocumentUrlRead>(`/documents/${documentId}/url`);
+  return data.url;
 }
 
 export async function createUnattachedDocument(

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Lightbox } from "@/components/Lightbox";
 import {
   listMediaQueue,
   moderateMedia,
@@ -214,6 +215,7 @@ function MediaCard({ media, lang }: { media: PendingMedia; lang: string }) {
   const queryClient = useQueryClient();
   const [rejecting, setRejecting] = useState(false);
   const [notes, setNotes] = useState("");
+  const [lightbox, setLightbox] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: (decision: MediaModerationDecision) =>
@@ -242,11 +244,18 @@ function MediaCard({ media, lang }: { media: PendingMedia; lang: string }) {
     <article className="ps-media-card">
       <div className="ps-media-thumb">
         {media.presigned_url ? (
-          <img
-            src={media.presigned_url}
-            alt={t("media.review.thumbnailAlt", { id: media.id })}
-            loading="lazy"
-          />
+          <button
+            type="button"
+            className="ps-media-thumb-btn"
+            aria-label={t("common.viewFullSize")}
+            onClick={() => setLightbox(media.presigned_url)}
+          >
+            <img
+              src={media.presigned_url}
+              alt={t("media.review.thumbnailAlt", { id: media.id })}
+              loading="lazy"
+            />
+          </button>
         ) : (
           <Icon>{ICON.image}</Icon>
         )}
@@ -338,6 +347,8 @@ function MediaCard({ media, lang }: { media: PendingMedia; lang: string }) {
           </button>
         </div>
       )}
+
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
     </article>
   );
 }

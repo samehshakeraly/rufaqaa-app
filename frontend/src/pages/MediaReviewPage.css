@@ -282,6 +282,17 @@
   height: 100%;
   object-fit: cover;
 }
+/* Clickable thumbnail → opens the full-size lightbox. Fills the thumb
+   (which is position:relative); the privacy chip still stacks above it. */
+.ps-media-thumb-btn {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
 .ps-media-thumb > .ps-icon {
   width: 32px;
   height: 32px;
