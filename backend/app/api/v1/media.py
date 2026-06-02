@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, text
 
@@ -23,6 +23,7 @@ from app.core.config import settings
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.user import User
+from app.schemas.common import Page
 from app.services.audit import record_audit
 from app.services.storage import ensure_bucket, presigned_get_url, put_object
 
@@ -286,6 +287,89 @@ async def get_media_presigned_url(
 # Approvers can decide on pending media; partner_staff cannot (they're
 # the typical uploader). Same separation as the orphan-case workflow.
 MEDIA_MODERATOR_ROLES: tuple[str, ...] = ("partner_manager", *ADMIN_ROLES)
+
+
+class MediaQueueItem(BaseModel):
+    """One row in the moderation queue. Carries a fresh presigned URL so
+    the reviewer can render the image without the bucket being public —
+    same s3:// → URL handling as list_orphan_photos."""
+
+    id: UUID
+    orphan_id: UUID
+    media_type: str
+    file_url: str
+    presigned_url: str
+    file_size_bytes: int
+    moderation_status: str
+    visibility: str
+    created_at: datetime
+
+
+@router.get("", response_model=Page[MediaQueueItem])
+async def list_media_queue(
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*MEDIA_MODERATOR_ROLES))],
+    moderation_status: Literal["pending", "approved", "rejected", "flagged"] = "pending",
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> Page[MediaQueueItem]:
+    """Moderation queue: media in the caller's organization filtered by
+    moderation_status, newest first.
+
+    Gated on MEDIA_MODERATOR_ROLES — only the roles that can act on an item
+    (POST /media/{id}/moderate) can see the queue. RLS already scopes media
+    by org; we filter on organization_id explicitly too (defense-in-depth).
+    """
+    bind = {"org": str(user.organization_id), "status": moderation_status}
+    total = (
+        await db.scalar(
+            text(
+                """
+                SELECT COUNT(*) FROM media
+                WHERE organization_id = :org AND moderation_status = :status
+                """
+            ),
+            bind,
+        )
+    ) or 0
+    rows = (
+        await db.execute(
+            text(
+                """
+                SELECT id, orphan_id, media_type, file_url, file_size_bytes,
+                       moderation_status, visibility, created_at
+                FROM media
+                WHERE organization_id = :org AND moderation_status = :status
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset
+                """
+            ),
+            {**bind, "limit": limit, "offset": offset},
+        )
+    ).all()
+
+    items: list[MediaQueueItem] = []
+    for row in rows:
+        file_url = str(row[3])
+        presigned = file_url
+        if file_url.startswith("s3://"):
+            _, _, rest = file_url.partition("s3://")
+            bucket, _, key = rest.partition("/")
+            presigned = await presigned_get_url(bucket, key)
+        items.append(
+            MediaQueueItem(
+                id=row[0],
+                orphan_id=row[1],
+                media_type=str(row[2]),
+                file_url=file_url,
+                presigned_url=presigned,
+                file_size_bytes=int(row[4] or 0),
+                moderation_status=str(row[5]),
+                visibility=str(row[6] or "private"),
+                created_at=row[7],
+            )
+        )
+    return Page(items=items, total=int(total), limit=limit, offset=offset)
 
 
 class MediaModeratePayload(BaseModel):
