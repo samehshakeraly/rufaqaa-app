@@ -87,6 +87,17 @@ async def create_orphan_record(
         nationality=data.nationality,
         father_name=data.father_name,
         father_death_date=data.father_death_date,
+        education_stage=data.education_stage,
+        academic_level=data.academic_level,
+        school_name=data.school_name,
+        quran_juz_memorized=data.quran_juz_memorized,
+        quran_note=data.quran_note,
+        health_status=data.health_status,
+        health_coverage=data.health_coverage,
+        chronic_conditions=data.chronic_conditions,
+        aspiration=data.aspiration,
+        challenges=data.challenges,
+        tags=data.tags,
         created_by=user.id,
     )
     db.add(orphan)

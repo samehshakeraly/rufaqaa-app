@@ -2,8 +2,19 @@ from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, Date, ForeignKey, Integer, Numeric, String, Text, func
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy import (
+    Boolean,
+    Date,
+    ForeignKey,
+    Integer,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+    func,
+    text,
+)
+from sqlalchemy.dialects.postgresql import ARRAY, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -41,6 +52,22 @@ class Orphan(Base):
     father_name: Mapped[str | None] = mapped_column(String(255))
     father_death_date: Mapped[date | None] = mapped_column(Date)
     father_death_certificate: Mapped[str | None] = mapped_column(String(100))
+
+    # Optional profile enrichment (see migration 0008). Enum-coded fields are
+    # validated in the Pydantic layer, not the DB.
+    education_stage: Mapped[str | None] = mapped_column(String(30))
+    academic_level: Mapped[str | None] = mapped_column(String(50))
+    school_name: Mapped[str | None] = mapped_column(String(255))
+    quran_juz_memorized: Mapped[int | None] = mapped_column(SmallInteger)
+    quran_note: Mapped[str | None] = mapped_column(Text)
+    health_status: Mapped[str | None] = mapped_column(String(20))
+    health_coverage: Mapped[str | None] = mapped_column(String(20))
+    chronic_conditions: Mapped[str | None] = mapped_column(Text)
+    aspiration: Mapped[str | None] = mapped_column(Text)
+    challenges: Mapped[str | None] = mapped_column(Text)
+    tags: Mapped[list[str]] = mapped_column(
+        ARRAY(Text), nullable=False, server_default=text("'{}'::text[]"), default=list
+    )
 
     case_status: Mapped[str] = mapped_column(String(30), default="pending_review")
 
