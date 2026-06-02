@@ -31,11 +31,17 @@
 
   --success-50: #ecfdf5;
   --success-100: #d1fae5;
+  --success-600: #059669;
   --success-700: #047857;
   --warning-50: #fffbeb;
   --warning-100: #fef3c7;
   --warning-700: #b45309;
+  --danger-50: #fef2f2;
   --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-700: #1d4ed8;
 
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -123,27 +129,266 @@
   line-height: 1.6;
 }
 
-/* ───────────── Field styling (scoped form overrides) ───────────── */
-.ps-reg-panel .card {
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  background: transparent;
+/* ───────────── Form ───────────── */
+.ps-reg-form {
+  display: flex;
+  flex-direction: column;
 }
-.ps-reg-panel .input {
+
+/* Duplicate (409) alert — reactive nod to the mockup's duplicate-check step */
+.ps-dup-result {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.ps-dup-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  color: var(--warning-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ps-dup-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--warning-700);
+}
+.ps-dup-sub {
+  font-size: 11.5px;
+  color: var(--gray-700);
+  margin-top: 2px;
+}
+.ps-dup-btn {
+  font-size: 11.5px;
+  font-weight: 500;
+  background: white;
+  border: 1px solid var(--warning-100);
+  color: var(--warning-700);
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  transition: var(--transition-fast);
+}
+.ps-dup-btn:hover {
+  background: var(--warning-700);
+  color: white;
+  border-color: var(--warning-700);
+}
+
+/* Section titles */
+.ps-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ps-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gray-100);
+}
+.ps-section-title:first-of-type {
+  margin-top: 0;
+}
+.ps-section-title .ps-icon {
+  color: var(--trust-400);
+}
+
+/* Field grid */
+.ps-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+@media (max-width: 540px) {
+  .ps-field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.ps-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.ps-field.full {
+  grid-column: 1 / -1;
+}
+.ps-field label,
+.ps-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: 0.02em;
+}
+.ps-req {
+  color: var(--danger-600);
+  font-weight: 700;
+}
+.ps-field input,
+.ps-field select {
+  width: 100%;
   padding: 9px 12px;
   background: var(--gray-50);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
   font-size: 14px;
+  font-family: inherit;
   color: var(--gray-900);
   transition: var(--transition);
 }
-.ps-reg-panel .input:focus {
+.ps-field input.latin {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.02em;
+}
+.ps-field input:focus,
+.ps-field select:focus {
   outline: none;
   background: white;
   border-color: var(--trust-300);
   box-shadow: var(--shadow-focus);
+}
+.ps-field input[aria-invalid="true"],
+.ps-field select[aria-invalid="true"] {
+  border-color: var(--danger-600);
+}
+.ps-field-hint {
+  font-size: 11px;
+  color: var(--gray-500);
+}
+.ps-field-err {
+  font-size: 11px;
+  color: var(--danger-700);
+}
+
+/* Gender radio pills */
+.ps-radio-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ps-radio-pill {
+  position: relative;
+  padding: 8px 16px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.ps-radio-pill input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+.ps-radio-pill:hover {
+  background: white;
+  border-color: var(--sky-300);
+}
+.ps-radio-pill:has(input:checked) {
+  background: var(--trust-300);
+  border-color: var(--trust-300);
+  color: white;
+}
+.ps-radio-pill:has(input:focus-visible) {
+  box-shadow: var(--shadow-focus);
+}
+
+/* Server error */
+.ps-reg-error {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--danger-50);
+  color: var(--danger-700);
+  font-size: 13px;
+}
+
+/* Privacy note */
+.ps-reg-note {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--info-700);
+  line-height: 1.55;
+}
+.ps-reg-note .ps-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Footer actions */
+.ps-reg-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-100);
+}
+.ps-reg-cancel {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: transparent;
+  color: var(--gray-700);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.ps-reg-cancel:hover {
+  border-color: var(--gray-300);
+  background: var(--gray-50);
+}
+.ps-reg-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--success-600);
+  background: var(--success-600);
+  color: white;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.ps-reg-submit:hover:not(:disabled) {
+  background: var(--success-700);
+  border-color: var(--success-700);
+}
+.ps-reg-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ───────────── Icons ───────────── */

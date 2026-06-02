@@ -520,6 +520,87 @@
   font-size: 13px;
 }
 
+/* ───────────── Reject-reason modal ───────────── */
+.ps-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(11, 30, 51, 0.45);
+}
+.ps-modal {
+  width: 100%;
+  max-width: 520px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 30px rgba(11, 30, 51, 0.18);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ps-modal h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.01em;
+}
+.ps-modal textarea {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.6;
+  color: var(--gray-900);
+  resize: vertical;
+  min-height: 96px;
+  transition: var(--transition);
+}
+.ps-modal textarea:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+.ps-modal-error {
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--danger-50);
+  color: var(--danger-700);
+  font-size: 12.5px;
+}
+.ps-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.ps-modal-submit {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--danger-600);
+  background: var(--danger-600);
+  color: white;
+  transition: var(--transition);
+}
+.ps-modal-submit:hover {
+  background: var(--danger-700);
+  border-color: var(--danger-700);
+}
+.ps-modal-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ───────────── Icons ───────────── */
 .ps-orphans .ps-icon {
   width: 20px;

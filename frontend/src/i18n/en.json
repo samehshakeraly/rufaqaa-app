@@ -1341,6 +1341,12 @@
       "subtitle": "Add a new case to your organization's register. The case is submitted for a manager's approval.",
       "sectionBasic": "Basic details",
       "sectionBasicDesc": "Enter the orphan's core identity details. You can add documents and photos from the case page after saving.",
+      "sectionName": "Name",
+      "sectionPersonal": "Personal information",
+      "sectionOrg": "Organization",
+      "nationalityHint": "Two-letter country code (e.g. KW).",
+      "submit": "Submit for approval",
+      "privacyNote": "Until a manager approves it, this case stays in review — it is not shown to any donor, and no one outside your organization can see it.",
       "duplicate": "Possible duplicate — this case looks similar to an existing record",
       "viewExisting": "View existing record",
       "back": "Back to orphans"
@@ -2265,7 +2271,18 @@
       "aiBody": "Once the moderation-queue endpoint lands, AI-screened media will be summarised here for your visual review.",
       "privacyLabel": "Reminder:",
       "privacyBody": "Every photo must pass a human visual review even if it clears the AI check. Bulk auto-approval is not permitted by policy.",
-      "comingSoonTitle": "The media queue isn't wired yet"
+      "comingSoonTitle": "The media queue isn't wired yet",
+      "tabs": {
+        "pending": "In review",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "filterLabel": "Filter media by review status",
+      "visibility": {
+        "private": "Private",
+        "sponsors": "Sponsors only",
+        "public": "Public"
+      }
     }
   },
   "documents": {

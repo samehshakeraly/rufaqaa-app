@@ -12,6 +12,8 @@ import {
   listFamilyGuardians,
 } from "@/lib/families";
 
+import "./adminEntities.css";
+
 const RELATIONS = [
   "mother",
   "grandfather",
@@ -41,30 +43,32 @@ export function FamilyDetailPage() {
   const [showForm, setShowForm] = useState(false);
 
   if (familyQ.isLoading) {
-    return <p className="text-slate-500">{t("common.loading")}</p>;
+    return (
+      <div className="adm">
+        <p className="adm-loading">{t("common.loading")}</p>
+      </div>
+    );
   }
   if (familyQ.error || !familyQ.data) {
     return (
-      <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-        {t("common.loadError")}
-      </p>
+      <div className="adm">
+        <p className="adm-error">{t("common.loadError")}</p>
+      </div>
     );
   }
   const f = familyQ.data;
 
   return (
-    <div className="space-y-6">
+    <div className="adm">
       <div>
-        <Link to="/admin/families" className="text-sm text-trust underline">
+        <Link to="/admin/families" className="adm-back">
           ← {t("families.backToList")}
         </Link>
       </div>
 
-      <div className="card space-y-2">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {f.family_name ?? f.code}
-        </h1>
-        <dl className="grid grid-cols-2 gap-3 text-sm">
+      <div className="adm-card">
+        <h1 className="adm-card-title">{f.family_name ?? f.code}</h1>
+        <dl className="adm-dl">
           <Row label={t("families.code")} value={f.code} mono />
           <Row label={t("families.deceasedFather")} value={f.deceased_father_name ?? "—"} />
           <Row label={t("families.country")} value={f.country_code ?? "—"} />
@@ -80,12 +84,12 @@ export function FamilyDetailPage() {
         </dl>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{t("families.guardians")}</h2>
+      <div className="adm-section">
+        <div className="adm-section-head">
+          <h2>{t("families.guardians")}</h2>
           <button
             type="button"
-            className="btn-primary"
+            className="adm-btn adm-btn-primary"
             onClick={() => setShowForm((v) => !v)}
           >
             {showForm ? t("common.cancel") : t("families.addGuardian")}
@@ -102,52 +106,47 @@ export function FamilyDetailPage() {
           />
         )}
 
-        {guardiansQ.isLoading && (
-          <p className="text-slate-500">{t("common.loading")}</p>
-        )}
+        {guardiansQ.isLoading && <p className="adm-loading">{t("common.loading")}</p>}
 
         {guardiansQ.data && guardiansQ.data.items.length === 0 && (
-          <div className="card text-center text-slate-500">{t("common.empty")}</div>
+          <div className="adm-empty">{t("common.empty")}</div>
         )}
 
         {guardiansQ.data && guardiansQ.data.items.length > 0 && (
-          <div className="card overflow-x-auto p-0">
-            <table className="min-w-full text-start">
-              <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
-                <tr>
-                  <th className="px-4 py-3 font-medium">{t("families.guardianName")}</th>
-                  <th className="px-4 py-3 font-medium">{t("families.relation")}</th>
-                  <th className="px-4 py-3 font-medium">{t("families.phone")}</th>
-                  <th className="px-4 py-3 font-medium">{t("families.email")}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-sky/40 text-sm">
-                {guardiansQ.data.items.map((g) => (
-                  <tr key={g.id} className="hover:bg-snow">
-                    <td className="px-4 py-3">{g.full_name}</td>
-                    <td className="px-4 py-3">
-                      {t(`families.relations.${g.relation}`, g.relation)}
-                    </td>
-                    <td className="px-4 py-3">{g.phone ?? "—"}</td>
-                    <td className="px-4 py-3">{g.email ?? "—"}</td>
+          <div className="adm-table-card">
+            <div className="adm-table-wrap">
+              <table className="adm-t">
+                <thead>
+                  <tr>
+                    <th>{t("families.guardianName")}</th>
+                    <th>{t("families.relation")}</th>
+                    <th>{t("families.phone")}</th>
+                    <th>{t("families.email")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {guardiansQ.data.items.map((g) => (
+                    <tr key={g.id}>
+                      <td className="adm-cell-strong">{g.full_name}</td>
+                      <td>{t(`families.relations.${g.relation}`, g.relation)}</td>
+                      <td className="latin">{g.phone ?? "—"}</td>
+                      <td className="latin">{g.email ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
         {guardiansQ.data && guardiansQ.data.items.length > 0 && (
-          <div className="space-y-4">
+          <div className="adm-section">
             {guardiansQ.data.items.map((g) => (
-              <details
-                key={`docs-${g.id}`}
-                className="rounded-lg border border-sky bg-snow p-2"
-              >
-                <summary className="cursor-pointer px-2 py-1 text-sm font-medium text-slate-700">
+              <details key={`docs-${g.id}`} className="adm-details">
+                <summary>
                   {t("documents.title")} — {g.full_name}
                 </summary>
-                <div className="pt-2">
+                <div className="adm-details-body">
                   <DocumentUploadCard target={{ kind: "guardian", guardianId: g.id }} />
                 </div>
               </details>
@@ -203,25 +202,19 @@ function NewGuardianForm({
         if (!v.full_name.trim()) return;
         mut.mutate();
       }}
-      className="card space-y-4"
+      className="adm-card"
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.guardianName")}
-          </span>
+      <div className="adm-form-grid">
+        <label className="adm-field">
+          <span>{t("families.guardianName")}</span>
           <input
-            className="input"
             value={v.full_name}
             onChange={(e) => setV({ ...v, full_name: e.target.value })}
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.relation")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.relation")}</span>
           <select
-            className="input"
             value={v.relation}
             onChange={(e) =>
               setV({ ...v, relation: e.target.value as GuardianCreateInput["relation"] })
@@ -234,34 +227,28 @@ function NewGuardianForm({
             ))}
           </select>
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.phone")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.phone")}</span>
           <input
-            className="input"
             value={v.phone ?? ""}
             onChange={(e) => setV({ ...v, phone: e.target.value })}
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.email")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.email")}</span>
           <input
             type="email"
-            className="input"
             value={v.email ?? ""}
             onChange={(e) => setV({ ...v, email: e.target.value })}
           />
         </label>
       </div>
-      {serverError && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{serverError}</p>
-      )}
-      <button type="submit" className="btn-primary" disabled={mut.isPending}>
-        {mut.isPending ? t("common.saving") : t("common.save")}
-      </button>
+      {serverError && <p className="adm-error">{serverError}</p>}
+      <div className="adm-form-foot">
+        <button type="submit" className="adm-btn adm-btn-primary" disabled={mut.isPending}>
+          {mut.isPending ? t("common.saving") : t("common.save")}
+        </button>
+      </div>
     </form>
   );
 }
@@ -277,10 +264,8 @@ function Row({
 }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className={`mt-1 ${mono ? "font-mono text-xs" : "text-sm"} text-slate-900`}>
-        {value}
-      </dd>
+      <dt className="adm-dt">{label}</dt>
+      <dd className={`adm-dd${mono ? " mono" : ""}`}>{value}</dd>
     </div>
   );
 }

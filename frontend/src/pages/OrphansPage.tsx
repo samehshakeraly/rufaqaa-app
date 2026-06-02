@@ -569,12 +569,12 @@ function ReasonDialog({
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="ps-modal-overlay"
+      onClick={onCancel}
     >
-      <div className="w-full max-w-lg space-y-4 rounded-lg bg-white p-5 shadow-xl">
-        <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="ps-modal" onClick={(e) => e.stopPropagation()}>
+        <h2>{title}</h2>
         <textarea
-          className="input"
           rows={4}
           autoFocus
           maxLength={1000}
@@ -582,13 +582,11 @@ function ReasonDialog({
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         />
-        {error && (
-          <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700">{error}</p>
-        )}
-        <div className="flex justify-end gap-2">
+        {error && <p className="ps-modal-error">{error}</p>}
+        <div className="ps-modal-actions">
           <button
             type="button"
-            className="rounded-lg border border-sky px-3 py-1 text-sm text-gray-700 hover:bg-tranquil"
+            className="ps-btn"
             onClick={onCancel}
             disabled={isSubmitting}
           >
@@ -596,7 +594,7 @@ function ReasonDialog({
           </button>
           <button
             type="button"
-            className="rounded-lg bg-danger-600 px-3 py-1 text-sm text-white hover:bg-danger-700 disabled:opacity-50"
+            className="ps-modal-submit"
             onClick={submit}
             disabled={isSubmitting}
           >

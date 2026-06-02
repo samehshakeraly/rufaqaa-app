@@ -353,6 +353,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 22px 26px 26px;
+  /* Cap the long-form report body to a readable measure, per PS-05. */
+  max-width: 760px;
 }
 .ps-report-title {
   font-size: 20px;
@@ -466,10 +468,13 @@
   color: var(--gray-300);
 }
 
-/* foot bar */
+/* foot bar — flex sibling of the scrolling body, so it stays pinned to the
+   bottom of the reviewer panel; the shadow lifts it off scrolling content
+   (matches the PS-05 sticky-footer treatment). */
 .ps-reviewer-foot {
   background: white;
   border-top: 1px solid var(--gray-200);
+  box-shadow: 0 -2px 12px rgba(11, 30, 51, 0.04);
   padding: 14px 24px;
   display: flex;
   align-items: center;

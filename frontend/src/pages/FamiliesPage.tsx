@@ -11,6 +11,8 @@ import {
   listFamilies,
 } from "@/lib/families";
 
+import "./adminEntities.css";
+
 const QK = ["families"] as const;
 const HOUSING_OPTIONS = ["owned", "rented", "donated", "homeless"] as const;
 
@@ -25,18 +27,18 @@ export function FamiliesPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">{t("families.title")}</h1>
-        <div className="flex items-center gap-4">
+    <div className="adm">
+      <div className="adm-head">
+        <h1>{t("families.title")}</h1>
+        <div className="adm-head-actions">
           {data && (
-            <span className="text-sm text-slate-500">
-              {t("common.total")}: {data.total.toLocaleString()}
+            <span className="adm-total">
+              {t("common.total")}: <span className="latin">{data.total.toLocaleString()}</span>
             </span>
           )}
           <button
             type="button"
-            className="btn-primary"
+            className="adm-btn adm-btn-primary"
             onClick={() => setShowForm((v) => !v)}
           >
             {showForm ? t("common.cancel") : t("families.addNew")}
@@ -54,51 +56,46 @@ export function FamiliesPage() {
       )}
 
       {isLoading && <TableSkeleton columns={5} />}
-      {error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {t("common.loadError")}
-        </p>
-      )}
+      {error && <p className="adm-error">{t("common.loadError")}</p>}
 
       {data && data.items.length === 0 && (
-        <div className="card text-center text-slate-500">{t("common.empty")}</div>
+        <div className="adm-empty">{t("common.empty")}</div>
       )}
 
       {data && data.items.length > 0 && (
-        <div className="card overflow-x-auto p-0">
-          <table className="min-w-full text-start">
-            <thead className="border-b border-sky bg-tranquil/40 text-sm text-slate-700">
-              <tr>
-                <th className="px-4 py-3 font-medium">{t("families.code")}</th>
-                <th className="px-4 py-3 font-medium">{t("families.familyName")}</th>
-                <th className="px-4 py-3 font-medium">{t("families.deceasedFather")}</th>
-                <th className="px-4 py-3 font-medium">{t("families.country")}</th>
-                <th className="px-4 py-3 font-medium">{t("families.housing")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sky/40 text-sm">
-              {data.items.map((f) => (
-                <tr key={f.id} className="hover:bg-snow">
-                  <td className="px-4 py-3 font-mono text-xs">
-                    <Link
-                      to={`/admin/families/${f.id}`}
-                      className="text-trust hover:underline"
-                    >
-                      {f.code}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">{f.family_name ?? "—"}</td>
-                  <td className="px-4 py-3">{f.deceased_father_name ?? "—"}</td>
-                  <td className="px-4 py-3">{f.country_code ?? "—"}</td>
-                  <td className="px-4 py-3">
-                    {f.housing_status
-                      ? t(`families.housingStatus.${f.housing_status}`, f.housing_status)
-                      : "—"}
-                  </td>
+        <div className="adm-table-card">
+          <div className="adm-table-wrap">
+            <table className="adm-t">
+              <thead>
+                <tr>
+                  <th>{t("families.code")}</th>
+                  <th>{t("families.familyName")}</th>
+                  <th>{t("families.deceasedFather")}</th>
+                  <th>{t("families.country")}</th>
+                  <th>{t("families.housing")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.items.map((f) => (
+                  <tr key={f.id}>
+                    <td>
+                      <Link to={`/admin/families/${f.id}`} className="adm-link mono">
+                        {f.code}
+                      </Link>
+                    </td>
+                    <td className="adm-cell-strong">{f.family_name ?? "—"}</td>
+                    <td>{f.deceased_father_name ?? "—"}</td>
+                    <td>{f.country_code ?? "—"}</td>
+                    <td>
+                      {f.housing_status
+                        ? t(`families.housingStatus.${f.housing_status}`, f.housing_status)
+                        : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
@@ -143,56 +140,41 @@ function NewFamilyForm({ onCreated }: { onCreated: () => void | Promise<void> })
         setServerError(null);
         mut.mutate();
       }}
-      className="card space-y-4"
+      className="adm-card"
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.familyName")}
-          </span>
+      <div className="adm-form-grid">
+        <label className="adm-field">
+          <span>{t("families.familyName")}</span>
           <input
-            className="input"
             value={v.family_name ?? ""}
             onChange={(e) => setV({ ...v, family_name: e.target.value })}
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.deceasedFather")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.deceasedFather")}</span>
           <input
-            className="input"
             value={v.deceased_father_name ?? ""}
             onChange={(e) => setV({ ...v, deceased_father_name: e.target.value })}
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.country")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.country")}</span>
           <input
-            className="input"
             maxLength={2}
             value={v.country_code ?? ""}
             onChange={(e) => setV({ ...v, country_code: e.target.value.toUpperCase() })}
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.city")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.city")}</span>
           <input
-            className="input"
             value={v.city ?? ""}
             onChange={(e) => setV({ ...v, city: e.target.value })}
           />
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
-            {t("families.housing")}
-          </span>
+        <label className="adm-field">
+          <span>{t("families.housing")}</span>
           <select
-            className="input"
             value={v.housing_status ?? "rented"}
             onChange={(e) =>
               setV({
@@ -209,12 +191,12 @@ function NewFamilyForm({ onCreated }: { onCreated: () => void | Promise<void> })
           </select>
         </label>
       </div>
-      {serverError && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{serverError}</p>
-      )}
-      <button type="submit" className="btn-primary" disabled={mut.isPending}>
-        {mut.isPending ? t("common.saving") : t("common.save")}
-      </button>
+      {serverError && <p className="adm-error">{serverError}</p>}
+      <div className="adm-form-foot">
+        <button type="submit" className="adm-btn adm-btn-primary" disabled={mut.isPending}>
+          {mut.isPending ? t("common.saving") : t("common.save")}
+        </button>
+      </div>
     </form>
   );
 }

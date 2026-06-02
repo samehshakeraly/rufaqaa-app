@@ -1,0 +1,492 @@
+/* ═══════════════════════════════════════════════════════════════
+   Admin entity pages — shared scoped styles
+   These companion screens (Families, Family detail, Donors,
+   Sponsorships) have no dedicated partner-staff mockup, so they
+   borrow the PS design language — the same tokens, tables, cards,
+   headers and status pills as PS-01..PS-06 — instead of raw
+   Tailwind. Shared (like finance.css) to stay DRY across the four
+   look-alike screens. Tokens only; scoped under `.adm`, prefixed
+   `adm-`; physical left/right written as logical (inline-start/-end)
+   for RTL-first.
+   ═══════════════════════════════════════════════════════════════ */
+
+.adm {
+  --snow-200: #eef5f8;
+  --tranquil-100: #eaf1f7;
+  --tranquil-200: #d6e6f2;
+  --sky-200: #b9d7ea;
+  --sky-300: #9cc3de;
+  --trust-300: #769fcd;
+  --trust-400: #5b85b8;
+  --trust-500: #426d9f;
+  --trust-600: #2d5683;
+  --trust-700: #1e4068;
+
+  --gray-50: #fafbfc;
+  --gray-100: #f4f6f8;
+  --gray-200: #e7ebef;
+  --gray-300: #d2d8df;
+  --gray-400: #a8b2bc;
+  --gray-500: #7a8590;
+  --gray-600: #5a636e;
+  --gray-700: #3f4750;
+  --gray-900: #161a1f;
+
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-600: #059669;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-700: #b45309;
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-600: #dc2626;
+  --danger-700: #b91c1c;
+  --info-50: #eff6ff;
+  --info-100: #dbeafe;
+  --info-700: #1d4ed8;
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-700: #6d28d9;
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
+  --transition: 200ms ease;
+  --transition-fast: 150ms ease;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.adm .latin,
+.adm .tabular {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+.adm .mono {
+  font-family: "IBM Plex Mono", monospace;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ───────────── Header ───────────── */
+.adm-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.adm-head h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.adm-head p {
+  font-size: 13.5px;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+.adm-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.adm-total {
+  font-size: 12.5px;
+  color: var(--gray-600);
+  white-space: nowrap;
+  align-self: center;
+}
+.adm-total .latin {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+
+/* ───────────── Buttons ───────────── */
+.adm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  transition: var(--transition);
+}
+.adm-btn:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.adm-btn-primary {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+  color: white;
+}
+.adm-btn-primary:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+  color: white;
+}
+.adm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Back link */
+.adm-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  transition: var(--transition-fast);
+}
+.adm-back:hover {
+  color: var(--trust-600);
+}
+
+/* ───────────── Sections + cards ───────────── */
+.adm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.adm-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.adm-section-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.adm-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+}
+.adm-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+}
+
+/* ───────────── Forms ───────────── */
+.adm-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 540px) {
+  .adm-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.adm-field.full {
+  grid-column: 1 / -1;
+}
+.adm-field > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+  letter-spacing: 0.02em;
+}
+.adm-field input,
+.adm-field select {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--gray-900);
+  transition: var(--transition);
+}
+.adm-field input:focus,
+.adm-field select:focus {
+  outline: none;
+  background: white;
+  border-color: var(--trust-300);
+  box-shadow: var(--shadow-focus);
+}
+.adm-field-err {
+  font-size: 11px;
+  color: var(--danger-700);
+}
+.adm-form-foot {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+.adm-error {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--danger-50);
+  color: var(--danger-700);
+  font-size: 13px;
+}
+
+/* ───────────── Definition list (detail header) ───────────── */
+.adm-dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 540px) {
+  .adm-dl {
+    grid-template-columns: 1fr;
+  }
+}
+.adm-dt {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+.adm-dd {
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--gray-900);
+}
+.adm-dd.mono {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+}
+
+/* ───────────── Disclosure (document cards) ───────────── */
+.adm-details {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  padding: 4px 6px;
+}
+.adm-details > summary {
+  cursor: pointer;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+  border-radius: var(--radius-md);
+}
+.adm-details > summary:hover {
+  background: var(--gray-50);
+}
+.adm-details[open] > summary {
+  border-bottom: 1px solid var(--gray-100);
+  margin-bottom: 6px;
+}
+.adm-details-body {
+  padding: 6px 10px 10px;
+}
+
+/* ───────────── Table ───────────── */
+.adm-table-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.adm-table-wrap {
+  overflow-x: auto;
+}
+.adm-t {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.adm-t thead {
+  background: var(--gray-50);
+}
+.adm-t th {
+  text-align: start;
+  padding: 11px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--gray-200);
+  white-space: nowrap;
+}
+.adm-t th.end {
+  text-align: end;
+}
+.adm-t td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+.adm-t tbody tr {
+  transition: var(--transition-fast);
+}
+.adm-t tbody tr:hover {
+  background: var(--snow-200);
+}
+.adm-t tbody tr:last-child td {
+  border-bottom: none;
+}
+.adm-cell-code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  background: var(--gray-50);
+  color: var(--gray-700);
+  padding: 3px 7px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+.adm-link {
+  color: var(--trust-600);
+  font-weight: 500;
+}
+.adm-link:hover {
+  color: var(--trust-700);
+  text-decoration: underline;
+}
+.adm-cell-strong {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.adm-cell-sub {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+.adm-cell-muted {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.adm-table-foot {
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* ───────────── Status pills ───────────── */
+.adm-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+}
+.adm-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.adm-status.success {
+  background: var(--success-50);
+  color: var(--success-700);
+  border-color: var(--success-100);
+}
+.adm-status.warning {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  border-color: var(--warning-100);
+}
+.adm-status.danger {
+  background: var(--danger-50);
+  color: var(--danger-700);
+  border-color: var(--danger-100);
+}
+.adm-status.info {
+  background: var(--info-50);
+  color: var(--info-700);
+  border-color: var(--info-100);
+}
+.adm-status.purple {
+  background: var(--purple-50);
+  color: var(--purple-700);
+  border-color: var(--purple-100);
+}
+
+/* ───────────── Row actions ───────────── */
+.adm-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.adm-row-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  color: var(--gray-700);
+  transition: var(--transition-fast);
+}
+.adm-row-btn:hover {
+  background: white;
+  border-color: var(--sky-300);
+  color: var(--trust-600);
+}
+.adm-row-btn.primary {
+  background: var(--trust-400);
+  border-color: var(--trust-400);
+  color: white;
+}
+.adm-row-btn.primary:hover {
+  background: var(--trust-500);
+  border-color: var(--trust-500);
+}
+.adm-row-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ───────────── States ───────────── */
+.adm-empty,
+.adm-msg {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+.adm-loading {
+  color: var(--gray-500);
+  font-size: 13px;
+}
