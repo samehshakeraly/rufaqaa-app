@@ -1367,6 +1367,52 @@
       "graduated": "Graduated",
       "deceased": "Deceased",
       "archived": "Archived"
+    },
+    "profile": {
+      "educationSection": "Education",
+      "educationStage": "Education stage",
+      "educationStageOptions": {
+        "not_enrolled": "Not enrolled",
+        "kindergarten": "Kindergarten",
+        "primary": "Primary",
+        "preparatory": "Preparatory",
+        "secondary": "Secondary",
+        "university": "University",
+        "vocational": "Vocational",
+        "graduated": "Graduated"
+      },
+      "academicLevel": "Academic level",
+      "schoolName": "School name",
+      "quranSection": "Qur'an",
+      "quranJuzMemorized": "Juz' memorized",
+      "quranNote": "Memorization note",
+      "healthSection": "Health",
+      "healthStatus": "Health status",
+      "healthStatusOptions": {
+        "good": "Good",
+        "chronic_condition": "Chronic condition",
+        "disability": "Disability",
+        "under_treatment": "Under treatment"
+      },
+      "healthCoverage": "Health coverage",
+      "healthCoverageOptions": {
+        "none": "None",
+        "government": "Government",
+        "private": "Private",
+        "charity": "Charity"
+      },
+      "chronicConditions": "Chronic conditions",
+      "profileSection": "Profile",
+      "aspiration": "Aspiration",
+      "challenges": "Challenges",
+      "tagsSection": "Tags",
+      "notSpecified": "Not specified",
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Type a tag and press Enter",
+        "add": "Add",
+        "remove": "Remove {{tag}}"
+      }
     }
   },
   "sponsorships": {

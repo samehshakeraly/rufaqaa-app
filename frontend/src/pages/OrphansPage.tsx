@@ -255,6 +255,7 @@ export function OrphansPage() {
       {showForm && (
         <div style={{ marginBottom: 16 }}>
           <NewOrphanForm
+            audience="staff"
             partners={partners?.items ?? []}
             onCreated={async () => {
               await qc.invalidateQueries({ queryKey });
