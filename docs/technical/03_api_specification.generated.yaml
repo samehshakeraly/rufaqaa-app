@@ -1828,10 +1828,45 @@ components:
 
         so a guardian can''t register a child for another family or partner.'
       properties:
+        academic_level:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: Academic Level
+        aspiration:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspiration
+        challenges:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Challenges
+        chronic_conditions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chronic Conditions
         date_of_birth:
           format: date
           title: Date Of Birth
           type: string
+        education_stage:
+          anyOf:
+          - enum:
+            - not_enrolled
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            - university
+            - vocational
+            - graduated
+            type: string
+          - type: 'null'
+          title: Education Stage
         family_name:
           maxLength: 100
           minLength: 1
@@ -1865,6 +1900,26 @@ components:
           - F
           title: Gender
           type: string
+        health_coverage:
+          anyOf:
+          - enum:
+            - none
+            - government
+            - private
+            - charity
+            type: string
+          - type: 'null'
+          title: Health Coverage
+        health_status:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
         middle_name:
           anyOf:
           - maxLength: 100
@@ -1878,6 +1933,29 @@ components:
             type: string
           - type: 'null'
           title: Nationality
+        quran_juz_memorized:
+          anyOf:
+          - maximum: 30.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
+        quran_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quran Note
+        school_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: School Name
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
       required:
       - first_name
       - family_name
@@ -2899,10 +2977,45 @@ components:
       type: object
     OrphanCreate:
       properties:
+        academic_level:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: Academic Level
+        aspiration:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspiration
+        challenges:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Challenges
+        chronic_conditions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chronic Conditions
         date_of_birth:
           format: date
           title: Date Of Birth
           type: string
+        education_stage:
+          anyOf:
+          - enum:
+            - not_enrolled
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            - university
+            - vocational
+            - graduated
+            type: string
+          - type: 'null'
+          title: Education Stage
         family_id:
           anyOf:
           - format: uuid
@@ -2942,6 +3055,26 @@ components:
           - F
           title: Gender
           type: string
+        health_coverage:
+          anyOf:
+          - enum:
+            - none
+            - government
+            - private
+            - charity
+            type: string
+          - type: 'null'
+          title: Health Coverage
+        health_status:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
         middle_name:
           anyOf:
           - maxLength: 100
@@ -2959,6 +3092,29 @@ components:
           format: uuid
           title: Partner Organization Id
           type: string
+        quran_juz_memorized:
+          anyOf:
+          - maximum: 30.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
+        quran_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quran Note
+        school_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: School Name
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
       required:
       - first_name
       - family_name
@@ -3117,6 +3273,17 @@ components:
       type: object
     OrphanRead:
       properties:
+        academic_level:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: Academic Level
+        aspiration:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspiration
         assigned_at:
           anyOf:
           - format: date-time
@@ -3148,6 +3315,16 @@ components:
           - archived
           title: Case Status
           type: string
+        challenges:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Challenges
+        chronic_conditions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chronic Conditions
         code:
           title: Code
           type: string
@@ -3163,6 +3340,20 @@ components:
           format: date
           title: Date Of Birth
           type: string
+        education_stage:
+          anyOf:
+          - enum:
+            - not_enrolled
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            - university
+            - vocational
+            - graduated
+            type: string
+          - type: 'null'
+          title: Education Stage
         family_id:
           anyOf:
           - format: uuid
@@ -3203,10 +3394,35 @@ components:
           - F
           title: Gender
           type: string
+        health_coverage:
+          anyOf:
+          - enum:
+            - none
+            - government
+            - private
+            - charity
+            type: string
+          - type: 'null'
+          title: Health Coverage
+        health_status:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
         id:
           format: uuid
           title: Id
           type: string
+        is_hafiz:
+          description: 'Derived (not stored): a child who has memorised the whole Qur''an.'
+          readOnly: true
+          title: Is Hafiz
+          type: boolean
         is_sponsored:
           title: Is Sponsored
           type: boolean
@@ -3231,6 +3447,29 @@ components:
           format: uuid
           title: Partner Organization Id
           type: string
+        quran_juz_memorized:
+          anyOf:
+          - maximum: 30.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
+        quran_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quran Note
+        school_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: School Name
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
         updated_at:
           format: date-time
           title: Updated At
@@ -3250,6 +3489,7 @@ components:
       - current_balance
       - created_at
       - updated_at
+      - is_hafiz
       title: OrphanRead
       type: object
     OrphanRejectPayload:
@@ -3299,12 +3539,47 @@ components:
 
         written. Status changes go through dedicated endpoints (workflow).'
       properties:
+        academic_level:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: Academic Level
+        aspiration:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspiration
+        challenges:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Challenges
+        chronic_conditions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chronic Conditions
         date_of_birth:
           anyOf:
           - format: date
             type: string
           - type: 'null'
           title: Date Of Birth
+        education_stage:
+          anyOf:
+          - enum:
+            - not_enrolled
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            - university
+            - vocational
+            - graduated
+            type: string
+          - type: 'null'
+          title: Education Stage
         family_name:
           anyOf:
           - maxLength: 100
@@ -3345,6 +3620,26 @@ components:
             type: string
           - type: 'null'
           title: Gender
+        health_coverage:
+          anyOf:
+          - enum:
+            - none
+            - government
+            - private
+            - charity
+            type: string
+          - type: 'null'
+          title: Health Coverage
+        health_status:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
         middle_name:
           anyOf:
           - maxLength: 100
@@ -3358,6 +3653,31 @@ components:
             type: string
           - type: 'null'
           title: Nationality
+        quran_juz_memorized:
+          anyOf:
+          - maximum: 30.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
+        quran_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Quran Note
+        school_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: School Name
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
       title: OrphanUpdate
       type: object
     Page_AuditLogRead_:

@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 Gender = Literal["M", "F"]
 CaseStatus = Literal[
@@ -17,6 +17,18 @@ CaseStatus = Literal[
     "deceased",
     "archived",
 ]
+EducationStage = Literal[
+    "not_enrolled",
+    "kindergarten",
+    "primary",
+    "preparatory",
+    "secondary",
+    "university",
+    "vocational",
+    "graduated",
+]
+HealthStatus = Literal["good", "chronic_condition", "disability", "under_treatment"]
+HealthCoverage = Literal["none", "government", "private", "charity"]
 
 
 class OrphanBase(BaseModel):
@@ -29,6 +41,20 @@ class OrphanBase(BaseModel):
     nationality: str | None = Field(default=None, min_length=2, max_length=2)
     father_name: str | None = Field(default=None, max_length=255)
     father_death_date: date | None = None
+
+    # Optional profile enrichment (see migration 0008). All optional so neither
+    # the staff create path nor the light guardian intake is forced to set them.
+    education_stage: EducationStage | None = None
+    academic_level: str | None = Field(default=None, max_length=50)
+    school_name: str | None = Field(default=None, max_length=255)
+    quran_juz_memorized: int | None = Field(default=None, ge=0, le=30)
+    quran_note: str | None = None
+    health_status: HealthStatus | None = None
+    health_coverage: HealthCoverage | None = None
+    chronic_conditions: str | None = None
+    aspiration: str | None = None
+    challenges: str | None = None
+    tags: list[str] = Field(default_factory=list)
 
 
 class OrphanCreateFields(OrphanBase):
@@ -68,6 +94,18 @@ class OrphanUpdate(BaseModel):
     father_name: str | None = Field(default=None, max_length=255)
     father_death_date: date | None = None
 
+    education_stage: EducationStage | None = None
+    academic_level: str | None = Field(default=None, max_length=50)
+    school_name: str | None = Field(default=None, max_length=255)
+    quran_juz_memorized: int | None = Field(default=None, ge=0, le=30)
+    quran_note: str | None = None
+    health_status: HealthStatus | None = None
+    health_coverage: HealthCoverage | None = None
+    chronic_conditions: str | None = None
+    aspiration: str | None = None
+    challenges: str | None = None
+    tags: list[str] | None = None
+
 
 class OrphanRead(OrphanBase):
     model_config = ConfigDict(from_attributes=True)
@@ -85,3 +123,9 @@ class OrphanRead(OrphanBase):
     current_balance: Decimal
     created_at: datetime
     updated_at: datetime
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def is_hafiz(self) -> bool:
+        """Derived (not stored): a child who has memorised the whole Qur'an."""
+        return self.quran_juz_memorized == 30

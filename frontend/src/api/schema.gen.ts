@@ -3419,11 +3419,21 @@ export interface components {
          *     so a guardian can't register a child for another family or partner.
          */
         GuardianOrphanCreate: {
+            /** Academic Level */
+            academic_level?: string | null;
+            /** Aspiration */
+            aspiration?: string | null;
+            /** Challenges */
+            challenges?: string | null;
+            /** Chronic Conditions */
+            chronic_conditions?: string | null;
             /**
              * Date Of Birth
              * Format: date
              */
             date_of_birth: string;
+            /** Education Stage */
+            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
             /** Family Name */
             family_name: string;
             /** Father Death Date */
@@ -3439,10 +3449,22 @@ export interface components {
              * @enum {string}
              */
             gender: "M" | "F";
+            /** Health Coverage */
+            health_coverage?: ("none" | "government" | "private" | "charity") | null;
+            /** Health Status */
+            health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Nationality */
             nationality?: string | null;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
+            /** Quran Note */
+            quran_note?: string | null;
+            /** School Name */
+            school_name?: string | null;
+            /** Tags */
+            tags?: string[];
         };
         /**
          * GuardianOrphanFinancials
@@ -4026,11 +4048,21 @@ export interface components {
         };
         /** OrphanCreate */
         OrphanCreate: {
+            /** Academic Level */
+            academic_level?: string | null;
+            /** Aspiration */
+            aspiration?: string | null;
+            /** Challenges */
+            challenges?: string | null;
+            /** Chronic Conditions */
+            chronic_conditions?: string | null;
             /**
              * Date Of Birth
              * Format: date
              */
             date_of_birth: string;
+            /** Education Stage */
+            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
             /** Family Id */
             family_id?: string | null;
             /** Family Name */
@@ -4048,6 +4080,10 @@ export interface components {
              * @enum {string}
              */
             gender: "M" | "F";
+            /** Health Coverage */
+            health_coverage?: ("none" | "government" | "private" | "charity") | null;
+            /** Health Status */
+            health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Nationality */
@@ -4057,6 +4093,14 @@ export interface components {
              * Format: uuid
              */
             partner_organization_id: string;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
+            /** Quran Note */
+            quran_note?: string | null;
+            /** School Name */
+            school_name?: string | null;
+            /** Tags */
+            tags?: string[];
         };
         /**
          * OrphanMeRead
@@ -4157,6 +4201,10 @@ export interface components {
         };
         /** OrphanRead */
         OrphanRead: {
+            /** Academic Level */
+            academic_level?: string | null;
+            /** Aspiration */
+            aspiration?: string | null;
             /** Assigned At */
             assigned_at?: string | null;
             /** Assigned To Channel Id */
@@ -4168,6 +4216,10 @@ export interface components {
              * @enum {string}
              */
             case_status: "pending_review" | "approved" | "rejected" | "available" | "reserved" | "sponsored" | "graduated" | "deceased" | "archived";
+            /** Challenges */
+            challenges?: string | null;
+            /** Chronic Conditions */
+            chronic_conditions?: string | null;
             /** Code */
             code: string;
             /**
@@ -4182,6 +4234,8 @@ export interface components {
              * Format: date
              */
             date_of_birth: string;
+            /** Education Stage */
+            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
             /** Family Id */
             family_id: string | null;
             /** Family Name */
@@ -4199,11 +4253,20 @@ export interface components {
              * @enum {string}
              */
             gender: "M" | "F";
+            /** Health Coverage */
+            health_coverage?: ("none" | "government" | "private" | "charity") | null;
+            /** Health Status */
+            health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /**
              * Id
              * Format: uuid
              */
             id: string;
+            /**
+             * Is Hafiz
+             * @description Derived (not stored): a child who has memorised the whole Qur'an.
+             */
+            readonly is_hafiz: boolean;
             /** Is Sponsored */
             is_sponsored: boolean;
             /** Middle Name */
@@ -4220,6 +4283,14 @@ export interface components {
              * Format: uuid
              */
             partner_organization_id: string;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
+            /** Quran Note */
+            quran_note?: string | null;
+            /** School Name */
+            school_name?: string | null;
+            /** Tags */
+            tags?: string[];
             /**
              * Updated At
              * Format: date-time
@@ -4255,8 +4326,18 @@ export interface components {
          *     written. Status changes go through dedicated endpoints (workflow).
          */
         OrphanUpdate: {
+            /** Academic Level */
+            academic_level?: string | null;
+            /** Aspiration */
+            aspiration?: string | null;
+            /** Challenges */
+            challenges?: string | null;
+            /** Chronic Conditions */
+            chronic_conditions?: string | null;
             /** Date Of Birth */
             date_of_birth?: string | null;
+            /** Education Stage */
+            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
             /** Family Name */
             family_name?: string | null;
             /** Father Death Date */
@@ -4269,10 +4350,22 @@ export interface components {
             full_name_en?: string | null;
             /** Gender */
             gender?: ("M" | "F") | null;
+            /** Health Coverage */
+            health_coverage?: ("none" | "government" | "private" | "charity") | null;
+            /** Health Status */
+            health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Nationality */
             nationality?: string | null;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
+            /** Quran Note */
+            quran_note?: string | null;
+            /** School Name */
+            school_name?: string | null;
+            /** Tags */
+            tags?: string[] | null;
         };
         /** Page[AuditLogRead] */
         Page_AuditLogRead_: {
