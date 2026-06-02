@@ -8,7 +8,7 @@ from app import __version__
 from app.api.v1 import api_router
 from app.core.config import settings
 from app.core.database import engine
-from app.core.errors import CatchAllExceptionMiddleware
+from app.core.errors import CatchAllExceptionMiddleware, register_exception_handlers
 from app.core.logging import RequestLogMiddleware, configure_logging
 from app.core.ratelimit import RateLimitMiddleware
 from app.core.sentry import init_sentry
@@ -68,6 +68,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Map object-storage (S3/MinIO) faults to a CORS-decorated 503 instead of an
+# opaque 500. Registered as exception handlers so they resolve inside CORS.
+register_exception_handlers(app)
 
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
