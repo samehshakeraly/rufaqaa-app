@@ -47,6 +47,7 @@ import { FamilyDetailPage } from "./pages/FamilyDetailPage";
 import { FinanceDashboardPage } from "./pages/FinanceDashboardPage";
 import { FinancialReportsPage } from "./pages/FinancialReportsPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { GuardianAddOrphanPage } from "./pages/GuardianAddOrphanPage";
 import { GuardianHomePage } from "./pages/GuardianHomePage";
 import { GuardianLoginPage } from "./pages/GuardianLoginPage";
 import { GuardianMessagesPage } from "./pages/GuardianMessagesPage";
@@ -178,6 +179,7 @@ export function App() {
         }
       >
         <Route path="/guardian" element={<GuardianHomePage />} />
+        <Route path="/guardian/orphans/new" element={<GuardianAddOrphanPage />} />
         <Route
           path="/guardian/orphans/:id"
           element={<GuardianOrphanDetailPage />}

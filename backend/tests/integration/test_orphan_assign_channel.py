@@ -26,6 +26,7 @@ async def _make_orphan_and_channel(api: AsyncClient, headers: dict[str, str]) ->
             "date_of_birth": "2017-06-15",
             "gender": "F",
             "nationality": "KW",
+            "father_name": "Test Father",
             "partner_organization_id": partner_id,
         },
         headers=headers,

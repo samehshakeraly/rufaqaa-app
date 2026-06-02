@@ -1,0 +1,105 @@
+/* ═══════════════════════════════════════════════════════════════
+   G-06 Guardian — Add Orphan. Scoped under `.gao-root`, prefixed
+   `gao-`. Tokens only (rufaqaa v0.1); logical properties for RTL.
+   The form itself is the shared NewOrphanForm (Design-System
+   `.card` / `.input` / `.btn-primary`); this file styles only the
+   page chrome (header + pending note + panel).
+   ═══════════════════════════════════════════════════════════════ */
+
+.gao-root {
+  --snow-100: #f7fbfc;
+  --tranquil-100: #eaf1f7;
+  --sky-200: #b9d7ea;
+  --trust-500: #426d9f;
+  --trust-700: #1e4068;
+
+  --gray-200: #e7ebef;
+  --gray-500: #7a8590;
+  --gray-900: #161a1f;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--gray-900);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ═══ Header ═══ */
+.gao-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gao-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--trust-500);
+  text-decoration: none;
+  width: fit-content;
+}
+.gao-back:hover {
+  text-decoration: underline;
+}
+.gao-title-area h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.gao-title-area p {
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+/* ═══ Pending-review note ═══ */
+.gao-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--tranquil-100);
+  border: 1px solid var(--sky-200);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--trust-700);
+  line-height: 1.6;
+}
+
+/* ═══ Form panel ═══ */
+.gao-panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 4px;
+}
+
+/* ═══ Icons ═══ */
+.gao-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gao-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gao-root *,
+  .gao-root *::before,
+  .gao-root *::after {
+    transition: none !important;
+  }
+}

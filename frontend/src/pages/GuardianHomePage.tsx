@@ -67,12 +67,21 @@ export function GuardianHomePage() {
       {/* Orphans */}
       <section aria-labelledby="ghm-orphans-title">
         <h2 className="ghm-section-title" id="ghm-orphans-title">
-          <span>{t("guardian.home.yourOrphans")}</span>
-          {orphans.data && list.length > 0 && (
-            <span className="ghm-section-meta">
-              {t("guardian.home.orphanCount", { count: list.length })}
-            </span>
-          )}
+          <span className="ghm-section-title-text">
+            {t("guardian.home.yourOrphans")}
+            {orphans.data && list.length > 0 && (
+              <span className="ghm-section-meta">
+                {t("guardian.home.orphanCount", { count: list.length })}
+              </span>
+            )}
+          </span>
+          <Link to="/guardian/orphans/new" className="ghm-btn ghm-btn--primary ghm-add-btn">
+            <svg className="ghm-icon ghm-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            {t("guardian.home.addOrphan")}
+          </Link>
         </h2>
 
         {orphans.isLoading && (
@@ -94,6 +103,13 @@ export function GuardianHomePage() {
               🌱
             </span>
             <p>{t("guardian.home.empty")}</p>
+            <Link to="/guardian/orphans/new" className="ghm-btn ghm-btn--primary ghm-state-cta">
+              <svg className="ghm-icon ghm-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              {t("guardian.home.addOrphan")}
+            </Link>
           </div>
         )}
 

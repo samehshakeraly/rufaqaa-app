@@ -31,7 +31,25 @@ class OrphanBase(BaseModel):
     father_death_date: date | None = None
 
 
-class OrphanCreate(OrphanBase):
+class OrphanCreateFields(OrphanBase):
+    """Core identity fields for *creating* an orphan, shared by the staff
+    create path (``OrphanCreate``) and the guardian self-service path
+    (``GuardianOrphanCreate``) so both validate identically.
+
+    ``father_name`` is **required** here (domain rule: an orphan is defined by
+    their father — "son/daughter of <father>" — and the father's death
+    certificate is a core document; there is no unknown-father case). Keeping
+    it non-null also means the canonical ``idx_orphans_no_duplicate`` unique
+    index fully covers duplicates with no NULL-father gap. ``OrphanBase`` keeps
+    it optional so ``OrphanRead`` can still serialise any legacy rows.
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    father_name: str = Field(min_length=1, max_length=255)
+
+
+class OrphanCreate(OrphanCreateFields):
     partner_organization_id: UUID
     family_id: UUID | None = None
 

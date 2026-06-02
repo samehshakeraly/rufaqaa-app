@@ -13,13 +13,15 @@ Privacy posture, hard-baked:
   - Cross-family access raises 403, not 404, so we don't leak that other
     families exist in the same org.
 
-Writes are deliberately limited. A guardian may **submit a monthly report**
+Writes are deliberately limited. A guardian may **register a new orphan** in
+their own family (`POST /me/orphans`), **submit a monthly report**
 (`POST /me/reports`) and **upload documents** for their own orphans
-(`POST /me/orphans/{id}/documents`); both land in a pending state
-(`pending_partner_approval` / `verification_status='pending'`) and surface in
-the existing staff review workflows — nothing is auto-published, and no donor
-identity is ever exposed. The guardian *profile* itself stays read-only here
-(literacy_level, banking, etc. are edited only via the staff/admin endpoints).
+(`POST /me/orphans/{id}/documents`); all land in a pending state
+(`pending_review` / `pending_partner_approval` / `verification_status='pending'`)
+and surface in the existing staff review workflows — nothing is auto-published
+or auto-approved, and no donor identity is ever exposed. The guardian *profile*
+itself stays read-only here (literacy_level, banking, etc. are edited only via
+the staff/admin endpoints).
 """
 
 from __future__ import annotations
@@ -37,13 +39,15 @@ from app.api.deps import CurrentUser, DbSession
 from app.core.config import settings
 from app.core.exceptions import NotFound
 from app.models.document import Document
-from app.models.family import Guardian
+from app.models.family import Family, Guardian
 from app.models.orphan import Orphan
 from app.models.report import OrphanReport
 from app.models.user import User
 from app.schemas.document import DocumentRead, DocumentType
+from app.schemas.orphan import OrphanCreateFields
 from app.schemas.report import ReportRead, ReportType
 from app.services.audit import record_audit
+from app.services.orphans import create_orphan_record
 from app.services.storage import ensure_bucket, put_object
 
 router = APIRouter()
@@ -106,6 +110,19 @@ class GuardianOrphanRead(BaseModel):
     profile_completion_percentage: int
     # Optional financial payload — only set when the org has opted in.
     financials: GuardianOrphanFinancials | None = None
+
+
+class GuardianOrphanCreate(OrphanCreateFields):
+    """Body for a guardian-submitted new orphan (G-06).
+
+    Only the core identity fields (``OrphanCreateFields`` — ``father_name`` is
+    required). ``organization_id``, ``family_id`` and
+    ``partner_organization_id`` are **derived server-side** from the guardian,
+    never accepted from the client — ``extra='forbid'`` rejects them outright
+    so a guardian can't register a child for another family or partner.
+    """
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
 class GuardianReportCreate(BaseModel):
@@ -291,6 +308,71 @@ async def list_my_orphans(db: DbSession, user: CurrentUser) -> list[GuardianOrph
             )
         )
     return out
+
+
+@router.post(
+    "/me/orphans",
+    response_model=GuardianOrphanRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_my_orphan(
+    payload: GuardianOrphanCreate,
+    db: DbSession,
+    user: CurrentUser,
+) -> GuardianOrphanRead:
+    """Guardian registers a new orphan in THEIR OWN family (G-06).
+
+    The orphan lands in ``case_status='pending_review'`` — identical to a
+    staff-created record — and surfaces in the very same supervisor approval
+    queue (``POST /orphans/{id}/approve|reject``). No workflow fork: this
+    delegates to the shared :func:`create_orphan_record`, so the no-duplicate
+    rule (409) is identical to the staff path.
+
+    Ownership is server-derived and non-negotiable: ``organization_id`` from
+    the caller (RLS), ``family_id`` = the guardian's own family, and
+    ``partner_organization_id`` inherited from that family. The request body
+    cannot set any of these (``extra='forbid'``), so a guardian can never
+    register a child for another family or partner.
+
+    Edge cases: a caller with no Guardian row → 404; a guardian not yet linked
+    to a family, or whose family has no partner organization → 409 (we never
+    guess a partner). The response is the privacy-safe ``GuardianOrphanRead``
+    (no donor identity, no financials).
+    """
+    guardian = await _load_guardian_or_404(db, user)
+    if guardian.family_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Your guardian profile is not linked to a family yet; contact the charity.",
+        )
+    family = await db.scalar(select(Family).where(Family.id == guardian.family_id))
+    if family is None or family.partner_organization_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "Your family is not linked to a partner organization yet; contact the charity."
+            ),
+        )
+
+    orphan = await create_orphan_record(
+        db,
+        user=user,
+        data=payload,
+        partner_organization_id=family.partner_organization_id,
+        family_id=guardian.family_id,
+        via="guardian_self",
+    )
+    return GuardianOrphanRead(
+        id=orphan.id,
+        code=orphan.code,
+        first_name=orphan.first_name,
+        family_name=orphan.family_name,
+        date_of_birth=orphan.date_of_birth,
+        gender=orphan.gender,
+        case_status=orphan.case_status,
+        profile_completion_percentage=orphan.profile_completion_percentage,
+        financials=None,
+    )
 
 
 @router.get("/me/reports", response_model=list[ReportRead])
