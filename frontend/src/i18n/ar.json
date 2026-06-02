@@ -3027,8 +3027,16 @@
       "reportsError": "تعذّر تحميل التقارير. حاول مرّة أخرى لاحقاً.",
       "noReports": "لا توجد تقارير لهذا اليتيم بعد.",
       "photosCount": "{{count}} صور",
-      "photosSoonTitle": "الصور قريباً",
-      "photosSoonBody": "سنوفّر قريباً عرض ورفع صور أيتامك من هنا بإذن الله.",
+      "photosTitle": "الصور",
+      "photoFile": "صورة (JPG أو PNG أو WebP)",
+      "photoUpload": "رفع صورة",
+      "photoUploading": "جارٍ الرفع…",
+      "photoUploadSuccess": "تم رفع الصورة — سيراجعها الفريق قبل أن يراها أيّ شخص آخر.",
+      "photoUploadError": "تعذّر رفع الصورة. حاول مرة أخرى.",
+      "photoReviewNote": "تخضع الصور لمراجعة الفريق قبل أن يراها أيّ شخص آخر.",
+      "photosError": "تعذّر تحميل الصور.",
+      "noPhotos": "لا توجد صور بعد.",
+      "photoAlt": "صورة اليتيم",
       "messagesModeration": "كل رسالة من الكفيل تمرّ بمراجعة الجهة المسؤولة قبل أن تصلك.",
       "messagesSoonTitle": "رسائل الكفيل قريباً",
       "messagesSoonBody": "ستتمكّن قريباً من قراءة رسائل الكفيل والردّ عليها من البوابة.",
@@ -3146,6 +3154,12 @@
       "verified": "موثّق",
       "rejected": "مرفوض",
       "expired": "منتهي الصلاحية"
+    },
+    "photoStatus": {
+      "pending": "قيد المراجعة",
+      "approved": "معتمدة",
+      "rejected": "مرفوضة",
+      "flagged": "موسومة"
     }
   },
   "platform": {

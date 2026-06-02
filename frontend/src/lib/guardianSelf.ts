@@ -1,3 +1,5 @@
+import type { components } from "@/api/schema.gen";
+
 import { api } from "./api";
 import type { DocumentRead, DocumentType } from "./documents";
 import type { OrphanCreateInput } from "./orphans";
@@ -204,6 +206,43 @@ export async function uploadGuardianOrphanDocument(
   if (title) form.append("title", title);
   const { data } = await api.post<DocumentRead>(
     `/guardian/me/orphans/${orphanId}/documents`,
+    form,
+    { headers: { "Content-Type": "multipart/form-data" } },
+  );
+  return data;
+}
+
+// ── Photos — types track schema.gen.ts ────────────────────────────────────
+/** One of the orphan's photos: a presigned URL + its moderation_status. */
+export type GuardianOrphanPhoto = components["schemas"]["GuardianOrphanPhoto"];
+/** Acknowledgement of a guardian photo upload (always lands 'pending'). */
+export type GuardianPhotoUploadResult = components["schemas"]["GuardianPhotoUploadResult"];
+
+/** GET /guardian/me/orphans/{id}/photos — the orphan's photos (every
+ * moderation status) with a fresh presigned URL, newest first, so the portal
+ * can show pending → approved/rejected. 403 if the orphan isn't in the
+ * guardian's family. */
+export async function listGuardianOrphanPhotos(
+  orphanId: string,
+): Promise<GuardianOrphanPhoto[]> {
+  const { data } = await api.get<GuardianOrphanPhoto[]>(
+    `/guardian/me/orphans/${orphanId}/photos`,
+  );
+  return data;
+}
+
+/** POST /guardian/me/orphans/{id}/photos — single multipart call: stages the
+ * image and records it as moderation_status='pending' / visibility='private',
+ * so it joins the same staff moderation queue as staff uploads. Never
+ * auto-approved — nobody else sees it until a moderator approves it. */
+export async function uploadGuardianOrphanPhoto(
+  orphanId: string,
+  file: File,
+): Promise<GuardianPhotoUploadResult> {
+  const form = new FormData();
+  form.append("file", file);
+  const { data } = await api.post<GuardianPhotoUploadResult>(
+    `/guardian/me/orphans/${orphanId}/photos`,
     form,
     { headers: { "Content-Type": "multipart/form-data" } },
   );

@@ -794,6 +794,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/guardian/me/orphans/{orphan_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Orphan Photos
+         * @description List the photos on file for one of the guardian's orphans, newest
+         *     first, each with a short-lived presigned URL and its moderation_status so
+         *     the G-… UI can show pending → approved/rejected. The guardian sees *all*
+         *     of their orphan's photos (any status); the ownership check scopes this to
+         *     their family only. Cross-family orphan → 403; non-guardian → 404.
+         */
+        get: operations["list_my_orphan_photos_api_v1_guardian_me_orphans__orphan_id__photos_get"];
+        put?: never;
+        /**
+         * Upload My Orphan Photo
+         * @description Guardian uploads a photo of their own orphan.
+         *
+         *     One call: ownership is verified *before* any byte is read (cross-family →
+         *     403, non-guardian → 404), then the image is streamed to the private bucket
+         *     and a `media` row is created with moderation_status='pending' /
+         *     visibility='private'. It is **never** auto-approved — it joins the same
+         *     staff moderation queue as staff uploads (GET /media?moderation_status=
+         *     pending) and only becomes donor-visible once a moderator approves it.
+         */
+        post: operations["upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/guardian/me/reports": {
         parameters: {
             query?: never;
@@ -2738,6 +2773,11 @@ export interface components {
             /** Title */
             title?: string | null;
         };
+        /** Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post */
+        Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post: {
+            /** File */
+            file: string;
+        };
         /** Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post */
         Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post: {
             /** File */
@@ -3505,6 +3545,28 @@ export interface components {
             is_sponsored: boolean;
         };
         /**
+         * GuardianOrphanPhoto
+         * @description One of the orphan's photos, with a fresh presigned URL so the portal
+         *     can render it without the bucket being public. The guardian sees every
+         *     one of *their* orphan's photos regardless of moderation_status.
+         */
+        GuardianOrphanPhoto: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Moderation Status */
+            moderation_status: string;
+            /** Presigned Url */
+            presigned_url: string;
+        };
+        /**
          * GuardianOrphanRead
          * @description Guardian-safe projection of an orphan.
          *
@@ -3537,6 +3599,26 @@ export interface components {
             id: string;
             /** Profile Completion Percentage */
             profile_completion_percentage: number;
+        };
+        /**
+         * GuardianPhotoUploadResult
+         * @description Thin acknowledgement of a guardian photo upload. The status is always
+         *     'pending' on creation — surfaced so the UI can show the review badge
+         *     immediately.
+         */
+        GuardianPhotoUploadResult: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Moderation Status */
+            moderation_status: string;
         };
         /** GuardianRead */
         GuardianRead: {
@@ -7118,6 +7200,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_orphan_photos_api_v1_guardian_me_orphans__orphan_id__photos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianOrphanPhoto"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianPhotoUploadResult"];
                 };
             };
             /** @description Validation Error */
