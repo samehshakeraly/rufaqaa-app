@@ -41,6 +41,27 @@ export interface OrphanCreateInput {
   father_death_date?: string;
   family_id?: string;
   nationality?: string;
+  // Extended profile fields (all optional). Mirror schema.gen.ts
+  // OrphanCreate / GuardianOrphanCreate.
+  education_stage?:
+    | "not_enrolled"
+    | "kindergarten"
+    | "primary"
+    | "preparatory"
+    | "secondary"
+    | "university"
+    | "vocational"
+    | "graduated";
+  academic_level?: string;
+  school_name?: string;
+  quran_juz_memorized?: number;
+  quran_note?: string;
+  health_status?: "good" | "chronic_condition" | "disability" | "under_treatment";
+  health_coverage?: "none" | "government" | "private" | "charity";
+  chronic_conditions?: string;
+  aspiration?: string;
+  challenges?: string;
+  tags?: string[];
 }
 
 export async function listOrphans(params?: {

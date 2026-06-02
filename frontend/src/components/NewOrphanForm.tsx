@@ -15,9 +15,34 @@ import { listPartners } from "@/lib/partners";
 // a "view existing" link (where the caller allows one — see `duplicateHref`).
 const ORPHAN_CODE_PATTERN = /\bORF-[A-Z0-9]{3,}\b/;
 
+// Enum option lists — mirror schema.gen.ts (OrphanCreate / GuardianOrphanCreate)
+// exactly. Used both for the zod validators and to render the <select> options.
+export const EDUCATION_STAGES = [
+  "not_enrolled",
+  "kindergarten",
+  "primary",
+  "preparatory",
+  "secondary",
+  "university",
+  "vocational",
+  "graduated",
+] as const;
+export const HEALTH_STATUSES = [
+  "good",
+  "chronic_condition",
+  "disability",
+  "under_treatment",
+] as const;
+export const HEALTH_COVERAGES = ["none", "government", "private", "charity"] as const;
+
+// Optional free-text: empty string is left as-is here and dropped at submit
+// time (truthiness gate), so we never send "" to the API.
+const optionalText = z.string().trim().optional();
+
 // father_name is REQUIRED (domain rule: an orphan is defined by their father).
 // partner_organization_id is only collected on the staff path; the guardian
 // portal derives it server-side, so it is dropped from validation there.
+// The extended profile fields are ALL optional, on both paths.
 function makeSchema(requirePartner: boolean) {
   return z.object({
     first_name: z.string().trim().min(1),
@@ -37,6 +62,32 @@ function makeSchema(requirePartner: boolean) {
           .uuid()
           .optional()
           .or(z.literal("").transform(() => undefined)),
+    // Education
+    education_stage: z
+      .enum(EDUCATION_STAGES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    academic_level: optionalText,
+    school_name: optionalText,
+    // Qur'an
+    quran_juz_memorized: z.preprocess(
+      (v) => (v === "" || v === undefined || v === null ? undefined : Number(v)),
+      z.number().int().min(0).max(30).optional(),
+    ),
+    quran_note: optionalText,
+    // Health
+    health_status: z
+      .enum(HEALTH_STATUSES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    health_coverage: z
+      .enum(HEALTH_COVERAGES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    chronic_conditions: optionalText,
+    // Profile
+    aspiration: optionalText,
+    challenges: optionalText,
   });
 }
 
@@ -71,6 +122,10 @@ interface NewOrphanFormProps {
    * Return null to show the message without a link (e.g. guardians, who have
    * no code-search screen). Defaults to the staff admin search. */
   duplicateHref?: (code: string) => string | null;
+  /** Who is filling the form. Guardians see a lighter subset — the sensitive
+   * staff-only fields (health_coverage, chronic_conditions, challenges) are
+   * neither rendered nor registered, so they are never submitted. */
+  audience?: "staff" | "guardian";
 }
 
 export function NewOrphanForm({
@@ -80,6 +135,7 @@ export function NewOrphanForm({
   showPartnerSelect = true,
   submitFn,
   duplicateHref = (code) => `/admin/orphans?q=${encodeURIComponent(code)}`,
+  audience = "staff",
 }: NewOrphanFormProps) {
   const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -105,12 +161,36 @@ export function NewOrphanForm({
     defaultValues: { gender: "M" },
   });
 
+  // Guardians get a lighter form: the three sensitive fields below are hidden
+  // and never registered, so they can't be submitted.
+  const isStaff = audience === "staff";
+
+  // Tags are a string[] edited as chips — managed outside react-hook-form.
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+
+  function addTag() {
+    const next = tagInput.trim();
+    if (!next || tags.includes(next)) {
+      setTagInput("");
+      return;
+    }
+    setTags((prev) => [...prev, next]);
+    setTagInput("");
+  }
+
+  function removeTag(tag: string) {
+    setTags((prev) => prev.filter((t) => t !== tag));
+  }
+
   const create: (p: OrphanCreateInput) => Promise<CreatedOrphan> = submitFn ?? createOrphan;
 
   const mutation = useMutation({
     mutationFn: (v: OrphanCreateInput) => create(v),
     onSuccess: async (created) => {
       reset();
+      setTags([]);
+      setTagInput("");
       await onCreated(created);
     },
     onError: (err) => {
@@ -145,6 +225,25 @@ export function NewOrphanForm({
         ? { partner_organization_id: v.partner_organization_id }
         : {}),
       ...(v.nationality ? { nationality: v.nationality } : {}),
+      // Extended profile — only sent when populated; numbers as numbers,
+      // tags only when non-empty.
+      ...(v.education_stage ? { education_stage: v.education_stage } : {}),
+      ...(v.academic_level ? { academic_level: v.academic_level } : {}),
+      ...(v.school_name ? { school_name: v.school_name } : {}),
+      ...(v.quran_juz_memorized !== undefined
+        ? { quran_juz_memorized: v.quran_juz_memorized }
+        : {}),
+      ...(v.quran_note ? { quran_note: v.quran_note } : {}),
+      ...(v.health_status ? { health_status: v.health_status } : {}),
+      ...(v.aspiration ? { aspiration: v.aspiration } : {}),
+      ...(tags.length > 0 ? { tags } : {}),
+      // Staff-only sensitive fields — guardians never render/register these,
+      // but we also gate here so they can't slip into the payload.
+      ...(isStaff && v.health_coverage ? { health_coverage: v.health_coverage } : {}),
+      ...(isStaff && v.chronic_conditions
+        ? { chronic_conditions: v.chronic_conditions }
+        : {}),
+      ...(isStaff && v.challenges ? { challenges: v.challenges } : {}),
     };
     mutation.mutate(payload);
   }
@@ -206,6 +305,127 @@ export function NewOrphanForm({
         )}
       </div>
 
+      {/* ── Education ─────────────────────────────────────── */}
+      <Section title={t("orphans.profile.educationSection")}>
+        <Field label={t("orphans.profile.educationStage")}>
+          <select className="input" {...register("education_stage")}>
+            <option value="">{t("orphans.profile.notSpecified")}</option>
+            {EDUCATION_STAGES.map((s) => (
+              <option key={s} value={s}>
+                {t(`orphans.profile.educationStageOptions.${s}`)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label={t("orphans.profile.academicLevel")}>
+          <input className="input" {...register("academic_level")} />
+        </Field>
+        <Field label={t("orphans.profile.schoolName")} className="sm:col-span-2">
+          <input className="input" {...register("school_name")} />
+        </Field>
+      </Section>
+
+      {/* ── Qur'an ────────────────────────────────────────── */}
+      <Section title={t("orphans.profile.quranSection")}>
+        <Field
+          label={t("orphans.profile.quranJuzMemorized")}
+          error={errors.quran_juz_memorized?.message}
+        >
+          <input
+            type="number"
+            min={0}
+            max={30}
+            step={1}
+            className="input"
+            {...register("quran_juz_memorized")}
+          />
+        </Field>
+        <Field label={t("orphans.profile.quranNote")}>
+          <input className="input" {...register("quran_note")} />
+        </Field>
+      </Section>
+
+      {/* ── Health ────────────────────────────────────────── */}
+      <Section title={t("orphans.profile.healthSection")}>
+        <Field label={t("orphans.profile.healthStatus")}>
+          <select className="input" {...register("health_status")}>
+            <option value="">{t("orphans.profile.notSpecified")}</option>
+            {HEALTH_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {t(`orphans.profile.healthStatusOptions.${s}`)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        {isStaff && (
+          <Field label={t("orphans.profile.healthCoverage")}>
+            <select className="input" {...register("health_coverage")}>
+              <option value="">{t("orphans.profile.notSpecified")}</option>
+              {HEALTH_COVERAGES.map((s) => (
+                <option key={s} value={s}>
+                  {t(`orphans.profile.healthCoverageOptions.${s}`)}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
+        {isStaff && (
+          <Field label={t("orphans.profile.chronicConditions")} className="sm:col-span-2">
+            <textarea className="input" rows={2} {...register("chronic_conditions")} />
+          </Field>
+        )}
+      </Section>
+
+      {/* ── Profile ───────────────────────────────────────── */}
+      <Section title={t("orphans.profile.profileSection")}>
+        <Field label={t("orphans.profile.aspiration")} className="sm:col-span-2">
+          <textarea className="input" rows={2} {...register("aspiration")} />
+        </Field>
+        {isStaff && (
+          <Field label={t("orphans.profile.challenges")} className="sm:col-span-2">
+            <textarea className="input" rows={2} {...register("challenges")} />
+          </Field>
+        )}
+      </Section>
+
+      {/* ── Tags ──────────────────────────────────────────── */}
+      <Section title={t("orphans.profile.tagsSection")}>
+        <Field label={t("orphans.profile.tags.label")} className="sm:col-span-2">
+          {tags.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 rounded-full bg-tranquil px-2 py-1 text-xs text-gray-700"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    aria-label={t("orphans.profile.tags.remove", { tag })}
+                    className="text-gray-500 hover:text-danger-700"
+                    onClick={() => removeTag(tag)}
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <input
+            className="input"
+            value={tagInput}
+            placeholder={t("orphans.profile.tags.placeholder")}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addTag();
+              }
+            }}
+          />
+        </Field>
+      </Section>
+
       {serverError && (
         <p className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700">{serverError}</p>
       )}
@@ -226,6 +446,17 @@ export function NewOrphanForm({
         )}
       </div>
     </form>
+  );
+}
+
+/** A labelled group of fields, reusing the form's existing two-column grid.
+ * No new design language — just a heading above the standard field layout. */
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="space-y-2">
+      <legend className="text-sm font-semibold text-gray-800">{title}</legend>
+      <div className="grid gap-4 sm:grid-cols-2">{children}</div>
+    </fieldset>
   );
 }
 

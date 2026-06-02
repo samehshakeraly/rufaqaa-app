@@ -50,6 +50,7 @@ export function GuardianAddOrphanPage() {
 
       <div className="gao-panel">
         <NewOrphanForm
+          audience="guardian"
           showPartnerSelect={false}
           submitFn={createMyOrphan}
           duplicateHref={() => null}

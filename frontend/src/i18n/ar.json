@@ -1367,6 +1367,52 @@
       "graduated": "متخرّج",
       "deceased": "متوفّى",
       "archived": "مؤرشف"
+    },
+    "profile": {
+      "educationSection": "التعليم",
+      "educationStage": "المرحلة الدراسية",
+      "educationStageOptions": {
+        "not_enrolled": "غير ملتحق",
+        "kindergarten": "روضة",
+        "primary": "ابتدائي",
+        "preparatory": "إعدادي",
+        "secondary": "ثانوي",
+        "university": "جامعي",
+        "vocational": "تدريب مهني",
+        "graduated": "متخرّج"
+      },
+      "academicLevel": "المستوى الدراسي",
+      "schoolName": "اسم المدرسة",
+      "quranSection": "القرآن الكريم",
+      "quranJuzMemorized": "عدد الأجزاء المحفوظة",
+      "quranNote": "ملاحظة حول الحفظ",
+      "healthSection": "الصحة",
+      "healthStatus": "الحالة الصحية",
+      "healthStatusOptions": {
+        "good": "جيدة",
+        "chronic_condition": "مرض مزمن",
+        "disability": "إعاقة",
+        "under_treatment": "تحت العلاج"
+      },
+      "healthCoverage": "التغطية الصحية",
+      "healthCoverageOptions": {
+        "none": "لا يوجد",
+        "government": "حكومية",
+        "private": "خاصة",
+        "charity": "خيرية"
+      },
+      "chronicConditions": "الأمراض المزمنة",
+      "profileSection": "نبذة",
+      "aspiration": "الطموح",
+      "challenges": "التحديات",
+      "tagsSection": "السمات",
+      "notSpecified": "غير محدد",
+      "tags": {
+        "label": "السمات",
+        "placeholder": "اكتب سمة ثم اضغط Enter",
+        "add": "إضافة",
+        "remove": "إزالة {{tag}}"
+      }
     }
   },
   "sponsorships": {

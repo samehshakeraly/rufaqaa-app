@@ -34,12 +34,9 @@ const schema = z.object({
   date_of_birth: z.string().min(4),
   gender: z.enum(["M", "F"]),
   partner_organization_id: z.string().uuid(),
-  father_name: z
-    .string()
-    .trim()
-    .min(1)
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
+  // Required domain field — an orphan is defined by their father (matches the
+  // shared NewOrphanForm and the OrphanCreate API contract).
+  father_name: z.string().trim().min(1),
   nationality: z
     .string()
     .length(2)
@@ -133,7 +130,7 @@ export function RegisterOrphanPage() {
       date_of_birth: v.date_of_birth,
       gender: v.gender,
       partner_organization_id: v.partner_organization_id,
-      ...(v.father_name ? { father_name: v.father_name } : {}),
+      father_name: v.father_name,
       ...(v.nationality ? { nationality: v.nationality } : {}),
     };
     mutation.mutate(payload);
@@ -206,8 +203,21 @@ export function RegisterOrphanPage() {
               )}
             </div>
             <div className="ps-field">
-              <label htmlFor="father_name">{t("orphans.fatherName")}</label>
-              <input id="father_name" autoComplete="off" {...register("father_name")} />
+              <label htmlFor="father_name">
+                {t("orphans.fatherName")} <span className="ps-req" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="father_name"
+                autoComplete="off"
+                aria-invalid={errors.father_name ? true : undefined}
+                aria-describedby={errors.father_name ? "father_name-err" : undefined}
+                {...register("father_name")}
+              />
+              {errors.father_name && (
+                <p className="ps-field-err" id="father_name-err">
+                  {t("common.required")}
+                </p>
+              )}
             </div>
             <div className="ps-field">
               <label htmlFor="family_name">
