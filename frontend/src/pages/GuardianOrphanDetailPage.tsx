@@ -720,7 +720,9 @@ function GuardianPhotosPanel({ orphanId, lang }: { orphanId: string; lang: strin
                 loading="lazy"
               />
               <div className="god-photo-meta">
-                <span>{new Date(p.created_at).toLocaleDateString(lang)}</span>
+                <span className="god-photo-date">
+                  {new Date(p.created_at).toLocaleDateString(lang)}
+                </span>
                 <PhotoStatusBadge status={p.moderation_status} />
               </div>
             </li>
@@ -741,7 +743,7 @@ function PhotoStatusBadge({ status }: { status: string }) {
         : "god-doc-badge--pending";
   return (
     <span className={`god-doc-badge ${modifier}`}>
-      {t(`guardian.photoStatus.${status}`, { defaultValue: status })}
+      {t(`guardian.detail.photoStatus.${status}`, { defaultValue: status })}
     </span>
   );
 }

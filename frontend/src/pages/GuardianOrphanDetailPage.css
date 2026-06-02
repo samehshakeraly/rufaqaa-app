@@ -751,3 +751,10 @@ button.god-action {
   font-size: 12px;
   color: var(--gray-500);
 }
+/* Date truncates so it never crowds/overlaps the fixed-width status badge. */
+.god-photo-date {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

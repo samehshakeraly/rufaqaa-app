@@ -3037,6 +3037,12 @@
       "photosError": "Couldn't load photos.",
       "noPhotos": "No photos yet.",
       "photoAlt": "Orphan photo",
+      "photoStatus": {
+        "pending": "Pending review",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "flagged": "Flagged"
+      },
       "messagesModeration": "Every sponsor message is reviewed by the organisation before it reaches you.",
       "messagesSoonTitle": "Sponsor messages coming soon",
       "messagesSoonBody": "You'll soon be able to read and reply to sponsor messages from the portal.",
@@ -3154,12 +3160,6 @@
       "verified": "Verified",
       "rejected": "Rejected",
       "expired": "Expired"
-    },
-    "photoStatus": {
-      "pending": "Pending review",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "flagged": "Flagged"
     }
   },
   "platform": {

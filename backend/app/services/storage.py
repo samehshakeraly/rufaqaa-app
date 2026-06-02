@@ -66,14 +66,33 @@ async def put_object(
     await asyncio.to_thread(_put_sync, bucket, key, body, content_type)
 
 
+def _swap_presigned_host(url: str, internal_endpoint: str, public_endpoint: str) -> str:
+    """Rewrite a signed URL's origin so a browser can reach the object.
+
+    boto3 signs against ``internal_endpoint`` (e.g. ``http://minio:9000`` inside
+    Docker), which a browser on the host can't resolve. When ``public_endpoint``
+    is set we swap *only* that origin (scheme+host[:port]) prefix for the public
+    one, leaving the path, query and ``X-Amz-Signature`` untouched — path-style
+    MinIO signs over the path + query, not the Host header, so the swap keeps the
+    signature valid. Empty ``public_endpoint`` (the default) is a no-op, and a
+    URL that doesn't start with ``internal_endpoint`` is returned unchanged.
+    """
+    public = public_endpoint.rstrip("/")
+    if not public:
+        return url
+    internal = internal_endpoint.rstrip("/")
+    if url.startswith(internal):
+        return public + url[len(internal) :]
+    return url
+
+
 def _presigned_get_sync(bucket: str, key: str, expires_in: int) -> str:
-    return str(
-        _s3_client().generate_presigned_url(
-            "get_object",
-            Params={"Bucket": bucket, "Key": key},
-            ExpiresIn=expires_in,
-        )
+    url = _s3_client().generate_presigned_url(
+        "get_object",
+        Params={"Bucket": bucket, "Key": key},
+        ExpiresIn=expires_in,
     )
+    return _swap_presigned_host(str(url), settings.S3_ENDPOINT, settings.S3_PUBLIC_ENDPOINT)
 
 
 async def presigned_get_url(bucket: str, key: str, expires_in: int = 3600) -> str:

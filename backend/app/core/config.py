@@ -65,6 +65,11 @@ class Settings(BaseSettings):
     MYFATOORAH_WEBHOOK_SECRET: str = ""
 
     S3_ENDPOINT: str = "http://localhost:9000"
+    # Browser-facing S3 origin for presigned GET URLs. boto3 signs against the
+    # internal S3_ENDPOINT (e.g. http://minio:9000 inside Docker), which a
+    # browser can't reach; when set, only that origin prefix is swapped for this
+    # one in generated URLs. Empty = no rewrite (use S3_ENDPOINT as-is).
+    S3_PUBLIC_ENDPOINT: str = ""
     S3_ACCESS_KEY: str = "rufaqaa_admin"
     S3_SECRET_KEY: str = "rufaqaa_dev_secret_change_me"
     S3_BUCKET_PRIVATE: str = "rufaqaa-private"

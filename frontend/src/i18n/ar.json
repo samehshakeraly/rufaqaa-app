@@ -3037,6 +3037,12 @@
       "photosError": "تعذّر تحميل الصور.",
       "noPhotos": "لا توجد صور بعد.",
       "photoAlt": "صورة اليتيم",
+      "photoStatus": {
+        "pending": "قيد المراجعة",
+        "approved": "معتمدة",
+        "rejected": "مرفوضة",
+        "flagged": "موسومة"
+      },
       "messagesModeration": "كل رسالة من الكفيل تمرّ بمراجعة الجهة المسؤولة قبل أن تصلك.",
       "messagesSoonTitle": "رسائل الكفيل قريباً",
       "messagesSoonBody": "ستتمكّن قريباً من قراءة رسائل الكفيل والردّ عليها من البوابة.",
@@ -3154,12 +3160,6 @@
       "verified": "موثّق",
       "rejected": "مرفوض",
       "expired": "منتهي الصلاحية"
-    },
-    "photoStatus": {
-      "pending": "قيد المراجعة",
-      "approved": "معتمدة",
-      "rejected": "مرفوضة",
-      "flagged": "موسومة"
     }
   },
   "platform": {
