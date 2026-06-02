@@ -1,21 +1,21 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 
-import { moderateMedia, type MediaModerationDecision } from "@/lib/media";
+import {
+  listMediaQueue,
+  moderateMedia,
+  type MediaModerationDecision,
+  type MediaQueueItem,
+} from "@/lib/media";
 import { toast } from "@/store/toasts";
 
 import "./MediaReviewPage.css";
 
-// TODO(backend): there is no GET /media?moderation_status=… list endpoint yet
-// — only per-orphan photos (GET /media/orphans/{id}/photos) and the per-item
-// POST /media/{id}/moderate. Until a moderation-queue endpoint lands the queue
-// is intentionally empty; we never fabricate a child's media. The full
-// workspace below (filter tabs + grid + card actions wired to the real
-// moderateMedia mutation) is ready — swap `items` for a useQuery(tab) call and
-// add query invalidation in MediaCard once the endpoint exists.
+// Card presentation shape. The queue endpoint (GET /media) returns the
+// fields below; orphan_name / file_name aren't part of that contract yet
+// (it carries orphan_id only), so they map to null and the card hides them.
 interface PendingMedia {
   id: string;
   presigned_url: string | null;
@@ -27,8 +27,21 @@ interface PendingMedia {
   visibility: string | null;
 }
 
+function toPendingMedia(m: MediaQueueItem): PendingMedia {
+  return {
+    id: m.id,
+    presigned_url: m.presigned_url,
+    orphan_name: null,
+    file_name: null,
+    file_size_bytes: m.file_size_bytes,
+    created_at: m.created_at,
+    visibility: m.visibility,
+  };
+}
+
 type ReviewTab = "pending" | "approved" | "rejected";
 const TABS: ReviewTab[] = ["pending", "approved", "rejected"];
+const QUEUE_KEY = "media-queue";
 
 function Icon({ children, sm = false }: { children: ReactNode; sm?: boolean }) {
   return (
@@ -80,9 +93,12 @@ export function MediaReviewPage() {
   const { t, i18n } = useTranslation();
   const [tab, setTab] = useState<ReviewTab>("pending");
 
-  // TODO(backend): replace with useQuery keyed on `tab` (moderation_status)
-  // once the queue endpoint exists. Empty by design until then.
-  const items: PendingMedia[] = [];
+  // Live moderation queue, keyed on the active tab (= moderation_status).
+  const query = useQuery({
+    queryKey: [QUEUE_KEY, tab],
+    queryFn: () => listMediaQueue(tab),
+  });
+  const items = (query.data?.items ?? []).map(toPendingMedia);
 
   return (
     <div className="ps-media">
@@ -132,26 +148,51 @@ export function MediaReviewPage() {
         </div>
       </div>
 
-      {items.length > 0 ? (
+      {query.isPending ? (
+        <MediaQueueSkeleton label={t("media.review.loading")} />
+      ) : query.isError ? (
+        <div className="ps-media-empty" role="alert">
+          <div className="ps-media-empty-icon" aria-hidden="true">
+            <Icon>{ICON.image}</Icon>
+          </div>
+          <div className="ps-media-empty-title">{t("media.review.loadError")}</div>
+          <button type="button" className="ps-media-link" onClick={() => query.refetch()}>
+            <Icon sm>{ICON.arrow}</Icon>
+            {t("common.retry")}
+          </button>
+        </div>
+      ) : items.length > 0 ? (
         <div className="ps-media-grid">
           {items.map((m) => (
             <MediaCard key={m.id} media={m} lang={i18n.language} />
           ))}
         </div>
       ) : (
-        /* Coming-soon empty state where the live queue will render. */
+        /* Real empty state: this tab has no media (no longer "coming soon"). */
         <div className="ps-media-empty">
           <div className="ps-media-empty-icon" aria-hidden="true">
             <Icon>{ICON.image}</Icon>
           </div>
-          <div className="ps-media-empty-title">{t("media.review.comingSoonTitle")}</div>
-          <div className="ps-media-empty-sub">{t("media.review.todoBackend")}</div>
-          <Link to="/admin/orphans?status=pending_review" className="ps-media-link">
-            <Icon sm>{ICON.arrow}</Icon>
-            {t("media.review.workaround")}
-          </Link>
+          <div className="ps-media-empty-title">{t(`media.review.empty.${tab}.title`)}</div>
+          <div className="ps-media-empty-sub">{t(`media.review.empty.${tab}.sub`)}</div>
         </div>
       )}
+    </div>
+  );
+}
+
+function MediaQueueSkeleton({ label }: { label: string }) {
+  return (
+    <div className="ps-media-grid" role="status" aria-busy="true" aria-label={label}>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="ps-media-card ps-media-skel" aria-hidden="true">
+          <div className="ps-media-thumb ps-media-skel-thumb" />
+          <div className="ps-media-body">
+            <div className="ps-media-skel-line" style={{ inlineSize: "60%" }} />
+            <div className="ps-media-skel-line" style={{ inlineSize: "40%" }} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -170,6 +211,7 @@ function visibilityLabel(t: (k: string) => string, visibility: string | null): s
 
 function MediaCard({ media, lang }: { media: PendingMedia; lang: string }) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [rejecting, setRejecting] = useState(false);
   const [notes, setNotes] = useState("");
 
@@ -182,7 +224,8 @@ function MediaCard({ media, lang }: { media: PendingMedia; lang: string }) {
           ? t("media.moderate.approved")
           : t("media.moderate.rejected"),
       );
-      // TODO(backend): invalidate the queue query here once it exists.
+      // Refresh every tab: the item leaves "pending" and joins approved/rejected.
+      void queryClient.invalidateQueries({ queryKey: [QUEUE_KEY] });
     },
     onError: () => toast.error(t("common.createError")),
   });

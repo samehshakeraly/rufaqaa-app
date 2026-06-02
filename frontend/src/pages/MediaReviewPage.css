@@ -178,8 +178,10 @@
   color: white;
   border: 1px solid var(--trust-400);
   border-radius: var(--radius-md);
+  font-family: inherit;
   font-size: 13px;
   font-weight: 500;
+  cursor: pointer;
   transition: var(--transition-fast);
 }
 .ps-media-link:hover {
@@ -437,4 +439,31 @@
 }
 .ps-media-reject-actions .ps-media-action.no {
   border-color: var(--danger-100);
+}
+
+/* ── Loading skeleton ─────────────────────────────────────────────────── */
+@keyframes ps-media-shimmer {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+.ps-media-skel {
+  pointer-events: none;
+}
+.ps-media-skel-thumb {
+  background: var(--gray-100);
+  animation: ps-media-shimmer 1.4s ease-in-out infinite;
+}
+.ps-media-skel-line {
+  block-size: 12px;
+  margin-block-start: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--gray-100);
+  animation: ps-media-shimmer 1.4s ease-in-out infinite;
 }

@@ -981,6 +981,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Media Queue
+         * @description Moderation queue: media in the caller's organization filtered by
+         *     moderation_status, newest first.
+         *
+         *     Gated on MEDIA_MODERATOR_ROLES — only the roles that can act on an item
+         *     (POST /media/{id}/moderate) can see the queue. RLS already scopes media
+         *     by org; we filter on organization_id explicitly too (defense-in-depth).
+         */
+        get: operations["list_media_queue_api_v1_media_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/media/file": {
         parameters: {
             query?: never;
@@ -3748,6 +3773,41 @@ export interface components {
             /** Visibility */
             visibility: string;
         };
+        /**
+         * MediaQueueItem
+         * @description One row in the moderation queue. Carries a fresh presigned URL so
+         *     the reviewer can render the image without the bucket being public —
+         *     same s3:// → URL handling as list_orphan_photos.
+         */
+        MediaQueueItem: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** File Size Bytes */
+            file_size_bytes: number;
+            /** File Url */
+            file_url: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Media Type */
+            media_type: string;
+            /** Moderation Status */
+            moderation_status: string;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /** Presigned Url */
+            presigned_url: string;
+            /** Visibility */
+            visibility: string;
+        };
         /** MediaUploadResponse */
         MediaUploadResponse: {
             /**
@@ -4448,6 +4508,17 @@ export interface components {
         Page_MarketingChannelRead_: {
             /** Items */
             items: components["schemas"]["MarketingChannelRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[MediaQueueItem] */
+        Page_MediaQueueItem_: {
+            /** Items */
+            items: components["schemas"]["MediaQueueItem"][];
             /** Limit */
             limit: number;
             /** Offset */
@@ -7484,6 +7555,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_SponsorshipRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_media_queue_api_v1_media_get: {
+        parameters: {
+            query?: {
+                moderation_status?: "pending" | "approved" | "rejected" | "flagged";
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_MediaQueueItem_"];
                 };
             };
             /** @description Validation Error */

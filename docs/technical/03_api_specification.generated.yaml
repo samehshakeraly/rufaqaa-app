@@ -2494,6 +2494,55 @@ components:
       - visibility
       title: MediaModerationRead
       type: object
+    MediaQueueItem:
+      description: 'One row in the moderation queue. Carries a fresh presigned URL so
+
+        the reviewer can render the image without the bucket being public —
+
+        same s3:// → URL handling as list_orphan_photos.'
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        file_size_bytes:
+          title: File Size Bytes
+          type: integer
+        file_url:
+          title: File Url
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        media_type:
+          title: Media Type
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        presigned_url:
+          title: Presigned Url
+          type: string
+        visibility:
+          title: Visibility
+          type: string
+      required:
+      - id
+      - orphan_id
+      - media_type
+      - file_url
+      - presigned_url
+      - file_size_bytes
+      - moderation_status
+      - visibility
+      - created_at
+      title: MediaQueueItem
+      type: object
     MediaUploadResponse:
       properties:
         created_at:
@@ -3863,6 +3912,29 @@ components:
       - limit
       - offset
       title: Page[MarketingChannelRead]
+      type: object
+    Page_MediaQueueItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/MediaQueueItem'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[MediaQueueItem]
       type: object
     Page_MessageRead_:
       properties:
@@ -7938,6 +8010,67 @@ paths:
       summary: My Sponsorships
       tags:
       - donor-portal
+  /api/v1/media:
+    get:
+      description: 'Moderation queue: media in the caller''s organization filtered by
+
+        moderation_status, newest first.
+
+
+        Gated on MEDIA_MODERATOR_ROLES — only the roles that can act on an item
+
+        (POST /media/{id}/moderate) can see the queue. RLS already scopes media
+
+        by org; we filter on organization_id explicitly too (defense-in-depth).'
+      operationId: list_media_queue_api_v1_media_get
+      parameters:
+      - in: query
+        name: moderation_status
+        required: false
+        schema:
+          default: pending
+          enum:
+          - pending
+          - approved
+          - rejected
+          - flagged
+          title: Moderation Status
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_MediaQueueItem_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Media Queue
+      tags:
+      - media
   /api/v1/media/file:
     post:
       description: 'Stage a file in object storage and return its s3:// URL plus

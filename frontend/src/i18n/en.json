@@ -1154,6 +1154,7 @@
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
+    "retry": "Retry",
     "add": "Add",
     "empty": "No data yet",
     "noResults": "No matching results",
@@ -2315,14 +2316,27 @@
     "review": {
       "title": "Media review",
       "description": "Review and moderate photos uploaded by partner staff before they appear on donor-facing pages.",
-      "todoBackend": "Pending media moderation requires a backend list endpoint (TODO). Until it lands, use the per-photo controls on the orphan detail page.",
       "thumbnailAlt": "Pending media thumbnail {{id}}",
-      "workaround": "Open orphans pending review",
       "aiTitle": "AI moderation — coming soon",
-      "aiBody": "Once the moderation-queue endpoint lands, AI-screened media will be summarised here for your visual review.",
+      "aiBody": "AI pre-screening isn't enabled yet, so every item below still needs your visual review. Once it lands, AI-flagged media will be highlighted here.",
       "privacyLabel": "Reminder:",
       "privacyBody": "Every photo must pass a human visual review even if it clears the AI check. Bulk auto-approval is not permitted by policy.",
-      "comingSoonTitle": "The media queue isn't wired yet",
+      "loading": "Loading media…",
+      "loadError": "Couldn't load the media queue.",
+      "empty": {
+        "pending": {
+          "title": "No media waiting for review",
+          "sub": "When partner staff upload photos, they'll appear here for approval."
+        },
+        "approved": {
+          "title": "No approved media yet",
+          "sub": "Photos you approve will be listed here."
+        },
+        "rejected": {
+          "title": "No rejected media",
+          "sub": "Photos you reject will be listed here."
+        }
+      },
       "tabs": {
         "pending": "In review",
         "approved": "Approved",
