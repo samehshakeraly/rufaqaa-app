@@ -1407,6 +1407,11 @@
       "challenges": "التحديات",
       "tagsSection": "السمات",
       "notSpecified": "غير محدد",
+      "title": "الملف الشخصي",
+      "edit": "تعديل",
+      "notSet": "غير مُسجَّل",
+      "isHafiz": "حافظ للقرآن",
+      "saved": "تم تحديث الملف",
       "tags": {
         "label": "السمات",
         "placeholder": "اكتب سمة ثم اضغط Enter",

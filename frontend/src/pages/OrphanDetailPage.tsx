@@ -5,6 +5,11 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { DocumentUploadCard } from "@/components/DocumentUploadCard";
+import {
+  EDUCATION_STAGES,
+  HEALTH_COVERAGES,
+  HEALTH_STATUSES,
+} from "@/components/NewOrphanForm";
 import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
 import { useRole } from "@/hooks/useRole";
 import {
@@ -13,6 +18,12 @@ import {
   getOrphanTimeline,
   rejectOrphan,
   releaseOrphan,
+  updateOrphan,
+  type EducationStage,
+  type HealthCoverage,
+  type HealthStatus,
+  type Orphan,
+  type OrphanUpdateInput,
 } from "@/lib/orphans";
 import { listOrphanPhotos, moderateMedia } from "@/lib/media";
 import { listReports } from "@/lib/reports";
@@ -37,7 +48,7 @@ export function OrphanDetailPage() {
   const { id = "" } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
-  const { isAdmin, isDonor, isPartnerApprover } = useRole();
+  const { isAdmin, isDonor, isPartnerApprover, isStaff } = useRole();
 
   const { data: orphan, isLoading, error } = useQuery({
     queryKey: ["orphan", id],
@@ -304,6 +315,11 @@ export function OrphanDetailPage() {
             </div>
           </section>
 
+          {/* Full orphan profile — staff-only surface. Sensitive fields
+              (health_coverage, chronic_conditions, challenges) live here and
+              must NOT leak onto guardian/donor surfaces. */}
+          {isStaff && <OrphanProfileCard orphan={orphan} />}
+
           <OrphanReportsCard orphanId={id} />
 
           <section className="ps-info-block">
@@ -440,6 +456,442 @@ export function OrphanDetailPage() {
         />
       )}
     </div>
+  );
+}
+
+// ── Profile (staff view + edit) ─────────────────────────────────────────
+// The full PR #64/#65 profile, rendered read-only by default with an inline
+// edit mode so staff can complete/correct a child's file on behalf of a
+// guardian. PATCH /orphans/{id} accepts every field; we send only what
+// changed.
+
+interface ProfileDraft {
+  education_stage: string;
+  academic_level: string;
+  school_name: string;
+  quran_juz_memorized: string;
+  quran_note: string;
+  health_status: string;
+  health_coverage: string;
+  chronic_conditions: string;
+  aspiration: string;
+  challenges: string;
+  tags: string[];
+}
+
+function draftFromOrphan(o: Orphan): ProfileDraft {
+  return {
+    education_stage: o.education_stage ?? "",
+    academic_level: o.academic_level ?? "",
+    school_name: o.school_name ?? "",
+    quran_juz_memorized:
+      o.quran_juz_memorized != null ? String(o.quran_juz_memorized) : "",
+    quran_note: o.quran_note ?? "",
+    health_status: o.health_status ?? "",
+    health_coverage: o.health_coverage ?? "",
+    chronic_conditions: o.chronic_conditions ?? "",
+    aspiration: o.aspiration ?? "",
+    challenges: o.challenges ?? "",
+    tags: o.tags ?? [],
+  };
+}
+
+// Diff a string/enum field: returns the value to send (trimmed string, or
+// null to clear) when it changed, else undefined (omit from payload).
+function diffStr(
+  orig: string | null | undefined,
+  next: string,
+): string | null | undefined {
+  const o = orig ?? "";
+  const n = next.trim();
+  if (n === o) return undefined;
+  return n === "" ? null : n;
+}
+
+function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
+  const payload: OrphanUpdateInput = {};
+
+  const stage = diffStr(o.education_stage, d.education_stage);
+  if (stage !== undefined) payload.education_stage = stage as EducationStage | null;
+  const academic = diffStr(o.academic_level, d.academic_level);
+  if (academic !== undefined) payload.academic_level = academic;
+  const school = diffStr(o.school_name, d.school_name);
+  if (school !== undefined) payload.school_name = school;
+  const quranNote = diffStr(o.quran_note, d.quran_note);
+  if (quranNote !== undefined) payload.quran_note = quranNote;
+  const status = diffStr(o.health_status, d.health_status);
+  if (status !== undefined) payload.health_status = status as HealthStatus | null;
+  const coverage = diffStr(o.health_coverage, d.health_coverage);
+  if (coverage !== undefined)
+    payload.health_coverage = coverage as HealthCoverage | null;
+  const chronic = diffStr(o.chronic_conditions, d.chronic_conditions);
+  if (chronic !== undefined) payload.chronic_conditions = chronic;
+  const aspiration = diffStr(o.aspiration, d.aspiration);
+  if (aspiration !== undefined) payload.aspiration = aspiration;
+  const challenges = diffStr(o.challenges, d.challenges);
+  if (challenges !== undefined) payload.challenges = challenges;
+
+  const qStr = d.quran_juz_memorized.trim();
+  const qNext = qStr === "" ? null : Number(qStr);
+  const qOrig = o.quran_juz_memorized ?? null;
+  if (qNext !== qOrig && !(qNext !== null && Number.isNaN(qNext))) {
+    payload.quran_juz_memorized = qNext;
+  }
+
+  const tagsOrig = o.tags ?? [];
+  if (JSON.stringify(d.tags) !== JSON.stringify(tagsOrig)) {
+    payload.tags = d.tags;
+  }
+
+  return payload;
+}
+
+function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<ProfileDraft>(() => draftFromOrphan(orphan));
+  const [tagInput, setTagInput] = useState("");
+
+  const updateMut = useMutation({
+    mutationFn: (payload: OrphanUpdateInput) => updateOrphan(orphan.id, payload),
+    onSuccess: async () => {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["orphan", orphan.id] }),
+        qc.invalidateQueries({ queryKey: ["orphans"] }),
+      ]);
+      toast.success(t("orphans.profile.saved"));
+      setEditing(false);
+    },
+    onError: (err) => {
+      const msg = err instanceof AxiosError ? err.response?.data?.detail : null;
+      toast.error(typeof msg === "string" ? msg : t("common.createError"));
+    },
+  });
+
+  function beginEdit() {
+    setDraft(draftFromOrphan(orphan));
+    setTagInput("");
+    setEditing(true);
+  }
+
+  function cancel() {
+    setTagInput("");
+    setEditing(false);
+  }
+
+  function save() {
+    const payload = buildProfilePayload(orphan, draft);
+    if (Object.keys(payload).length === 0) {
+      setEditing(false);
+      return;
+    }
+    updateMut.mutate(payload);
+  }
+
+  function addTag() {
+    const next = tagInput.trim();
+    if (!next || draft.tags.includes(next)) {
+      setTagInput("");
+      return;
+    }
+    setDraft((d) => ({ ...d, tags: [...d.tags, next] }));
+    setTagInput("");
+  }
+
+  function removeTag(tag: string) {
+    setDraft((d) => ({ ...d, tags: d.tags.filter((x) => x !== tag) }));
+  }
+
+  const notSet = <span className="ps-info-muted">{t("orphans.profile.notSet")}</span>;
+  const text = (v?: string | null) => (v && v.trim() ? v : notSet);
+
+  return (
+    <section className="ps-info-block">
+      <div className="ps-info-block-head">
+        <span className="ps-info-block-title">
+          <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          {t("orphans.profile.title")}
+        </span>
+        {!editing && (
+          <button type="button" className="ps-btn" onClick={beginEdit}>
+            {t("orphans.profile.edit")}
+          </button>
+        )}
+      </div>
+
+      {!editing && (
+        <div className="ps-info-rows">
+          <ProfileRow label={t("orphans.profile.educationStage")}>
+            {orphan.education_stage
+              ? t(`orphans.profile.educationStageOptions.${orphan.education_stage}`)
+              : notSet}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.academicLevel")}>
+            {text(orphan.academic_level)}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.schoolName")}>
+            {text(orphan.school_name)}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.quranJuzMemorized")}>
+            {orphan.quran_juz_memorized != null ? (
+              <>
+                <span className="tabular-nums">{orphan.quran_juz_memorized}</span>
+                {orphan.is_hafiz && (
+                  <span className="ps-badge active ps-hafiz-badge">
+                    {t("orphans.profile.isHafiz")}
+                  </span>
+                )}
+              </>
+            ) : (
+              notSet
+            )}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.quranNote")}>
+            {text(orphan.quran_note)}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.healthStatus")}>
+            {orphan.health_status
+              ? t(`orphans.profile.healthStatusOptions.${orphan.health_status}`)
+              : notSet}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.healthCoverage")}>
+            {orphan.health_coverage
+              ? t(`orphans.profile.healthCoverageOptions.${orphan.health_coverage}`)
+              : notSet}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.chronicConditions")}>
+            {text(orphan.chronic_conditions)}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.aspiration")}>
+            {text(orphan.aspiration)}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.challenges")}>
+            {text(orphan.challenges)}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.tags.label")}>
+            {orphan.tags && orphan.tags.length > 0 ? (
+              <span className="ps-tag-chips">
+                {orphan.tags.map((tag) => (
+                  <span key={tag} className="ps-badge partner">
+                    {tag}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              notSet
+            )}
+          </ProfileRow>
+        </div>
+      )}
+
+      {editing && (
+        <>
+          <div className="ps-info-rows">
+            <ProfileEditField label={t("orphans.profile.educationStage")}>
+              <select
+                className="input"
+                value={draft.education_stage}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, education_stage: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {EDUCATION_STAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.educationStageOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.academicLevel")}>
+              <input
+                className="input"
+                value={draft.academic_level}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, academic_level: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.schoolName")}>
+              <input
+                className="input"
+                value={draft.school_name}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, school_name: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.quranJuzMemorized")}>
+              <input
+                type="number"
+                min={0}
+                max={30}
+                step={1}
+                className="input"
+                value={draft.quran_juz_memorized}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, quran_juz_memorized: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.quranNote")}>
+              <input
+                className="input"
+                value={draft.quran_note}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, quran_note: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.healthStatus")}>
+              <select
+                className="input"
+                value={draft.health_status}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, health_status: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {HEALTH_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.healthStatusOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.healthCoverage")}>
+              <select
+                className="input"
+                value={draft.health_coverage}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, health_coverage: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {HEALTH_COVERAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.healthCoverageOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.chronicConditions")}>
+              <textarea
+                className="input"
+                rows={2}
+                value={draft.chronic_conditions}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, chronic_conditions: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.aspiration")}>
+              <textarea
+                className="input"
+                rows={2}
+                value={draft.aspiration}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, aspiration: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.challenges")}>
+              <textarea
+                className="input"
+                rows={2}
+                value={draft.challenges}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, challenges: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.tags.label")}>
+              {draft.tags.length > 0 && (
+                <div className="ps-tag-chips ps-tag-chips-edit">
+                  {draft.tags.map((tag) => (
+                    <span key={tag} className="ps-badge partner">
+                      {tag}
+                      <button
+                        type="button"
+                        aria-label={t("orphans.profile.tags.remove", { tag })}
+                        className="ps-tag-remove"
+                        onClick={() => removeTag(tag)}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <input
+                className="input"
+                value={tagInput}
+                placeholder={t("orphans.profile.tags.placeholder")}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+              />
+            </ProfileEditField>
+          </div>
+          <div className="ps-profile-edit-actions">
+            <button
+              type="button"
+              className="ps-btn ps-btn-primary"
+              onClick={save}
+              disabled={updateMut.isPending}
+            >
+              {updateMut.isPending ? t("common.saving") : t("common.save")}
+            </button>
+            <button
+              type="button"
+              className="ps-btn"
+              onClick={cancel}
+              disabled={updateMut.isPending}
+            >
+              {t("common.cancel")}
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function ProfileRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="ps-info-row">
+      <span className="ps-info-row-label">{label}</span>
+      <span className="ps-info-row-value">{children}</span>
+    </div>
+  );
+}
+
+function ProfileEditField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="ps-edit-field">
+      <span className="ps-edit-field-label">{label}</span>
+      {children}
+    </label>
   );
 }
 

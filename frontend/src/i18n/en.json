@@ -1407,6 +1407,11 @@
       "challenges": "Challenges",
       "tagsSection": "Tags",
       "notSpecified": "Not specified",
+      "title": "Profile",
+      "edit": "Edit",
+      "notSet": "Not set",
+      "isHafiz": "Hafiz",
+      "saved": "Profile updated",
       "tags": {
         "label": "Tags",
         "placeholder": "Type a tag and press Enter",
