@@ -8576,25 +8576,17 @@ paths:
       - orphan-self
   /api/v1/orphans:
     get:
-      description: 'List orphans, optionally filtered by case_status and a search term.
-
-
-        `q` does a Postgres full-text search against the trigger-maintained
-
-        `search_vector` (covers Arabic + English name fields and the code) and
-
-        also matches the code prefix directly so partial codes like "ORF-AB"
-
-        still work.
-
-
-        `channel_id` narrows to orphans assigned to a marketing channel.
-
-        `assignment_status` filters by assignment deadline: "active" keeps
-
-        orphans whose deadline is still in the future, "expired" those past it,
-
-        "all" applies no deadline filter.'
+      description: "List orphans, optionally filtered by case_status and a search term.\n\n`q` does a Postgres full-text search\
+        \ against the trigger-maintained\n`search_vector` (covers Arabic + English name fields and the code) and\nalso matches\
+        \ the code prefix directly so partial codes like \"ORF-AB\"\nstill work.\n\n`channel_id` narrows to orphans assigned\
+        \ to a marketing channel.\n`assignment_status` filters by assignment deadline: \"active\" keeps\norphans whose deadline\
+        \ is still in the future, \"expired\" those past it,\n\"all\" applies no deadline filter.\n\nProfile-segment filters\
+        \ (all optional, AND-composed, omitted = no filter)\nlet staff carve out orphan segments for marketing campaigns:\n\
+        \n- `education_stage` / `health_status`: exact enum match.\n- `is_hafiz`: derived from `quran_juz_memorized`; true\
+        \ → exactly 30 juz'\n  memorised, false → anything other than 30 (fewer juz' *or* unrecorded).\n- `min_juz`: keep\
+        \ orphans with at least this many juz' memorised (NULLs,\n  i.e. unrecorded, are excluded).\n- `tags` + `tags_match`:\
+        \ repeatable tag filter (max 10 tags, 50 chars\n  each). \"all\" (default) keeps orphans whose tags contain every\
+        \ requested\n  tag (`@>`); \"any\" keeps orphans sharing at least one tag (`&&`)."
       operationId: list_orphans_api_v1_orphans_get
       parameters:
       - in: query
@@ -8641,6 +8633,74 @@ paths:
           - expired
           - all
           title: Assignment Status
+          type: string
+      - in: query
+        name: education_stage
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - not_enrolled
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            - university
+            - vocational
+            - graduated
+            type: string
+          - type: 'null'
+          title: Education Stage
+      - in: query
+        name: health_status
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
+      - in: query
+        name: is_hafiz
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Hafiz
+      - in: query
+        name: min_juz
+        required: false
+        schema:
+          anyOf:
+          - maximum: 30
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Juz
+      - in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      - in: query
+        name: tags_match
+        required: false
+        schema:
+          default: all
+          enum:
+          - all
+          - any
+          title: Tags Match
           type: string
       - in: query
         name: q

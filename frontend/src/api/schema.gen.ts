@@ -1347,6 +1347,18 @@ export interface paths {
          *     `assignment_status` filters by assignment deadline: "active" keeps
          *     orphans whose deadline is still in the future, "expired" those past it,
          *     "all" applies no deadline filter.
+         *
+         *     Profile-segment filters (all optional, AND-composed, omitted = no filter)
+         *     let staff carve out orphan segments for marketing campaigns:
+         *
+         *     - `education_stage` / `health_status`: exact enum match.
+         *     - `is_hafiz`: derived from `quran_juz_memorized`; true → exactly 30 juz'
+         *       memorised, false → anything other than 30 (fewer juz' *or* unrecorded).
+         *     - `min_juz`: keep orphans with at least this many juz' memorised (NULLs,
+         *       i.e. unrecorded, are excluded).
+         *     - `tags` + `tags_match`: repeatable tag filter (max 10 tags, 50 chars
+         *       each). "all" (default) keeps orphans whose tags contain every requested
+         *       tag (`@>`); "any" keeps orphans sharing at least one tag (`&&`).
          */
         get: operations["list_orphans_api_v1_orphans_get"];
         put?: never;
@@ -8056,6 +8068,12 @@ export interface operations {
                 case_status?: string | null;
                 channel_id?: string | null;
                 assignment_status?: "active" | "expired" | "all";
+                education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+                health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+                is_hafiz?: boolean | null;
+                min_juz?: number | null;
+                tags?: string[] | null;
+                tags_match?: "all" | "any";
                 q?: string | null;
             };
             header?: never;
