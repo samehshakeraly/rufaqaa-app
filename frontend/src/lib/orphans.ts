@@ -1,5 +1,19 @@
 import { api } from "./api";
 
+// Enum unions — mirror schema.gen.ts exactly. Shared across the create,
+// read, and update shapes.
+export type EducationStage =
+  | "not_enrolled"
+  | "kindergarten"
+  | "primary"
+  | "preparatory"
+  | "secondary"
+  | "university"
+  | "vocational"
+  | "graduated";
+export type HealthStatus = "good" | "chronic_condition" | "disability" | "under_treatment";
+export type HealthCoverage = "none" | "government" | "private" | "charity";
+
 export interface Orphan {
   id: string;
   code: string;
@@ -15,6 +29,20 @@ export interface Orphan {
   assigned_at: string | null;
   assignment_deadline: string | null;
   created_at: string;
+  // Extended profile fields (read). Mirror schema.gen.ts OrphanRead.
+  education_stage?: EducationStage | null;
+  academic_level?: string | null;
+  school_name?: string | null;
+  quran_juz_memorized?: number | null;
+  quran_note?: string | null;
+  health_status?: HealthStatus | null;
+  health_coverage?: HealthCoverage | null;
+  chronic_conditions?: string | null;
+  aspiration?: string | null;
+  challenges?: string | null;
+  tags?: string[];
+  /** Derived (not stored): a child who has memorised the whole Qur'an. */
+  is_hafiz?: boolean;
 }
 
 export type AssignmentStatus = "active" | "expired" | "all";
@@ -86,6 +114,41 @@ export async function createOrphan(payload: OrphanCreateInput): Promise<Orphan> 
 
 export async function getOrphan(id: string): Promise<Orphan> {
   const { data } = await api.get<Orphan>(`/orphans/${id}`);
+  return data;
+}
+
+/** Partial update. Every key optional — only the supplied fields are written.
+ * Mirrors schema.gen.ts OrphanUpdate. `case_status` is intentionally absent:
+ * status changes go through the approve / reject / release endpoints. */
+export interface OrphanUpdateInput {
+  // Basic editable identity fields the PATCH already supports.
+  first_name?: string;
+  family_name?: string;
+  middle_name?: string | null;
+  full_name_en?: string | null;
+  date_of_birth?: string;
+  gender?: "M" | "F";
+  nationality?: string | null;
+  father_name?: string | null;
+  // Extended profile fields.
+  education_stage?: EducationStage | null;
+  academic_level?: string | null;
+  school_name?: string | null;
+  quran_juz_memorized?: number | null;
+  quran_note?: string | null;
+  health_status?: HealthStatus | null;
+  health_coverage?: HealthCoverage | null;
+  chronic_conditions?: string | null;
+  aspiration?: string | null;
+  challenges?: string | null;
+  tags?: string[];
+}
+
+export async function updateOrphan(
+  id: string,
+  payload: OrphanUpdateInput,
+): Promise<Orphan> {
+  const { data } = await api.patch<Orphan>(`/orphans/${id}`, payload);
   return data;
 }
 
