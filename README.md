@@ -108,6 +108,12 @@ make status
 | API | http://localhost:8000 | (لاحقاً عند تطوير Backend) |
 | Web | http://localhost:3000 | (لاحقاً عند تطوير Frontend) |
 
+> **تخزين الملفات (MinIO):** خدمة `createbuckets` تُنشئ دلاءَي التخزين
+> (`rufaqaa-private` و`rufaqaa-public`) تلقائياً عند `make up` بعد جاهزية MinIO،
+> فيعمل رفع الملفات على بيئة جديدة دون خطوات يدوية. كما يُنشئ الـ backend الدلو
+> تلقائياً عند أوّل استخدام (backstop). إذا كان MinIO غير متاح، يُرجِع رفع
+> الملفات رمز **503** واضحاً (لا 500 غامضاً).
+
 ## Donor onboarding flow
 
 A brand-new donor can browse → sign up → verify their email → sponsor an orphan and pay with a card, end-to-end, without admin intervention. The full surface is documented in [`docs/donor-portal.md`](docs/donor-portal.md). Key routes:

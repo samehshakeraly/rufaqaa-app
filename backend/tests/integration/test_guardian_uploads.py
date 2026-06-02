@@ -21,6 +21,7 @@ import uuid
 from urllib.parse import urlparse
 
 import pytest
+from botocore.exceptions import ClientError, EndpointConnectionError
 from httpx import AsyncClient
 from sqlalchemy import text
 
@@ -345,3 +346,45 @@ async def test_guardian_uploads_document_lands_pending(
     r = await api.get(f"/api/v1/guardian/me/orphans/{orphan_id}/documents", headers=headers)
     assert r.status_code == 200
     assert any(d["id"] == body["id"] for d in r.json())
+
+
+# ── Storage outage → clean 503 (app-wide fix) ───────────────────────────
+
+
+@pytest.mark.parametrize(
+    "storage_exc",
+    [
+        EndpointConnectionError(endpoint_url="http://minio:9000"),
+        ClientError({"Error": {"Code": "403", "Message": "Forbidden"}}, "HeadBucket"),
+    ],
+    ids=["connection_error", "client_error"],
+)
+async def test_guardian_upload_storage_failure_returns_503(
+    api: AsyncClient,
+    auth_headers: dict[str, str],
+    monkeypatch: pytest.MonkeyPatch,
+    storage_exc: Exception,
+) -> None:
+    """An object-storage outage maps to a clean 503 (not a bare 500), so the
+    error response carries CORS headers app-wide.
+
+    We force the failure by stubbing the bucket call, so this is deterministic
+    regardless of whether MinIO is actually reachable in the test env — and it
+    covers both botocore families (connection error + API ClientError).
+    """
+    family_id, headers = await _create_family_and_guardian(api, auth_headers)
+    orphan_id = await _make_orphan_in_family(api, auth_headers, family_id)
+
+    async def _boom(*_args: object, **_kwargs: object) -> None:
+        raise storage_exc
+
+    monkeypatch.setattr("app.api.v1.guardian_self.ensure_bucket", _boom)
+
+    r = await api.post(
+        f"/api/v1/guardian/me/orphans/{orphan_id}/documents",
+        files={"file": ("cert.pdf", _TINY_PDF, "application/pdf")},
+        data={"document_type": "school_certificate"},
+        headers=headers,
+    )
+    assert r.status_code == 503, r.text
+    assert "storage" in r.json()["detail"].lower()

@@ -12,9 +12,20 @@ from functools import lru_cache
 
 import boto3
 from botocore.client import BaseClient
+from botocore.config import Config
 from botocore.exceptions import ClientError
 
 from app.core.config import settings
+
+# Fail fast when the bucket service is unreachable: a single attempt with a 2s
+# connect timeout, so a down/unreachable MinIO surfaces in ~2s (then mapped to a
+# 503 by register_exception_handlers) instead of botocore's default ~9s of
+# connection retries tying up the to_thread worker.
+_S3_CONFIG = Config(
+    connect_timeout=2,
+    read_timeout=5,
+    retries={"max_attempts": 1, "mode": "standard"},
+)
 
 
 @lru_cache(maxsize=1)
@@ -25,6 +36,7 @@ def _s3_client() -> BaseClient:
         aws_access_key_id=settings.S3_ACCESS_KEY,
         aws_secret_access_key=settings.S3_SECRET_KEY,
         region_name=settings.S3_REGION,
+        config=_S3_CONFIG,
     )
 
 
