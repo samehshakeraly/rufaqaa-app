@@ -8,10 +8,13 @@ import { Skeleton } from "@/components/Skeleton";
 import type { DocumentType } from "@/lib/documents";
 import {
   listGuardianOrphanDocuments,
+  listGuardianOrphanPhotos,
   listGuardianOrphans,
   listGuardianReports,
   uploadGuardianOrphanDocument,
+  uploadGuardianOrphanPhoto,
   type GuardianOrphan,
+  type GuardianOrphanPhoto,
   type GuardianReport,
 } from "@/lib/guardianSelf";
 import { ageFromDob } from "@/lib/orphanSelf";
@@ -23,8 +26,9 @@ type TabKey = "overview" | "reports" | "documents" | "photos" | "messages";
 
 /** G-03 — detail page for one of the guardian's orphans. Profile facts come
  * from GET /guardian/me/orphans (filtered to this id); the Reports tab reads
- * the live GET /guardian/me/reports. Photos has no guardian-facing read
- * endpoint yet, so it shows a "coming soon" state.
+ * the live GET /guardian/me/reports; the Photos tab reads/uploads via
+ * GET|POST /guardian/me/orphans/{id}/photos — uploads land pending/private and
+ * flow into the staff moderation queue, so nothing is donor-visible unreviewed.
  *
  * CHILD-DATA SENSITIVITY: only the API's privacy-safe projection is rendered.
  * Money/balance/sponsorship are shown ONLY when the server attaches the
@@ -218,17 +222,8 @@ export function GuardianOrphanDetailPage() {
 
             {tab === "photos" && (
               <div role="tabpanel" className="god-tab-panel">
-                <div className="god-soon">
-                  <span className="god-soon-icon" aria-hidden="true">
-                    <svg className="god-icon god-icon-lg" viewBox="0 0 24 24">
-                      <rect x="3" y="3" width="18" height="18" rx="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                  </span>
-                  <h3>{t("guardian.detail.photosSoonTitle")}</h3>
-                  <p>{t("guardian.detail.photosSoonBody")}</p>
-                </div>
+                <h2 className="god-panel-title">{t("guardian.detail.photosTitle")}</h2>
+                <GuardianPhotosPanel orphanId={orphan.id} lang={i18n.language} />
               </div>
             )}
 
@@ -634,6 +629,119 @@ function DocStatusBadge({ status }: { status: string }) {
   return (
     <span className={`god-doc-badge ${modifier}`}>
       {t(`guardian.docStatus.${status}`, { defaultValue: status })}
+    </span>
+  );
+}
+
+/** Guardian uploads and views photos of their own orphan. Uploads land
+ * moderation_status='pending' / visibility='private' and flow into the SAME
+ * staff moderation queue as staff uploads — nobody else sees a photo until a
+ * moderator approves it. The backend enforces family ownership; this is only
+ * ever the guardian's own orphan, and they see every status (pending/approved/
+ * rejected) of their own uploads. */
+function GuardianPhotosPanel({ orphanId, lang }: { orphanId: string; lang: string }) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [file, setFile] = useState<File | null>(null);
+  const [fileKey, setFileKey] = useState(0);
+
+  const photos = useQuery({
+    queryKey: ["guardian", "me", "photos", orphanId],
+    queryFn: () => listGuardianOrphanPhotos(orphanId),
+  });
+
+  const upload = useMutation({
+    mutationFn: (f: File) => uploadGuardianOrphanPhoto(orphanId, f),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["guardian", "me", "photos", orphanId] });
+      toast.success(t("guardian.detail.photoUploadSuccess"));
+      setFile(null);
+      setFileKey((k) => k + 1); // reset the <input type=file>
+    },
+    onError: (err) => {
+      const detail = err instanceof AxiosError ? err.response?.data?.detail : null;
+      toast.error(typeof detail === "string" ? detail : t("guardian.detail.photoUploadError"));
+    },
+  });
+
+  const list: GuardianOrphanPhoto[] = photos.data ?? [];
+
+  return (
+    <>
+      <div className="god-doc-upload">
+        <label className="god-doc-field">
+          <span className="god-doc-field-label">{t("guardian.detail.photoFile")}</span>
+          <input
+            key={fileKey}
+            type="file"
+            className="god-doc-file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          />
+        </label>
+        <button
+          type="button"
+          className="god-doc-upload-btn"
+          disabled={!file || upload.isPending}
+          onClick={() => file && upload.mutate(file)}
+        >
+          {upload.isPending
+            ? t("guardian.detail.photoUploading")
+            : t("guardian.detail.photoUpload")}
+        </button>
+        <p className="god-doc-hint">
+          <ShieldIcon />
+          {t("guardian.detail.photoReviewNote")}
+        </p>
+      </div>
+
+      {photos.isLoading && <Skeleton className="h-24 w-full" />}
+      {photos.isError && (
+        <div className="god-state god-state--error" role="alert">
+          {t("guardian.detail.photosError")}
+        </div>
+      )}
+      {photos.data && list.length === 0 && (
+        <div className="god-state">
+          <span className="god-state-emoji" aria-hidden="true">
+            📷
+          </span>
+          <p>{t("guardian.detail.noPhotos")}</p>
+        </div>
+      )}
+      {list.length > 0 && (
+        <ul className="god-photo-grid">
+          {list.map((p) => (
+            <li key={p.id} className="god-photo-card">
+              <img
+                className="god-photo-thumb"
+                src={p.presigned_url}
+                alt={t("guardian.detail.photoAlt")}
+                loading="lazy"
+              />
+              <div className="god-photo-meta">
+                <span>{new Date(p.created_at).toLocaleDateString(lang)}</span>
+                <PhotoStatusBadge status={p.moderation_status} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function PhotoStatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  const modifier =
+    status === "approved"
+      ? "god-doc-badge--ok"
+      : status === "rejected"
+        ? "god-doc-badge--no"
+        : "god-doc-badge--pending";
+  return (
+    <span className={`god-doc-badge ${modifier}`}>
+      {t(`guardian.photoStatus.${status}`, { defaultValue: status })}
     </span>
   );
 }

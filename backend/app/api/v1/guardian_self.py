@@ -48,7 +48,7 @@ from app.schemas.orphan import OrphanCreateFields
 from app.schemas.report import ReportRead, ReportType
 from app.services.audit import record_audit
 from app.services.orphans import create_orphan_record
-from app.services.storage import ensure_bucket, put_object
+from app.services.storage import ensure_bucket, presigned_get_url, put_object
 
 router = APIRouter()
 
@@ -151,6 +151,10 @@ class GuardianReportCreate(BaseModel):
 _GUARDIAN_DOC_MIME: frozenset[str] = frozenset(
     {"application/pdf", "image/jpeg", "image/png", "image/webp"}
 )
+
+# Guardian-uploadable photo MIME allow-list. Images only — mirrors
+# media.ALLOWED_IMAGE_TYPES (no PDF: these are photos, not documents).
+_GUARDIAN_PHOTO_MIME: frozenset[str] = frozenset({"image/jpeg", "image/png", "image/webp"})
 
 
 # ── Helpers ────────────────────────────────────────────────────────────
@@ -570,3 +574,170 @@ async def upload_my_orphan_document(
     await db.commit()
     await db.refresh(doc)
     return DocumentRead.model_validate(doc)
+
+
+# ── Photos (G-… "صور اليتيم") ────────────────────────────────────────────
+#
+# A guardian uploads photos of their own orphan; they land
+# moderation_status='pending' / visibility='private' and flow into the SAME
+# staff moderation queue as staff uploads (GET /media?moderation_status=pending).
+# Nothing is auto-approved. There is no `media` ORM model, so — exactly like
+# media.upload_orphan_photo — we INSERT/SELECT the row with raw SQL.
+
+
+class GuardianOrphanPhoto(BaseModel):
+    """One of the orphan's photos, with a fresh presigned URL so the portal
+    can render it without the bucket being public. The guardian sees every
+    one of *their* orphan's photos regardless of moderation_status."""
+
+    id: UUID
+    presigned_url: str
+    moderation_status: str
+    created_at: datetime
+
+
+class GuardianPhotoUploadResult(BaseModel):
+    """Thin acknowledgement of a guardian photo upload. The status is always
+    'pending' on creation — surfaced so the UI can show the review badge
+    immediately."""
+
+    id: UUID
+    moderation_status: str
+    created_at: datetime
+
+
+@router.get(
+    "/me/orphans/{orphan_id}/photos",
+    response_model=list[GuardianOrphanPhoto],
+)
+async def list_my_orphan_photos(
+    orphan_id: UUID,
+    db: DbSession,
+    user: CurrentUser,
+) -> list[GuardianOrphanPhoto]:
+    """List the photos on file for one of the guardian's orphans, newest
+    first, each with a short-lived presigned URL and its moderation_status so
+    the G-… UI can show pending → approved/rejected. The guardian sees *all*
+    of their orphan's photos (any status); the ownership check scopes this to
+    their family only. Cross-family orphan → 403; non-guardian → 404.
+    """
+    guardian = await _load_guardian_or_404(db, user)
+    await _orphan_in_family_or_error(db, guardian, orphan_id)
+
+    rows = (
+        await db.execute(
+            text(
+                """
+                SELECT id, file_url, moderation_status, created_at
+                FROM media
+                WHERE orphan_id = :orphan AND media_type = 'photo'
+                ORDER BY created_at DESC
+                """
+            ),
+            {"orphan": str(orphan_id)},
+        )
+    ).all()
+
+    out: list[GuardianOrphanPhoto] = []
+    for row in rows:
+        file_url = str(row[1])
+        presigned = file_url
+        if file_url.startswith("s3://"):
+            _, _, rest = file_url.partition("s3://")
+            bucket, _, key = rest.partition("/")
+            presigned = await presigned_get_url(bucket, key)
+        out.append(
+            GuardianOrphanPhoto(
+                id=row[0],
+                presigned_url=presigned,
+                moderation_status=str(row[2] or "pending"),
+                created_at=row[3],
+            )
+        )
+    return out
+
+
+@router.post(
+    "/me/orphans/{orphan_id}/photos",
+    response_model=GuardianPhotoUploadResult,
+    status_code=status.HTTP_201_CREATED,
+)
+async def upload_my_orphan_photo(
+    orphan_id: UUID,
+    db: DbSession,
+    user: CurrentUser,
+    file: Annotated[UploadFile, File()],
+) -> GuardianPhotoUploadResult:
+    """Guardian uploads a photo of their own orphan.
+
+    One call: ownership is verified *before* any byte is read (cross-family →
+    403, non-guardian → 404), then the image is streamed to the private bucket
+    and a `media` row is created with moderation_status='pending' /
+    visibility='private'. It is **never** auto-approved — it joins the same
+    staff moderation queue as staff uploads (GET /media?moderation_status=
+    pending) and only becomes donor-visible once a moderator approves it.
+    """
+    guardian = await _load_guardian_or_404(db, user)
+    orphan = await _orphan_in_family_or_error(db, guardian, orphan_id)
+
+    if file.content_type not in _GUARDIAN_PHOTO_MIME:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Allowed types: {sorted(_GUARDIAN_PHOTO_MIME)}",
+        )
+    body = await file.read()
+    if len(body) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Empty upload")
+    if len(body) > settings.UPLOAD_MAX_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Max upload is {settings.UPLOAD_MAX_BYTES} bytes",
+        )
+
+    bucket = settings.S3_BUCKET_PRIVATE
+    await ensure_bucket(bucket)
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower() or "bin"
+    key = f"orphans/{orphan.id}/{uuid4().hex}.{ext}"
+    await put_object(bucket, key, body, content_type=file.content_type or "image/jpeg")
+
+    media_id = uuid4()
+    now = datetime.now(UTC)
+    await db.execute(
+        text(
+            """
+            INSERT INTO media
+                (id, organization_id, orphan_id, media_type,
+                 file_url, file_size_bytes, moderation_status,
+                 visibility, uploaded_by, created_at)
+            VALUES
+                (:id, :org, :orphan, 'photo',
+                 :url, :size, 'pending',
+                 'private', :uploader, :now)
+            """
+        ),
+        {
+            "id": str(media_id),
+            "org": str(user.organization_id),
+            "orphan": str(orphan.id),
+            "url": f"s3://{bucket}/{key}",
+            "size": len(body),
+            "uploader": str(user.id),
+            "now": now,
+        },
+    )
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="media.uploaded",
+        entity_type="media",
+        entity_id=media_id,
+        new_values={"orphan_id": str(orphan.id), "size": len(body), "via": "guardian_self"},
+    )
+    await db.commit()
+
+    return GuardianPhotoUploadResult(
+        id=media_id,
+        moderation_status="pending",
+        created_at=now,
+    )

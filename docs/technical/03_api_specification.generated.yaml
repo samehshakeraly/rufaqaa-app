@@ -379,6 +379,16 @@ components:
       - document_type
       title: Body_upload_my_orphan_document_api_v1_guardian_me_orphans__orphan_id__documents_post
       type: object
+    Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post:
+      properties:
+        file:
+          contentMediaType: application/octet-stream
+          title: File
+          type: string
+      required:
+      - file
+      title: Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post
+      type: object
     Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post:
       properties:
         file:
@@ -1988,6 +1998,34 @@ components:
       - is_sponsored
       title: GuardianOrphanFinancials
       type: object
+    GuardianOrphanPhoto:
+      description: 'One of the orphan''s photos, with a fresh presigned URL so the portal
+
+        can render it without the bucket being public. The guardian sees every
+
+        one of *their* orphan''s photos regardless of moderation_status.'
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+        presigned_url:
+          title: Presigned Url
+          type: string
+      required:
+      - id
+      - presigned_url
+      - moderation_status
+      - created_at
+      title: GuardianOrphanPhoto
+      type: object
     GuardianOrphanRead:
       description: 'Guardian-safe projection of an orphan.
 
@@ -2040,6 +2078,30 @@ components:
       - case_status
       - profile_completion_percentage
       title: GuardianOrphanRead
+      type: object
+    GuardianPhotoUploadResult:
+      description: 'Thin acknowledgement of a guardian photo upload. The status is always
+
+        ''pending'' on creation — surfaced so the UI can show the review badge
+
+        immediately.'
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+      required:
+      - id
+      - moderation_status
+      - created_at
+      title: GuardianPhotoUploadResult
       type: object
     GuardianRead:
       properties:
@@ -7508,6 +7570,95 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Upload My Orphan Document
+      tags:
+      - guardian-self
+  /api/v1/guardian/me/orphans/{orphan_id}/photos:
+    get:
+      description: 'List the photos on file for one of the guardian''s orphans, newest
+
+        first, each with a short-lived presigned URL and its moderation_status so
+
+        the G-… UI can show pending → approved/rejected. The guardian sees *all*
+
+        of their orphan''s photos (any status); the ownership check scopes this to
+
+        their family only. Cross-family orphan → 403; non-guardian → 404.'
+      operationId: list_my_orphan_photos_api_v1_guardian_me_orphans__orphan_id__photos_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GuardianOrphanPhoto'
+                title: Response List My Orphan Photos Api V1 Guardian Me Orphans  Orphan Id  Photos Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Orphan Photos
+      tags:
+      - guardian-self
+    post:
+      description: 'Guardian uploads a photo of their own orphan.
+
+
+        One call: ownership is verified *before* any byte is read (cross-family →
+
+        403, non-guardian → 404), then the image is streamed to the private bucket
+
+        and a `media` row is created with moderation_status=''pending'' /
+
+        visibility=''private''. It is **never** auto-approved — it joins the same
+
+        staff moderation queue as staff uploads (GET /media?moderation_status=
+
+        pending) and only becomes donor-visible once a moderator approves it.'
+      operationId: upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianPhotoUploadResult'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Upload My Orphan Photo
       tags:
       - guardian-self
   /api/v1/guardian/me/reports:

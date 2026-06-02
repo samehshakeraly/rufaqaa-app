@@ -3027,8 +3027,16 @@
       "reportsError": "Couldn't load reports. Please try again later.",
       "noReports": "No reports for this orphan yet.",
       "photosCount": "{{count}} photos",
-      "photosSoonTitle": "Photos coming soon",
-      "photosSoonBody": "Viewing and uploading your orphans' photos here is coming soon.",
+      "photosTitle": "Photos",
+      "photoFile": "Photo (JPG, PNG or WebP)",
+      "photoUpload": "Upload photo",
+      "photoUploading": "Uploading…",
+      "photoUploadSuccess": "Photo uploaded — the team will review it before anyone else can see it.",
+      "photoUploadError": "Couldn't upload the photo. Please try again.",
+      "photoReviewNote": "Photos are reviewed by the team before anyone else can see them.",
+      "photosError": "Couldn't load photos.",
+      "noPhotos": "No photos yet.",
+      "photoAlt": "Orphan photo",
       "messagesModeration": "Every sponsor message is reviewed by the organisation before it reaches you.",
       "messagesSoonTitle": "Sponsor messages coming soon",
       "messagesSoonBody": "You'll soon be able to read and reply to sponsor messages from the portal.",
@@ -3146,6 +3154,12 @@
       "verified": "Verified",
       "rejected": "Rejected",
       "expired": "Expired"
+    },
+    "photoStatus": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "flagged": "Flagged"
     }
   },
   "platform": {
