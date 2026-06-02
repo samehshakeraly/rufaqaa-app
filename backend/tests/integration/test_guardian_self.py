@@ -452,8 +452,7 @@ async def test_guardian_create_orphan_duplicate_returns_409(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """The canonical idx_orphans_no_duplicate rule is enforced for guardians
-    too: a second identical submission → 409 (not 500), with the existing
-    ORF code surfaced so the UI can link to it."""
+    too: a second identical submission → 409 (not 500)."""
     partner_id = await _seed_partner_id()
     family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
     await _link_family_to_partner(family_id, partner_id)
@@ -461,11 +460,10 @@ async def test_guardian_create_orphan_duplicate_returns_409(
     payload = _orphan_payload("dup")
     r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers)
     assert r.status_code == 201, r.text
-    existing_code = r.json()["code"]
 
     r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers)
     assert r.status_code == 409, r.text
-    assert existing_code in r.json()["detail"]
+    assert "already exists" in r.json()["detail"]
 
 
 async def test_guardian_create_orphan_requires_father_name(

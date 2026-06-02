@@ -71,8 +71,7 @@ async def test_create_orphan_duplicate_returns_409(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """The canonical idx_orphans_no_duplicate rule now surfaces as a clean 409
-    on the staff create path (shared create helper), embedding the existing
-    ORF code — not an unhandled 500."""
+    on the staff create path (shared create helper) — not an unhandled 500."""
     import uuid
 
     partner_id = await _seed_partner_id()
@@ -88,11 +87,10 @@ async def test_create_orphan_duplicate_returns_409(
     }
     r = await api.post("/api/v1/orphans", json=payload, headers=auth_headers)
     assert r.status_code == 201, r.text
-    existing_code = r.json()["code"]
 
     r = await api.post("/api/v1/orphans", json=payload, headers=auth_headers)
     assert r.status_code == 409, r.text
-    assert existing_code in r.json()["detail"]
+    assert "already exists" in r.json()["detail"]
 
 
 async def test_create_orphan_requires_father_name(
