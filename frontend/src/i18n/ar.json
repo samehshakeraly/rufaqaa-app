@@ -1296,6 +1296,24 @@
     "exportCsv": "تصدير CSV",
     "searchPlaceholder": "ابحث بالاسم أو الرمز...",
     "allStatuses": "كل الحالات",
+    "filters": {
+      "educationStage": "المرحلة الدراسية",
+      "healthStatus": "الحالة الصحّية",
+      "isHafiz": "حافظ القرآن",
+      "minJuz": "أدنى عدد أجزاء",
+      "tags": "الوسوم",
+      "tagsMode": "مطابقة الوسوم",
+      "all": "الكل",
+      "isHafizOptions": {
+        "all": "الكل",
+        "hafiz": "حافظ",
+        "notHafiz": "غير حافظ"
+      },
+      "tagsModeOptions": {
+        "all": "يطابق الكل",
+        "any": "يطابق أيّاً منها"
+      }
+    },
     "code": "الرمز",
     "name": "الاسم",
     "firstName": "الاسم الأول",
