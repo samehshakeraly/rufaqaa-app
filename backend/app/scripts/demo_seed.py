@@ -43,6 +43,7 @@ from app.models.payment import Payment
 from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
+from app.services.orphans import recompute_profile_completion
 
 # Marker so the script can be idempotent without polluting the audit
 # log with a separate "demo data" entity type.
@@ -572,10 +573,11 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                 is_sponsored=False,
                 current_balance=Decimal("0"),
                 balance_currency="KWD",
-                profile_completion_percentage=rng.choice([40, 60, 80, 100]),
-                profile_completion_score=rng.choice([40, 60, 80, 100]),
                 created_by=admin_id,
             )
+            # Derive the real completion% from the fields set above (leaves
+            # profile_completion_score at its model default of 0).
+            recompute_profile_completion(o)
             db.add(o)
             orphans.append(o)
         counts["orphans"] = len(orphans)

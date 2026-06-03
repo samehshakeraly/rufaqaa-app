@@ -23,7 +23,11 @@ from app.schemas.common import Page
 from app.schemas.orphan import OrphanCreate, OrphanRead, OrphanUpdate
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
-from app.services.orphans import create_orphan_record, stamp_available_since
+from app.services.orphans import (
+    create_orphan_record,
+    recompute_profile_completion,
+    stamp_available_since,
+)
 
 router = APIRouter()
 
@@ -210,6 +214,10 @@ async def update_orphan(
         if old != value:
             changes[field] = {"old": _stringify(old), "new": _stringify(value)}
             setattr(orphan, field, value)
+
+    # Recompute the derived completion% from the freshly-updated fields. Done
+    # after `changes` is built so it never leaks into the audit old/new values.
+    recompute_profile_completion(orphan)
 
     if changes:
         record_audit(

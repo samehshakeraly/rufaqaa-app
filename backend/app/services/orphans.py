@@ -56,6 +56,51 @@ def stamp_available_since(orphan: Orphan) -> None:
         orphan.available_since = datetime.now(UTC)
 
 
+def _is_filled_str(value: str | None) -> bool:
+    """A string enrichment field counts as filled when it is present and not
+    just whitespace."""
+    return value is not None and value.strip() != ""
+
+
+def compute_profile_completion(orphan: Orphan) -> int:
+    """Equal-weighted profile-completion percentage (0–100) over seven
+    enrichment fields.
+
+    This function is the **single source of truth** for the measure; the 0010
+    data migration mirrors it field-for-field in SQL and the demo seed calls it
+    directly. "Filled" rules:
+
+    * string fields (``nationality``, ``education_stage``, ``school_name``,
+      ``health_status``, ``aspiration``) — non-NULL and not whitespace-only;
+    * ``quran_juz_memorized`` — non-NULL (0 is a *known* value, so it counts);
+    * ``tags`` — a non-empty list.
+
+    The denominator is 7, which never lands on a .5 boundary for an integer
+    filled-count (0..7), so Python ``round`` and SQL ``round`` agree exactly.
+    """
+    filled = sum(
+        1
+        for is_filled in (
+            _is_filled_str(orphan.nationality),
+            _is_filled_str(orphan.education_stage),
+            _is_filled_str(orphan.school_name),
+            orphan.quran_juz_memorized is not None,
+            _is_filled_str(orphan.health_status),
+            _is_filled_str(orphan.aspiration),
+            bool(orphan.tags),
+        )
+        if is_filled
+    )
+    return round(filled / 7 * 100)
+
+
+def recompute_profile_completion(orphan: Orphan) -> None:
+    """Refresh the stored ``profile_completion_percentage`` from the orphan's
+    current field values. Deliberately leaves ``profile_completion_score``
+    alone — that sibling column is unused everywhere."""
+    orphan.profile_completion_percentage = compute_profile_completion(orphan)
+
+
 def _duplicate_detail(existing_code: str | None) -> str:
     detail = "An orphan with the same name, date of birth and father already exists"
     return f"{detail} ({existing_code})" if existing_code else detail
@@ -121,6 +166,9 @@ async def create_orphan_record(
     # one is ever created already in the available pool, anchor it now too.
     if orphan.case_status == "available":
         stamp_available_since(orphan)
+    # Single chokepoint for the derived completion%, so both the staff create
+    # and the guardian self-service create (which delegates here) get it.
+    recompute_profile_completion(orphan)
     db.add(orphan)
     try:
         await db.flush()
