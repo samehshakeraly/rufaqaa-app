@@ -13,9 +13,15 @@ import uuid
 from httpx import AsyncClient
 
 
-async def _make_available_orphan(api: AsyncClient, headers: dict[str, str]) -> str:
+async def _make_available_orphan(
+    api: AsyncClient,
+    headers: dict[str, str],
+    extra: dict[str, object] | None = None,
+) -> str:
     """Create an orphan and bump it to case_status='available' so it
-    shows up on the public listing."""
+    shows up on the public listing. ``extra`` is merged into the create
+    payload so a test can seed profile fields (donor-safe and sensitive
+    alike) and assert how the public projection filters them."""
     partner_id = (await api.get("/api/v1/partners", headers=headers)).json()["items"][0]["id"]
     suffix = uuid.uuid4().hex[:4]
     r = await api.post(
@@ -28,6 +34,7 @@ async def _make_available_orphan(api: AsyncClient, headers: dict[str, str]) -> s
             "gender": "F",
             "nationality": "KW",
             "partner_organization_id": partner_id,
+            **(extra or {}),
         },
         headers=headers,
     )
@@ -90,19 +97,91 @@ async def test_public_orphans_returns_only_curated_fields(
         assert forbidden not in item, f"{forbidden} leaked in public response"
 
 
-async def test_public_orphan_detail_same_shape_plus_description(
+async def test_public_orphan_detail_exposes_donor_safe_profile(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
-    code = await _make_available_orphan(api, auth_headers)
+    """The detail view surfaces the humanizing, donor-safe profile slice
+    (aspiration, education stage, Qur'an progress + is_hafiz, tags) while
+    keeping sensitive profile data internal — even when every field is
+    populated on the underlying row."""
+    code = await _make_available_orphan(
+        api,
+        auth_headers,
+        extra={
+            # Donor-safe — should surface
+            "aspiration": "To become a doctor",
+            "education_stage": "secondary",
+            "quran_juz_memorized": 30,
+            "tags": ["football", "drawing"],
+            # Sensitive — must stay internal
+            "school_name": "Secret School",
+            "academic_level": "Grade 9",
+            "health_status": "good",
+            "health_coverage": "government",
+            "chronic_conditions": "none",
+            "challenges": "Private hardship details",
+            "quran_note": "Internal memorization note",
+        },
+    )
     r = await api.get(f"/api/v1/public/orphans/{code}")
     assert r.status_code == 200, r.text
     body = r.json()
+
+    # Exact donor-safe shape — card fields + curated profile slice.
+    assert set(body.keys()) == {
+        "code",
+        "first_name",
+        "age_years",
+        "gender",
+        "country",
+        "case_status",
+        "partner_organization_name",
+        "short_description",
+        "aspiration",
+        "education_stage",
+        "quran_juz_memorized",
+        "is_hafiz",
+        "tags",
+    }
+
+    # Donor-safe values are returned as stored.
     assert body["code"] == code
-    # short_description is the only addition over the card
-    assert "short_description" in body
-    # Sensitive fields still absent
-    for forbidden in ("family_name", "father_name", "date_of_birth"):
-        assert forbidden not in body
+    assert body["aspiration"] == "To become a doctor"
+    assert body["education_stage"] == "secondary"
+    assert body["quran_juz_memorized"] == 30
+    assert body["is_hafiz"] is True
+    assert body["tags"] == ["football", "drawing"]
+
+    # Sensitive profile + identity fields are NEVER present in the public schema.
+    for forbidden in (
+        "school_name",
+        "academic_level",
+        "health_status",
+        "health_coverage",
+        "chronic_conditions",
+        "challenges",
+        "quran_note",
+        "family_name",
+        "father_name",
+        "middle_name",
+        "date_of_birth",
+        "family_id",
+        "organization_id",
+    ):
+        assert forbidden not in body, f"{forbidden} leaked in public detail response"
+
+
+async def test_public_orphan_detail_is_hafiz_false_when_partial(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """is_hafiz is derived from quran_juz_memorized == 30; a partial
+    memorizer surfaces the count but is not flagged a hafiz."""
+    code = await _make_available_orphan(api, auth_headers, extra={"quran_juz_memorized": 5})
+    r = await api.get(f"/api/v1/public/orphans/{code}")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["quran_juz_memorized"] == 5
+    assert body["is_hafiz"] is False
 
 
 async def test_public_orphan_detail_hides_pending_review(

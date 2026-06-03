@@ -12,6 +12,15 @@ export interface PublicOrphan {
 
 export interface PublicOrphanDetail extends PublicOrphan {
   short_description: string | null;
+  // Donor-safe humanizing profile slice (see backend PublicOrphanDetail).
+  // Sensitive fields (health, challenges, school, family, documents) are
+  // intentionally never sent on this surface.
+  aspiration: string | null;
+  /** Education-stage enum code (e.g. "primary"); localized on the client. */
+  education_stage: string | null;
+  quran_juz_memorized: number | null;
+  is_hafiz: boolean;
+  tags: string[];
 }
 
 export interface PublicOrphansPage {

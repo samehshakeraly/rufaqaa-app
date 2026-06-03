@@ -144,12 +144,54 @@ export function DonorOrphanDetailPage() {
                 {info.country}
               </Field>
             )}
+            {info.education_stage && (
+              <Field label={t("orphans.profile.educationStage")}>
+                {t(
+                  `orphans.profile.educationStageOptions.${info.education_stage}`,
+                )}
+              </Field>
+            )}
+            {info.quran_juz_memorized != null &&
+              info.quran_juz_memorized > 0 && (
+                <Field label={t("orphans.profile.quranSection")}>
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    {t("donor.orphanDetail.quranMemorized", {
+                      n: info.quran_juz_memorized,
+                    })}
+                    {info.is_hafiz && (
+                      <span className="rounded-full bg-success-100 px-2 py-0.5 text-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-100">
+                        {t("donor.orphanDetail.hafiz")}
+                      </span>
+                    )}
+                  </span>
+                </Field>
+              )}
           </dl>
+        )}
+        {info?.aspiration && (
+          <p className="mt-3 rounded-lg bg-tranquil-100 px-3 py-2 text-sm text-trust-800 dark:bg-trust-500/10 dark:text-tranquil-100">
+            <span className="font-medium">
+              {t("donor.orphanDetail.aspiration")}:{" "}
+            </span>
+            {info.aspiration}
+          </p>
         )}
         {info?.short_description && (
           <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">
             {info.short_description}
           </p>
+        )}
+        {info && info.tags.length > 0 && (
+          <ul className="mt-3 flex flex-wrap gap-1.5">
+            {info.tags.map((tag) => (
+              <li
+                key={tag}
+                className="rounded-full bg-tranquil-200 px-2 py-0.5 text-xs font-medium text-trust-700 dark:bg-gray-700 dark:text-tranquil-200"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
