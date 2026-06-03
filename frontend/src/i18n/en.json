@@ -1413,6 +1413,18 @@
         "private": "Private",
         "charity": "Charity"
       },
+      "motherStatus": "Mother's status",
+      "motherStatusOptions": {
+        "alive": "Alive",
+        "deceased": "Deceased",
+        "unknown": "Unknown"
+      },
+      "priorityLevel": "Priority",
+      "priorityLevelOptions": {
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
       "chronicConditions": "Chronic conditions",
       "profileSection": "Profile",
       "aspiration": "Aspiration",
