@@ -22,6 +22,7 @@ identical concurrent creates — never an unhandled 500.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -39,6 +40,20 @@ from app.utils.codes import generate_code
 # on this specifically so an unrelated unique violation (e.g. the random
 # ``code``) is NOT mistaken for a duplicate orphan and still raises a 500.
 _DUPLICATE_INDEX = "idx_orphans_no_duplicate"
+
+
+def stamp_available_since(orphan: Orphan) -> None:
+    """Stamp ``available_since`` the first time an orphan enters the available
+    pool.
+
+    Idempotent and centralised: call this from *every* site that moves an
+    orphan to ``case_status='available'``. It records the current time only
+    when the field is still NULL and **never** overwrites an existing value,
+    so a child that bounces in and out of the pool keeps its original
+    availability anchor.
+    """
+    if orphan.available_since is None:
+        orphan.available_since = datetime.now(UTC)
 
 
 def _duplicate_detail(existing_code: str | None) -> str:
@@ -98,8 +113,14 @@ async def create_orphan_record(
         aspiration=data.aspiration,
         challenges=data.challenges,
         tags=data.tags,
+        mother_status=data.mother_status,
+        priority_level=data.priority_level,
         created_by=user.id,
     )
+    # New orphans normally land in 'pending_review' (the model default), but if
+    # one is ever created already in the available pool, anchor it now too.
+    if orphan.case_status == "available":
+        stamp_available_since(orphan)
     db.add(orphan)
     try:
         await db.flush()

@@ -3554,8 +3554,20 @@ export interface components {
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /**
+             * Mother Status
+             * @default unknown
+             * @enum {string}
+             */
+            mother_status: "alive" | "deceased" | "unknown";
             /** Nationality */
             nationality?: string | null;
+            /**
+             * Priority Level
+             * @default normal
+             * @enum {string}
+             */
+            priority_level: "normal" | "high" | "urgent";
             /** Quran Juz Memorized */
             quran_juz_memorized?: number | null;
             /** Quran Note */
@@ -4262,6 +4274,12 @@ export interface components {
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /**
+             * Mother Status
+             * @default unknown
+             * @enum {string}
+             */
+            mother_status: "alive" | "deceased" | "unknown";
             /** Nationality */
             nationality?: string | null;
             /**
@@ -4269,6 +4287,12 @@ export interface components {
              * Format: uuid
              */
             partner_organization_id: string;
+            /**
+             * Priority Level
+             * @default normal
+             * @enum {string}
+             */
+            priority_level: "normal" | "high" | "urgent";
             /** Quran Juz Memorized */
             quran_juz_memorized?: number | null;
             /** Quran Note */
@@ -4387,6 +4411,8 @@ export interface components {
             assigned_to_channel_id?: string | null;
             /** Assignment Deadline */
             assignment_deadline?: string | null;
+            /** Available Since */
+            available_since?: string | null;
             /**
              * Case Status
              * @enum {string}
@@ -4447,6 +4473,12 @@ export interface components {
             is_sponsored: boolean;
             /** Middle Name */
             middle_name?: string | null;
+            /**
+             * Mother Status
+             * @default unknown
+             * @enum {string}
+             */
+            mother_status: "alive" | "deceased" | "unknown";
             /** Nationality */
             nationality?: string | null;
             /**
@@ -4459,6 +4491,12 @@ export interface components {
              * Format: uuid
              */
             partner_organization_id: string;
+            /**
+             * Priority Level
+             * @default normal
+             * @enum {string}
+             */
+            priority_level: "normal" | "high" | "urgent";
             /** Quran Juz Memorized */
             quran_juz_memorized?: number | null;
             /** Quran Note */
@@ -4532,8 +4570,12 @@ export interface components {
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /** Mother Status */
+            mother_status?: ("alive" | "deceased" | "unknown") | null;
             /** Nationality */
             nationality?: string | null;
+            /** Priority Level */
+            priority_level?: ("normal" | "high" | "urgent") | null;
             /** Quran Juz Memorized */
             quran_juz_memorized?: number | null;
             /** Quran Note */
