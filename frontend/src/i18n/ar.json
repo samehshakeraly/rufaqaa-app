@@ -1413,6 +1413,18 @@
         "private": "خاصة",
         "charity": "خيرية"
       },
+      "motherStatus": "حالة الأم",
+      "motherStatusOptions": {
+        "alive": "على قيد الحياة",
+        "deceased": "متوفّاة",
+        "unknown": "غير معروفة"
+      },
+      "priorityLevel": "الأولوية",
+      "priorityLevelOptions": {
+        "normal": "عادية",
+        "high": "مرتفعة",
+        "urgent": "عاجلة"
+      },
       "chronicConditions": "الأمراض المزمنة",
       "profileSection": "نبذة",
       "aspiration": "الطموح",

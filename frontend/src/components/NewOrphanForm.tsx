@@ -34,6 +34,8 @@ export const HEALTH_STATUSES = [
   "under_treatment",
 ] as const;
 export const HEALTH_COVERAGES = ["none", "government", "private", "charity"] as const;
+export const MOTHER_STATUSES = ["alive", "deceased", "unknown"] as const;
+export const PRIORITY_LEVELS = ["normal", "high", "urgent"] as const;
 
 // Optional free-text: empty string is left as-is here and dropped at submit
 // time (truthiness gate), so we never send "" to the API.
@@ -62,6 +64,15 @@ function makeSchema(requirePartner: boolean) {
           .uuid()
           .optional()
           .or(z.literal("").transform(() => undefined)),
+    // Mother status (shown to both audiences) and case priority (staff-only).
+    mother_status: z
+      .enum(MOTHER_STATUSES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    priority_level: z
+      .enum(PRIORITY_LEVELS)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
     // Education
     education_stage: z
       .enum(EDUCATION_STAGES)
@@ -158,7 +169,7 @@ export function NewOrphanForm({
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { gender: "M" },
+    defaultValues: { gender: "M", mother_status: "unknown", priority_level: "normal" },
   });
 
   // Guardians get a lighter form: the three sensitive fields below are hidden
@@ -221,6 +232,8 @@ export function NewOrphanForm({
       date_of_birth: v.date_of_birth,
       gender: v.gender,
       father_name: v.father_name,
+      // Non-sensitive: always sent (defaults to "unknown"), both audiences.
+      mother_status: v.mother_status,
       ...(showPartnerSelect && v.partner_organization_id
         ? { partner_organization_id: v.partner_organization_id }
         : {}),
@@ -240,6 +253,7 @@ export function NewOrphanForm({
       // Staff-only sensitive fields — guardians never render/register these,
       // but we also gate here so they can't slip into the payload.
       ...(isStaff && v.health_coverage ? { health_coverage: v.health_coverage } : {}),
+      ...(isStaff && v.priority_level ? { priority_level: v.priority_level } : {}),
       ...(isStaff && v.chronic_conditions
         ? { chronic_conditions: v.chronic_conditions }
         : {}),
@@ -287,6 +301,26 @@ export function NewOrphanForm({
         <Field label={t("orphans.nationality")}>
           <input className="input" placeholder="KW" maxLength={2} {...register("nationality")} />
         </Field>
+        <Field label={t("orphans.profile.motherStatus")}>
+          <select className="input" {...register("mother_status")}>
+            {MOTHER_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {t(`orphans.profile.motherStatusOptions.${s}`)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        {isStaff && (
+          <Field label={t("orphans.profile.priorityLevel")}>
+            <select className="input" {...register("priority_level")}>
+              {PRIORITY_LEVELS.map((s) => (
+                <option key={s} value={s}>
+                  {t(`orphans.profile.priorityLevelOptions.${s}`)}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
         {showPartnerSelect && (
           <Field
             label={t("orphans.partner")}

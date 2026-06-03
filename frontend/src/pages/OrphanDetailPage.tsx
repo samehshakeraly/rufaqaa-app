@@ -10,6 +10,8 @@ import {
   EDUCATION_STAGES,
   HEALTH_COVERAGES,
   HEALTH_STATUSES,
+  MOTHER_STATUSES,
+  PRIORITY_LEVELS,
 } from "@/components/NewOrphanForm";
 import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
 import { useRole } from "@/hooks/useRole";
@@ -23,6 +25,8 @@ import {
   type EducationStage,
   type HealthCoverage,
   type HealthStatus,
+  type MotherStatus,
+  type PriorityLevel,
   type Orphan,
   type OrphanUpdateInput,
 } from "@/lib/orphans";
@@ -485,6 +489,8 @@ interface ProfileDraft {
   health_status: string;
   health_coverage: string;
   chronic_conditions: string;
+  mother_status: string;
+  priority_level: string;
   aspiration: string;
   challenges: string;
   tags: string[];
@@ -501,6 +507,8 @@ function draftFromOrphan(o: Orphan): ProfileDraft {
     health_status: o.health_status ?? "",
     health_coverage: o.health_coverage ?? "",
     chronic_conditions: o.chronic_conditions ?? "",
+    mother_status: o.mother_status ?? "",
+    priority_level: o.priority_level ?? "",
     aspiration: o.aspiration ?? "",
     challenges: o.challenges ?? "",
     tags: o.tags ?? [],
@@ -537,6 +545,10 @@ function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
     payload.health_coverage = coverage as HealthCoverage | null;
   const chronic = diffStr(o.chronic_conditions, d.chronic_conditions);
   if (chronic !== undefined) payload.chronic_conditions = chronic;
+  const mother = diffStr(o.mother_status, d.mother_status);
+  if (mother !== undefined) payload.mother_status = mother as MotherStatus | null;
+  const priority = diffStr(o.priority_level, d.priority_level);
+  if (priority !== undefined) payload.priority_level = priority as PriorityLevel | null;
   const aspiration = diffStr(o.aspiration, d.aspiration);
   if (aspiration !== undefined) payload.aspiration = aspiration;
   const challenges = diffStr(o.challenges, d.challenges);
@@ -674,6 +686,16 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
               ? t(`orphans.profile.healthCoverageOptions.${orphan.health_coverage}`)
               : notSet}
           </ProfileRow>
+          <ProfileRow label={t("orphans.profile.motherStatus")}>
+            {orphan.mother_status
+              ? t(`orphans.profile.motherStatusOptions.${orphan.mother_status}`)
+              : notSet}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.priorityLevel")}>
+            {orphan.priority_level
+              ? t(`orphans.profile.priorityLevelOptions.${orphan.priority_level}`)
+              : notSet}
+          </ProfileRow>
           <ProfileRow label={t("orphans.profile.chronicConditions")}>
             {text(orphan.chronic_conditions)}
           </ProfileRow>
@@ -786,6 +808,38 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
                 {HEALTH_COVERAGES.map((s) => (
                   <option key={s} value={s}>
                     {t(`orphans.profile.healthCoverageOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.motherStatus")}>
+              <select
+                className="input"
+                value={draft.mother_status}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, mother_status: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {MOTHER_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.motherStatusOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.priorityLevel")}>
+              <select
+                className="input"
+                value={draft.priority_level}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, priority_level: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {PRIORITY_LEVELS.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.priorityLevelOptions.${s}`)}
                   </option>
                 ))}
               </select>

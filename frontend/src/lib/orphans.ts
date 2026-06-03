@@ -13,6 +13,8 @@ export type EducationStage =
   | "graduated";
 export type HealthStatus = "good" | "chronic_condition" | "disability" | "under_treatment";
 export type HealthCoverage = "none" | "government" | "private" | "charity";
+export type MotherStatus = "alive" | "deceased" | "unknown";
+export type PriorityLevel = "normal" | "high" | "urgent";
 
 export interface Orphan {
   id: string;
@@ -38,6 +40,8 @@ export interface Orphan {
   health_status?: HealthStatus | null;
   health_coverage?: HealthCoverage | null;
   chronic_conditions?: string | null;
+  mother_status?: MotherStatus | null;
+  priority_level?: PriorityLevel | null;
   aspiration?: string | null;
   challenges?: string | null;
   tags?: string[];
@@ -87,6 +91,8 @@ export interface OrphanCreateInput {
   health_status?: "good" | "chronic_condition" | "disability" | "under_treatment";
   health_coverage?: "none" | "government" | "private" | "charity";
   chronic_conditions?: string;
+  mother_status?: MotherStatus;
+  priority_level?: PriorityLevel;
   aspiration?: string;
   challenges?: string;
   tags?: string[];
@@ -139,6 +145,8 @@ export interface OrphanUpdateInput {
   health_status?: HealthStatus | null;
   health_coverage?: HealthCoverage | null;
   chronic_conditions?: string | null;
+  mother_status?: MotherStatus | null;
+  priority_level?: PriorityLevel | null;
   aspiration?: string | null;
   challenges?: string | null;
   tags?: string[];
