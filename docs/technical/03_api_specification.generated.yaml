@@ -5218,11 +5218,29 @@ components:
       title: PublicOrphanCard
       type: object
     PublicOrphanDetail:
-      description: Detail page — same fields as the card plus a short description.
+      description: 'Detail page — the card fields plus a curated, donor-safe slice of the
+
+        humanizing profile: aspiration, education stage, Qur''an progress, and the
+
+        hobby / talent / segment tags.
+
+
+        Sensitive profile data — health status / coverage, chronic conditions,
+
+        challenges, school name, academic level, family and document info — is
+
+        deliberately NOT exposed here; it stays internal to staff/guardian views.
+
+        Broadening this set is a security review, not a casual change.'
       properties:
         age_years:
           title: Age Years
           type: integer
+        aspiration:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspiration
         case_status:
           title: Case Status
           type: string
@@ -5234,6 +5252,11 @@ components:
           - type: string
           - type: 'null'
           title: Country
+        education_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Education Stage
         first_name:
           title: First Name
           type: string
@@ -5243,16 +5266,31 @@ components:
           - F
           title: Gender
           type: string
+        is_hafiz:
+          description: 'Derived (not stored): a child who has memorised the whole Qur''an.'
+          readOnly: true
+          title: Is Hafiz
+          type: boolean
         partner_organization_name:
           anyOf:
           - type: string
           - type: 'null'
           title: Partner Organization Name
+        quran_juz_memorized:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
         short_description:
           anyOf:
           - type: string
           - type: 'null'
           title: Short Description
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
       required:
       - code
       - first_name
@@ -5261,6 +5299,7 @@ components:
       - country
       - case_status
       - partner_organization_name
+      - is_hafiz
       title: PublicOrphanDetail
       type: object
     PublicPage:

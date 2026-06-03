@@ -59,8 +59,46 @@ export function PublicOrphanDetailPage() {
         {o.partner_organization_name && (
           <p className="text-sm text-slate-500">{o.partner_organization_name}</p>
         )}
+        {o.education_stage && (
+          <p className="text-sm text-slate-600">
+            {t("orphans.profile.educationStage")}:{" "}
+            {t(`orphans.profile.educationStageOptions.${o.education_stage}`)}
+          </p>
+        )}
+        {o.quran_juz_memorized != null && o.quran_juz_memorized > 0 && (
+          <p className="flex flex-wrap items-center gap-1.5 text-sm text-slate-600">
+            {t("donor.orphanDetail.quranMemorized", {
+              n: o.quran_juz_memorized,
+            })}
+            {o.is_hafiz && (
+              <span className="rounded-full bg-success-100 px-2 py-0.5 text-xs font-medium text-success-700">
+                {t("donor.orphanDetail.hafiz")}
+              </span>
+            )}
+          </p>
+        )}
+        {o.aspiration && (
+          <p className="rounded-lg bg-tranquil-100 px-3 py-2 text-sm text-trust-800">
+            <span className="font-medium">
+              {t("donor.orphanDetail.aspiration")}:{" "}
+            </span>
+            {o.aspiration}
+          </p>
+        )}
         {o.short_description && (
           <p className="mt-2 text-sm text-slate-700">{o.short_description}</p>
+        )}
+        {o.tags.length > 0 && (
+          <ul className="flex flex-wrap gap-1.5">
+            {o.tags.map((tag) => (
+              <li
+                key={tag}
+                className="rounded-full bg-tranquil-200 px-2 py-0.5 text-xs font-medium text-trust-700"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
         )}
       </article>
 

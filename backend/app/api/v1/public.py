@@ -15,7 +15,7 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from sqlalchemy import desc, func, select
 
 from app.api.deps import DbSession
@@ -48,9 +48,27 @@ class PublicOrphanCard(BaseModel):
 
 
 class PublicOrphanDetail(PublicOrphanCard):
-    """Detail page — same fields as the card plus a short description."""
+    """Detail page — the card fields plus a curated, donor-safe slice of the
+    humanizing profile: aspiration, education stage, Qur'an progress, and the
+    hobby / talent / segment tags.
+
+    Sensitive profile data — health status / coverage, chronic conditions,
+    challenges, school name, academic level, family and document info — is
+    deliberately NOT exposed here; it stays internal to staff/guardian views.
+    Broadening this set is a security review, not a casual change."""
 
     short_description: str | None = None
+    aspiration: str | None = None
+    # Enum *code* (e.g. "primary"); the frontend localizes the label.
+    education_stage: str | None = None
+    quran_juz_memorized: int | None = None
+    tags: list[str] = Field(default_factory=list)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def is_hafiz(self) -> bool:
+        """Derived (not stored): a child who has memorised the whole Qur'an."""
+        return self.quran_juz_memorized == 30
 
 
 class PublicPage(BaseModel):
@@ -158,6 +176,10 @@ async def public_orphan_detail(code: str, db: DbSession) -> PublicOrphanDetail:
     return PublicOrphanDetail(
         **card.model_dump(),
         short_description=None,  # placeholder until partners author this
+        aspiration=orphan.aspiration,
+        education_stage=orphan.education_stage,
+        quran_juz_memorized=orphan.quran_juz_memorized,
+        tags=orphan.tags,
     )
 
 

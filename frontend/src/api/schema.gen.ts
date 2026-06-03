@@ -5293,17 +5293,28 @@ export interface components {
         };
         /**
          * PublicOrphanDetail
-         * @description Detail page — same fields as the card plus a short description.
+         * @description Detail page — the card fields plus a curated, donor-safe slice of the
+         *     humanizing profile: aspiration, education stage, Qur'an progress, and the
+         *     hobby / talent / segment tags.
+         *
+         *     Sensitive profile data — health status / coverage, chronic conditions,
+         *     challenges, school name, academic level, family and document info — is
+         *     deliberately NOT exposed here; it stays internal to staff/guardian views.
+         *     Broadening this set is a security review, not a casual change.
          */
         PublicOrphanDetail: {
             /** Age Years */
             age_years: number;
+            /** Aspiration */
+            aspiration?: string | null;
             /** Case Status */
             case_status: string;
             /** Code */
             code: string;
             /** Country */
             country: string | null;
+            /** Education Stage */
+            education_stage?: string | null;
             /** First Name */
             first_name: string;
             /**
@@ -5311,10 +5322,19 @@ export interface components {
              * @enum {string}
              */
             gender: "M" | "F";
+            /**
+             * Is Hafiz
+             * @description Derived (not stored): a child who has memorised the whole Qur'an.
+             */
+            readonly is_hafiz: boolean;
             /** Partner Organization Name */
             partner_organization_name: string | null;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
             /** Short Description */
             short_description?: string | null;
+            /** Tags */
+            tags?: string[];
         };
         /** PublicPage */
         PublicPage: {
