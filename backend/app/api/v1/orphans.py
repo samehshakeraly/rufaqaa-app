@@ -20,7 +20,13 @@ from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.orphan import OrphanCreate, OrphanRead, OrphanUpdate
+from app.schemas.orphan import (
+    EducationStage,
+    HealthStatus,
+    OrphanCreate,
+    OrphanRead,
+    OrphanUpdate,
+)
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
 from app.services.orphans import (
@@ -41,6 +47,12 @@ async def list_orphans(
     case_status: str | None = None,
     channel_id: UUID | None = None,
     assignment_status: Literal["active", "expired", "all"] = "all",
+    education_stage: EducationStage | None = None,
+    health_status: HealthStatus | None = None,
+    is_hafiz: bool | None = None,
+    min_juz: Annotated[int | None, Query(ge=0, le=30)] = None,
+    tags: Annotated[list[str] | None, Query()] = None,
+    tags_mode: Literal["all", "any"] = "all",
     q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
 ) -> Page[OrphanRead]:
     """List orphans, optionally filtered by case_status and a search term.
@@ -54,6 +66,15 @@ async def list_orphans(
     `assignment_status` filters by assignment deadline: "active" keeps
     orphans whose deadline is still in the future, "expired" those past it,
     "all" applies no deadline filter.
+
+    Segment filters (org-scoped staff surface only; `health_status` is a
+    sensitive field never exposed on the public/donor surfaces):
+    `education_stage` and `health_status` match the coded column exactly.
+    `is_hafiz` is derived from `quran_juz_memorized` (== 30 when true; any
+    other value, including NULL, when false). `min_juz` keeps orphans who
+    have memorised at least that many juz'. `tags` filters on the tag array:
+    `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
+    orphans sharing at least one (`&&`).
     """
     # Explicit org scope (defense-in-depth alongside RLS).
     stmt = select(Orphan).where(
@@ -68,6 +89,25 @@ async def list_orphans(
         stmt = stmt.where(Orphan.assignment_deadline >= datetime.now(UTC))
     elif assignment_status == "expired":
         stmt = stmt.where(Orphan.assignment_deadline < datetime.now(UTC))
+    if education_stage:
+        stmt = stmt.where(Orphan.education_stage == education_stage)
+    if health_status:
+        stmt = stmt.where(Orphan.health_status == health_status)
+    if is_hafiz is not None:
+        # is_hafiz is defined as quran_juz_memorized == 30 (mirror schema/public).
+        # IS DISTINCT FROM treats NULL as "not a hafiz" for the negative case.
+        stmt = stmt.where(
+            Orphan.quran_juz_memorized == 30
+            if is_hafiz
+            else Orphan.quran_juz_memorized.is_distinct_from(30)
+        )
+    if min_juz is not None:
+        stmt = stmt.where(Orphan.quran_juz_memorized >= min_juz)
+    if tags:
+        # tags is ARRAY(Text): @> ("all" — every tag present) vs && ("any" — overlap).
+        stmt = stmt.where(
+            Orphan.tags.contains(tags) if tags_mode == "all" else Orphan.tags.overlap(tags)
+        )
     if q:
         # plainto_tsquery treats input as raw text and handles tokenisation,
         # which is safer than letting users craft tsquery operators.

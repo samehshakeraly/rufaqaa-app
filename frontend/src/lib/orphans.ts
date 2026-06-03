@@ -108,8 +108,29 @@ export async function listOrphans(params?: {
   /** Filter by assignment deadline: active = not yet lapsed,
    * expired = past deadline, all = no filter. */
   assignment_status?: AssignmentStatus;
+  /** Segment filters — staff list only (org-scoped endpoint). `health_status`
+   * is a sensitive field and is never sent from public/donor surfaces. */
+  education_stage?: EducationStage;
+  health_status?: HealthStatus;
+  is_hafiz?: boolean;
+  min_juz?: number;
+  tags?: string[];
+  /** How to match `tags`: "all" requires every tag (@>), "any" an overlap (&&). */
+  tags_mode?: "all" | "any";
 }): Promise<Page<Orphan>> {
-  const { data } = await api.get<Page<Orphan>>("/orphans", { params });
+  // Build the query string by hand so `tags` goes out as repeated entries
+  // (?tags=a&tags=b) — FastAPI binds those to list[str]. Axios' default array
+  // serialization uses tags[]=… brackets, which the API wouldn't pick up.
+  const search = new URLSearchParams();
+  if (params) {
+    const { tags, ...rest } = params;
+    for (const [key, value] of Object.entries(rest)) {
+      // Omit undefined; stringify everything else (numbers/booleans → "30"/"true").
+      if (value !== undefined) search.append(key, String(value));
+    }
+    for (const tag of tags ?? []) search.append("tags", tag);
+  }
+  const { data } = await api.get<Page<Orphan>>("/orphans", { params: search });
   return data;
 }
 

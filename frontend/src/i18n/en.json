@@ -1296,6 +1296,24 @@
     "exportCsv": "Export CSV",
     "searchPlaceholder": "Search by name or code…",
     "allStatuses": "All statuses",
+    "filters": {
+      "educationStage": "Education stage",
+      "healthStatus": "Health status",
+      "isHafiz": "Hafiz",
+      "minJuz": "Min. juz",
+      "tags": "Tags",
+      "tagsMode": "Tag match",
+      "all": "All",
+      "isHafizOptions": {
+        "all": "All",
+        "hafiz": "Hafiz",
+        "notHafiz": "Not hafiz"
+      },
+      "tagsModeOptions": {
+        "all": "Match all",
+        "any": "Match any"
+      }
+    },
     "code": "Code",
     "name": "Name",
     "firstName": "First name",

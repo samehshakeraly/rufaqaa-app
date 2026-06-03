@@ -9040,7 +9040,24 @@ paths:
 
         orphans whose deadline is still in the future, "expired" those past it,
 
-        "all" applies no deadline filter.'
+        "all" applies no deadline filter.
+
+
+        Segment filters (org-scoped staff surface only; `health_status` is a
+
+        sensitive field never exposed on the public/donor surfaces):
+
+        `education_stage` and `health_status` match the coded column exactly.
+
+        `is_hafiz` is derived from `quran_juz_memorized` (== 30 when true; any
+
+        other value, including NULL, when false). `min_juz` keeps orphans who
+
+        have memorised at least that many juz''. `tags` filters on the tag array:
+
+        `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
+
+        orphans sharing at least one (`&&`).'
       operationId: list_orphans_api_v1_orphans_get
       parameters:
       - in: query
@@ -9087,6 +9104,74 @@ paths:
           - expired
           - all
           title: Assignment Status
+          type: string
+      - in: query
+        name: education_stage
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - not_enrolled
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            - university
+            - vocational
+            - graduated
+            type: string
+          - type: 'null'
+          title: Education Stage
+      - in: query
+        name: health_status
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
+      - in: query
+        name: is_hafiz
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Hafiz
+      - in: query
+        name: min_juz
+        required: false
+        schema:
+          anyOf:
+          - maximum: 30
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Juz
+      - in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      - in: query
+        name: tags_mode
+        required: false
+        schema:
+          default: all
+          enum:
+          - all
+          - any
+          title: Tags Mode
           type: string
       - in: query
         name: q

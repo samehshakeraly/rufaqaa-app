@@ -159,24 +159,24 @@
 }
 
 /* ───────────── Filter bar ───────────── */
+/* Wrapping flex row so the search box plus the segment-filter controls flow
+   onto as many lines as the viewport needs. Logical properties + flex keep
+   it correct under both LTR and the default RTL direction. */
 .ps-filter-bar {
   background: white;
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-xl);
   padding: 12px;
   margin-bottom: 14px;
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
-@media (max-width: 720px) {
-  .ps-filter-bar {
-    grid-template-columns: 1fr;
-  }
-}
 .ps-search {
   position: relative;
+  flex: 1 1 220px;
+  min-width: 180px;
 }
 .ps-search input {
   width: 100%;
@@ -203,11 +203,82 @@
   height: 15px;
   pointer-events: none;
 }
+
+/* Segment-filter selects + number input — same surface as the search box. */
+.ps-filter-select,
+.ps-filter-input {
+  padding: 8px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--gray-900);
+  font-family: inherit;
+}
+.ps-filter-select:focus,
+.ps-filter-input:focus {
+  outline: none;
+  background: white;
+  border-color: var(--sky-300);
+  box-shadow: var(--shadow-focus);
+}
+.ps-filter-num {
+  width: 96px;
+}
+
+/* Tags filter: chips + free-text entry sharing one bordered surface. */
+.ps-tags-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  min-width: 160px;
+}
+.ps-tags-filter input {
+  flex: 1;
+  min-width: 90px;
+  padding: 3px 0;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--gray-900);
+  font-family: inherit;
+}
+.ps-tags-filter input:focus {
+  outline: none;
+}
+.ps-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--tranquil-100);
+  color: var(--trust-700);
+  border: 1px solid var(--sky-200);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.ps-tag-chip button {
+  color: var(--gray-500);
+  font-size: 11px;
+  line-height: 1;
+  transition: var(--transition-fast);
+}
+.ps-tag-chip button:hover {
+  color: var(--danger-700);
+}
+
 .ps-filter-total {
   font-size: 12.5px;
   color: var(--gray-600);
   white-space: nowrap;
   align-self: center;
+  margin-inline-start: auto;
   padding-inline: 4px;
 }
 .ps-filter-total .latin {

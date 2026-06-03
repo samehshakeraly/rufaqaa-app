@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { NewOrphanForm } from "@/components/NewOrphanForm";
+import { EDUCATION_STAGES, HEALTH_STATUSES, NewOrphanForm } from "@/components/NewOrphanForm";
 import { Pagination } from "@/components/Pagination";
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
 import {
+  type EducationStage,
+  type HealthStatus,
   type Orphan,
   approveOrphan,
   archiveOrphan,
@@ -23,8 +25,22 @@ import "./OrphansPage.css";
 
 const PAGE_SIZE = 20;
 
-const orphanQueryKey = (q: string, caseStatus: string, offset: number) =>
-  ["orphans", { limit: PAGE_SIZE, offset, q, caseStatus }] as const;
+// Every filter dimension that narrows the list. Kept as plain strings (""
+// = unset) so they slot straight into the react-query key; the listOrphans
+// call below maps them to typed params, omitting the empty ones.
+interface OrphanFilters {
+  q: string;
+  caseStatus: string;
+  educationStage: string;
+  healthStatus: string;
+  isHafiz: string;
+  minJuz: string;
+  tags: string[];
+  tagsMode: "all" | "any";
+}
+
+const orphanQueryKey = (filters: OrphanFilters, offset: number) =>
+  ["orphans", { limit: PAGE_SIZE, offset, ...filters }] as const;
 
 const CASE_STATUS_OPTIONS = [
   "",
@@ -89,6 +105,15 @@ export function OrphansPage() {
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [caseStatus, setCaseStatus] = useState<string>(urlStatus);
+  // Segment filters (staff list only). "" means "all" for the selects; the
+  // tri-state isHafiz maps ""→undefined, "true"→true, "false"→false.
+  const [educationStage, setEducationStage] = useState<EducationStage | "">("");
+  const [healthStatus, setHealthStatus] = useState<HealthStatus | "">("");
+  const [isHafiz, setIsHafiz] = useState<"" | "true" | "false">("");
+  const [minJuz, setMinJuz] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagsMode, setTagsMode] = useState<"all" | "any">("all");
+  const [tagInput, setTagInput] = useState("");
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
@@ -109,13 +134,23 @@ export function OrphansPage() {
   // empty page after narrowing the result set.
   useEffect(() => {
     setOffset(0);
-  }, [debouncedSearch, caseStatus]);
+  }, [debouncedSearch, caseStatus, educationStage, healthStatus, isHafiz, minJuz, tags, tagsMode]);
 
   // Clear bulk selection when the filter / page changes — selected IDs
   // would otherwise refer to rows that aren't visible anymore.
   useEffect(() => {
     setSelected(new Set());
-  }, [debouncedSearch, caseStatus, offset]);
+  }, [
+    debouncedSearch,
+    caseStatus,
+    educationStage,
+    healthStatus,
+    isHafiz,
+    minJuz,
+    tags,
+    tagsMode,
+    offset,
+  ]);
 
   function onCaseStatusChange(next: string) {
     setCaseStatus(next);
@@ -125,7 +160,32 @@ export function OrphansPage() {
     setSearchParams(sp, { replace: true });
   }
 
-  const queryKey = orphanQueryKey(debouncedSearch, caseStatus, offset);
+  // Tags filter chips — same Enter/comma entry UX as NewOrphanForm.
+  function addTag() {
+    const next = tagInput.trim();
+    if (!next || tags.includes(next)) {
+      setTagInput("");
+      return;
+    }
+    setTags((prev) => [...prev, next]);
+    setTagInput("");
+  }
+
+  function removeTag(tag: string) {
+    setTags((prev) => prev.filter((x) => x !== tag));
+  }
+
+  const filters: OrphanFilters = {
+    q: debouncedSearch,
+    caseStatus,
+    educationStage,
+    healthStatus,
+    isHafiz,
+    minJuz,
+    tags,
+    tagsMode,
+  };
+  const queryKey = orphanQueryKey(filters, offset);
   const { data, isLoading, error } = useQuery({
     queryKey,
     queryFn: () =>
@@ -134,6 +194,11 @@ export function OrphansPage() {
         offset,
         ...(debouncedSearch ? { q: debouncedSearch } : {}),
         ...(caseStatus ? { case_status: caseStatus } : {}),
+        ...(educationStage ? { education_stage: educationStage } : {}),
+        ...(healthStatus ? { health_status: healthStatus } : {}),
+        ...(isHafiz !== "" ? { is_hafiz: isHafiz === "true" } : {}),
+        ...(minJuz !== "" ? { min_juz: Number(minJuz) } : {}),
+        ...(tags.length > 0 ? { tags, tags_mode: tagsMode } : {}),
       }),
   });
   const { data: partners } = useQuery({
@@ -294,6 +359,100 @@ export function OrphansPage() {
           />
           {ICON_SEARCH}
         </div>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.filters.educationStage")}
+          value={educationStage}
+          onChange={(e) => setEducationStage(e.target.value as EducationStage | "")}
+        >
+          <option value="">
+            {t("orphans.filters.educationStage")}: {t("orphans.filters.all")}
+          </option>
+          {EDUCATION_STAGES.map((s) => (
+            <option key={s} value={s}>
+              {t(`orphans.profile.educationStageOptions.${s}`)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.filters.healthStatus")}
+          value={healthStatus}
+          onChange={(e) => setHealthStatus(e.target.value as HealthStatus | "")}
+        >
+          <option value="">
+            {t("orphans.filters.healthStatus")}: {t("orphans.filters.all")}
+          </option>
+          {HEALTH_STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {t(`orphans.profile.healthStatusOptions.${s}`)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.filters.isHafiz")}
+          value={isHafiz}
+          onChange={(e) => setIsHafiz(e.target.value as "" | "true" | "false")}
+        >
+          <option value="">{t("orphans.filters.isHafizOptions.all")}</option>
+          <option value="true">{t("orphans.filters.isHafizOptions.hafiz")}</option>
+          <option value="false">{t("orphans.filters.isHafizOptions.notHafiz")}</option>
+        </select>
+
+        <input
+          type="number"
+          min={0}
+          max={30}
+          step={1}
+          className="ps-filter-input ps-filter-num"
+          aria-label={t("orphans.filters.minJuz")}
+          placeholder={t("orphans.filters.minJuz")}
+          value={minJuz}
+          onChange={(e) => setMinJuz(e.target.value)}
+        />
+
+        <div className="ps-tags-filter">
+          {tags.map((tag) => (
+            <span key={tag} className="ps-tag-chip">
+              {tag}
+              <button
+                type="button"
+                aria-label={t("orphans.profile.tags.remove", { tag })}
+                onClick={() => removeTag(tag)}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+          <input
+            aria-label={t("orphans.filters.tags")}
+            placeholder={t("orphans.filters.tags")}
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === ",") {
+                e.preventDefault();
+                addTag();
+              }
+            }}
+            onBlur={addTag}
+          />
+        </div>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.filters.tagsMode")}
+          value={tagsMode}
+          onChange={(e) => setTagsMode(e.target.value as "all" | "any")}
+        >
+          <option value="all">{t("orphans.filters.tagsModeOptions.all")}</option>
+          <option value="any">{t("orphans.filters.tagsModeOptions.any")}</option>
+        </select>
+
         {data && (
           <span className="ps-filter-total">
             {t("common.total")}: <span className="latin">{data.total.toLocaleString(i18n.language)}</span>

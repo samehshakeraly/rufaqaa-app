@@ -1433,6 +1433,15 @@ export interface paths {
          *     `assignment_status` filters by assignment deadline: "active" keeps
          *     orphans whose deadline is still in the future, "expired" those past it,
          *     "all" applies no deadline filter.
+         *
+         *     Segment filters (org-scoped staff surface only; `health_status` is a
+         *     sensitive field never exposed on the public/donor surfaces):
+         *     `education_stage` and `health_status` match the coded column exactly.
+         *     `is_hafiz` is derived from `quran_juz_memorized` (== 30 when true; any
+         *     other value, including NULL, when false). `min_juz` keeps orphans who
+         *     have memorised at least that many juz'. `tags` filters on the tag array:
+         *     `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
+         *     orphans sharing at least one (`&&`).
          */
         get: operations["list_orphans_api_v1_orphans_get"];
         put?: never;
@@ -8435,6 +8444,12 @@ export interface operations {
                 case_status?: string | null;
                 channel_id?: string | null;
                 assignment_status?: "active" | "expired" | "all";
+                education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+                health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+                is_hafiz?: boolean | null;
+                min_juz?: number | null;
+                tags?: string[] | null;
+                tags_mode?: "all" | "any";
                 q?: string | null;
             };
             header?: never;
