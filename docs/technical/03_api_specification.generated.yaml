@@ -1946,6 +1946,14 @@ components:
             type: string
           - type: 'null'
           title: Middle Name
+        mother_status:
+          default: unknown
+          enum:
+          - alive
+          - deceased
+          - unknown
+          title: Mother Status
+          type: string
         nationality:
           anyOf:
           - maxLength: 2
@@ -1953,6 +1961,14 @@ components:
             type: string
           - type: 'null'
           title: Nationality
+        priority_level:
+          default: normal
+          enum:
+          - normal
+          - high
+          - urgent
+          title: Priority Level
+          type: string
         quran_juz_memorized:
           anyOf:
           - maximum: 30.0
@@ -3202,6 +3218,14 @@ components:
             type: string
           - type: 'null'
           title: Middle Name
+        mother_status:
+          default: unknown
+          enum:
+          - alive
+          - deceased
+          - unknown
+          title: Mother Status
+          type: string
         nationality:
           anyOf:
           - maxLength: 2
@@ -3212,6 +3236,14 @@ components:
         partner_organization_id:
           format: uuid
           title: Partner Organization Id
+          type: string
+        priority_level:
+          default: normal
+          enum:
+          - normal
+          - high
+          - urgent
+          title: Priority Level
           type: string
         quran_juz_memorized:
           anyOf:
@@ -3423,6 +3455,12 @@ components:
             type: string
           - type: 'null'
           title: Assignment Deadline
+        available_since:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Available Since
         case_status:
           enum:
           - pending_review
@@ -3553,6 +3591,14 @@ components:
             type: string
           - type: 'null'
           title: Middle Name
+        mother_status:
+          default: unknown
+          enum:
+          - alive
+          - deceased
+          - unknown
+          title: Mother Status
+          type: string
         nationality:
           anyOf:
           - maxLength: 2
@@ -3567,6 +3613,14 @@ components:
         partner_organization_id:
           format: uuid
           title: Partner Organization Id
+          type: string
+        priority_level:
+          default: normal
+          enum:
+          - normal
+          - high
+          - urgent
+          title: Priority Level
           type: string
         quran_juz_memorized:
           anyOf:
@@ -3767,6 +3821,15 @@ components:
             type: string
           - type: 'null'
           title: Middle Name
+        mother_status:
+          anyOf:
+          - enum:
+            - alive
+            - deceased
+            - unknown
+            type: string
+          - type: 'null'
+          title: Mother Status
         nationality:
           anyOf:
           - maxLength: 2
@@ -3774,6 +3837,15 @@ components:
             type: string
           - type: 'null'
           title: Nationality
+        priority_level:
+          anyOf:
+          - enum:
+            - normal
+            - high
+            - urgent
+            type: string
+          - type: 'null'
+          title: Priority Level
         quran_juz_memorized:
           anyOf:
           - maximum: 30.0

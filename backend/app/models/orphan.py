@@ -71,6 +71,18 @@ class Orphan(Base):
 
     case_status: Mapped[str] = mapped_column(String(30), default="pending_review")
 
+    # Orphan browsing foundation (see migration 0009). ``available_since`` is
+    # stamped the first time a child enters the available pool and is never
+    # overwritten (see app.services.orphans.stamp_available_since). The two
+    # coded columns are NOT NULL with DB-level CHECK constraints.
+    available_since: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
+    mother_status: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default=text("'unknown'"), default="unknown"
+    )
+    priority_level: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default=text("'normal'"), default="normal"
+    )
+
     assigned_to_channel_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("marketing_channels.id")
     )

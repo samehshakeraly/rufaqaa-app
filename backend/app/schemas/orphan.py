@@ -29,6 +29,8 @@ EducationStage = Literal[
 ]
 HealthStatus = Literal["good", "chronic_condition", "disability", "under_treatment"]
 HealthCoverage = Literal["none", "government", "private", "charity"]
+MotherStatus = Literal["alive", "deceased", "unknown"]
+PriorityLevel = Literal["normal", "high", "urgent"]
 
 
 class OrphanBase(BaseModel):
@@ -55,6 +57,11 @@ class OrphanBase(BaseModel):
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] = Field(default_factory=list)
+
+    # Orphan browsing foundation (see migration 0009). Optional at creation —
+    # both fall back to the DB default ('unknown' / 'normal') when omitted.
+    mother_status: MotherStatus = "unknown"
+    priority_level: PriorityLevel = "normal"
 
 
 class OrphanCreateFields(OrphanBase):
@@ -106,6 +113,9 @@ class OrphanUpdate(BaseModel):
     challenges: str | None = None
     tags: list[str] | None = None
 
+    mother_status: MotherStatus | None = None
+    priority_level: PriorityLevel | None = None
+
 
 class OrphanRead(OrphanBase):
     model_config = ConfigDict(from_attributes=True)
@@ -121,6 +131,7 @@ class OrphanRead(OrphanBase):
     assignment_deadline: datetime | None = None
     is_sponsored: bool
     current_balance: Decimal
+    available_since: datetime | None = None
     created_at: datetime
     updated_at: datetime
 

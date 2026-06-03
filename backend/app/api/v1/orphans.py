@@ -23,7 +23,7 @@ from app.schemas.common import Page
 from app.schemas.orphan import OrphanCreate, OrphanRead, OrphanUpdate
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
-from app.services.orphans import create_orphan_record
+from app.services.orphans import create_orphan_record, stamp_available_since
 
 router = APIRouter()
 
@@ -436,6 +436,7 @@ async def release_orphan(
     old_status = orphan.case_status
     old_channel = orphan.assigned_to_channel_id
     orphan.case_status = "available"
+    stamp_available_since(orphan)
     orphan.assigned_to_channel_id = None
     orphan.assignment_deadline = None
     record_audit(
