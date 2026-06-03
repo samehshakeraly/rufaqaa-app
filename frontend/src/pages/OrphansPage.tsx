@@ -12,6 +12,7 @@ import {
   type EducationStage,
   type HealthStatus,
   type Orphan,
+  type OrphanSort,
   approveOrphan,
   archiveOrphan,
   exportOrphansCsv,
@@ -37,10 +38,22 @@ interface OrphanFilters {
   minJuz: string;
   tags: string[];
   tagsMode: "all" | "any";
+  sort: string;
 }
 
 const orphanQueryKey = (filters: OrphanFilters, offset: number) =>
   ["orphans", { limit: PAGE_SIZE, offset, ...filters }] as const;
+
+// Named sort options offered in the toolbar. "" (unset) is rendered as a
+// leading default option and sends no `sort` param — the backend then
+// auto-picks (relevance while searching, else newest).
+const SORT_OPTIONS = [
+  "recently_available",
+  "longest_waiting",
+  "priority",
+  "most_complete",
+  "newest",
+] as const;
 
 const CASE_STATUS_OPTIONS = [
   "",
@@ -114,6 +127,8 @@ export function OrphansPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagsMode, setTagsMode] = useState<"all" | "any">("all");
   const [tagInput, setTagInput] = useState("");
+  // "" = unset → no sort param sent (backend auto-picks the order).
+  const [sort, setSort] = useState<OrphanSort | "">("");
   const [offset, setOffset] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
@@ -134,7 +149,17 @@ export function OrphansPage() {
   // empty page after narrowing the result set.
   useEffect(() => {
     setOffset(0);
-  }, [debouncedSearch, caseStatus, educationStage, healthStatus, isHafiz, minJuz, tags, tagsMode]);
+  }, [
+    debouncedSearch,
+    caseStatus,
+    educationStage,
+    healthStatus,
+    isHafiz,
+    minJuz,
+    tags,
+    tagsMode,
+    sort,
+  ]);
 
   // Clear bulk selection when the filter / page changes — selected IDs
   // would otherwise refer to rows that aren't visible anymore.
@@ -149,6 +174,7 @@ export function OrphansPage() {
     minJuz,
     tags,
     tagsMode,
+    sort,
     offset,
   ]);
 
@@ -184,6 +210,7 @@ export function OrphansPage() {
     minJuz,
     tags,
     tagsMode,
+    sort,
   };
   const queryKey = orphanQueryKey(filters, offset);
   const { data, isLoading, error } = useQuery({
@@ -199,6 +226,7 @@ export function OrphansPage() {
         ...(isHafiz !== "" ? { is_hafiz: isHafiz === "true" } : {}),
         ...(minJuz !== "" ? { min_juz: Number(minJuz) } : {}),
         ...(tags.length > 0 ? { tags, tags_mode: tagsMode } : {}),
+        ...(sort ? { sort } : {}),
       }),
   });
   const { data: partners } = useQuery({
@@ -451,6 +479,20 @@ export function OrphansPage() {
         >
           <option value="all">{t("orphans.filters.tagsModeOptions.all")}</option>
           <option value="any">{t("orphans.filters.tagsModeOptions.any")}</option>
+        </select>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.sort.label")}
+          value={sort}
+          onChange={(e) => setSort(e.target.value as OrphanSort | "")}
+        >
+          <option value="">{t("orphans.sort.default")}</option>
+          {SORT_OPTIONS.map((s) => (
+            <option key={s} value={s}>
+              {t(`orphans.sort.options.${s}`)}
+            </option>
+          ))}
         </select>
 
         {data && (

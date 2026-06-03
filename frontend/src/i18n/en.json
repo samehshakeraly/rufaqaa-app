@@ -1314,6 +1314,17 @@
         "any": "Match any"
       }
     },
+    "sort": {
+      "label": "Sort",
+      "default": "Default",
+      "options": {
+        "recently_available": "Recently available",
+        "longest_waiting": "Longest waiting",
+        "priority": "By priority",
+        "most_complete": "Most complete",
+        "newest": "Newest"
+      }
+    },
     "code": "Code",
     "name": "Name",
     "firstName": "First name",

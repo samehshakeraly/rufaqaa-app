@@ -1314,6 +1314,17 @@
         "any": "يطابق أيّاً منها"
       }
     },
+    "sort": {
+      "label": "الترتيب",
+      "default": "الافتراضي",
+      "options": {
+        "recently_available": "المتاحون حديثاً",
+        "longest_waiting": "الأطول انتظاراً",
+        "priority": "حسب الأولوية",
+        "most_complete": "الأكثر اكتمالاً",
+        "newest": "الأحدث إضافةً"
+      }
+    },
     "code": "الرمز",
     "name": "الاسم",
     "firstName": "الاسم الأول",
