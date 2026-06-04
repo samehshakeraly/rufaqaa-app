@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { EDUCATION_STAGES, HEALTH_STATUSES, NewOrphanForm } from "@/components/NewOrphanForm";
+import {
+  EDUCATION_STAGES,
+  HEALTH_STATUSES,
+  NewOrphanForm,
+  PRIORITY_LEVELS,
+} from "@/components/NewOrphanForm";
 import { Pagination } from "@/components/Pagination";
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
@@ -13,6 +18,7 @@ import {
   type HealthStatus,
   type Orphan,
   type OrphanSort,
+  type PriorityLevel,
   approveOrphan,
   archiveOrphan,
   exportOrphansCsv,
@@ -38,6 +44,10 @@ interface OrphanFilters {
   minJuz: string;
   tags: string[];
   tagsMode: "all" | "any";
+  orphanType: string;
+  priority: string;
+  minWaitingDays: string;
+  minCompletion: string;
   sort: string;
 }
 
@@ -127,6 +137,12 @@ export function OrphansPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagsMode, setTagsMode] = useState<"all" | "any">("all");
   const [tagInput, setTagInput] = useState("");
+  // Advanced filters (staff list only). "" means "all" for the selects;
+  // the number inputs send their param only when non-empty.
+  const [orphanType, setOrphanType] = useState<"" | "single" | "double">("");
+  const [priority, setPriority] = useState<PriorityLevel | "">("");
+  const [minWaitingDays, setMinWaitingDays] = useState("");
+  const [minCompletion, setMinCompletion] = useState("");
   // "" = unset → no sort param sent (backend auto-picks the order).
   const [sort, setSort] = useState<OrphanSort | "">("");
   const [offset, setOffset] = useState(0);
@@ -158,6 +174,10 @@ export function OrphansPage() {
     minJuz,
     tags,
     tagsMode,
+    orphanType,
+    priority,
+    minWaitingDays,
+    minCompletion,
     sort,
   ]);
 
@@ -174,6 +194,10 @@ export function OrphansPage() {
     minJuz,
     tags,
     tagsMode,
+    orphanType,
+    priority,
+    minWaitingDays,
+    minCompletion,
     sort,
     offset,
   ]);
@@ -210,6 +234,10 @@ export function OrphansPage() {
     minJuz,
     tags,
     tagsMode,
+    orphanType,
+    priority,
+    minWaitingDays,
+    minCompletion,
     sort,
   };
   const queryKey = orphanQueryKey(filters, offset);
@@ -226,6 +254,10 @@ export function OrphansPage() {
         ...(isHafiz !== "" ? { is_hafiz: isHafiz === "true" } : {}),
         ...(minJuz !== "" ? { min_juz: Number(minJuz) } : {}),
         ...(tags.length > 0 ? { tags, tags_mode: tagsMode } : {}),
+        ...(orphanType ? { orphan_type: orphanType } : {}),
+        ...(priority ? { priority } : {}),
+        ...(minWaitingDays !== "" ? { min_waiting_days: Number(minWaitingDays) } : {}),
+        ...(minCompletion !== "" ? { min_completion: Number(minCompletion) } : {}),
         ...(sort ? { sort } : {}),
       }),
   });
@@ -480,6 +512,58 @@ export function OrphansPage() {
           <option value="all">{t("orphans.filters.tagsModeOptions.all")}</option>
           <option value="any">{t("orphans.filters.tagsModeOptions.any")}</option>
         </select>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.filters.orphanType")}
+          value={orphanType}
+          onChange={(e) => setOrphanType(e.target.value as "" | "single" | "double")}
+        >
+          <option value="">
+            {t("orphans.filters.orphanType")}: {t("orphans.filters.all")}
+          </option>
+          <option value="single">{t("orphans.filters.orphanTypeOptions.single")}</option>
+          <option value="double">{t("orphans.filters.orphanTypeOptions.double")}</option>
+        </select>
+
+        <select
+          className="ps-filter-select"
+          aria-label={t("orphans.filters.priority")}
+          value={priority}
+          onChange={(e) => setPriority(e.target.value as PriorityLevel | "")}
+        >
+          <option value="">
+            {t("orphans.filters.priority")}: {t("orphans.filters.all")}
+          </option>
+          {PRIORITY_LEVELS.map((p) => (
+            <option key={p} value={p}>
+              {t(`orphans.profile.priorityLevelOptions.${p}`)}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="number"
+          min={0}
+          step={1}
+          className="ps-filter-input ps-filter-num"
+          aria-label={t("orphans.filters.minWaitingDays")}
+          placeholder={t("orphans.filters.minWaitingDays")}
+          value={minWaitingDays}
+          onChange={(e) => setMinWaitingDays(e.target.value)}
+        />
+
+        <input
+          type="number"
+          min={0}
+          max={100}
+          step={1}
+          className="ps-filter-input ps-filter-num"
+          aria-label={t("orphans.filters.minCompletion")}
+          placeholder={t("orphans.filters.minCompletion")}
+          value={minCompletion}
+          onChange={(e) => setMinCompletion(e.target.value)}
+        />
 
         <select
           className="ps-filter-select"

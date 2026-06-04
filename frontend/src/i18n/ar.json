@@ -1303,6 +1303,10 @@
       "minJuz": "أدنى عدد أجزاء",
       "tags": "الوسوم",
       "tagsMode": "مطابقة الوسوم",
+      "orphanType": "نوع اليُتم",
+      "priority": "الأولوية",
+      "minWaitingDays": "أدنى أيام الانتظار",
+      "minCompletion": "أدنى نسبة اكتمال",
       "all": "الكل",
       "isHafizOptions": {
         "all": "الكل",
@@ -1312,6 +1316,10 @@
       "tagsModeOptions": {
         "all": "يطابق الكل",
         "any": "يطابق أيّاً منها"
+      },
+      "orphanTypeOptions": {
+        "single": "يتيم الأب",
+        "double": "يتيم الأبوين"
       }
     },
     "sort": {

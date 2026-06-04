@@ -126,6 +126,16 @@ export async function listOrphans(params?: {
   tags?: string[];
   /** How to match `tags`: "all" requires every tag (@>), "any" an overlap (&&). */
   tags_mode?: "all" | "any";
+  /** Advanced filters — staff list only. `orphan_type` is derived from
+   * mother_status (single = father lost / mother alive, double = both parents);
+   * orphans with an unknown mother status surface only when this is omitted. */
+  orphan_type?: "single" | "double";
+  /** Exact match on the case priority level. */
+  priority?: PriorityLevel;
+  /** Minimum days spent waiting in the available pool (excludes never-available). */
+  min_waiting_days?: number;
+  /** Minimum profile completion percentage (0–100), inclusive. */
+  min_completion?: number;
   /** Sort order. Omit to let the backend auto-pick (relevance while searching,
    * else newest). */
   sort?: OrphanSort;

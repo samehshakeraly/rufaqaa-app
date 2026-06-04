@@ -1,6 +1,6 @@
 import csv
 import io
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
@@ -27,6 +27,7 @@ from app.schemas.orphan import (
     OrphanRead,
     OrphanSort,
     OrphanUpdate,
+    PriorityLevel,
 )
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
@@ -96,6 +97,10 @@ async def list_orphans(
     min_juz: Annotated[int | None, Query(ge=0, le=30)] = None,
     tags: Annotated[list[str] | None, Query()] = None,
     tags_mode: Literal["all", "any"] = "all",
+    orphan_type: Literal["single", "double"] | None = None,
+    priority: PriorityLevel | None = None,
+    min_waiting_days: Annotated[int | None, Query(ge=0)] = None,
+    min_completion: Annotated[int | None, Query(ge=0, le=100)] = None,
     q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
     sort: OrphanSort | None = None,
 ) -> Page[OrphanRead]:
@@ -119,6 +124,16 @@ async def list_orphans(
     have memorised at least that many juz'. `tags` filters on the tag array:
     `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
     orphans sharing at least one (`&&`).
+
+    Advanced filters (staff surface): `orphan_type` is derived from
+    `mother_status` — "single" keeps father-only orphans (mother alive),
+    "double" keeps double orphans (mother deceased). There is no explicit
+    value for an unknown mother status, so those orphans surface only when
+    `orphan_type` is omitted. `priority` matches `priority_level` exactly.
+    `min_waiting_days` keeps orphans that have spent at least that many days
+    in the available pool (rows with a NULL `available_since` are excluded).
+    `min_completion` keeps orphans whose `profile_completion_percentage` is at
+    least the supplied value (0–100).
 
     `sort` orders the result set. When omitted, ordering is automatic:
     relevance (ts_rank) while a `q` search term is present, otherwise newest
@@ -158,6 +173,21 @@ async def list_orphans(
         stmt = stmt.where(
             Orphan.tags.contains(tags) if tags_mode == "all" else Orphan.tags.overlap(tags)
         )
+    if orphan_type == "single":
+        # Father lost, mother alive. "unknown" mother_status has no explicit
+        # value and surfaces only when orphan_type is omitted.
+        stmt = stmt.where(Orphan.mother_status == "alive")
+    elif orphan_type == "double":
+        stmt = stmt.where(Orphan.mother_status == "deceased")
+    if priority:
+        stmt = stmt.where(Orphan.priority_level == priority)
+    if min_waiting_days is not None:
+        # Minimum days in the available pool. Rows that never entered it
+        # (available_since NULL) can't satisfy a waiting bound, so exclude them.
+        cutoff = datetime.now(UTC) - timedelta(days=min_waiting_days)
+        stmt = stmt.where(Orphan.available_since.is_not(None), Orphan.available_since <= cutoff)
+    if min_completion is not None:
+        stmt = stmt.where(Orphan.profile_completion_percentage >= min_completion)
     if q:
         # plainto_tsquery treats input as raw text and handles tokenisation,
         # which is safer than letting users craft tsquery operators. This WHERE

@@ -9060,6 +9060,25 @@ paths:
         orphans sharing at least one (`&&`).
 
 
+        Advanced filters (staff surface): `orphan_type` is derived from
+
+        `mother_status` — "single" keeps father-only orphans (mother alive),
+
+        "double" keeps double orphans (mother deceased). There is no explicit
+
+        value for an unknown mother status, so those orphans surface only when
+
+        `orphan_type` is omitted. `priority` matches `priority_level` exactly.
+
+        `min_waiting_days` keeps orphans that have spent at least that many days
+
+        in the available pool (rows with a NULL `available_since` are excluded).
+
+        `min_completion` keeps orphans whose `profile_completion_percentage` is at
+
+        least the supplied value (0–100).
+
+
         `sort` orders the result set. When omitted, ordering is automatic:
 
         relevance (ts_rank) while a `q` search term is present, otherwise newest
@@ -9184,6 +9203,48 @@ paths:
           - any
           title: Tags Mode
           type: string
+      - in: query
+        name: orphan_type
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - single
+            - double
+            type: string
+          - type: 'null'
+          title: Orphan Type
+      - in: query
+        name: priority
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - normal
+            - high
+            - urgent
+            type: string
+          - type: 'null'
+          title: Priority
+      - in: query
+        name: min_waiting_days
+        required: false
+        schema:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Waiting Days
+      - in: query
+        name: min_completion
+        required: false
+        schema:
+          anyOf:
+          - maximum: 100
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Completion
       - in: query
         name: q
         required: false
