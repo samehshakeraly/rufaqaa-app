@@ -201,12 +201,8 @@ async def test_explicit_sort_overrides_relevance(
     partner_id = await _seed_partner_id()
     marker = f"sort-ov-{uuid.uuid4().hex[:8]}"
     token = f"needle{uuid.uuid4().hex[:6]}"
-    older = await _create(
-        api, auth_headers, partner_id, first_name=f"{token}-alpha", tags=[marker]
-    )
-    newer = await _create(
-        api, auth_headers, partner_id, first_name=f"{token}-beta", tags=[marker]
-    )
+    older = await _create(api, auth_headers, partner_id, first_name=f"{token}-alpha", tags=[marker])
+    newer = await _create(api, auth_headers, partner_id, first_name=f"{token}-beta", tags=[marker])
     await _set_fields(older, available_since=_t(1))
     await _set_fields(newer, available_since=_t(9))
 
