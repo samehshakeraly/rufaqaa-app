@@ -113,3 +113,42 @@ export async function fetchPlatformByOrg(limit = 10): Promise<PlatformByOrg> {
   });
   return data;
 }
+
+export interface PlatformHeadline {
+  avg_sponsorship_duration_days: number | null;
+  // In-platform donor-activation rate (0..1), not visitor→donor.
+  donor_conversion_rate: number;
+}
+
+export async function fetchPlatformHeadline(): Promise<PlatformHeadline> {
+  const { data } = await api.get<PlatformHeadline>("/stats/platform/headline");
+  return data;
+}
+
+export interface PlatformFunnel {
+  registered_donors: number;
+  donors_with_sponsorship: number;
+  donors_with_active_sponsorship: number;
+}
+
+export async function fetchPlatformFunnel(): Promise<PlatformFunnel> {
+  const { data } = await api.get<PlatformFunnel>("/stats/platform/funnel");
+  return data;
+}
+
+export interface PaymentMethodSlice {
+  method: string;
+  count: number;
+  total: string; // Decimal serialized as string, like other money fields.
+}
+
+export interface PlatformPaymentMethods {
+  items: PaymentMethodSlice[];
+}
+
+export async function fetchPlatformPaymentMethods(): Promise<PlatformPaymentMethods> {
+  const { data } = await api.get<PlatformPaymentMethods>(
+    "/stats/platform/payment-methods",
+  );
+  return data;
+}

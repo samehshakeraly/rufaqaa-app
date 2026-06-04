@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { listPlatformOrganizations } from "@/lib/platform";
 import {
   fetchPlatformByOrg,
+  fetchPlatformFunnel,
+  fetchPlatformHeadline,
+  fetchPlatformPaymentMethods,
   fetchPlatformSummary,
   fetchPlatformTimeseries,
   type PaymentsTimeseries,
@@ -19,15 +22,16 @@ import "./PlatformAnalyticsPage.css";
  * App-shell chrome is provided by PlatformLayout.
  *
  * Wired to existing endpoints:
- *   - GET /stats/platform/timeseries  → growth area chart + summary totals
- *   - GET /stats/platform/by-org      → top organizations ranking
- *   - GET /platform/organizations     → orphan distribution by country
+ *   - GET /stats/platform/timeseries      → growth area chart + summary totals
+ *   - GET /stats/platform/by-org          → top organizations ranking
+ *   - GET /stats/platform/headline        → avg sponsorship duration + donor-activation rate
+ *   - GET /stats/platform/funnel          → donor-activation funnel
+ *   - GET /stats/platform/payment-methods → payment-method breakdown
+ *   - GET /platform/organizations         → orphan distribution by country
  *
- * Inert / not-yet-sourced (TODO(backend)):
+ * Still inert / not-yet-sourced (TODO(backend)):
  *   - PDF report export (no endpoint)
- *   - Payment-methods breakdown (no endpoint)
- *   - Avg sponsorship duration / conversion rate / report-read rate
- *   - Visitor→donor conversion funnel (no analytics endpoint)
+ *   - Monthly report read rate (no report-open tracking on the platform)
  */
 
 const RANGES = [3, 6, 12] as const;
@@ -118,6 +122,18 @@ export function PlatformAnalyticsPage() {
     queryKey: ["platform", "summary"],
     queryFn: fetchPlatformSummary,
   });
+  const { data: headline } = useQuery({
+    queryKey: ["platform", "headline"],
+    queryFn: fetchPlatformHeadline,
+  });
+  const { data: funnel } = useQuery({
+    queryKey: ["platform", "funnel"],
+    queryFn: fetchPlatformFunnel,
+  });
+  const { data: paymentMethods } = useQuery({
+    queryKey: ["platform", "payment-methods"],
+    queryFn: fetchPlatformPaymentMethods,
+  });
   const currency = summary?.total_donated_by_currency[0]?.currency ?? null;
 
   // The backend timeseries is a fixed 12-month window; the range selector
@@ -161,6 +177,10 @@ export function PlatformAnalyticsPage() {
   const totalOrphans = byCountry.reduce((a, [, v]) => a + v.orphans, 0);
   const maxOrphans = Math.max(...byCountry.map(([, v]) => v.orphans), 1);
   const maxOrg = Math.max(...(byOrg?.items ?? []).map((it) => Number(it.donations_total)), 1);
+  const maxMethodTotal = Math.max(
+    ...(paymentMethods?.items ?? []).map((m) => Number(m.total)),
+    1,
+  );
   const isAr = i18n.language.startsWith("ar");
 
   return (
@@ -303,7 +323,7 @@ export function PlatformAnalyticsPage() {
           </div>
         </div>
 
-        {/* Payment methods — TODO(backend): no payment-method breakdown. */}
+        {/* Payment methods — completed payments grouped by method. */}
         <div className="sa-panel">
           <div className="sa-panel-head">
             <div className="sa-panel-title">
@@ -312,11 +332,43 @@ export function PlatformAnalyticsPage() {
             </div>
           </div>
           <div className="sa-panel-body">
-            <EmptyState
-              title={t("platform.comingSoonTitle")}
-              body={t("platform.comingSoonBody")}
-              icon={ICONS.pie}
-            />
+            {!paymentMethods ? (
+              <div className="sa-skeleton" style={{ height: 200 }} />
+            ) : paymentMethods.items.length === 0 ? (
+              <EmptyState title={t("common.empty")} icon={ICONS.pie} />
+            ) : (
+              <div className="sa-geo-list">
+                {paymentMethods.items.map((m) => {
+                  const total = Number(m.total);
+                  return (
+                    <div className="sa-geo-row" key={m.method}>
+                      <div className="sa-geo-flag" aria-hidden="true">
+                        <Icon className="sa-icon sa-icon-sm">{ICONS.pie}</Icon>
+                      </div>
+                      <div>
+                        <div className="sa-geo-name">
+                          {t(`platform.analytics.paymentMethods.method.${m.method}`, m.method)}
+                        </div>
+                        <div className="sa-geo-detail">
+                          {t("platform.analytics.paymentMethods.count", { count: m.count })}
+                        </div>
+                      </div>
+                      <div className="sa-geo-bar-wrap">
+                        <div className="sa-geo-bar">
+                          <div
+                            className="sa-geo-bar-fill"
+                            style={{
+                              inlineSize: `${((total / maxMethodTotal) * 100).toFixed(1)}%`,
+                            }}
+                          />
+                        </div>
+                        <span className="sa-geo-count latin">{nfmt.format(total)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -363,18 +415,28 @@ export function PlatformAnalyticsPage() {
         </div>
       </div>
 
-      {/* ── Headline stats — TODO(backend): no source endpoints ─────── */}
+      {/* ── Headline stats ──────────────────────────────────────────
+          avgDuration + conversion are wired to /stats/platform/headline;
+          reportRead stays a PLACEHOLDER (no report-open tracking yet). */}
       <div className="sa-stat-grid sa-section">
         <BigStat
           icon={ICONS.clock}
           label={t("platform.analytics.stats.avgDuration")}
-          value={PLACEHOLDER}
+          value={
+            headline?.avg_sponsorship_duration_days != null
+              ? t("platform.analytics.stats.avgDurationDays", {
+                  count: headline.avg_sponsorship_duration_days,
+                })
+              : PLACEHOLDER
+          }
           explain={t("platform.analytics.stats.avgDurationHint")}
         />
         <BigStat
           icon={ICONS.trendingUp}
           label={t("platform.analytics.stats.conversion")}
-          value={PLACEHOLDER}
+          value={
+            headline ? `${(headline.donor_conversion_rate * 100).toFixed(1)}%` : PLACEHOLDER
+          }
           explain={t("platform.analytics.stats.conversionHint")}
         />
         <BigStat
@@ -385,7 +447,10 @@ export function PlatformAnalyticsPage() {
         />
       </div>
 
-      {/* ── Conversion funnel — TODO(backend): no funnel endpoint ───── */}
+      {/* ── Donor-activation funnel (registered → sponsored → active) ──
+          Honest in-platform funnel: no visitor/lead stage exists because
+          nothing tracks pre-registration. Widths are relative to the
+          registered-donor count. */}
       <div className="sa-section">
         <div className="sa-panel">
           <div className="sa-panel-head">
@@ -395,11 +460,38 @@ export function PlatformAnalyticsPage() {
             </div>
           </div>
           <div className="sa-panel-body">
-            <EmptyState
-              title={t("platform.comingSoonTitle")}
-              body={t("platform.comingSoonBody")}
-              icon={ICONS.funnel}
-            />
+            {!funnel ? (
+              <div className="sa-skeleton" style={{ height: 160 }} />
+            ) : funnel.registered_donors === 0 ? (
+              <EmptyState title={t("common.empty")} icon={ICONS.funnel} />
+            ) : (
+              <div className="sa-rank-list">
+                {(
+                  [
+                    ["registered", funnel.registered_donors],
+                    ["sponsored", funnel.donors_with_sponsorship],
+                    ["active", funnel.donors_with_active_sponsorship],
+                  ] as const
+                ).map(([key, count]) => (
+                  <div className="sa-rank-row" key={key}>
+                    <div className="sa-rank-head">
+                      <span className="sa-rank-name">
+                        {t(`platform.analytics.funnel.${key}`)}
+                      </span>
+                      <span className="sa-rank-value latin">{nfmt.format(count)}</span>
+                    </div>
+                    <div className="sa-rank-bar">
+                      <div
+                        className="sa-rank-bar-fill"
+                        style={{
+                          inlineSize: `${((count / funnel.registered_donors) * 100).toFixed(1)}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -3393,18 +3393,35 @@
         "partners": "{{count}} partner organizations"
       },
       "paymentMethods": {
-        "title": "Payment methods used"
+        "title": "Payment methods used",
+        "count": "{{count}} payments",
+        "method": {
+          "credit_card": "Credit card",
+          "debit_card": "Debit card",
+          "bank_transfer": "Bank transfer",
+          "knet": "KNET",
+          "paypal": "PayPal",
+          "cash": "Cash",
+          "cheque": "Cheque",
+          "standing_order": "Standing order",
+          "mobile_payment": "Mobile payment",
+          "other": "Other"
+        }
       },
       "stats": {
         "avgDuration": "Average sponsorship duration",
         "avgDurationHint": "From sponsorship start to cancellation.",
-        "conversion": "Conversion rate (visitor → donor)",
-        "conversionHint": "From site visit to first sponsorship payment.",
+        "avgDurationDays": "{{count}} days",
+        "conversion": "Donor activation rate",
+        "conversionHint": "Share of donors who created at least one sponsorship.",
         "reportRead": "Monthly report read rate",
         "reportReadHint": "Sponsors who open their orphan's monthly report."
       },
       "funnel": {
-        "title": "Visitor-to-sponsor conversion funnel"
+        "title": "Donor activation funnel",
+        "registered": "Registered donors",
+        "sponsored": "Created a sponsorship",
+        "active": "Active sponsorship"
       }
     },
     "settings": {

@@ -4558,6 +4558,24 @@ components:
       - payment_url
       title: PaymentInitiateResponse
       type: object
+    PaymentMethodSlice:
+      properties:
+        count:
+          title: Count
+          type: integer
+        method:
+          title: Method
+          type: string
+        total:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total
+          type: string
+      required:
+      - method
+      - count
+      - total
+      title: PaymentMethodSlice
+      type: object
     PaymentRead:
       properties:
         amount:
@@ -4873,6 +4891,38 @@ components:
       - items
       title: PlatformByOrg
       type: object
+    PlatformFunnel:
+      properties:
+        donors_with_active_sponsorship:
+          title: Donors With Active Sponsorship
+          type: integer
+        donors_with_sponsorship:
+          title: Donors With Sponsorship
+          type: integer
+        registered_donors:
+          title: Registered Donors
+          type: integer
+      required:
+      - registered_donors
+      - donors_with_sponsorship
+      - donors_with_active_sponsorship
+      title: PlatformFunnel
+      type: object
+    PlatformHeadline:
+      properties:
+        avg_sponsorship_duration_days:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Avg Sponsorship Duration Days
+        donor_conversion_rate:
+          title: Donor Conversion Rate
+          type: number
+      required:
+      - avg_sponsorship_duration_days
+      - donor_conversion_rate
+      title: PlatformHeadline
+      type: object
     PlatformMonthlyPoint:
       properties:
         month:
@@ -5163,6 +5213,17 @@ components:
           - type: 'null'
           title: Subscription Plan
       title: PlatformOrgUpdate
+      type: object
+    PlatformPaymentMethods:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PaymentMethodSlice'
+          title: Items
+          type: array
+      required:
+      - items
+      title: PlatformPaymentMethods
       type: object
     PlatformSettingsRead:
       properties:
@@ -11340,6 +11401,70 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Platform By Org
+      tags:
+      - stats
+  /api/v1/stats/platform/funnel:
+    get:
+      description: 'In-platform donor-activation funnel across ALL orgs: registered
+
+        donors → donors who created a sponsorship → donors with an active
+
+        sponsorship. Honest about what the data supports — there is no
+
+        visitor/lead stage because nothing tracks pre-registration. Cross-org
+
+        read gated to super_admin.'
+      operationId: platform_funnel_api_v1_stats_platform_funnel_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFunnel'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Platform Funnel
+      tags:
+      - stats
+  /api/v1/stats/platform/headline:
+    get:
+      description: "Two headline figures for the super-admin console:\n\n* average sponsorship duration (whole days) over\
+        \ sponsorships that have\n  already ended, and\n* the in-platform DONOR ACTIVATION rate — the share of (non-deleted)\n\
+        \  donors who created at least one sponsorship.\n\nThe activation rate is deliberately NOT a visitor→donor conversion:\
+        \ the\nplatform has no visitor/event tracking, so we only report behaviour we\ncan actually observe. Cross-org read\
+        \ gated to super_admin."
+      operationId: platform_headline_api_v1_stats_platform_headline_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHeadline'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Platform Headline
+      tags:
+      - stats
+  /api/v1/stats/platform/payment-methods:
+    get:
+      description: 'Completed payments grouped by payment method across ALL orgs: count
+
+        and summed amount per method, ordered by total descending. Cross-org
+
+        read gated to super_admin.'
+      operationId: platform_payment_methods_api_v1_stats_platform_payment_methods_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPaymentMethods'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Platform Payment Methods
       tags:
       - stats
   /api/v1/stats/platform/summary:
