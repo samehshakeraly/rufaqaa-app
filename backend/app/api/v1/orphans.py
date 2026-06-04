@@ -7,7 +7,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import func, or_, select, text
+from sqlalchemy import case, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
@@ -25,6 +25,7 @@ from app.schemas.orphan import (
     HealthStatus,
     OrphanCreate,
     OrphanRead,
+    OrphanSort,
     OrphanUpdate,
 )
 from app.schemas.timeline import Timeline, TimelineEvent
@@ -36,6 +37,48 @@ from app.services.orphans import (
 )
 
 router = APIRouter()
+
+
+def _resolve_order_by(sort: OrphanSort | None, q: str | None) -> list[Any]:
+    """Pick the ORDER BY for the staff orphan list, by precedence:
+
+    1. an explicit ``sort`` wins (even when ``q`` is present), then
+    2. relevance ordering when a search term ``q`` is supplied, else
+    3. newest first.
+
+    Every branch appends ``Orphan.id`` ascending as a final, stable tiebreaker
+    so offset pagination stays deterministic across pages.
+    """
+    tiebreaker = Orphan.id.asc()
+    if sort is not None:
+        if sort == "recently_available":
+            return [Orphan.available_since.desc().nulls_last(), tiebreaker]
+        if sort == "longest_waiting":
+            # Earliest into the available pool = waiting longest.
+            return [Orphan.available_since.asc().nulls_last(), tiebreaker]
+        if sort == "priority":
+            priority_rank = case(
+                (Orphan.priority_level == "urgent", 3),
+                (Orphan.priority_level == "high", 2),
+                else_=1,
+            )
+            return [
+                priority_rank.desc(),
+                Orphan.available_since.desc().nulls_last(),
+                tiebreaker,
+            ]
+        if sort == "most_complete":
+            return [Orphan.profile_completion_percentage.desc(), tiebreaker]
+        # sort == "newest"
+        return [Orphan.created_at.desc(), tiebreaker]
+    if q:
+        # Best full-text matches first when a query was supplied.
+        return [
+            text("ts_rank(search_vector, plainto_tsquery('simple', :q)) DESC").bindparams(q=q),
+            Orphan.created_at.desc(),
+            tiebreaker,
+        ]
+    return [Orphan.created_at.desc(), tiebreaker]
 
 
 @router.get("", response_model=Page[OrphanRead])
@@ -54,6 +97,7 @@ async def list_orphans(
     tags: Annotated[list[str] | None, Query()] = None,
     tags_mode: Literal["all", "any"] = "all",
     q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
+    sort: OrphanSort | None = None,
 ) -> Page[OrphanRead]:
     """List orphans, optionally filtered by case_status and a search term.
 
@@ -75,6 +119,12 @@ async def list_orphans(
     have memorised at least that many juz'. `tags` filters on the tag array:
     `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
     orphans sharing at least one (`&&`).
+
+    `sort` orders the result set. When omitted, ordering is automatic:
+    relevance (ts_rank) while a `q` search term is present, otherwise newest
+    first. Passing `sort` explicitly always wins — it overrides relevance even
+    when `q` is supplied (the `q` text-match WHERE clause still applies). See
+    :func:`_resolve_order_by` for each option's ORDER BY.
     """
     # Explicit org scope (defense-in-depth alongside RLS).
     stmt = select(Orphan).where(
@@ -110,8 +160,8 @@ async def list_orphans(
         )
     if q:
         # plainto_tsquery treats input as raw text and handles tokenisation,
-        # which is safer than letting users craft tsquery operators.
-        tsquery = func.plainto_tsquery("simple", q)
+        # which is safer than letting users craft tsquery operators. This WHERE
+        # clause always applies; only the ORDER BY (below) reacts to `sort`.
         like = f"%{q}%"
         stmt = stmt.where(
             or_(
@@ -121,16 +171,8 @@ async def list_orphans(
                 Orphan.family_name.ilike(like),
             )
         )
-        # Rank: best matches first when a query was supplied
-        stmt = stmt.order_by(
-            text("ts_rank(search_vector, plainto_tsquery('simple', :q)) DESC").bindparams(q=q),
-            Orphan.created_at.desc(),
-        )
-        # Avoid the "unused" warning about tsquery — it's still useful as a
-        # readable reference even though we use raw text() above.
-        _ = tsquery
-    else:
-        stmt = stmt.order_by(Orphan.created_at.desc())
+
+    stmt = stmt.order_by(*_resolve_order_by(sort, q))
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (await db.scalars(stmt.limit(limit).offset(offset))).all()

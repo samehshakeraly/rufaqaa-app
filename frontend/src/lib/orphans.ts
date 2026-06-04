@@ -16,6 +16,15 @@ export type HealthCoverage = "none" | "government" | "private" | "charity";
 export type MotherStatus = "alive" | "deceased" | "unknown";
 export type PriorityLevel = "normal" | "high" | "urgent";
 
+// Sort options for the staff orphan list. Mirrors the backend `OrphanSort`
+// Literal / schema.gen.ts. `balanced` is intentionally excluded (later batch).
+export type OrphanSort =
+  | "recently_available"
+  | "longest_waiting"
+  | "priority"
+  | "most_complete"
+  | "newest";
+
 export interface Orphan {
   id: string;
   code: string;
@@ -117,6 +126,9 @@ export async function listOrphans(params?: {
   tags?: string[];
   /** How to match `tags`: "all" requires every tag (@>), "any" an overlap (&&). */
   tags_mode?: "all" | "any";
+  /** Sort order. Omit to let the backend auto-pick (relevance while searching,
+   * else newest). */
+  sort?: OrphanSort;
 }): Promise<Page<Orphan>> {
   // Build the query string by hand so `tags` goes out as repeated entries
   // (?tags=a&tags=b) — FastAPI binds those to list[str]. Axios' default array

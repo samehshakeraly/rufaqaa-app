@@ -9057,7 +9057,18 @@ paths:
 
         `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
 
-        orphans sharing at least one (`&&`).'
+        orphans sharing at least one (`&&`).
+
+
+        `sort` orders the result set. When omitted, ordering is automatic:
+
+        relevance (ts_rank) while a `q` search term is present, otherwise newest
+
+        first. Passing `sort` explicitly always wins — it overrides relevance even
+
+        when `q` is supplied (the `q` text-match WHERE clause still applies). See
+
+        :func:`_resolve_order_by` for each option''s ORDER BY.'
       operationId: list_orphans_api_v1_orphans_get
       parameters:
       - in: query
@@ -9183,6 +9194,20 @@ paths:
             type: string
           - type: 'null'
           title: Q
+      - in: query
+        name: sort
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - recently_available
+            - longest_waiting
+            - priority
+            - most_complete
+            - newest
+            type: string
+          - type: 'null'
+          title: Sort
       responses:
         '200':
           content:

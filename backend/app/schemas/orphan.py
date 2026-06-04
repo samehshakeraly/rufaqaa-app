@@ -32,6 +32,16 @@ HealthCoverage = Literal["none", "government", "private", "charity"]
 MotherStatus = Literal["alive", "deceased", "unknown"]
 PriorityLevel = Literal["normal", "high", "urgent"]
 
+# Sort options for the staff orphan list (GET /orphans). ``balanced`` is
+# intentionally excluded here — it lands in a later batch.
+OrphanSort = Literal[
+    "recently_available",
+    "longest_waiting",
+    "priority",
+    "most_complete",
+    "newest",
+]
+
 
 class OrphanBase(BaseModel):
     first_name: str = Field(min_length=1, max_length=100)

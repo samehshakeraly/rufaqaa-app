@@ -27,6 +27,7 @@ describe("listOrphans query serialization", () => {
       education_stage: "primary",
       tags: ["top_student", "needs_glasses"],
       tags_mode: "any",
+      sort: "priority",
       q: undefined,
     });
 
@@ -40,6 +41,7 @@ describe("listOrphans query serialization", () => {
     expect(params.get("min_juz")).toBe("5");
     expect(params.get("education_stage")).toBe("primary");
     expect(params.get("tags_mode")).toBe("any");
+    expect(params.get("sort")).toBe("priority");
     // Undefined keys are dropped, not sent as "undefined".
     expect(params.has("q")).toBe(false);
   });

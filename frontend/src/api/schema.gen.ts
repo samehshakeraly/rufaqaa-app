@@ -1442,6 +1442,12 @@ export interface paths {
          *     have memorised at least that many juz'. `tags` filters on the tag array:
          *     `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
          *     orphans sharing at least one (`&&`).
+         *
+         *     `sort` orders the result set. When omitted, ordering is automatic:
+         *     relevance (ts_rank) while a `q` search term is present, otherwise newest
+         *     first. Passing `sort` explicitly always wins — it overrides relevance even
+         *     when `q` is supplied (the `q` text-match WHERE clause still applies). See
+         *     :func:`_resolve_order_by` for each option's ORDER BY.
          */
         get: operations["list_orphans_api_v1_orphans_get"];
         put?: never;
@@ -8451,6 +8457,7 @@ export interface operations {
                 tags?: string[] | null;
                 tags_mode?: "all" | "any";
                 q?: string | null;
+                sort?: ("recently_available" | "longest_waiting" | "priority" | "most_complete" | "newest") | null;
             };
             header?: never;
             path?: never;
