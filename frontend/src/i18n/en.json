@@ -1303,6 +1303,10 @@
       "minJuz": "Min. juz",
       "tags": "Tags",
       "tagsMode": "Tag match",
+      "orphanType": "Orphan type",
+      "priority": "Priority",
+      "minWaitingDays": "Min. waiting days",
+      "minCompletion": "Min. completion %",
       "all": "All",
       "isHafizOptions": {
         "all": "All",
@@ -1312,6 +1316,10 @@
       "tagsModeOptions": {
         "all": "Match all",
         "any": "Match any"
+      },
+      "orphanTypeOptions": {
+        "single": "Single (father)",
+        "double": "Double (both parents)"
       }
     },
     "sort": {

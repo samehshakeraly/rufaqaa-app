@@ -1443,6 +1443,16 @@ export interface paths {
          *     `tags_mode="all"` requires every supplied tag (`@>`), `"any"` matches
          *     orphans sharing at least one (`&&`).
          *
+         *     Advanced filters (staff surface): `orphan_type` is derived from
+         *     `mother_status` — "single" keeps father-only orphans (mother alive),
+         *     "double" keeps double orphans (mother deceased). There is no explicit
+         *     value for an unknown mother status, so those orphans surface only when
+         *     `orphan_type` is omitted. `priority` matches `priority_level` exactly.
+         *     `min_waiting_days` keeps orphans that have spent at least that many days
+         *     in the available pool (rows with a NULL `available_since` are excluded).
+         *     `min_completion` keeps orphans whose `profile_completion_percentage` is at
+         *     least the supplied value (0–100).
+         *
          *     `sort` orders the result set. When omitted, ordering is automatic:
          *     relevance (ts_rank) while a `q` search term is present, otherwise newest
          *     first. Passing `sort` explicitly always wins — it overrides relevance even
@@ -8456,6 +8466,10 @@ export interface operations {
                 min_juz?: number | null;
                 tags?: string[] | null;
                 tags_mode?: "all" | "any";
+                orphan_type?: ("single" | "double") | null;
+                priority?: ("normal" | "high" | "urgent") | null;
+                min_waiting_days?: number | null;
+                min_completion?: number | null;
                 q?: string | null;
                 sort?: ("recently_available" | "longest_waiting" | "priority" | "most_complete" | "newest") | null;
             };
