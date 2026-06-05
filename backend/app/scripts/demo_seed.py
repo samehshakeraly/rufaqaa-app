@@ -38,6 +38,7 @@ from app.models.donor import Donor
 from app.models.family import Family, Guardian
 from app.models.organization import Organization
 from app.models.orphan import Orphan
+from app.models.orphanage import Orphanage
 from app.models.partner import MarketingChannel, PartnerOrganization
 from app.models.payment import Payment
 from app.models.report import OrphanReport
@@ -105,6 +106,14 @@ PARTNER_FIXTURES: list[dict[str, str]] = [
         "contact_person": "علي المقطري",
         "contact_email": "info@khair-ye.example",
         "contact_phone": "+967711234567",
+    },
+    {
+        "name_ar": "العون المباشر كينيا",
+        "name_en": "Direct Aid Kenya",
+        "country_code": "KE",
+        "contact_person": "جمال عبدالله",
+        "contact_email": "info@directaid-ke.example",
+        "contact_phone": "+254712345678",
     },
 ]
 
@@ -351,6 +360,10 @@ async def _wipe_demo() -> None:
         await db.execute(delete(Sponsorship).where(Sponsorship.code.like("KAF-DEMO%")))
         # 9. Orphans
         await db.execute(delete(Orphan).where(Orphan.code.like("ORF-DEMO%")))
+        # 9b. Orphanages — ordered AFTER orphans (orphans.orphanage_id →
+        #     orphanages) and BEFORE partner orgs (orphanages.partner_
+        #     organization_id → partner_organizations).
+        await db.execute(delete(Orphanage).where(Orphanage.code.like("DAR-DEMO%")))
         # 10. Guardians
         await db.execute(
             text(
@@ -386,6 +399,7 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
         "families": 0,
         "guardians": 0,
         "orphans": 0,
+        "orphanages": 0,
         "donors": 0,
         "sponsorships": 0,
         "payments": 0,
@@ -399,6 +413,18 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
     now = datetime.now(UTC)
 
     async with make_session() as db:
+        # Kenya (KE) is not in the base-seeded countries, but the KE partner +
+        # dar below FK to it. Insert it idempotently as reference data — the
+        # wipe block deliberately leaves it in place.
+        await db.execute(
+            text(
+                "INSERT INTO countries "
+                "(code_alpha2, code_alpha3, name_ar, name_en, flag_emoji, phone_code) "
+                "VALUES ('KE','KEN','كينيا','Kenya','🇰🇪','+254') "
+                "ON CONFLICT (code_alpha2) DO NOTHING"
+            )
+        )
+
         # Marker — sentinel donor for the idempotency check
         db.add(
             Donor(
@@ -581,6 +607,28 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
             db.add(o)
             orphans.append(o)
         counts["orphans"] = len(orphans)
+
+        # ── Orphanage (dar) — the Kenya partner runs a resident institution ─
+        # Pin a few of its orphans there as residents. Flush first so we have
+        # orphanage.id, then set it on the residents (UPDATEd on the final
+        # commit). family_id stays set too — family + dar coexist by design.
+        kenya_partner = next(p for p in partners if p.country_code == "KE")
+        orphanage = Orphanage(
+            organization_id=org_id,
+            partner_organization_id=kenya_partner.id,
+            code=_code("DAR"),
+            name_ar="دار أيتام المتميّزين",
+            name_en="Al-Mutamayyizin Orphanage",
+            country_code="KE",
+            city="نيروبي",
+            status="active",
+        )
+        db.add(orphanage)
+        await db.flush()  # populate orphanage.id
+        residents = [o for o in orphans if o.partner_organization_id == kenya_partner.id][:3]
+        for o in residents:
+            o.orphanage_id = orphanage.id
+        counts["orphanages"] = 1
 
         # ── Donors (15) ──────────────────────────────────────────────────
         donors: list[Donor] = []
@@ -943,6 +991,7 @@ async def main(force: bool) -> None:
         f"{counts['families']} families, "
         f"{counts['guardians']} guardians, "
         f"{counts['orphans']} orphans, "
+        f"{counts['orphanages']} orphanages, "
         f"{counts['donors']} donors, "
         f"{counts['sponsorships']} sponsorships, "
         f"{counts['payments']} payments, "
