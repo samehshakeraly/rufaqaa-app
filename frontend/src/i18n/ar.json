@@ -3393,18 +3393,35 @@
         "partners": "{{count}} جهات شريكة"
       },
       "paymentMethods": {
-        "title": "وسائل الدفع المستخدَمة"
+        "title": "وسائل الدفع المستخدَمة",
+        "count": "{{count}} دفعة",
+        "method": {
+          "credit_card": "بطاقة ائتمان",
+          "debit_card": "بطاقة خصم",
+          "bank_transfer": "تحويل بنكي",
+          "knet": "كي نت",
+          "paypal": "باي بال",
+          "cash": "نقداً",
+          "cheque": "شيك",
+          "standing_order": "أمر دفع دائم",
+          "mobile_payment": "دفع عبر الجوال",
+          "other": "أخرى"
+        }
       },
       "stats": {
         "avgDuration": "متوسّط مدّة الكفالة",
         "avgDurationHint": "من تاريخ بدء الكفالة إلى إلغائها.",
-        "conversion": "معدّل التحويل (زائر → كفيل)",
-        "conversionHint": "من زيارة الموقع إلى أوّل دفعة كفالة.",
+        "avgDurationDays": "{{count}} يوم",
+        "conversion": "معدّل تفعيل المتبرّعين",
+        "conversionHint": "نسبة المتبرّعين الذين أنشأوا كفالة واحدة على الأقل.",
         "reportRead": "معدّل قراءة التقارير الشهرية",
         "reportReadHint": "نسبة الكفلاء الذين يفتحون تقرير يتيمهم الشهري."
       },
       "funnel": {
-        "title": "مسار التحويل من زائر إلى كفيل"
+        "title": "مسار تفعيل المتبرّع",
+        "registered": "متبرّعون مسجَّلون",
+        "sponsored": "أنشأوا كفالة",
+        "active": "كفالة نشطة"
       }
     },
     "settings": {

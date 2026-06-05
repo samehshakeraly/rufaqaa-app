@@ -142,6 +142,35 @@ class PlatformByOrg(BaseModel):
     items: list[OrgRanking]
 
 
+class PlatformHeadline(BaseModel):
+    # AVG(end_date - start_date) over ended sponsorships, whole days; None
+    # when no sponsorship has ended yet.
+    avg_sponsorship_duration_days: int | None
+    # In-platform DONOR ACTIVATION: share of non-deleted donors that created
+    # at least one sponsorship. 0..1; 0.0 when there are no donors. This is
+    # NOT a visitor→donor figure — the platform has no visitor tracking.
+    donor_conversion_rate: float
+
+
+class PlatformFunnel(BaseModel):
+    # Honest in-platform donor-activation funnel (registered → sponsored →
+    # active). No visitor/event source exists, so the funnel starts at the
+    # registered donor, not a site visit.
+    registered_donors: int
+    donors_with_sponsorship: int
+    donors_with_active_sponsorship: int
+
+
+class PaymentMethodSlice(BaseModel):
+    method: str
+    count: int
+    total: Decimal
+
+
+class PlatformPaymentMethods(BaseModel):
+    items: list[PaymentMethodSlice]
+
+
 # ── Platform settings ────────────────────────────────────────────────
 
 

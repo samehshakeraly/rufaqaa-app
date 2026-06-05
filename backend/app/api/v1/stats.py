@@ -26,8 +26,12 @@ from app.models.user import User
 from app.schemas.platform import (
     CurrencyTotal,
     OrgRanking,
+    PaymentMethodSlice,
     PlatformByOrg,
+    PlatformFunnel,
+    PlatformHeadline,
     PlatformMonthlyPoint,
+    PlatformPaymentMethods,
     PlatformSummary,
     PlatformTimeseries,
 )
@@ -358,4 +362,90 @@ async def platform_by_org(
             )
             for r in rows
         ],
+    )
+
+
+@router.get("/platform/headline", response_model=PlatformHeadline)
+async def platform_headline(db: DbSession, _admin: SuperAdmin) -> PlatformHeadline:
+    """Two headline figures for the super-admin console:
+
+    * average sponsorship duration (whole days) over sponsorships that have
+      already ended, and
+    * the in-platform DONOR ACTIVATION rate — the share of (non-deleted)
+      donors who created at least one sponsorship.
+
+    The activation rate is deliberately NOT a visitor→donor conversion: the
+    platform has no visitor/event tracking, so we only report behaviour we
+    can actually observe. Cross-org read gated to super_admin.
+    """
+    # `end_date - start_date` is integer days in Postgres; AVG yields a
+    # Decimal we round to whole days. NULL (no ended sponsorships) → None.
+    avg_days = await db.scalar(
+        select(func.avg(Sponsorship.end_date - Sponsorship.start_date)).where(
+            Sponsorship.end_date.is_not(None)
+        )
+    )
+    total_donors = (
+        await db.scalar(select(func.count(Donor.id)).where(Donor.deleted_at.is_(None))) or 0
+    )
+    donors_with_sponsorship = (
+        await db.scalar(select(func.count(Sponsorship.donor_id.distinct()))) or 0
+    )
+
+    return PlatformHeadline(
+        avg_sponsorship_duration_days=(int(round(avg_days)) if avg_days is not None else None),
+        donor_conversion_rate=(donors_with_sponsorship / total_donors if total_donors else 0.0),
+    )
+
+
+@router.get("/platform/funnel", response_model=PlatformFunnel)
+async def platform_funnel(db: DbSession, _admin: SuperAdmin) -> PlatformFunnel:
+    """In-platform donor-activation funnel across ALL orgs: registered
+    donors → donors who created a sponsorship → donors with an active
+    sponsorship. Honest about what the data supports — there is no
+    visitor/lead stage because nothing tracks pre-registration. Cross-org
+    read gated to super_admin."""
+    registered_donors = (
+        await db.scalar(select(func.count(Donor.id)).where(Donor.deleted_at.is_(None))) or 0
+    )
+    donors_with_sponsorship = (
+        await db.scalar(select(func.count(Sponsorship.donor_id.distinct()))) or 0
+    )
+    donors_with_active_sponsorship = (
+        await db.scalar(
+            select(func.count(Sponsorship.donor_id.distinct())).where(
+                Sponsorship.status == "active"
+            )
+        )
+        or 0
+    )
+    return PlatformFunnel(
+        registered_donors=int(registered_donors),
+        donors_with_sponsorship=int(donors_with_sponsorship),
+        donors_with_active_sponsorship=int(donors_with_active_sponsorship),
+    )
+
+
+@router.get("/platform/payment-methods", response_model=PlatformPaymentMethods)
+async def platform_payment_methods(db: DbSession, _admin: SuperAdmin) -> PlatformPaymentMethods:
+    """Completed payments grouped by payment method across ALL orgs: count
+    and summed amount per method, ordered by total descending. Cross-org
+    read gated to super_admin."""
+    rows = (
+        await db.execute(
+            select(
+                Payment.payment_method,
+                func.count(Payment.id),
+                func.coalesce(func.sum(Payment.amount), 0),
+            )
+            .where(Payment.status == "completed")
+            .group_by(Payment.payment_method)
+            .order_by(func.coalesce(func.sum(Payment.amount), 0).desc())
+        )
+    ).all()
+    return PlatformPaymentMethods(
+        items=[
+            PaymentMethodSlice(method=str(r[0]), count=int(r[1]), total=Decimal(r[2] or 0))
+            for r in rows
+        ]
     )

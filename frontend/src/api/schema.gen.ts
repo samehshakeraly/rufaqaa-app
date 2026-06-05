@@ -2367,6 +2367,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stats/platform/funnel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform Funnel
+         * @description In-platform donor-activation funnel across ALL orgs: registered
+         *     donors → donors who created a sponsorship → donors with an active
+         *     sponsorship. Honest about what the data supports — there is no
+         *     visitor/lead stage because nothing tracks pre-registration. Cross-org
+         *     read gated to super_admin.
+         */
+        get: operations["platform_funnel_api_v1_stats_platform_funnel_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stats/platform/headline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform Headline
+         * @description Two headline figures for the super-admin console:
+         *
+         *     * average sponsorship duration (whole days) over sponsorships that have
+         *       already ended, and
+         *     * the in-platform DONOR ACTIVATION rate — the share of (non-deleted)
+         *       donors who created at least one sponsorship.
+         *
+         *     The activation rate is deliberately NOT a visitor→donor conversion: the
+         *     platform has no visitor/event tracking, so we only report behaviour we
+         *     can actually observe. Cross-org read gated to super_admin.
+         */
+        get: operations["platform_headline_api_v1_stats_platform_headline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stats/platform/payment-methods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Platform Payment Methods
+         * @description Completed payments grouped by payment method across ALL orgs: count
+         *     and summed amount per method, ordered by total descending. Cross-org
+         *     read gated to super_admin.
+         */
+        get: operations["platform_payment_methods_api_v1_stats_platform_payment_methods_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/stats/platform/summary": {
         parameters: {
             query?: never;
@@ -4947,6 +5022,15 @@ export interface components {
             /** Payment Url */
             payment_url: string;
         };
+        /** PaymentMethodSlice */
+        PaymentMethodSlice: {
+            /** Count */
+            count: number;
+            /** Method */
+            method: string;
+            /** Total */
+            total: string;
+        };
         /** PaymentRead */
         PaymentRead: {
             /** Amount */
@@ -5100,6 +5184,22 @@ export interface components {
             items: components["schemas"]["OrgRanking"][];
             /** Limit */
             limit: number;
+        };
+        /** PlatformFunnel */
+        PlatformFunnel: {
+            /** Donors With Active Sponsorship */
+            donors_with_active_sponsorship: number;
+            /** Donors With Sponsorship */
+            donors_with_sponsorship: number;
+            /** Registered Donors */
+            registered_donors: number;
+        };
+        /** PlatformHeadline */
+        PlatformHeadline: {
+            /** Avg Sponsorship Duration Days */
+            avg_sponsorship_duration_days: number | null;
+            /** Donor Conversion Rate */
+            donor_conversion_rate: number;
         };
         /** PlatformMonthlyPoint */
         PlatformMonthlyPoint: {
@@ -5290,6 +5390,11 @@ export interface components {
             subscription_expires_at?: string | null;
             /** Subscription Plan */
             subscription_plan?: string | null;
+        };
+        /** PlatformPaymentMethods */
+        PlatformPaymentMethods: {
+            /** Items */
+            items: components["schemas"]["PaymentMethodSlice"][];
         };
         /** PlatformSettingsRead */
         PlatformSettingsRead: {
@@ -10314,6 +10419,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    platform_funnel_api_v1_stats_platform_funnel_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformFunnel"];
+                };
+            };
+        };
+    };
+    platform_headline_api_v1_stats_platform_headline_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformHeadline"];
+                };
+            };
+        };
+    };
+    platform_payment_methods_api_v1_stats_platform_payment_methods_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlatformPaymentMethods"];
                 };
             };
         };

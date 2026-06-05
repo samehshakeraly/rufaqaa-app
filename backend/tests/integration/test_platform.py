@@ -263,6 +263,54 @@ async def test_platform_stats_aggregate_across_orgs(
     assert "months" in ts.json()
 
 
+async def test_platform_headline_funnel_payment_methods(
+    api: AsyncClient, super_admin_headers: dict[str, str]
+) -> None:
+    """The three analytics-gap endpoints return 200 with the documented
+    shape for super_admin. We seed a donor + completed credit_card payment
+    so the donor and payment-method aggregates have something to surface."""
+    org_id = await _dev_org_id()
+    await _seed_org_donation(org_id, Decimal("75.50"), "KWD")
+
+    # Headline: avg sponsorship duration (whole days or null) + donor
+    # activation rate (in-platform, 0..1 — NOT visitor→donor).
+    headline = await api.get("/api/v1/stats/platform/headline", headers=super_admin_headers)
+    assert headline.status_code == 200, headline.text
+    h = headline.json()
+    assert set(h) == {"avg_sponsorship_duration_days", "donor_conversion_rate"}
+    assert h["avg_sponsorship_duration_days"] is None or isinstance(
+        h["avg_sponsorship_duration_days"], int
+    )
+    assert isinstance(h["donor_conversion_rate"], int | float)
+    assert 0.0 <= h["donor_conversion_rate"] <= 1.0
+
+    # Funnel: registered → sponsored → active, each a plain count.
+    funnel = await api.get("/api/v1/stats/platform/funnel", headers=super_admin_headers)
+    assert funnel.status_code == 200, funnel.text
+    f = funnel.json()
+    assert set(f) == {
+        "registered_donors",
+        "donors_with_sponsorship",
+        "donors_with_active_sponsorship",
+    }
+    assert all(isinstance(v, int) for v in f.values())
+    assert f["registered_donors"] >= 1  # the donor we just seeded
+    # Active sponsors are a subset of donors who ever created a sponsorship.
+    assert f["donors_with_active_sponsorship"] <= f["donors_with_sponsorship"]
+
+    # Payment methods: one slice per completed-payment method.
+    methods = await api.get("/api/v1/stats/platform/payment-methods", headers=super_admin_headers)
+    assert methods.status_code == 200, methods.text
+    m = methods.json()
+    assert "items" in m
+    for item in m["items"]:
+        assert set(item) == {"method", "count", "total"}
+    cc = [it for it in m["items"] if it["method"] == "credit_card"]
+    assert cc, "the seeded completed credit_card payment must appear"
+    assert cc[0]["count"] >= 1
+    assert Decimal(cc[0]["total"]) >= Decimal("75.50")
+
+
 # ── platform settings ────────────────────────────────────────────────
 
 
@@ -321,6 +369,9 @@ _PLATFORM_ROUTES = [
     ("get", "/api/v1/stats/platform/summary", None),
     ("get", "/api/v1/stats/platform/timeseries", None),
     ("get", "/api/v1/stats/platform/by-org", None),
+    ("get", "/api/v1/stats/platform/headline", None),
+    ("get", "/api/v1/stats/platform/funnel", None),
+    ("get", "/api/v1/stats/platform/payment-methods", None),
 ]
 
 
