@@ -29,8 +29,11 @@ import "./PlatformOrganizationsPage.css";
  * content area only. All cross-org reads/writes go through the existing
  * super-admin-gated `/platform/*` endpoints.
  *
+ * Server-driven: search, the plan <select>, and the sortable column headers
+ * all round-trip to the API (the status tabs filter the loaded set client-side).
+ *
  * Inert / not-yet-sourced (TODO(backend)):
- *   - Export, advanced filter / columns / sort toolbar buttons
+ *   - Export toolbar button (no organizations export endpoint)
  *   - "Monthly donations" column (no per-org donations field) → donors used
  */
 
@@ -55,15 +58,6 @@ const ICONS = {
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </>
   ),
-  filter: <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />,
-  columns: (
-    <>
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-    </>
-  ),
-  sort: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
   download: (
     <>
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -120,6 +114,48 @@ function initials(name: string): string {
   return name.slice(0, 2);
 }
 
+type SortOrder = "asc" | "desc";
+interface SortState {
+  field: string;
+  order: SortOrder;
+}
+
+/**
+ * A sortable column header: clickable, toggles asc/desc on repeat click, and
+ * exposes aria-sort plus a visual (▲/▼) + localized-tooltip direction hint.
+ * The non-sortable "Actions" column stays a plain <th>.
+ */
+function SortableTh({
+  field,
+  label,
+  sort,
+  onSort,
+}: {
+  field: string;
+  label: string;
+  sort: SortState;
+  onSort: (field: string) => void;
+}) {
+  const { t } = useTranslation();
+  const active = sort.field === field;
+  const ariaSort = active ? (sort.order === "asc" ? "ascending" : "descending") : "none";
+  return (
+    <th scope="col" aria-sort={ariaSort}>
+      <button
+        type="button"
+        className={`sa-th-sort${active ? " active" : ""}`}
+        onClick={() => onSort(field)}
+        title={active ? t(`platform.orgs.sort.${sort.order}`) : undefined}
+      >
+        <span>{label}</span>
+        <span className="sa-sort-ind" aria-hidden="true">
+          {active ? (sort.order === "asc" ? "▲" : "▼") : "↕"}
+        </span>
+      </button>
+    </th>
+  );
+}
+
 export function PlatformOrganizationsPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
@@ -127,17 +163,34 @@ export function PlatformOrganizationsPage() {
 
   const [tab, setTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
+  const [plan, setPlan] = useState("");
+  const [sort, setSort] = useState<SortState>({ field: "created_at", order: "desc" });
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<PlatformOrgSummary | null>(null);
   const [suspending, setSuspending] = useState<PlatformOrgSummary | null>(null);
   const [activating, setActivating] = useState<PlatformOrgSummary | null>(null);
 
-  const params = { ...(search.trim() ? { search: search.trim() } : {}) };
+  // sort.field / sort.order / plan all round-trip to the server; keeping them
+  // in `params` (and thus the queryKey) makes any change refetch.
+  const params = {
+    ...(search.trim() ? { search: search.trim() } : {}),
+    ...(plan ? { plan } : {}),
+    sort: sort.field,
+    order: sort.order,
+  };
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["platform", "organizations", params],
     queryFn: () => listPlatformOrganizations(params),
   });
+
+  // Click a header to sort by it (ascending); click the active one to flip.
+  const onSort = (field: string) =>
+    setSort((s) =>
+      s.field === field
+        ? { field, order: s.order === "asc" ? "desc" : "asc" }
+        : { field, order: "asc" },
+    );
 
   const invalidate = () =>
     qc.invalidateQueries({ queryKey: ["platform"], exact: false });
@@ -158,6 +211,19 @@ export function PlatformOrganizationsPage() {
     () => (data ?? []).filter((o) => tab === "all" || o.status === tab),
     [data, tab],
   );
+
+  // Plan <select> options are the DISTINCT plans present in the loaded rows
+  // (the column is free-text — no enum to hardcode). The active plan is kept
+  // in the list even when the server-filtered result set collapses to it.
+  const planOptions = useMemo(() => {
+    const seen = new Set<string>();
+    for (const o of data ?? []) if (o.subscription_plan) seen.add(o.subscription_plan);
+    if (plan) seen.add(plan);
+    return [...seen].sort();
+  }, [data, plan]);
+
+  // The organization column sorts by the name shown for the current locale.
+  const orgSortField = isAr ? "name_ar" : "name_en";
 
   const activeCount = counts.active ?? 0;
   const pendingCount = counts.pending_approval ?? 0;
@@ -222,15 +288,21 @@ export function PlatformOrganizationsPage() {
             aria-label={t("platform.orgs.filters.search")}
           />
         </div>
-        {/* TODO(backend): advanced filter / columns / sort have no API source. */}
-        <button type="button" className="sa-filter-btn" disabled aria-disabled="true">
-          <Icon>{ICONS.filter}</Icon>
-          {t("platform.orgs.toolbar.filter")}
-        </button>
-        <button type="button" className="sa-filter-btn" disabled aria-disabled="true">
-          <Icon>{ICONS.sort}</Icon>
-          {t("platform.orgs.toolbar.sort")}
-        </button>
+        {/* Plan filter — distinct plans from the loaded data, wired to the
+            server `plan` param; "All plans" clears it. */}
+        <select
+          className="sa-filter-select"
+          value={plan}
+          onChange={(e) => setPlan(e.target.value)}
+          aria-label={t("platform.orgs.toolbar.plan")}
+        >
+          <option value="">{t("platform.orgs.plan.all")}</option>
+          {planOptions.map((p) => (
+            <option key={p} value={p}>
+              {p === "free" ? t("platform.orgs.plan.free") : p}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* ── Table ──────────────────────────────────────────────────── */}
@@ -245,13 +317,48 @@ export function PlatformOrganizationsPage() {
               <caption>{t("platform.orgs.title")}</caption>
               <thead>
                 <tr>
-                  <th scope="col">{t("platform.orgs.cols.organization")}</th>
-                  <th scope="col">{t("platform.orgs.cols.country")}</th>
-                  <th scope="col">{t("platform.orgs.cols.plan")}</th>
-                  <th scope="col">{t("platform.orgs.cols.status")}</th>
-                  <th scope="col">{t("platform.orgs.cols.orphans")}</th>
-                  <th scope="col">{t("platform.orgs.cols.donors")}</th>
-                  <th scope="col">{t("platform.orgs.cols.createdAt")}</th>
+                  <SortableTh
+                    field={orgSortField}
+                    label={t("platform.orgs.cols.organization")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <SortableTh
+                    field="country"
+                    label={t("platform.orgs.cols.country")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <SortableTh
+                    field="plan"
+                    label={t("platform.orgs.cols.plan")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <SortableTh
+                    field="status"
+                    label={t("platform.orgs.cols.status")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <SortableTh
+                    field="orphans"
+                    label={t("platform.orgs.cols.orphans")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <SortableTh
+                    field="donors"
+                    label={t("platform.orgs.cols.donors")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <SortableTh
+                    field="created_at"
+                    label={t("platform.orgs.cols.createdAt")}
+                    sort={sort}
+                    onSort={onSort}
+                  />
                   <th scope="col" className="sa-th-end">
                     {t("platform.orgs.cols.actions")}
                   </th>

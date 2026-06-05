@@ -10313,7 +10313,14 @@ paths:
 
         is an intentional cross-tenant read gated to super_admin). Tenant
 
-        counts are joined in via grouped subqueries to avoid N+1.'
+        counts are joined in via grouped subqueries to avoid N+1.
+
+
+        `sort`/`order` apply a server-side, whitelisted sort (default
+
+        created_at desc); `plan` narrows to a single subscription plan. The
+
+        status / country / search filters are unchanged.'
       operationId: list_organizations_api_v1_platform_organizations_get
       parameters:
       - in: query
@@ -10340,6 +10347,42 @@ paths:
           - type: string
           - type: 'null'
           title: Search
+      - in: query
+        name: plan
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Plan
+      - in: query
+        name: sort
+        required: false
+        schema:
+          default: created_at
+          enum:
+          - created_at
+          - code
+          - name_ar
+          - name_en
+          - country
+          - status
+          - plan
+          - orphans
+          - donors
+          - sponsorships
+          title: Sort
+          type: string
+      - in: query
+        name: order
+        required: false
+        schema:
+          default: desc
+          enum:
+          - asc
+          - desc
+          title: Order
+          type: string
       responses:
         '200':
           content:

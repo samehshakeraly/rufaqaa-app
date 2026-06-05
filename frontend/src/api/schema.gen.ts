@@ -1886,6 +1886,10 @@ export interface paths {
          * @description List ALL organizations across the platform (no org filter — this
          *     is an intentional cross-tenant read gated to super_admin). Tenant
          *     counts are joined in via grouped subqueries to avoid N+1.
+         *
+         *     `sort`/`order` apply a server-side, whitelisted sort (default
+         *     created_at desc); `plan` narrows to a single subscription plan. The
+         *     status / country / search filters are unchanged.
          */
         get: operations["list_organizations_api_v1_platform_organizations_get"];
         put?: never;
@@ -9462,6 +9466,9 @@ export interface operations {
                 status?: string | null;
                 country?: string | null;
                 search?: string | null;
+                plan?: string | null;
+                sort?: "created_at" | "code" | "name_ar" | "name_en" | "country" | "status" | "plan" | "orphans" | "donors" | "sponsorships";
+                order?: "asc" | "desc";
             };
             header?: never;
             path?: never;
