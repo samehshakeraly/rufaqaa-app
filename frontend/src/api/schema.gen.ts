@@ -4422,6 +4422,8 @@ export interface components {
             mother_status: "alive" | "deceased" | "unknown";
             /** Nationality */
             nationality?: string | null;
+            /** Orphanage Id */
+            orphanage_id?: string | null;
             /**
              * Partner Organization Id
              * Format: uuid
@@ -4626,6 +4628,8 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Orphanage Id */
+            orphanage_id: string | null;
             /**
              * Partner Organization Id
              * Format: uuid
@@ -4714,6 +4718,8 @@ export interface components {
             mother_status?: ("alive" | "deceased" | "unknown") | null;
             /** Nationality */
             nationality?: string | null;
+            /** Orphanage Id */
+            orphanage_id?: string | null;
             /** Priority Level */
             priority_level?: ("normal" | "high" | "urgent") | null;
             /** Quran Juz Memorized */

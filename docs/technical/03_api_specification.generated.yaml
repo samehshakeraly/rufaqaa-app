@@ -3233,6 +3233,12 @@ components:
             type: string
           - type: 'null'
           title: Nationality
+        orphanage_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphanage Id
         partner_organization_id:
           format: uuid
           title: Partner Organization Id
@@ -3610,6 +3616,12 @@ components:
           format: uuid
           title: Organization Id
           type: string
+        orphanage_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphanage Id
         partner_organization_id:
           format: uuid
           title: Partner Organization Id
@@ -3659,6 +3671,7 @@ components:
       - organization_id
       - partner_organization_id
       - family_id
+      - orphanage_id
       - case_status
       - is_sponsored
       - current_balance
@@ -3837,6 +3850,12 @@ components:
             type: string
           - type: 'null'
           title: Nationality
+        orphanage_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphanage Id
         priority_level:
           anyOf:
           - enum:

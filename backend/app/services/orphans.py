@@ -31,6 +31,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.orphan import Orphan
+from app.models.orphanage import Orphanage
 from app.models.user import User
 from app.schemas.orphan import OrphanCreateFields
 from app.services.audit import record_audit
@@ -106,6 +107,30 @@ def _duplicate_detail(existing_code: str | None) -> str:
     return f"{detail} ({existing_code})" if existing_code else detail
 
 
+async def _assert_orphanage_in_org(
+    db: AsyncSession, orphanage_id: UUID, organization_id: UUID
+) -> None:
+    """Reject an ``orphanage_id`` that does not belong to ``organization_id``.
+
+    Mirrors the org-scoped select in ``api/v1/orphanages.py``. We validate
+    explicitly (400) instead of trusting RLS: a Postgres superuser connection
+    bypasses RLS, so a cross-org id would otherwise be silently accepted and an
+    orphan would end up pointing at another tenant's dar. Shared by the create
+    service and ``update_orphan``.
+    """
+    owned = await db.scalar(
+        select(Orphanage.id).where(
+            Orphanage.id == orphanage_id,
+            Orphanage.organization_id == organization_id,
+        )
+    )
+    if owned is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="orphanage_id does not reference an orphanage in this organization",
+        )
+
+
 async def create_orphan_record(
     db: AsyncSession,
     *,
@@ -114,6 +139,7 @@ async def create_orphan_record(
     partner_organization_id: UUID,
     family_id: UUID | None,
     via: str,
+    orphanage_id: UUID | None = None,
 ) -> Orphan:
     """Insert an orphan and commit, returning the persisted row.
 
@@ -121,8 +147,15 @@ async def create_orphan_record(
     default), so it rides the existing supervisor approve/reject workflow.
     ``via`` ("staff" | "guardian_self") is recorded on the audit row.
 
-    Raises ``409`` if it would violate the no-duplicate rule.
+    Raises ``409`` if it would violate the no-duplicate rule, or ``400`` if a
+    cross-org ``orphanage_id`` is supplied.
     """
+    # Staff may pin the child to a dar at creation. Validate ownership before
+    # anything else so a cross-org id fails fast with a clean 400. The guardian
+    # self-service caller never passes orphanage_id, so this is a no-op there.
+    if orphanage_id is not None:
+        await _assert_orphanage_in_org(db, orphanage_id, user.organization_id)
+
     # Friendly pre-check: the DB unique index is the real guard, but looking up
     # the conflicting row first lets us return a clear 409 with the existing
     # code. Runs in the request's RLS org context, so it is org-scoped.
@@ -137,6 +170,7 @@ async def create_orphan_record(
         organization_id=user.organization_id,
         partner_organization_id=partner_organization_id,
         family_id=family_id,
+        orphanage_id=orphanage_id,
         code=generate_code("ORF"),
         first_name=data.first_name,
         middle_name=data.middle_name,
