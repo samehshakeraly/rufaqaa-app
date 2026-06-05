@@ -8,6 +8,7 @@ erDiagram
     organizations ||--o{ partner_organizations : "has"
     organizations ||--o{ marketing_channels : "has"
     organizations ||--o{ orphans : "manages"
+    organizations ||--o{ orphanages : "operates"
     organizations ||--o{ donors : "has"
     organizations ||--o{ sponsorships : "manages"
     organizations ||--o{ payments : "tracks"
@@ -23,7 +24,10 @@ erDiagram
     families ||--o{ orphans : "contains"
     families ||--o{ guardians : "has"
     
+    orphanages ||--o{ orphans : "houses"
+    
     partner_organizations ||--o{ orphans : "manages"
+    partner_organizations ||--o{ orphanages : "manages"
     partner_organizations ||--o{ bank_transfers : "receives"
     
     marketing_channels ||--o{ orphans : "promotes"
@@ -78,6 +82,7 @@ erDiagram
         uuid organization_id FK
         uuid partner_organization_id FK
         uuid family_id FK
+        uuid orphanage_id FK
         uuid user_id FK
         string code UK
         string first_name
@@ -151,6 +156,17 @@ erDiagram
         string deceased_father_name
         date father_death_date
         string country_code
+    }
+    
+    orphanages {
+        uuid id PK
+        uuid organization_id FK
+        uuid partner_organization_id FK
+        string code UK
+        string name_ar
+        string name_en
+        string country_code
+        string status
     }
     
     guardians {
@@ -273,10 +289,12 @@ donors ←─── sponsorships ───→ orphans
            payments
 ```
 
-### 3. Family Structure
+### 3. Family / Residence Structure
 ```
-families (1) ──── (∞) orphans
+families (1) ──── (∞) orphans      (family home: orphans.orphanage_id IS NULL)
    └── (∞) guardians
+
+orphanages (1) ──── (∞) orphans    (dar / institution: orphans.orphanage_id set)
 ```
 
 ### 4. Marketing Pipeline
@@ -371,6 +389,7 @@ CREATE RULE no_delete_audit AS ON DELETE TO audit_log DO INSTEAD NOTHING;
 | Bank Transfer | TRF- | TRF-00033 |
 | Partner | PTN- | PTN-00007 |
 | Family | FAM- | FAM-00012 |
+| Orphanage | DAR- | DAR-00003 |
 
 ---
 

@@ -32,6 +32,9 @@ class Orphan(Base):
         PG_UUID(as_uuid=True), ForeignKey("partner_organizations.id"), nullable=False
     )
     family_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("families.id"))
+    orphanage_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("orphanages.id")
+    )
     user_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("users.id"), unique=True
     )
