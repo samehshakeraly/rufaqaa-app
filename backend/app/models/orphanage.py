@@ -43,3 +43,9 @@ class Orphanage(Base):
         TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
     )
     created_by: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True))
+
+    # The orphanage_manager who runs this dar. UNIQUE in the DB (one dar per
+    # manager); NULL = no manager assigned yet.
+    manager_user_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id"), unique=True
+    )

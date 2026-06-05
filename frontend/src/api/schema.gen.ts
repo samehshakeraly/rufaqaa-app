@@ -4743,6 +4743,8 @@ export interface components {
             district?: string | null;
             /** Governorate */
             governorate?: string | null;
+            /** Manager User Id */
+            manager_user_id?: string | null;
             /** Name Ar */
             name_ar: string;
             /** Name En */
@@ -4782,6 +4784,8 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /** Manager User Id */
+            manager_user_id: string | null;
             /** Name Ar */
             name_ar: string;
             /** Name En */
@@ -4819,6 +4823,8 @@ export interface components {
             district?: string | null;
             /** Governorate */
             governorate?: string | null;
+            /** Manager User Id */
+            manager_user_id?: string | null;
             /** Name Ar */
             name_ar?: string | null;
             /** Name En */
