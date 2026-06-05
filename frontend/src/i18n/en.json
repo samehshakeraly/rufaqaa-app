@@ -3327,7 +3327,7 @@
       "create": {
         "title": "Add a new organization",
         "code": "Code",
-        "country": "Country code",
+        "country": "Country",
         "nameAr": "Name (Arabic)",
         "nameEn": "Name (English)",
         "currency": "Default currency",

@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import { countryOptions, flagEmoji } from "@/lib/countries";
 import {
   activatePlatformOrganization,
   createPlatformOrganization,
@@ -98,15 +99,6 @@ const ICONS = {
 // All statuses plus the synthetic "all" tab.
 const TABS = ["all", ...ORG_STATUSES] as const;
 type Tab = (typeof TABS)[number];
-
-// ISO-3166 alpha-2 → regional-indicator flag emoji (derived from the
-// stored country_code; no external data).
-function flagEmoji(code: string): string {
-  if (!/^[A-Za-z]{2}$/.test(code)) return "";
-  return String.fromCodePoint(
-    ...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65),
-  );
-}
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -556,7 +548,7 @@ function CreateOrgModal({
   onClose: () => void;
   onCreated: () => void | Promise<void>;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [code, setCode] = useState("");
   const [nameAr, setNameAr] = useState("");
   const [nameEn, setNameEn] = useState("");
@@ -614,13 +606,18 @@ function CreateOrgModal({
             />
           </Field>
           <Field label={t("platform.orgs.create.country")}>
-            <input
+            <select
+              className="sa-select"
               required
-              maxLength={2}
-              className="sa-input"
               value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-            />
+              onChange={(e) => setCountryCode(e.target.value)}
+            >
+              {countryOptions(i18n.language).map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label={t("platform.orgs.create.nameAr")}>
             <input required className="sa-input" value={nameAr} onChange={(e) => setNameAr(e.target.value)} />
