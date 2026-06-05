@@ -1413,6 +1413,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphanages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Orphanages */
+        get: operations["list_orphanages_api_v1_orphanages_get"];
+        put?: never;
+        /** Create Orphanage */
+        post: operations["create_orphanage_api_v1_orphanages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphanages/{orphanage_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Orphanage */
+        get: operations["get_orphanage_api_v1_orphanages__orphanage_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Orphanage */
+        patch: operations["update_orphanage_api_v1_orphanages__orphanage_id__patch"];
+        trace?: never;
+    };
     "/api/v1/orphans": {
         parameters: {
             query?: never;
@@ -4689,6 +4725,103 @@ export interface components {
             /** Tags */
             tags?: string[] | null;
         };
+        /** OrphanageCreate */
+        OrphanageCreate: {
+            /** Address Details */
+            address_details?: string | null;
+            /** City */
+            city?: string | null;
+            /** Country Code */
+            country_code?: string | null;
+            /** District */
+            district?: string | null;
+            /** Governorate */
+            governorate?: string | null;
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
+            /** Notes */
+            notes?: string | null;
+            /** Partner Organization Id */
+            partner_organization_id?: string | null;
+            /**
+             * Status
+             * @default active
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "archived";
+        };
+        /** OrphanageRead */
+        OrphanageRead: {
+            /** Address Details */
+            address_details?: string | null;
+            /** City */
+            city?: string | null;
+            /** Code */
+            code: string;
+            /** Country Code */
+            country_code?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** District */
+            district?: string | null;
+            /** Governorate */
+            governorate?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
+            /** Notes */
+            notes?: string | null;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Partner Organization Id */
+            partner_organization_id: string | null;
+            /**
+             * Status
+             * @default active
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "archived";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** OrphanageUpdate */
+        OrphanageUpdate: {
+            /** Address Details */
+            address_details?: string | null;
+            /** City */
+            city?: string | null;
+            /** Country Code */
+            country_code?: string | null;
+            /** District */
+            district?: string | null;
+            /** Governorate */
+            governorate?: string | null;
+            /** Name Ar */
+            name_ar?: string | null;
+            /** Name En */
+            name_en?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /** Status */
+            status?: ("active" | "inactive" | "archived") | null;
+        };
         /** Page[AuditLogRead] */
         Page_AuditLogRead_: {
             /** Items */
@@ -4803,6 +4936,17 @@ export interface components {
         Page_OrphanRead_: {
             /** Items */
             items: components["schemas"]["OrphanRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[OrphanageRead] */
+        Page_OrphanageRead_: {
+            /** Items */
+            items: components["schemas"]["OrphanageRead"][];
             /** Limit */
             limit: number;
             /** Offset */
@@ -8557,6 +8701,137 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrphanSponsorView"];
+                };
+            };
+        };
+    };
+    list_orphanages_api_v1_orphanages_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_OrphanageRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_orphanage_api_v1_orphanages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrphanageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orphanage_api_v1_orphanages__orphanage_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphanage_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_orphanage_api_v1_orphanages__orphanage_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphanage_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrphanageUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

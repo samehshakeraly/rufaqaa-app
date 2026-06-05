@@ -3873,6 +3873,225 @@ components:
           title: Tags
       title: OrphanUpdate
       type: object
+    OrphanageCreate:
+      properties:
+        address_details:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address Details
+        city:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: City
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        district:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: District
+        governorate:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Governorate
+        name_ar:
+          maxLength: 255
+          minLength: 1
+          title: Name Ar
+          type: string
+        name_en:
+          maxLength: 255
+          minLength: 1
+          title: Name En
+          type: string
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
+        status:
+          default: active
+          enum:
+          - active
+          - inactive
+          - archived
+          title: Status
+          type: string
+      required:
+      - name_ar
+      - name_en
+      title: OrphanageCreate
+      type: object
+    OrphanageRead:
+      properties:
+        address_details:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address Details
+        city:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: City
+        code:
+          title: Code
+          type: string
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        district:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: District
+        governorate:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Governorate
+        id:
+          format: uuid
+          title: Id
+          type: string
+        name_ar:
+          maxLength: 255
+          minLength: 1
+          title: Name Ar
+          type: string
+        name_en:
+          maxLength: 255
+          minLength: 1
+          title: Name En
+          type: string
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
+        status:
+          default: active
+          enum:
+          - active
+          - inactive
+          - archived
+          title: Status
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - name_ar
+      - name_en
+      - id
+      - code
+      - organization_id
+      - partner_organization_id
+      - created_at
+      - updated_at
+      title: OrphanageRead
+      type: object
+    OrphanageUpdate:
+      properties:
+        address_details:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address Details
+        city:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: City
+        country_code:
+          anyOf:
+          - maxLength: 2
+            minLength: 2
+            type: string
+          - type: 'null'
+          title: Country Code
+        district:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: District
+        governorate:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Governorate
+        name_ar:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name Ar
+        name_en:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name En
+        notes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Notes
+        status:
+          anyOf:
+          - enum:
+            - active
+            - inactive
+            - archived
+            type: string
+          - type: 'null'
+          title: Status
+      title: OrphanageUpdate
+      type: object
     Page_AuditLogRead_:
       properties:
         items:
@@ -4125,6 +4344,29 @@ components:
       - limit
       - offset
       title: Page[OrphanRead]
+      type: object
+    Page_OrphanageRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/OrphanageRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[OrphanageRead]
       type: object
     Page_PartnerRead_:
       properties:
@@ -9081,6 +9323,134 @@ paths:
       summary: Get Orphan Sponsor
       tags:
       - orphan-self
+  /api/v1/orphanages:
+    get:
+      operationId: list_orphanages_api_v1_orphanages_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_OrphanageRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphanages
+      tags:
+      - orphanages
+    post:
+      operationId: create_orphanage_api_v1_orphanages_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanageCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Orphanage
+      tags:
+      - orphanages
+  /api/v1/orphanages/{orphanage_id}:
+    get:
+      operationId: get_orphanage_api_v1_orphanages__orphanage_id__get
+      parameters:
+      - in: path
+        name: orphanage_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphanage Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphanage
+      tags:
+      - orphanages
+    patch:
+      operationId: update_orphanage_api_v1_orphanages__orphanage_id__patch
+      parameters:
+      - in: path
+        name: orphanage_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphanage Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanageUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Orphanage
+      tags:
+      - orphanages
   /api/v1/orphans:
     get:
       description: 'List orphans, optionally filtered by case_status and a search term.

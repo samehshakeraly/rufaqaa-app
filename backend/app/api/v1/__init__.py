@@ -16,6 +16,7 @@ from app.api.v1 import (
     messages,
     organization,
     orphan_self,
+    orphanages,
     orphans,
     partners,
     payments,
@@ -47,6 +48,7 @@ api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
 api_router.include_router(stats.router, prefix="/stats", tags=["stats"])
 api_router.include_router(media.router, prefix="/media", tags=["media"])
 api_router.include_router(families.router, prefix="/families", tags=["families"])
+api_router.include_router(orphanages.router, prefix="/orphanages", tags=["orphanages"])
 api_router.include_router(donor_portal.router, prefix="/me", tags=["donor-portal"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(organization.router, prefix="/organization", tags=["organization"])
