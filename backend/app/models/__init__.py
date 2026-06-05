@@ -3,6 +3,7 @@ from app.models.donor import Donor
 from app.models.family import Family, Guardian
 from app.models.organization import Organization
 from app.models.orphan import Orphan
+from app.models.orphanage import Orphanage
 from app.models.partner import MarketingChannel, PartnerOrganization
 from app.models.payment import Payment
 from app.models.platform_settings import PlatformSettings
@@ -20,6 +21,7 @@ __all__ = [
     "Organization",
     "Orphan",
     "OrphanReport",
+    "Orphanage",
     "PartnerOrganization",
     "Payment",
     "PlatformSettings",
