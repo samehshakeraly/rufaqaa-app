@@ -1008,6 +1008,7 @@
     "donors": "Donors",
     "partners": "Partners",
     "families": "Families",
+    "orphanages": "Orphanages",
     "sponsorships": "Sponsorships",
     "payments": "Payments",
     "bankTransfers": "Bank transfers",
@@ -2494,6 +2495,41 @@
       "aunt": "Aunt",
       "sibling": "Sibling",
       "other": "Other"
+    }
+  },
+  "orphanages": {
+    "title": "Orphanages",
+    "cols": {
+      "code": "Code",
+      "name": "Name",
+      "country": "Country",
+      "status": "Status",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "create": {
+      "title": "Add orphanage",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "country": "Country",
+      "governorate": "Governorate",
+      "city": "City",
+      "district": "District",
+      "address": "Address",
+      "status": "Status",
+      "notes": "Notes",
+      "submit": "Create",
+      "created": "Orphanage created"
+    },
+    "edit": {
+      "title": "Edit orphanage",
+      "submit": "Save changes",
+      "updated": "Orphanage updated"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "archived": "Archived"
     }
   },
   "donors": {

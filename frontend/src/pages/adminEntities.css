@@ -490,3 +490,60 @@
   color: var(--gray-500);
   font-size: 13px;
 }
+
+/* ───────────── Modal (create / edit) ───────────── */
+.adm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 30, 51, 0.45);
+  padding: 16px;
+}
+.adm-modal {
+  max-height: 90vh;
+  width: 100%;
+  max-width: 560px;
+  overflow-y: auto;
+  border-radius: var(--radius-xl);
+  background: white;
+  padding: 22px;
+  box-shadow: 0 20px 40px -12px rgba(11, 30, 51, 0.35);
+}
+.adm-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.adm-modal-head h2 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+.adm-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--gray-500);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: var(--transition-fast);
+}
+.adm-modal-close:hover {
+  background: var(--gray-100);
+  color: var(--gray-900);
+}
+.adm-modal-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

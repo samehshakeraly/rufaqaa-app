@@ -170,6 +170,7 @@ const TITLE_MAP: ReadonlyArray<readonly [string, string]> = [
   ["/admin/orphans", "nav.orphans"],
   ["/admin/donors", "nav.donors"],
   ["/admin/families", "nav.families"],
+  ["/admin/orphanages", "nav.orphanages"],
   ["/admin/partners", "nav.partners"],
   ["/admin/sponsorships", "nav.sponsorships"],
   ["/admin/reports", "nav.fullReports"],
@@ -351,6 +352,10 @@ export function AppLayout() {
               <NavLink to="/admin/families" className={navItemClass}>
                 <NavIco>{ICONS.home}</NavIco>
                 {t("nav.families")}
+              </NavLink>
+              <NavLink to="/admin/orphanages" className={navItemClass}>
+                <NavIco>{ICONS.building}</NavIco>
+                {t("nav.orphanages")}
               </NavLink>
               <NavLink to="/admin/sponsorships" className={navItemClass}>
                 <NavIco>{ICONS.heart}</NavIco>

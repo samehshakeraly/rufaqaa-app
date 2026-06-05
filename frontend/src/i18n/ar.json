@@ -1008,6 +1008,7 @@
     "donors": "المتبرعون",
     "partners": "الشركاء",
     "families": "الأسر",
+    "orphanages": "دور الأيتام",
     "sponsorships": "الكفالات",
     "payments": "المدفوعات",
     "bankTransfers": "التحويلات البنكية",
@@ -2494,6 +2495,41 @@
       "aunt": "عمة/خالة",
       "sibling": "أخ/أخت",
       "other": "أخرى"
+    }
+  },
+  "orphanages": {
+    "title": "دور الأيتام",
+    "cols": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "country": "الدولة",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإضافة",
+      "actions": "إجراءات"
+    },
+    "create": {
+      "title": "إضافة دار",
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "country": "الدولة",
+      "governorate": "المحافظة",
+      "city": "المدينة",
+      "district": "الحي",
+      "address": "العنوان",
+      "status": "الحالة",
+      "notes": "ملاحظات",
+      "submit": "إنشاء",
+      "created": "تم إنشاء الدار"
+    },
+    "edit": {
+      "title": "تعديل الدار",
+      "submit": "حفظ التغييرات",
+      "updated": "تم تحديث الدار"
+    },
+    "status": {
+      "active": "نشطة",
+      "inactive": "غير نشطة",
+      "archived": "مؤرشفة"
     }
   },
   "donors": {

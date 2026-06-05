@@ -62,6 +62,7 @@ import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphanHomePage } from "./pages/OrphanHomePage";
 import { OrphanLoginPage } from "./pages/OrphanLoginPage";
 import { OrphanMessagesPage } from "./pages/OrphanMessagesPage";
+import { OrphanagesPage } from "./pages/OrphanagesPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
 // Partner-manager portal (PM-01..PM-04)
@@ -214,6 +215,7 @@ export function App() {
           <Route path="donors" element={<DonorsPage />} />
           <Route path="families" element={<FamiliesPage />} />
           <Route path="families/:id" element={<FamilyDetailPage />} />
+          <Route path="orphanages" element={<OrphanagesPage />} />
           <Route path="partners" element={<PartnersPage />} />
           <Route path="partners/:id" element={<PartnerDetailPage />} />
           <Route path="sponsorships" element={<SponsorshipsPage />} />
