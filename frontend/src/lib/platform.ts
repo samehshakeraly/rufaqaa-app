@@ -58,6 +58,11 @@ export interface PlatformOrgListParams {
   status?: string;
   country?: string;
   search?: string;
+  /** Whitelisted sort key (see backend OrgSortKey); defaults to created_at. */
+  sort?: string;
+  order?: "asc" | "desc";
+  /** Exact subscription_plan to filter by (free-text column). */
+  plan?: string;
 }
 
 export async function listPlatformOrganizations(
@@ -68,6 +73,9 @@ export async function listPlatformOrganizations(
       ...(params.status ? { status: params.status } : {}),
       ...(params.country ? { country: params.country } : {}),
       ...(params.search ? { search: params.search } : {}),
+      ...(params.sort ? { sort: params.sort } : {}),
+      ...(params.order ? { order: params.order } : {}),
+      ...(params.plan ? { plan: params.plan } : {}),
     },
   });
   return data;

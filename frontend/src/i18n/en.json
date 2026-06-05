@@ -3364,9 +3364,16 @@
         "all": "All"
       },
       "toolbar": {
-        "filter": "Filter",
         "columns": "Columns",
-        "sort": "Sort"
+        "plan": "Plan"
+      },
+      "plan": {
+        "all": "All plans",
+        "free": "Free"
+      },
+      "sort": {
+        "asc": "Ascending",
+        "desc": "Descending"
       }
     },
     "analytics": {

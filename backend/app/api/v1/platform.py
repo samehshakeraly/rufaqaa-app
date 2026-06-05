@@ -22,11 +22,11 @@ endpoints — every handler depends on the super-admin-only guard below.
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import asc, desc, func, select
 
 from app.api.deps import DbSession
 from app.core.authz import require_roles
@@ -56,6 +56,23 @@ router = APIRouter()
 # Super-admin-only guard reused by every route in this module. NOTE: this
 # is deliberately NOT ADMIN_ROLES — org_admin must get 403 here.
 SuperAdmin = Annotated[User, Depends(require_roles("super_admin"))]
+
+# Whitelist of sortable keys for the org list. FastAPI validates the `sort`
+# query param against this Literal and returns 422 for anything else. The
+# aggregate keys (orphans / donors / sponsorships) map to joined count
+# expressions, not real columns — see list_organizations' sort map.
+OrgSortKey = Literal[
+    "created_at",
+    "code",
+    "name_ar",
+    "name_en",
+    "country",
+    "status",
+    "plan",
+    "orphans",
+    "donors",
+    "sponsorships",
+]
 
 
 # ── helpers ──────────────────────────────────────────────────────────
@@ -107,10 +124,17 @@ async def list_organizations(
     status_filter: Annotated[str | None, Query(alias="status")] = None,
     country: str | None = None,
     search: str | None = None,
+    plan: str | None = None,
+    sort: OrgSortKey = "created_at",
+    order: Literal["asc", "desc"] = "desc",
 ) -> list[PlatformOrgSummary]:
     """List ALL organizations across the platform (no org filter — this
     is an intentional cross-tenant read gated to super_admin). Tenant
-    counts are joined in via grouped subqueries to avoid N+1."""
+    counts are joined in via grouped subqueries to avoid N+1.
+
+    `sort`/`order` apply a server-side, whitelisted sort (default
+    created_at desc); `plan` narrows to a single subscription plan. The
+    status / country / search filters are unchanged."""
     orphan_counts = (
         select(Orphan.organization_id.label("org_id"), func.count(Orphan.id).label("c"))
         .where(Orphan.deleted_at.is_(None))
@@ -132,13 +156,15 @@ async def list_organizations(
         .subquery()
     )
 
+    # Name the joined count expressions once so the SAME expression powers
+    # both the SELECT projection and the ORDER BY — that reuse is what makes
+    # the aggregate sorts (orphans / donors / sponsorships) work.
+    orphan_total = func.coalesce(orphan_counts.c.c, 0)
+    donor_total = func.coalesce(donor_counts.c.c, 0)
+    sponsorship_total = func.coalesce(sponsorship_counts.c.c, 0)
+
     stmt = (
-        select(
-            Organization,
-            func.coalesce(orphan_counts.c.c, 0),
-            func.coalesce(donor_counts.c.c, 0),
-            func.coalesce(sponsorship_counts.c.c, 0),
-        )
+        select(Organization, orphan_total, donor_total, sponsorship_total)
         .outerjoin(orphan_counts, orphan_counts.c.org_id == Organization.id)
         .outerjoin(donor_counts, donor_counts.c.org_id == Organization.id)
         .outerjoin(sponsorship_counts, sponsorship_counts.c.org_id == Organization.id)
@@ -154,7 +180,28 @@ async def list_organizations(
             | Organization.name_en.ilike(like)
             | Organization.code.ilike(like)
         )
-    stmt = stmt.order_by(Organization.created_at.desc())
+    if plan:
+        stmt = stmt.where(Organization.subscription_plan == plan)
+
+    # Whitelisted sort: each key maps to the column or count expression it
+    # orders by. `order` picks asc()/desc(); a final tiebreaker on the unique
+    # org code keeps results deterministic (so equal sort keys never reorder
+    # between pages). The default sort + order keeps the original created_at
+    # desc behaviour.
+    sort_columns: dict[str, Any] = {
+        "created_at": Organization.created_at,
+        "code": Organization.code,
+        "name_ar": Organization.name_ar,
+        "name_en": Organization.name_en,
+        "country": Organization.country_code,
+        "status": Organization.status,
+        "plan": Organization.subscription_plan,
+        "orphans": orphan_total,
+        "donors": donor_total,
+        "sponsorships": sponsorship_total,
+    }
+    direction = asc if order == "asc" else desc
+    stmt = stmt.order_by(direction(sort_columns[sort]), Organization.code.asc())
 
     rows = (await db.execute(stmt)).all()
     return [

@@ -124,6 +124,94 @@ async def test_super_admin_lists_orgs_across_boundaries(
         assert key in sample
 
 
+async def test_list_orgs_sort_by_code_asc(
+    api: AsyncClient, super_admin_headers: dict[str, str]
+) -> None:
+    """sort=code&order=asc orders the list by org code ascending. We seed three
+    orgs whose codes differ only in a trailing uppercase letter (so the order is
+    unambiguous under any DB collation) and assert their relative order in the
+    response is A → M → Z even though they were created out of order."""
+    tag = uuid.uuid4().hex[:6].upper()
+    for suffix in ("M", "Z", "A"):
+        r = await api.post(
+            "/api/v1/platform/organizations",
+            headers=super_admin_headers,
+            json={
+                "code": f"SORTZ{tag}{suffix}",
+                "name_ar": "ترتيب",
+                "name_en": "Sort",
+                "country_code": "KW",
+                "admin_email": f"{_rand('owner')}@test.rufaqaa.app",
+                "admin_password": "OwnerPass12345",
+            },
+        )
+        assert r.status_code == 201, r.text
+
+    resp = await api.get(
+        "/api/v1/platform/organizations?sort=code&order=asc", headers=super_admin_headers
+    )
+    assert resp.status_code == 200, resp.text
+    ours = [o["code"] for o in resp.json() if o["code"].startswith(f"SORTZ{tag}")]
+    assert ours == [f"SORTZ{tag}{s}" for s in ("A", "M", "Z")]
+
+
+async def test_list_orgs_default_sort_is_created_at_desc(
+    api: AsyncClient, super_admin_headers: dict[str, str]
+) -> None:
+    """With no sort param the list keeps the original newest-first ordering."""
+    resp = await api.get("/api/v1/platform/organizations", headers=super_admin_headers)
+    assert resp.status_code == 200, resp.text
+    created = [datetime.fromisoformat(o["created_at"]) for o in resp.json()]
+    assert created == sorted(created, reverse=True)
+
+
+async def test_list_orgs_filter_by_plan(
+    api: AsyncClient, super_admin_headers: dict[str, str]
+) -> None:
+    """plan=<value> returns only orgs carrying that exact subscription_plan."""
+    create = await api.post(
+        "/api/v1/platform/organizations",
+        headers=super_admin_headers,
+        json={
+            "code": _rand("ORG"),
+            "name_ar": "خطة",
+            "name_en": "Plan Org",
+            "country_code": "KW",
+            "admin_email": f"{_rand('owner')}@test.rufaqaa.app",
+            "admin_password": "OwnerPass12345",
+        },
+    )
+    assert create.status_code == 201, create.text
+    org_id = create.json()["organization"]["id"]
+    plan = _rand("pl")  # unique, <= 20 chars (subscription_plan max_length)
+    patch = await api.patch(
+        f"/api/v1/platform/organizations/{org_id}",
+        headers=super_admin_headers,
+        json={"subscription_plan": plan},
+    )
+    assert patch.status_code == 200, patch.text
+
+    resp = await api.get(f"/api/v1/platform/organizations?plan={plan}", headers=super_admin_headers)
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert any(o["id"] == org_id for o in body)
+    assert all(o["subscription_plan"] == plan for o in body)
+
+
+async def test_list_orgs_invalid_sort_or_order_rejected(
+    api: AsyncClient, super_admin_headers: dict[str, str]
+) -> None:
+    """The sort/order whitelists are enforced by FastAPI → 422, not a 500."""
+    bad_sort = await api.get(
+        "/api/v1/platform/organizations?sort=not_a_column", headers=super_admin_headers
+    )
+    assert bad_sort.status_code == 422, bad_sort.text
+    bad_order = await api.get(
+        "/api/v1/platform/organizations?order=sideways", headers=super_admin_headers
+    )
+    assert bad_order.status_code == 422, bad_order.text
+
+
 async def test_super_admin_create_get_patch_lifecycle(
     api: AsyncClient, super_admin_headers: dict[str, str]
 ) -> None:

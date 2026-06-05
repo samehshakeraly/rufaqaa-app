@@ -195,7 +195,7 @@
   padding: 14px;
   margin-bottom: 18px;
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   gap: 10px;
   align-items: center;
 }
@@ -229,27 +229,26 @@
 .sa-search svg {
   color: var(--gray-400);
 }
-.sa-filter-btn {
+.sa-filter-select {
   padding: 10px 14px;
   background: white;
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
+  font-family: inherit;
   font-size: 13.5px;
   color: var(--gray-700);
   font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: var(--transition);
   cursor: pointer;
+  transition: var(--transition);
 }
-.sa-filter-btn:hover {
+.sa-filter-select:hover {
   border-color: var(--sky-300);
   color: var(--trust-600);
 }
-.sa-filter-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+.sa-filter-select:focus {
+  outline: none;
+  border-color: var(--trust-400);
+  box-shadow: 0 0 0 3px rgba(118, 159, 205, 0.25);
 }
 
 /* ───────────── Table ───────────── */
@@ -301,6 +300,38 @@
 }
 .sa-th-end {
   text-align: end;
+}
+
+/* Sortable column headers — the <th> keeps its look; the inner button is a
+   transparent, full-label click target carrying an asc/desc indicator. */
+.sa-th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.sa-th-sort:hover {
+  color: var(--trust-600);
+}
+.sa-th-sort:focus-visible {
+  outline: 2px solid var(--trust-400);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.sa-sort-ind {
+  font-size: 9px;
+  line-height: 1;
+  color: var(--gray-400);
+}
+.sa-th-sort.active .sa-sort-ind {
+  color: var(--trust-500);
 }
 
 .sa-cell-org {
