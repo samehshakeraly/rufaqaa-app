@@ -64,6 +64,13 @@ function makeSchema(requirePartner: boolean) {
           .uuid()
           .optional()
           .or(z.literal("").transform(() => undefined)),
+    // Dar (orphanage) — staff-only; the picker is rendered only when the
+    // `orphanages` prop is supplied. Empty string = family home (no dar).
+    orphanage_id: z
+      .string()
+      .uuid()
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
     // Mother status (shown to both audiences) and case priority (staff-only).
     mother_status: z
       .enum(MOTHER_STATUSES)
@@ -119,6 +126,10 @@ interface NewOrphanFormProps {
   /** Optional partner list. If omitted (and the picker is shown) the form
    * fetches its own. */
   partners?: { id: string; name_ar: string; name_en: string | null }[];
+  /** Optional dar (orphanage) list. When provided, a staff-only orphanage
+   * picker is rendered; omit it (guardian path) and the picker stays hidden,
+   * so guardians can never assign a dar. */
+  orphanages?: { id: string; name_ar: string; name_en: string | null }[];
   /** Called on success with the freshly created orphan. */
   onCreated: (orphan: CreatedOrphan) => void | Promise<void>;
   /** Optional cancel handler (e.g. close the inline panel). */
@@ -141,6 +152,7 @@ interface NewOrphanFormProps {
 
 export function NewOrphanForm({
   partners: partnersProp,
+  orphanages,
   onCreated,
   onCancel,
   showPartnerSelect = true,
@@ -237,6 +249,9 @@ export function NewOrphanForm({
       ...(showPartnerSelect && v.partner_organization_id
         ? { partner_organization_id: v.partner_organization_id }
         : {}),
+      // Staff-only: only sent when the picker was rendered (orphanages prop
+      // present). Guardians never pass the prop, so it can't slip in here.
+      ...(orphanages && v.orphanage_id ? { orphanage_id: v.orphanage_id } : {}),
       ...(v.nationality ? { nationality: v.nationality } : {}),
       // Extended profile — only sent when populated; numbers as numbers,
       // tags only when non-empty.
@@ -332,6 +347,18 @@ export function NewOrphanForm({
               {partners.map((p) => (
                 <option key={p.id} value={p.id}>
                   {i18n.language === "ar" ? p.name_ar : (p.name_en ?? p.name_ar)}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
+        {orphanages && (
+          <Field label={t("orphans.orphanage.label")} className="sm:col-span-2">
+            <select className="input" {...register("orphanage_id")}>
+              <option value="">{t("orphans.orphanage.familyHome")}</option>
+              {orphanages.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {i18n.language === "ar" ? o.name_ar : (o.name_en ?? o.name_ar)}
                 </option>
               ))}
             </select>

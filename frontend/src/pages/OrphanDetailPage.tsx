@@ -15,6 +15,7 @@ import {
 } from "@/components/NewOrphanForm";
 import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
 import { useRole } from "@/hooks/useRole";
+import { listOrphanages } from "@/lib/orphanages";
 import {
   approveOrphan,
   getOrphan,
@@ -481,6 +482,7 @@ export function OrphanDetailPage() {
 // changed.
 
 interface ProfileDraft {
+  orphanage_id: string;
   education_stage: string;
   academic_level: string;
   school_name: string;
@@ -498,6 +500,7 @@ interface ProfileDraft {
 
 function draftFromOrphan(o: Orphan): ProfileDraft {
   return {
+    orphanage_id: o.orphanage_id ?? "",
     education_stage: o.education_stage ?? "",
     academic_level: o.academic_level ?? "",
     school_name: o.school_name ?? "",
@@ -529,6 +532,10 @@ function diffStr(
 
 function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
   const payload: OrphanUpdateInput = {};
+
+  // Dar assignment: a changed value (UUID or "" → null) is sent; null clears it.
+  const orphanage = diffStr(o.orphanage_id, d.orphanage_id);
+  if (orphanage !== undefined) payload.orphanage_id = orphanage;
 
   const stage = diffStr(o.education_stage, d.education_stage);
   if (stage !== undefined) payload.education_stage = stage as EducationStage | null;
@@ -570,11 +577,25 @@ function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
 }
 
 function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<ProfileDraft>(() => draftFromOrphan(orphan));
   const [tagInput, setTagInput] = useState("");
+
+  // Org dars, to render the assignment by name (read) and offer the picker
+  // (edit). Shares the ["orphanages"] cache with the list/create surfaces.
+  const { data: orphanagesPage } = useQuery({
+    queryKey: ["orphanages"],
+    queryFn: () => listOrphanages({ limit: 100 }),
+  });
+  const orphanages = orphanagesPage?.items ?? [];
+  const orphanageName = (id: string | null): string | null => {
+    if (!id) return null;
+    const found = orphanages.find((o) => o.id === id);
+    if (!found) return null;
+    return i18n.language === "ar" ? found.name_ar : found.name_en ?? found.name_ar;
+  };
 
   const updateMut = useMutation({
     mutationFn: (payload: OrphanUpdateInput) => updateOrphan(orphan.id, payload),
@@ -648,6 +669,13 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
 
       {!editing && (
         <div className="ps-info-rows">
+          <ProfileRow label={t("orphans.orphanage.label")}>
+            {orphan.orphanage_id ? (
+              orphanageName(orphan.orphanage_id) ?? t("orphans.orphanage.resident")
+            ) : (
+              <span className="ps-info-muted">{t("orphans.orphanage.familyHome")}</span>
+            )}
+          </ProfileRow>
           <ProfileRow label={t("orphans.profile.educationStage")}>
             {orphan.education_stage
               ? t(`orphans.profile.educationStageOptions.${orphan.education_stage}`)
@@ -724,6 +752,20 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
       {editing && (
         <>
           <div className="ps-info-rows">
+            <ProfileEditField label={t("orphans.orphanage.label")}>
+              <select
+                className="input"
+                value={draft.orphanage_id}
+                onChange={(e) => setDraft((d) => ({ ...d, orphanage_id: e.target.value }))}
+              >
+                <option value="">{t("orphans.orphanage.familyHome")}</option>
+                {orphanages.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {i18n.language === "ar" ? o.name_ar : o.name_en ?? o.name_ar}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
             <ProfileEditField label={t("orphans.profile.educationStage")}>
               <select
                 className="input"

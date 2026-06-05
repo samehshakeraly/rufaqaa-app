@@ -507,3 +507,44 @@ async def test_non_guardian_cannot_create_orphan_via_self_endpoint(
         headers=auth_headers,
     )
     assert r.status_code == 404, r.text
+
+
+async def test_guardian_self_create_leaves_orphanage_none(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A guardian-created orphan never gets a dar: orphanage_id stays NULL even
+    though the column exists — the dar is a staff-only assignment."""
+    partner_id = await _seed_partner_id()
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_id, partner_id)
+
+    r = await api.post(
+        "/api/v1/guardian/me/orphans", json=_orphan_payload("nodar"), headers=headers
+    )
+    assert r.status_code == 201, r.text
+    created = r.json()
+
+    async with make_session() as db:
+        row = (
+            await db.execute(
+                text("SELECT orphanage_id FROM orphans WHERE id = :id"),
+                {"id": created["id"]},
+            )
+        ).first()
+    assert row is not None
+    assert row[0] is None
+
+
+async def test_guardian_self_create_rejects_orphanage_id_field(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """The guardian body forbids extra fields, so a client cannot smuggle an
+    orphanage_id in to self-assign a dar → 422."""
+    partner_id = await _seed_partner_id()
+    family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
+    await _link_family_to_partner(family_id, partner_id)
+
+    payload = _orphan_payload("smuggle")
+    payload["orphanage_id"] = str(uuid.uuid4())
+    r = await api.post("/api/v1/guardian/me/orphans", json=payload, headers=headers)
+    assert r.status_code == 422, r.text

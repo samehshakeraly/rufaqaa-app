@@ -13,6 +13,7 @@ import {
 import { Pagination } from "@/components/Pagination";
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
+import { listOrphanages } from "@/lib/orphanages";
 import {
   type EducationStage,
   type HealthStatus,
@@ -265,6 +266,12 @@ export function OrphansPage() {
     queryKey: ["partners"],
     queryFn: () => listPartners(),
   });
+  // Org dars for the staff create picker (NewOrphanForm renders it only when
+  // this prop is passed — guardians never get it).
+  const { data: orphanages } = useQuery({
+    queryKey: ["orphanages"],
+    queryFn: () => listOrphanages({ limit: 100 }),
+  });
 
   const approveMut = useMutation({
     mutationFn: (id: string) => approveOrphan(id),
@@ -382,6 +389,7 @@ export function OrphansPage() {
           <NewOrphanForm
             audience="staff"
             partners={partners?.items ?? []}
+            orphanages={orphanages?.items ?? []}
             onCreated={async () => {
               await qc.invalidateQueries({ queryKey });
               setShowForm(false);

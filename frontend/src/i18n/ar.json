@@ -1353,6 +1353,11 @@
     "view": "عرض",
     "actionsCol": "إجراءات",
     "selectPartner": "اختر الجهة الشريكة",
+    "orphanage": {
+      "label": "الدار",
+      "familyHome": "— بقي في بيت الأسرة —",
+      "resident": "مقيم في دار"
+    },
     "balance": "الرصيد الحالي",
     "timeline": "السجلّ الزمني",
     "bulkSelected": "تم اختيار {{count}}",

@@ -1353,6 +1353,11 @@
     "view": "View",
     "actionsCol": "Actions",
     "selectPartner": "Choose a partner",
+    "orphanage": {
+      "label": "Orphanage",
+      "familyHome": "— Family home (no orphanage) —",
+      "resident": "Orphanage resident"
+    },
     "balance": "Current balance",
     "timeline": "Timeline",
     "bulkSelected": "{{count}} selected",

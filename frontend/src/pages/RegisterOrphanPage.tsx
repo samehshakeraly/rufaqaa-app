@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
+import { listOrphanages } from "@/lib/orphanages";
 import { createOrphan, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 import { toast } from "@/store/toasts";
@@ -40,6 +41,12 @@ const schema = z.object({
   nationality: z
     .string()
     .length(2)
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  // Optional dar (orphanage) assignment — empty = family home.
+  orphanage_id: z
+    .string()
+    .uuid()
     .optional()
     .or(z.literal("").transform(() => undefined)),
 });
@@ -85,6 +92,12 @@ export function RegisterOrphanPage() {
     queryFn: () => listPartners(),
   });
   const partners = partnersQuery.data?.items ?? [];
+
+  const orphanagesQuery = useQuery({
+    queryKey: ["orphanages"],
+    queryFn: () => listOrphanages({ limit: 100 }),
+  });
+  const orphanages = orphanagesQuery.data?.items ?? [];
 
   const {
     register,
@@ -132,6 +145,7 @@ export function RegisterOrphanPage() {
       partner_organization_id: v.partner_organization_id,
       father_name: v.father_name,
       ...(v.nationality ? { nationality: v.nationality } : {}),
+      ...(v.orphanage_id ? { orphanage_id: v.orphanage_id } : {}),
     };
     mutation.mutate(payload);
   }
@@ -320,6 +334,17 @@ export function RegisterOrphanPage() {
                   {t("common.required")}
                 </p>
               )}
+            </div>
+            <div className="ps-field full">
+              <label htmlFor="orphanage_id">{t("orphans.orphanage.label")}</label>
+              <select id="orphanage_id" defaultValue="" {...register("orphanage_id")}>
+                <option value="">{t("orphans.orphanage.familyHome")}</option>
+                {orphanages.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {i18n.language === "ar" ? o.name_ar : o.name_en ?? o.name_ar}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

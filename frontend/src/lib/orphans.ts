@@ -39,6 +39,8 @@ export interface Orphan {
   assigned_to_channel_id: string | null;
   assigned_at: string | null;
   assignment_deadline: string | null;
+  /** Current dar (orphanage) the child resides in; null = family home. */
+  orphanage_id: string | null;
   created_at: string;
   // Extended profile fields (read). Mirror schema.gen.ts OrphanRead.
   education_stage?: EducationStage | null;
@@ -81,6 +83,8 @@ export interface OrphanCreateInput {
   full_name_en?: string;
   father_death_date?: string;
   family_id?: string;
+  /** Staff-only dar assignment. Omitted by the guardian self-service path. */
+  orphanage_id?: string;
   nationality?: string;
   // Extended profile fields (all optional). Mirror schema.gen.ts
   // OrphanCreate / GuardianOrphanCreate.
@@ -179,6 +183,8 @@ export interface OrphanUpdateInput {
   gender?: "M" | "F";
   nationality?: string | null;
   father_name?: string | null;
+  /** Dar assignment. Send a UUID to assign, or null to clear (family home). */
+  orphanage_id?: string | null;
   // Extended profile fields.
   education_stage?: EducationStage | null;
   academic_level?: string | null;

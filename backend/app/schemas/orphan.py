@@ -95,6 +95,10 @@ class OrphanCreateFields(OrphanBase):
 class OrphanCreate(OrphanCreateFields):
     partner_organization_id: UUID
     family_id: UUID | None = None
+    # Current dar (orphanage) the child resides in. STAFF-ONLY: the guardian
+    # self-service path never sets it. Coexists with family_id by design
+    # (family = background, dar = current sponsor). Org-validated server-side.
+    orphanage_id: UUID | None = None
 
 
 class OrphanUpdate(BaseModel):
@@ -126,6 +130,10 @@ class OrphanUpdate(BaseModel):
     mother_status: MotherStatus | None = None
     priority_level: PriorityLevel | None = None
 
+    # Dar (orphanage) assignment. None in the payload leaves it untouched;
+    # an explicit null clears it (family home). Org-validated in the endpoint.
+    orphanage_id: UUID | None = None
+
 
 class OrphanRead(OrphanBase):
     model_config = ConfigDict(from_attributes=True)
@@ -135,6 +143,7 @@ class OrphanRead(OrphanBase):
     organization_id: UUID
     partner_organization_id: UUID
     family_id: UUID | None
+    orphanage_id: UUID | None
     case_status: CaseStatus
     assigned_to_channel_id: UUID | None = None
     assigned_at: datetime | None = None

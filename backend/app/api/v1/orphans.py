@@ -32,6 +32,7 @@ from app.schemas.orphan import (
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
 from app.services.orphans import (
+    _assert_orphanage_in_org,
     create_orphan_record,
     recompute_profile_completion,
     stamp_available_since,
@@ -234,6 +235,7 @@ async def create_orphan(
         partner_organization_id=payload.partner_organization_id,
         family_id=payload.family_id,
         via="staff",
+        orphanage_id=payload.orphanage_id,
     )
     return OrphanRead.model_validate(orphan)
 
@@ -320,8 +322,15 @@ async def update_orphan(
     if orphan is None:
         raise NotFound("Orphan")
 
+    data = payload.model_dump(exclude_unset=True)
+    # orphanage_id is the one editable field that can point across tenants;
+    # validate ownership explicitly before applying (a superuser connection
+    # bypasses RLS). An explicit null clears the assignment (always allowed).
+    if data.get("orphanage_id") is not None:
+        await _assert_orphanage_in_org(db, data["orphanage_id"], user.organization_id)
+
     changes: dict[str, dict[str, str | None]] = {}
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    for field, value in data.items():
         old = getattr(orphan, field)
         if old != value:
             changes[field] = {"old": _stringify(old), "new": _stringify(value)}
