@@ -16,6 +16,7 @@ from app.api.v1 import (
     messages,
     organization,
     orphan_self,
+    orphanage_self,
     orphanages,
     orphans,
     partners,
@@ -59,4 +60,5 @@ api_router.include_router(public.router, prefix="/public", tags=["public"])
 api_router.include_router(donor_self.router, prefix="/donor", tags=["donor-self"])
 api_router.include_router(guardian_self.router, prefix="/guardian", tags=["guardian-self"])
 api_router.include_router(orphan_self.router, prefix="/orphan", tags=["orphan-self"])
+api_router.include_router(orphanage_self.router, prefix="/orphanage", tags=["orphanage-self"])
 api_router.include_router(messages.router, prefix="/messages", tags=["messages"])

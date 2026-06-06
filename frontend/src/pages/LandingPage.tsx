@@ -38,6 +38,7 @@ const KNOWN_HOME_PATHS = new Set([
   "/admin/marketing-channels",
   "/donor/dashboard",
   "/orphan",
+  "/orphanage-manager",
 ]);
 
 // Locale-aware number formatting (tabular figures rendered via the
