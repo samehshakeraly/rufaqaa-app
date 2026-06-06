@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 PaymentMethod = Literal[
     "credit_card",
@@ -29,6 +29,11 @@ PaymentStatus = Literal[
     "disputed",
     "on_hold",
 ]
+
+# Derived (not stored): "kafala" when the payment is tied to a sponsorship,
+# otherwise a "general" donation. There is no payment-level type column — this
+# is computed from ``sponsorship_id`` on the list endpoint and used as a filter.
+PaymentType = Literal["kafala", "general"]
 
 
 class PaymentStatusUpdate(BaseModel):
@@ -70,6 +75,22 @@ class PaymentRead(BaseModel):
     initiated_at: datetime
     completed_at: datetime | None
     created_at: datetime
+
+    # List-payload enrichment (derived via joins on the list endpoint; default
+    # None so model_validate() of a bare Payment row stays valid).
+    #
+    # Privacy / child-safety: ``orphan_code`` is the orphan's CODE only — never
+    # a name. ``donor_reference`` is the donor's non-identifying CODE — never a
+    # name or email. Both come from the related row's ``code`` column.
+    orphan_code: str | None = None
+    donor_reference: str | None = None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def payment_type(self) -> PaymentType:
+        """Derived (not stored): "kafala" when tied to a sponsorship, else
+        a "general" donation. See ``GET /payments``."""
+        return "kafala" if self.sponsorship_id is not None else "general"
 
 
 class PaymentInitiate(BaseModel):

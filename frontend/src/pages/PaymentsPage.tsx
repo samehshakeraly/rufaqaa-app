@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { Money } from "@/components/Money";
 import { TableSkeleton } from "@/components/Skeleton";
 import { fetchOrganization } from "@/lib/organization";
-import { exportPaymentsCsv, listPayments } from "@/lib/payments";
+import { exportPaymentsCsv, listPayments, PAYMENT_METHODS, type PaymentMethod } from "@/lib/payments";
 import { fetchSummary } from "@/lib/stats";
 import { toast } from "@/store/toasts";
 
@@ -20,8 +20,8 @@ const PAGE_SIZES = [25, 50, 100] as const;
 // standalone "pending" tab; pending counts still surface in the stat strip.)
 const TABS = ["", "completed", "processing", "failed", "refunded"] as const;
 
-// Quick date ranges. Applied client-side over the loaded page only.
-// TODO(backend): server-side date filtering — /payments exposes no date param.
+// Quick date ranges → the server-side `date_from` lower bound (the selected
+// range's start). "all" sends no bound.
 const RANGES = ["all", "today", "month", "90d", "year"] as const;
 type Range = (typeof RANGES)[number];
 
@@ -50,22 +50,35 @@ export function PaymentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [query, setQuery] = useState("");
   const [range, setRange] = useState<Range>("all");
-  const [methodFilter, setMethodFilter] = useState("");
+  const [methodFilter, setMethodFilter] = useState<PaymentMethod | "">("");
   const [currencyFilter, setCurrencyFilter] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  // Reset to first page whenever the tab or page size changes.
+  // Reset to first page whenever the tab, page size, or any server filter changes.
   useEffect(() => {
     setOffset(0);
-  }, [statusFilter, pageSize]);
+  }, [statusFilter, pageSize, range, methodFilter, currencyFilter]);
+
+  // Selected quick-range → a stable `date_from` (memoised on `range` so a
+  // relative range like "90d" doesn't drift every render and churn the query).
+  const dateFrom = useMemo(() => {
+    const start = rangeStart(range);
+    return start != null ? new Date(start).toISOString() : undefined;
+  }, [range]);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["payments", { limit: pageSize, offset, statusFilter }],
+    queryKey: [
+      "payments",
+      { limit: pageSize, offset, statusFilter, dateFrom, methodFilter, currencyFilter },
+    ],
     queryFn: () =>
       listPayments({
         limit: pageSize,
         offset,
         ...(statusFilter ? { status: statusFilter } : {}),
+        ...(dateFrom ? { date_from: dateFrom } : {}),
+        ...(methodFilter ? { method: methodFilter } : {}),
+        ...(currencyFilter ? { currency: currencyFilter } : {}),
       }),
   });
   const { data: org } = useQuery({ queryKey: ["organization"], queryFn: fetchOrganization });
@@ -79,38 +92,34 @@ export function PaymentsPage() {
     queryKey: ["payments", { status: "refunded", count: true }],
     queryFn: () => listPayments({ status: "refunded", limit: 1 }),
   });
+  // Currency dropdown options come from a status-scoped probe (NOT narrowed by
+  // the method/currency/date filters), so the list stays stable once a currency
+  // is picked. Methods use the full static list (PAYMENT_METHODS) instead.
+  const { data: currencyProbe } = useQuery({
+    queryKey: ["payments", { currencyOptions: true, statusFilter }],
+    queryFn: () =>
+      listPayments({ ...(statusFilter ? { status: statusFilter } : {}), limit: 100 }),
+  });
 
   const baseCurrency = org?.default_currency ?? null;
   const lang = i18n.language;
 
-  // TODO(backend): server-side filtering — /payments exposes only a status
-  // param, so search, date range, method and currency all narrow the loaded
-  // page client-side (same approach as the existing free-text search).
+  // Date range, method and currency are now filtered server-side. Only the
+  // free-text search still narrows the loaded page client-side (/payments has
+  // no search param).
   const rows = useMemo(() => {
     const items = data?.items ?? [];
     const q = query.trim().toLowerCase();
-    const start = rangeStart(range);
-    return items.filter((p) => {
-      if (q && !(p.code.toLowerCase().includes(q) || (p.payment_gateway ?? "").toLowerCase().includes(q)))
-        return false;
-      if (methodFilter && p.payment_method !== methodFilter) return false;
-      if (currencyFilter && p.currency !== currencyFilter) return false;
-      if (start != null) {
-        const when = p.completed_at ?? p.initiated_at;
-        if (!when || new Date(when).getTime() < start) return false;
-      }
-      return true;
-    });
-  }, [data, query, range, methodFilter, currencyFilter]);
+    if (!q) return items;
+    return items.filter(
+      (p) =>
+        p.code.toLowerCase().includes(q) || (p.payment_gateway ?? "").toLowerCase().includes(q),
+    );
+  }, [data, query]);
 
-  // Distinct method/currency options derived from the loaded page.
-  const methodOptions = useMemo(
-    () => Array.from(new Set((data?.items ?? []).map((p) => p.payment_method))),
-    [data],
-  );
   const currencyOptions = useMemo(
-    () => Array.from(new Set((data?.items ?? []).map((p) => p.currency))),
-    [data],
+    () => Array.from(new Set((currencyProbe?.items ?? []).map((p) => p.currency))).sort(),
+    [currencyProbe],
   );
 
   const selectedRows = rows.filter((p) => selected.has(p.id));
@@ -233,7 +242,7 @@ export function PaymentsPage() {
         ))}
       </nav>
 
-      {/* ── Search + filters (all client-side over the loaded page) ──── */}
+      {/* ── Search + filters (date/method/currency are server-side) ──── */}
       <section className="fin-filter-bar">
         <div className="fin-search">
           <FinIcon>{FIN_ICONS.search}</FinIcon>
@@ -245,7 +254,6 @@ export function PaymentsPage() {
             aria-label={t("payments.searchPlaceholder")}
           />
         </div>
-        {/* TODO(backend): server-side date filtering — applied client-side. */}
         <div className="fin-range-strip" role="group" aria-label={t("payments.range")}>
           {RANGES.map((r) => (
             <button
@@ -259,13 +267,16 @@ export function PaymentsPage() {
             </button>
           ))}
         </div>
-        {/* TODO(backend): server-side method/currency filtering — client-side. */}
         <label className="fin-fpill">
           <span className="sr-only">{t("payments.method")}</span>
           <FinIcon>{FIN_ICONS.exchange}</FinIcon>
-          <select value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)} aria-label={t("payments.method")}>
+          <select
+            value={methodFilter}
+            onChange={(e) => setMethodFilter(e.target.value as PaymentMethod | "")}
+            aria-label={t("payments.method")}
+          >
             <option value="">{t("payments.allMethods")}</option>
-            {methodOptions.map((m) => (
+            {PAYMENT_METHODS.map((m) => (
               <option key={m} value={m}>
                 {t(`payments.methods.${m}`, m)}
               </option>
@@ -379,11 +390,14 @@ export function PaymentsPage() {
                         {p.completed_at ? p.completed_at.slice(0, 10) : <span className="fin-ph">—</span>}
                       </div>
                     </td>
-                    {/* Privacy: the list endpoint returns no donor name/code — and
-                        we never surface donor identity here. Placeholder only.
-                        TODO(backend): donor reference is in the receipt endpoint. */}
+                    {/* Privacy: a non-identifying donor reference (code) only —
+                        never the donor's name or email. */}
                     <td>
-                      <span className="fin-ph">—</span>
+                      {p.donor_reference ? (
+                        <span className="fin-cell-id">{p.donor_reference}</span>
+                      ) : (
+                        <span className="fin-ph">—</span>
+                      )}
                     </td>
                     <td>
                       <span className="fin-method">
@@ -396,15 +410,18 @@ export function PaymentsPage() {
                     <td className="fin-amt">
                       <Money amount={p.amount} currency={p.currency} />
                     </td>
-                    {/* Child safety: orphan column shows code only, never a name.
-                        TODO(backend): orphan_code is not on the list payload. */}
+                    {/* Child safety: orphan column shows the code only, never a name. */}
                     <td>
-                      <span className="fin-ph">—</span>
+                      {p.orphan_code ? (
+                        <span className="fin-cell-id">{p.orphan_code}</span>
+                      ) : (
+                        <span className="fin-ph">—</span>
+                      )}
                     </td>
-                    {/* TODO(backend): payment type/category (zakat/kafala/…) is
-                        not exposed on the list payload. */}
                     <td>
-                      <span className="fin-ph">—</span>
+                      <span className={`fin-type ${p.payment_type}`}>
+                        {t(`payments.types.${p.payment_type}`)}
+                      </span>
                     </td>
                     <td>
                       <span className={`fin-status ${STATUS_TONE[p.status] ?? "pending"}`}>

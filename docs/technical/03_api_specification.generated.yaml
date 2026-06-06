@@ -5004,6 +5004,11 @@ components:
           format: uuid
           title: Donor Id
           type: string
+        donor_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Reference
         gateway_transaction_id:
           anyOf:
           - type: string
@@ -5021,6 +5026,11 @@ components:
           format: uuid
           title: Organization Id
           type: string
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
         orphan_id:
           anyOf:
           - format: uuid
@@ -5045,6 +5055,16 @@ components:
           - mobile_payment
           - other
           title: Payment Method
+          type: string
+        payment_type:
+          description: 'Derived (not stored): "kafala" when tied to a sponsorship, else
+
+            a "general" donation. See ``GET /payments``.'
+          enum:
+          - kafala
+          - general
+          readOnly: true
+          title: Payment Type
           type: string
         sponsorship_id:
           anyOf:
@@ -5081,6 +5101,7 @@ components:
       - initiated_at
       - completed_at
       - created_at
+      - payment_type
       title: PaymentRead
       type: object
     PaymentReceipt:
@@ -10629,6 +10650,27 @@ paths:
       - partners
   /api/v1/payments:
     get:
+      description: 'List payments for the org, with optional server-side filters.
+
+
+        `status`, `donor_id`, `sponsorship_id` and `donor_overdue` are the existing
+
+        filters. Added server-side filters (replacing client-side page narrowing):
+
+        `date_from` / `date_to` bound the effective payment time —
+
+        ``COALESCE(completed_at, initiated_at)``, the same instant the row displays;
+
+        `method` matches `payment_method` exactly; `currency` matches the 3-letter
+
+        code; `payment_type` is derived from `sponsorship_id` — "kafala" keeps
+
+        payments tied to a sponsorship, "general" keeps the rest.
+
+
+        Each row is enriched with the related `orphan_code` and a non-identifying
+
+        `donor_reference` (both the related row''s `code` — never a name or email).'
       operationId: list_payments_api_v1_payments_get
       parameters:
       - in: query
@@ -10682,6 +10724,64 @@ paths:
           - type: boolean
           - type: 'null'
           title: Donor Overdue
+      - in: query
+        name: date_from
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Date From
+      - in: query
+        name: date_to
+        required: false
+        schema:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Date To
+      - in: query
+        name: method
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - credit_card
+            - debit_card
+            - bank_transfer
+            - knet
+            - paypal
+            - cash
+            - cheque
+            - standing_order
+            - mobile_payment
+            - other
+            type: string
+          - type: 'null'
+          title: Method
+      - in: query
+        name: currency
+        required: false
+        schema:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Currency
+      - in: query
+        name: payment_type
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - kafala
+            - general
+            type: string
+          - type: 'null'
+          title: Payment Type
       responses:
         '200':
           content:
