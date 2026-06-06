@@ -35,6 +35,9 @@ export function useRole() {
   const isDonor = role === "donor";
   const isGuardian = role === "guardian";
   const isOrphan = role === "orphan";
+  // Runs a residential dar (orphanage). Gates the /orphanage-manager portal;
+  // distinct from staff — the backend never lists it in STAFF_ROLES.
+  const isOrphanageManager = role === "orphanage_manager";
   const emailVerified = Boolean(data?.email_verified_at);
 
   return {
@@ -52,6 +55,7 @@ export function useRole() {
     isDonor,
     isGuardian,
     isOrphan,
+    isOrphanageManager,
     emailVerified,
     /**
      * Where to send this user when they hit `/` or just signed in.
@@ -78,7 +82,9 @@ export function useRole() {
                     ? "/orphan"
                     : isGuardian
                       ? "/guardian"
-                      : // Any unrecognised role lands on the public landing.
-                        "/",
+                      : isOrphanageManager
+                        ? "/orphanage-manager"
+                        : // Any unrecognised role lands on the public landing.
+                          "/",
   };
 }

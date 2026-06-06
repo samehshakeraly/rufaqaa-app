@@ -3964,6 +3964,53 @@ components:
       - name_en
       title: OrphanageCreate
       type: object
+    OrphanageOrphanRead:
+      description: 'Manager-safe projection of a resident orphan.
+
+
+        Mirrors the guardian''s `GuardianOrphanRead`: the core identity fields the
+
+        portal needs, with no financial figures (`current_balance`,
+
+        `balance_currency`, `is_sponsored`) and no donor / partner identity.'
+      properties:
+        case_status:
+          title: Case Status
+          type: string
+        code:
+          title: Code
+          type: string
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        family_name:
+          title: Family Name
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          title: Gender
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        profile_completion_percentage:
+          title: Profile Completion Percentage
+          type: integer
+      required:
+      - id
+      - code
+      - first_name
+      - family_name
+      - date_of_birth
+      - gender
+      - case_status
+      - profile_completion_percentage
+      title: OrphanageOrphanRead
+      type: object
     OrphanageRead:
       properties:
         address_details:
@@ -4061,6 +4108,81 @@ components:
       - created_at
       - updated_at
       title: OrphanageRead
+      type: object
+    OrphanageReportCreate:
+      description: 'Body for a manager-submitted monthly report.
+
+
+        Identical to `GuardianReportCreate`: lands directly in
+
+        ``pending_partner_approval`` (the manager''s act of sending IS the
+
+        submission) and surfaces in the existing staff review queue. Text-only
+
+        for this cut; photo/voice attachments are deferred.'
+      properties:
+        activities:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Activities
+        educational_progress:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Educational Progress
+        health_status:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Health Status
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+        psychological_status:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Psychological Status
+        quran_progress:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Quran Progress
+        report_type:
+          default: monthly
+          enum:
+          - monthly
+          - quarterly
+          - annual
+          - special
+          - incident
+          title: Report Type
+          type: string
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+      required:
+      - orphan_id
+      - period_start
+      - period_end
+      title: OrphanageReportCreate
       type: object
     OrphanageUpdate:
       properties:
@@ -9361,6 +9483,144 @@ paths:
       summary: Get Orphan Sponsor
       tags:
       - orphan-self
+  /api/v1/orphanage/me:
+    get:
+      description: 'Return the dar profile for the calling manager.
+
+
+        404 for any caller who does not manage an orphanage — the resource is the
+
+        gate (mirrors `GET /guardian/me`).'
+      operationId: get_orphanage_me_api_v1_orphanage_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanageRead'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphanage Me
+      tags:
+      - orphanage-self
+  /api/v1/orphanage/me/orphans:
+    get:
+      description: 'List the resident orphans of the manager''s dar.
+
+
+        Scoped to ``orphanage_id == my_orphanage.id`` AND the caller''s org
+
+        (explicit, not RLS alone). Financial fields are never serialised — the
+
+        projection mirrors the guardian''s privacy-safe orphan shape.'
+      operationId: list_my_residents_api_v1_orphanage_me_orphans_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanageOrphanRead'
+                title: Response List My Residents Api V1 Orphanage Me Orphans Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Residents
+      tags:
+      - orphanage-self
+  /api/v1/orphanage/me/reports:
+    get:
+      description: 'List reports for one of the dar''s resident orphans.
+
+
+        403 if the orphan isn''t a resident of the manager''s dar — we''d rather
+
+        signal "you can''t touch this" loudly than 404 (which would leak orphan
+
+        existence to non-owners). Mirrors `GET /guardian/me/reports`.'
+      operationId: list_my_resident_reports_api_v1_orphanage_me_reports_get
+      parameters:
+      - description: Orphan UUID; must be a resident of the manager's orphanage
+        in: query
+        name: orphan_id
+        required: true
+        schema:
+          description: Orphan UUID; must be a resident of the manager's orphanage
+          format: uuid
+          title: Orphan Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ReportRead'
+                title: Response List My Resident Reports Api V1 Orphanage Me Reports Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Resident Reports
+      tags:
+      - orphanage-self
+    post:
+      description: 'Manager submits a monthly report for one of their resident orphans.
+
+
+        Identical in shape to `POST /guardian/me/reports`: the report is created
+
+        **directly in ``pending_partner_approval``** with
+
+        ``submitted_by``/``submitted_at`` set, so it appears at once in the staff
+
+        ``PartnerReportsReview`` queue and rides the existing approve/reject
+
+        workflow — no fork. A non-resident orphan → 403; a caller who manages no
+
+        dar → 404.'
+      operationId: create_my_resident_report_api_v1_orphanage_me_reports_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrphanageReportCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create My Resident Report
+      tags:
+      - orphanage-self
   /api/v1/orphanages:
     get:
       operationId: list_orphanages_api_v1_orphanages_get

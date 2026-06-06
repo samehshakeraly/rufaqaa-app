@@ -7,6 +7,7 @@ import { FinanceRoute } from "./components/FinanceRoute";
 import { GuardianRoute } from "./components/GuardianRoute";
 import { MarketingRoute } from "./components/MarketingRoute";
 import { OrphanRoute } from "./components/OrphanRoute";
+import { OrphanageManagerRoute } from "./components/OrphanageManagerRoute";
 import { PartnerApproverGate } from "./components/PartnerApproverGate";
 import { PartnerRoute } from "./components/PartnerRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -16,6 +17,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { DonorLayout } from "./components/layout/DonorLayout";
 import { GuardianLayout } from "./components/layout/GuardianLayout";
 import { OrphanLayout } from "./components/layout/OrphanLayout";
+import { OrphanageManagerLayout } from "./components/layout/OrphanageManagerLayout";
 import { PartnerLayout } from "./components/layout/PartnerLayout";
 import { PlatformLayout } from "./components/layout/PlatformLayout";
 import { PublicLayout } from "./components/layout/PublicLayout";
@@ -62,6 +64,9 @@ import { OrphanDetailPage } from "./pages/OrphanDetailPage";
 import { OrphanHomePage } from "./pages/OrphanHomePage";
 import { OrphanLoginPage } from "./pages/OrphanLoginPage";
 import { OrphanMessagesPage } from "./pages/OrphanMessagesPage";
+import { OrphanageManagerHomePage } from "./pages/OrphanageManagerHomePage";
+import { OrphanageManagerOrphanDetailPage } from "./pages/OrphanageManagerOrphanDetailPage";
+import { OrphanageManagerReportPage } from "./pages/OrphanageManagerReportPage";
 import { OrphanagesPage } from "./pages/OrphanagesPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
@@ -190,6 +195,31 @@ export function App() {
           element={<GuardianReportUploadPage />}
         />
         <Route path="/guardian/messages" element={<GuardianMessagesPage />} />
+      </Route>
+
+      {/* ── Orphanage-manager portal (role=orphanage_manager) ─────
+          Distinct OrphanageManagerLayout chrome ("بوابة دار الأيتام").
+          Mirrors the guardian portal: gated by OrphanageManagerRoute to
+          role=orphanage_manager; staff/donor/orphan/guardian are sent to
+          their own home. Reads the live /orphanage/me* endpoints (dar
+          profile, resident orphans, monthly reports) — scoped by
+          orphanage_id instead of family_id. */}
+      <Route
+        element={
+          <OrphanageManagerRoute>
+            <OrphanageManagerLayout />
+          </OrphanageManagerRoute>
+        }
+      >
+        <Route path="/orphanage-manager" element={<OrphanageManagerHomePage />} />
+        <Route
+          path="/orphanage-manager/orphans/:id"
+          element={<OrphanageManagerOrphanDetailPage />}
+        />
+        <Route
+          path="/orphanage-manager/orphans/:id/report"
+          element={<OrphanageManagerReportPage />}
+        />
       </Route>
 
       {/* ── Admin / staff area ──────────────────────────────────── */}

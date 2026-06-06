@@ -1413,6 +1413,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphanage/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orphanage Me
+         * @description Return the dar profile for the calling manager.
+         *
+         *     404 for any caller who does not manage an orphanage — the resource is the
+         *     gate (mirrors `GET /guardian/me`).
+         */
+        get: operations["get_orphanage_me_api_v1_orphanage_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphanage/me/orphans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Residents
+         * @description List the resident orphans of the manager's dar.
+         *
+         *     Scoped to ``orphanage_id == my_orphanage.id`` AND the caller's org
+         *     (explicit, not RLS alone). Financial fields are never serialised — the
+         *     projection mirrors the guardian's privacy-safe orphan shape.
+         */
+        get: operations["list_my_residents_api_v1_orphanage_me_orphans_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphanage/me/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Resident Reports
+         * @description List reports for one of the dar's resident orphans.
+         *
+         *     403 if the orphan isn't a resident of the manager's dar — we'd rather
+         *     signal "you can't touch this" loudly than 404 (which would leak orphan
+         *     existence to non-owners). Mirrors `GET /guardian/me/reports`.
+         */
+        get: operations["list_my_resident_reports_api_v1_orphanage_me_reports_get"];
+        put?: never;
+        /**
+         * Create My Resident Report
+         * @description Manager submits a monthly report for one of their resident orphans.
+         *
+         *     Identical in shape to `POST /guardian/me/reports`: the report is created
+         *     **directly in ``pending_partner_approval``** with
+         *     ``submitted_by``/``submitted_at`` set, so it appears at once in the staff
+         *     ``PartnerReportsReview`` queue and rides the existing approve/reject
+         *     workflow — no fork. A non-resident orphan → 403; a caller who manages no
+         *     dar → 404.
+         */
+        post: operations["create_my_resident_report_api_v1_orphanage_me_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphanages": {
         parameters: {
             query?: never;
@@ -4760,6 +4842,38 @@ export interface components {
              */
             status: "active" | "inactive" | "archived";
         };
+        /**
+         * OrphanageOrphanRead
+         * @description Manager-safe projection of a resident orphan.
+         *
+         *     Mirrors the guardian's `GuardianOrphanRead`: the core identity fields the
+         *     portal needs, with no financial figures (`current_balance`,
+         *     `balance_currency`, `is_sponsored`) and no donor / partner identity.
+         */
+        OrphanageOrphanRead: {
+            /** Case Status */
+            case_status: string;
+            /** Code */
+            code: string;
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Family Name */
+            family_name: string;
+            /** First Name */
+            first_name: string;
+            /** Gender */
+            gender: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Profile Completion Percentage */
+            profile_completion_percentage: number;
+        };
         /** OrphanageRead */
         OrphanageRead: {
             /** Address Details */
@@ -4810,6 +4924,60 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+        };
+        /**
+         * OrphanageReportCreate
+         * @description Body for a manager-submitted monthly report.
+         *
+         *     Identical to `GuardianReportCreate`: lands directly in
+         *     ``pending_partner_approval`` (the manager's act of sending IS the
+         *     submission) and surfaces in the existing staff review queue. Text-only
+         *     for this cut; photo/voice attachments are deferred.
+         */
+        OrphanageReportCreate: {
+            /** Activities */
+            activities?: {
+                [key: string]: unknown;
+            } | null;
+            /** Educational Progress */
+            educational_progress?: {
+                [key: string]: unknown;
+            } | null;
+            /** Health Status */
+            health_status?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /** Psychological Status */
+            psychological_status?: {
+                [key: string]: unknown;
+            } | null;
+            /** Quran Progress */
+            quran_progress?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Report Type
+             * @default monthly
+             * @enum {string}
+             */
+            report_type: "monthly" | "quarterly" | "annual" | "special" | "incident";
+            /** Summary */
+            summary?: string | null;
         };
         /** OrphanageUpdate */
         OrphanageUpdate: {
@@ -8713,6 +8881,112 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrphanSponsorView"];
+                };
+            };
+        };
+    };
+    get_orphanage_me_api_v1_orphanage_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanageRead"];
+                };
+            };
+        };
+    };
+    list_my_residents_api_v1_orphanage_me_orphans_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanageOrphanRead"][];
+                };
+            };
+        };
+    };
+    list_my_resident_reports_api_v1_orphanage_me_reports_get: {
+        parameters: {
+            query: {
+                /** @description Orphan UUID; must be a resident of the manager's orphanage */
+                orphan_id: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_my_resident_report_api_v1_orphanage_me_reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrphanageReportCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
