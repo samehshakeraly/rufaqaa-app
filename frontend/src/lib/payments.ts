@@ -13,6 +13,25 @@ export type PaymentMethod =
   | "mobile_payment"
   | "other";
 
+// Full, ordered set of payment methods — used to populate filter dropdowns
+// (the loaded page can't be the source once filtering is server-side).
+export const PAYMENT_METHODS: readonly PaymentMethod[] = [
+  "credit_card",
+  "debit_card",
+  "bank_transfer",
+  "knet",
+  "paypal",
+  "cash",
+  "cheque",
+  "standing_order",
+  "mobile_payment",
+  "other",
+];
+
+// Derived server-side from sponsorship link: "kafala" (tied to a sponsorship)
+// vs "general" (everything else). No payment-level type column exists.
+export type PaymentType = "kafala" | "general";
+
 export interface Payment {
   id: string;
   code: string;
@@ -27,6 +46,12 @@ export interface Payment {
   initiated_at: string;
   completed_at: string | null;
   created_at: string;
+  // List-payload enrichment (see GET /payments). Codes only — never names:
+  // orphan_code is the orphan's code; donor_reference is the donor's
+  // non-identifying code. payment_type is the derived kafala/general value.
+  orphan_code: string | null;
+  donor_reference: string | null;
+  payment_type: PaymentType;
 }
 
 export interface PaymentCreateInput {
@@ -49,6 +74,12 @@ export async function listPayments(params?: {
    * that donor's most recent payment. Used by the Overdue Donors screen
    * to surface each donor's last payment date. */
   donor_overdue?: boolean;
+  /** Bound the effective payment time (completed_at ?? initiated_at), ISO 8601. */
+  date_from?: string;
+  date_to?: string;
+  method?: PaymentMethod;
+  currency?: string;
+  payment_type?: PaymentType;
 }): Promise<Page<Payment>> {
   const { data } = await api.get<Page<Payment>>("/payments", { params });
   return data;

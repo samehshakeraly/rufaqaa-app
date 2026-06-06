@@ -25,10 +25,12 @@ from app.schemas.payment import (
     PaymentCreate,
     PaymentInitiate,
     PaymentInitiateResponse,
+    PaymentMethod,
     PaymentRead,
     PaymentReceipt,
     PaymentRefund,
     PaymentStatusUpdate,
+    PaymentType,
 )
 from app.services import myfatoorah
 from app.services.audit import record_audit
@@ -47,7 +49,25 @@ async def list_payments(
     sponsorship_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
     donor_overdue: bool | None = None,
+    date_from: datetime | None = None,
+    date_to: datetime | None = None,
+    method: PaymentMethod | None = None,
+    currency: Annotated[str | None, Query(min_length=3, max_length=3)] = None,
+    payment_type: PaymentType | None = None,
 ) -> Page[PaymentRead]:
+    """List payments for the org, with optional server-side filters.
+
+    `status`, `donor_id`, `sponsorship_id` and `donor_overdue` are the existing
+    filters. Added server-side filters (replacing client-side page narrowing):
+    `date_from` / `date_to` bound the effective payment time —
+    ``COALESCE(completed_at, initiated_at)``, the same instant the row displays;
+    `method` matches `payment_method` exactly; `currency` matches the 3-letter
+    code; `payment_type` is derived from `sponsorship_id` — "kafala" keeps
+    payments tied to a sponsorship, "general" keeps the rest.
+
+    Each row is enriched with the related `orphan_code` and a non-identifying
+    `donor_reference` (both the related row's `code` — never a name or email).
+    """
     # Explicit org scope (defense-in-depth alongside RLS).
     stmt = select(Payment).where(Payment.organization_id == user.organization_id)
     if donor_id:
@@ -56,6 +76,22 @@ async def list_payments(
         stmt = stmt.where(Payment.sponsorship_id == sponsorship_id)
     if status_filter:
         stmt = stmt.where(Payment.status == status_filter)
+    if method:
+        stmt = stmt.where(Payment.payment_method == method)
+    if currency:
+        stmt = stmt.where(Payment.currency == currency)
+    if payment_type == "kafala":
+        stmt = stmt.where(Payment.sponsorship_id.is_not(None))
+    elif payment_type == "general":
+        stmt = stmt.where(Payment.sponsorship_id.is_(None))
+    if date_from is not None or date_to is not None:
+        # Effective payment time: completed_at when present, else initiated_at
+        # (mirrors the client-side `completed_at ?? initiated_at` it replaces).
+        when = func.coalesce(Payment.completed_at, Payment.initiated_at)
+        if date_from is not None:
+            stmt = stmt.where(when >= date_from)
+        if date_to is not None:
+            stmt = stmt.where(when <= date_to)
     if donor_overdue:
         # Donors with at least one active, overdue sponsorship — return a
         # single row per donor: their most recent payment. DISTINCT ON
@@ -78,15 +114,28 @@ async def list_payments(
         stmt = stmt.where(Payment.id.in_(last_payment_ids))
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-    rows = (
-        await db.scalars(stmt.order_by(Payment.created_at.desc()).limit(limit).offset(offset))
-    ).all()
-    return Page(
-        items=[PaymentRead.model_validate(r) for r in rows],
-        total=total,
-        limit=limit,
-        offset=offset,
+
+    # Enrich each row with the related codes. Donor is mandatory (INNER JOIN);
+    # orphan is optional (LEFT JOIN). We pull only the `code` columns — never a
+    # donor/orphan name or email — so identity is never exposed on this list.
+    rows_stmt = (
+        stmt.add_columns(Donor.code, Orphan.code)
+        .join(Donor, Donor.id == Payment.donor_id)
+        .outerjoin(Orphan, Orphan.id == Payment.orphan_id)
+        .order_by(Payment.created_at.desc())
+        .limit(limit)
+        .offset(offset)
     )
+    result = await db.execute(rows_stmt)
+
+    items: list[PaymentRead] = []
+    for payment, donor_code, orphan_code in result.all():
+        item = PaymentRead.model_validate(payment)
+        item.donor_reference = donor_code
+        item.orphan_code = orphan_code
+        items.append(item)
+
+    return Page(items=items, total=total, limit=limit, offset=offset)
 
 
 @router.post("", response_model=PaymentRead, status_code=status.HTTP_201_CREATED)

@@ -1835,7 +1835,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Payments */
+        /**
+         * List Payments
+         * @description List payments for the org, with optional server-side filters.
+         *
+         *     `status`, `donor_id`, `sponsorship_id` and `donor_overdue` are the existing
+         *     filters. Added server-side filters (replacing client-side page narrowing):
+         *     `date_from` / `date_to` bound the effective payment time —
+         *     ``COALESCE(completed_at, initiated_at)``, the same instant the row displays;
+         *     `method` matches `payment_method` exactly; `currency` matches the 3-letter
+         *     code; `payment_type` is derived from `sponsorship_id` — "kafala" keeps
+         *     payments tied to a sponsorship, "general" keeps the rest.
+         *
+         *     Each row is enriched with the related `orphan_code` and a non-identifying
+         *     `donor_reference` (both the related row's `code` — never a name or email).
+         */
         get: operations["list_payments_api_v1_payments_get"];
         put?: never;
         /**
@@ -5379,6 +5393,8 @@ export interface components {
              * Format: uuid
              */
             donor_id: string;
+            /** Donor Reference */
+            donor_reference?: string | null;
             /** Gateway Transaction Id */
             gateway_transaction_id: string | null;
             /**
@@ -5396,6 +5412,8 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Orphan Code */
+            orphan_code?: string | null;
             /** Orphan Id */
             orphan_id: string | null;
             /** Payment Gateway */
@@ -5405,6 +5423,13 @@ export interface components {
              * @enum {string}
              */
             payment_method: "credit_card" | "debit_card" | "bank_transfer" | "knet" | "paypal" | "cash" | "cheque" | "standing_order" | "mobile_payment" | "other";
+            /**
+             * Payment Type
+             * @description Derived (not stored): "kafala" when tied to a sponsorship, else
+             *     a "general" donation. See ``GET /payments``.
+             * @enum {string}
+             */
+            readonly payment_type: "kafala" | "general";
             /** Sponsorship Id */
             sponsorship_id: string | null;
             /**
@@ -9761,6 +9786,11 @@ export interface operations {
                 sponsorship_id?: string | null;
                 status?: string | null;
                 donor_overdue?: boolean | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                method?: ("credit_card" | "debit_card" | "bank_transfer" | "knet" | "paypal" | "cash" | "cheque" | "standing_order" | "mobile_payment" | "other") | null;
+                currency?: string | null;
+                payment_type?: ("kafala" | "general") | null;
             };
             header?: never;
             path?: never;

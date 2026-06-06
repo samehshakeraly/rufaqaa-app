@@ -160,6 +160,23 @@
   margin-top: 2px;
 }
 
+/* ── Payment type tag (kafala / general) ────────────────────────────── */
+.fin-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+.fin-type.kafala {
+  background: var(--fin-50);
+  color: var(--fin-700);
+}
+
 /* ── Numbered pager ─────────────────────────────────────────────────── */
 .fin-pager {
   display: flex;

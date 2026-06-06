@@ -1559,6 +1559,10 @@
       "disputed": "Disputed",
       "on_hold": "On hold"
     },
+    "types": {
+      "kafala": "Sponsorship",
+      "general": "General"
+    },
     "subtitle": "A complete record of every payment received — linked to sponsorship and receipt",
     "searchPlaceholder": "Search by code, gateway or reference…",
     "addManual": "Add manual payment",
