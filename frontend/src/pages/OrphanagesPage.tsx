@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { TableSkeleton } from "@/components/Skeleton";
@@ -13,11 +13,19 @@ import {
   type Orphanage,
   type OrphanageStatus,
 } from "@/lib/orphanages";
+import { listUsers, type AdminUser } from "@/lib/users";
 import { toast } from "@/store/toasts";
 
 import "./adminEntities.css";
 
 const QK = ["orphanages"] as const;
+const MANAGERS_QK = ["users", "orphanage_manager"] as const;
+
+// Display name for a manager option / cell — full name, falling back to email.
+function managerLabel(u: AdminUser): string {
+  const full = `${u.first_name} ${u.last_name}`.trim();
+  return full || u.email;
+}
 
 // adm-status pill variants, keyed by the dar's lifecycle status.
 const STATUS_VARIANT: Record<OrphanageStatus, string> = {
@@ -37,6 +45,18 @@ export function OrphanagesPage() {
     queryKey: QK,
     queryFn: () => listOrphanages({ limit: 100 }),
   });
+
+  // The org's orphanage managers — drives the picker and resolves the name
+  // shown in the list. Shared (one query) across the page and both modals.
+  const { data: managersData } = useQuery({
+    queryKey: MANAGERS_QK,
+    queryFn: () => listUsers({ role: "orphanage_manager", limit: 100 }),
+  });
+  const managers = useMemo(() => managersData?.items ?? [], [managersData]);
+  const managerById = useMemo(
+    () => new Map(managers.map((m) => [m.id, m])),
+    [managers],
+  );
 
   const dfmt = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium" });
   const invalidate = () => qc.invalidateQueries({ queryKey: QK });
@@ -61,7 +81,7 @@ export function OrphanagesPage() {
         </div>
       </div>
 
-      {isLoading && <TableSkeleton columns={6} />}
+      {isLoading && <TableSkeleton columns={7} />}
       {error && <p className="adm-error">{t("common.loadError")}</p>}
       {data && data.items.length === 0 && <div className="adm-empty">{t("common.empty")}</div>}
 
@@ -74,6 +94,7 @@ export function OrphanagesPage() {
                   <th>{t("orphanages.cols.code")}</th>
                   <th>{t("orphanages.cols.name")}</th>
                   <th>{t("orphanages.cols.country")}</th>
+                  <th>{t("orphanages.cols.manager")}</th>
                   <th>{t("orphanages.cols.status")}</th>
                   <th>{t("orphanages.cols.createdAt")}</th>
                   <th className="end">{t("orphanages.cols.actions")}</th>
@@ -94,6 +115,13 @@ export function OrphanagesPage() {
                         </>
                       ) : (
                         "—"
+                      )}
+                    </td>
+                    <td>
+                      {o.manager_user_id && managerById.has(o.manager_user_id) ? (
+                        managerLabel(managerById.get(o.manager_user_id)!)
+                      ) : (
+                        <span className="adm-cell-muted">{t("orphanages.manager.none")}</span>
                       )}
                     </td>
                     <td>
@@ -126,6 +154,7 @@ export function OrphanagesPage() {
 
       {showCreate && (
         <CreateOrphanageModal
+          managers={managers}
           onClose={() => setShowCreate(false)}
           onCreated={async () => {
             await invalidate();
@@ -136,6 +165,7 @@ export function OrphanagesPage() {
       {editing && (
         <EditOrphanageModal
           orphanage={editing}
+          managers={managers}
           onClose={() => setEditing(null)}
           onSaved={async () => {
             await invalidate();
@@ -159,6 +189,7 @@ interface FormState {
   address_details: string;
   status: OrphanageStatus;
   notes: string;
+  manager_user_id: string; // "" = no manager
 }
 
 const EMPTY_FORM: FormState = {
@@ -171,6 +202,7 @@ const EMPTY_FORM: FormState = {
   address_details: "",
   status: "active",
   notes: "",
+  manager_user_id: "",
 };
 
 // Trim + collapse empty optional strings to null so we never persist "".
@@ -236,7 +268,15 @@ function ModalShell({
 
 // Field labels are shared between create + edit (only the modal title,
 // submit label and toast differ), so both forms render this block.
-function OrphanageFields({ v, setV }: { v: FormState; setV: (next: FormState) => void }) {
+function OrphanageFields({
+  v,
+  setV,
+  managers,
+}: {
+  v: FormState;
+  setV: (next: FormState) => void;
+  managers: AdminUser[];
+}) {
   const { t, i18n } = useTranslation();
   return (
     <div className="adm-form-grid">
@@ -276,6 +316,20 @@ function OrphanageFields({ v, setV }: { v: FormState; setV: (next: FormState) =>
         </select>
       </label>
       <label className="adm-field">
+        <span>{t("orphanages.create.manager")}</span>
+        <select
+          value={v.manager_user_id}
+          onChange={(e) => setV({ ...v, manager_user_id: e.target.value })}
+        >
+          <option value="">{t("orphanages.manager.none")}</option>
+          {managers.map((m) => (
+            <option key={m.id} value={m.id}>
+              {managerLabel(m)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="adm-field">
         <span>{t("orphanages.create.governorate")}</span>
         <input
           value={v.governorate}
@@ -308,9 +362,11 @@ function OrphanageFields({ v, setV }: { v: FormState; setV: (next: FormState) =>
 // ── Create ────────────────────────────────────────────────────────────
 
 function CreateOrphanageModal({
+  managers,
   onClose,
   onCreated,
 }: {
+  managers: AdminUser[];
   onClose: () => void;
   onCreated: () => void | Promise<void>;
 }) {
@@ -319,7 +375,12 @@ function CreateOrphanageModal({
   const [serverError, setServerError] = useState<string | null>(null);
 
   const mut = useMutation({
-    mutationFn: () => createOrphanage(toPayload(v)),
+    // Omit manager_user_id entirely when none is chosen (vs sending null).
+    mutationFn: () =>
+      createOrphanage({
+        ...toPayload(v),
+        ...(v.manager_user_id ? { manager_user_id: v.manager_user_id } : {}),
+      }),
     onSuccess: async () => {
       toast.success(t("orphanages.create.created"));
       await onCreated();
@@ -336,7 +397,7 @@ function CreateOrphanageModal({
           mut.mutate();
         }}
       >
-        <OrphanageFields v={v} setV={setV} />
+        <OrphanageFields v={v} setV={setV} managers={managers} />
         {serverError && <p className="adm-error">{serverError}</p>}
         <div className="adm-modal-actions">
           <button type="button" className="adm-btn" onClick={onClose} disabled={mut.isPending}>
@@ -355,10 +416,12 @@ function CreateOrphanageModal({
 
 function EditOrphanageModal({
   orphanage,
+  managers,
   onClose,
   onSaved,
 }: {
   orphanage: Orphanage;
+  managers: AdminUser[];
   onClose: () => void;
   onSaved: () => void | Promise<void>;
 }) {
@@ -374,11 +437,17 @@ function EditOrphanageModal({
     address_details: orphanage.address_details ?? "",
     status: orphanage.status,
     notes: orphanage.notes ?? "",
+    manager_user_id: orphanage.manager_user_id ?? "",
   });
   const [serverError, setServerError] = useState<string | null>(null);
 
   const mut = useMutation({
-    mutationFn: () => updateOrphanage(orphanage.id, toPayload(v)),
+    // Empty → null clears the existing assignment (vs omitting it).
+    mutationFn: () =>
+      updateOrphanage(orphanage.id, {
+        ...toPayload(v),
+        manager_user_id: v.manager_user_id || null,
+      }),
     onSuccess: async () => {
       toast.success(t("orphanages.edit.updated"));
       await onSaved();
@@ -398,7 +467,7 @@ function EditOrphanageModal({
           mut.mutate();
         }}
       >
-        <OrphanageFields v={v} setV={setV} />
+        <OrphanageFields v={v} setV={setV} managers={managers} />
         {serverError && <p className="adm-error">{serverError}</p>}
         <div className="adm-modal-actions">
           <button type="button" className="adm-btn" onClick={onClose} disabled={mut.isPending}>

@@ -21,6 +21,7 @@ class OrphanageBase(BaseModel):
 
 class OrphanageCreate(OrphanageBase):
     partner_organization_id: UUID | None = None
+    manager_user_id: UUID | None = None
 
 
 class OrphanageUpdate(BaseModel):
@@ -33,6 +34,8 @@ class OrphanageUpdate(BaseModel):
     address_details: str | None = None
     status: OrphanageStatus | None = None
     notes: str | None = None
+    # Present-and-null clears the assignment; omitted leaves it untouched.
+    manager_user_id: UUID | None = None
 
 
 class OrphanageRead(OrphanageBase):
@@ -42,5 +45,6 @@ class OrphanageRead(OrphanageBase):
     code: str
     organization_id: UUID
     partner_organization_id: UUID | None
+    manager_user_id: UUID | None
     created_at: datetime
     updated_at: datetime

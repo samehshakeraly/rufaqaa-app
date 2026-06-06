@@ -2508,6 +2508,7 @@
       "code": "Code",
       "name": "Name",
       "country": "Country",
+      "manager": "Manager",
       "status": "Status",
       "createdAt": "Created",
       "actions": "Actions"
@@ -2523,6 +2524,7 @@
       "address": "Address",
       "status": "Status",
       "notes": "Notes",
+      "manager": "Manager",
       "submit": "Create",
       "created": "Orphanage created"
     },
@@ -2530,6 +2532,9 @@
       "title": "Edit orphanage",
       "submit": "Save changes",
       "updated": "Orphanage updated"
+    },
+    "manager": {
+      "none": "No manager"
     },
     "status": {
       "active": "Active",

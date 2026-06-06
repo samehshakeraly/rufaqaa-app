@@ -3924,6 +3924,12 @@ components:
             type: string
           - type: 'null'
           title: Governorate
+        manager_user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Manager User Id
         name_ar:
           maxLength: 255
           minLength: 1
@@ -4001,6 +4007,12 @@ components:
           format: uuid
           title: Id
           type: string
+        manager_user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Manager User Id
         name_ar:
           maxLength: 255
           minLength: 1
@@ -4045,6 +4057,7 @@ components:
       - code
       - organization_id
       - partner_organization_id
+      - manager_user_id
       - created_at
       - updated_at
       title: OrphanageRead
@@ -4081,6 +4094,12 @@ components:
             type: string
           - type: 'null'
           title: Governorate
+        manager_user_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Manager User Id
         name_ar:
           anyOf:
           - maxLength: 255

@@ -1,12 +1,14 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.exceptions import NotFound
 from app.models.orphanage import Orphanage
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.orphanage import (
     OrphanageCreate,
@@ -17,6 +19,49 @@ from app.services.audit import record_audit
 from app.utils.codes import generate_code
 
 router = APIRouter()
+
+
+async def _assert_user_can_manage(
+    db: AsyncSession,
+    user_id: UUID,
+    organization_id: UUID,
+    *,
+    exclude_orphanage_id: UUID | None = None,
+) -> None:
+    """Validate that ``user_id`` may be assigned as a dar's manager.
+
+    Mirrors the org-scoped validation in ``services/orphans._assert_orphanage_in_org``:
+    we check explicitly (400) rather than trusting RLS — a Postgres superuser
+    connection bypasses it. Two rules:
+
+    * the user must exist, belong to ``organization_id`` and be an
+      ``orphanage_manager`` (the role 0011 introduced);
+    * the user must not already manage a *different* dar. The DB enforces this
+      with a UNIQUE constraint on ``manager_user_id``; pre-checking here turns
+      its raw 409 unique-violation into a clean 400. ``exclude_orphanage_id``
+      lets an update re-assert the dar's own current manager without tripping.
+    """
+    manager = await db.scalar(
+        select(User).where(
+            User.id == user_id,
+            User.organization_id == organization_id,
+        )
+    )
+    if manager is None or manager.role != "orphanage_manager":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="manager_user_id must reference an orphanage_manager in this organization",
+        )
+
+    stmt = select(Orphanage.id).where(Orphanage.manager_user_id == user_id)
+    if exclude_orphanage_id is not None:
+        stmt = stmt.where(Orphanage.id != exclude_orphanage_id)
+    if (await db.scalar(stmt)) is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="user already manages another orphanage",
+        )
+
 
 # NOTE: every query below scopes to user.organization_id EXPLICITLY rather
 # than leaning on the orphanages_org_isolation RLS policy alone. This is a
@@ -53,6 +98,8 @@ async def create_orphanage(
     db: DbSession,
     user: CurrentUser,
 ) -> OrphanageRead:
+    if payload.manager_user_id is not None:
+        await _assert_user_can_manage(db, payload.manager_user_id, user.organization_id)
     orphanage = Orphanage(
         organization_id=user.organization_id,
         partner_organization_id=payload.partner_organization_id,
@@ -66,6 +113,7 @@ async def create_orphanage(
         address_details=payload.address_details,
         status=payload.status,
         notes=payload.notes,
+        manager_user_id=payload.manager_user_id,
         created_by=user.id,
     )
     db.add(orphanage)
@@ -117,6 +165,15 @@ async def update_orphanage(
     if orphanage is None:
         raise NotFound("Orphanage")
     updates = payload.model_dump(exclude_unset=True)
+    # A present, non-null manager is validated before assignment; a present
+    # null clears it (no check needed); an absent key leaves it untouched.
+    if updates.get("manager_user_id") is not None:
+        await _assert_user_can_manage(
+            db,
+            updates["manager_user_id"],
+            user.organization_id,
+            exclude_orphanage_id=orphanage.id,
+        )
     for field, value in updates.items():
         setattr(orphanage, field, value)
     await db.flush()
@@ -127,7 +184,9 @@ async def update_orphanage(
         action="orphanage.updated",
         entity_type="orphanage",
         entity_id=orphanage.id,
-        new_values=updates,
+        # mode="json" keeps the audit JSONB-safe now that an updatable field
+        # (manager_user_id) is a UUID rather than a plain string.
+        new_values=payload.model_dump(exclude_unset=True, mode="json"),
     )
     await db.commit()
     await db.refresh(orphanage)

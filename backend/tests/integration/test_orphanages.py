@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import uuid
 
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
+from sqlalchemy import select
 
 from app.core.database import make_session
 from app.core.security import hash_password
 from app.models.organization import Organization
 from app.models.user import User
+from app.scripts.seed import SEED_ADMIN_EMAIL
 
 
 async def _other_org_headers(api: AsyncClient) -> dict[str, str]:
@@ -130,3 +132,180 @@ async def test_orphanage_get_patch_unknown_404(
         headers=auth_headers,
     )
     assert r.status_code == 404
+
+
+# ── Manager assignment (orphanages.manager_user_id) ──────────────────────
+
+
+async def _seed_org_user_id(role: str) -> str:
+    """Create a user with ``role`` in the SEEDED org (the one ``auth_headers``
+    belongs to) and return its id — so it can be offered as a dar manager."""
+    suffix = uuid.uuid4().hex[:8]
+    async with make_session() as db:
+        admin = await db.scalar(select(User).where(User.email == SEED_ADMIN_EMAIL))
+        assert admin is not None
+        user = User(
+            organization_id=admin.organization_id,
+            email=f"dar-mgr-{suffix}@dev.example.com",
+            password_hash=hash_password("managerpw123456"),
+            first_name="Demo",
+            last_name="Manager",
+            role=role,
+            status="active",
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return str(user.id)
+
+
+async def _other_org_user_id(role: str) -> str:
+    """Create a user with ``role`` in a brand-new org (org B); return its id."""
+    suffix = uuid.uuid4().hex[:8]
+    async with make_session() as db:
+        org = Organization(
+            code=f"OTM-{suffix[:6].upper()}",
+            name_ar="منظمة أخرى",
+            name_en="Other Org",
+            org_type="standalone",
+            deployment_mode="self_hosted",
+            country_code="KW",
+        )
+        db.add(org)
+        await db.flush()
+        user = User(
+            organization_id=org.id,
+            email=f"dar-mgr-other-{suffix}@other.example.com",
+            password_hash=hash_password("managerpw123456"),
+            first_name="Other",
+            last_name="Manager",
+            role=role,
+            status="active",
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        return str(user.id)
+
+
+async def _create_dar(api: AsyncClient, headers: dict[str, str], **extra: object) -> Response:
+    suffix = uuid.uuid4().hex[:6]
+    return await api.post(
+        "/api/v1/orphanages",
+        json={"name_ar": f"دار-{suffix}", "name_en": f"Dar {suffix}", **extra},
+        headers=headers,
+    )
+
+
+async def test_assign_manager_on_create_set_patch_clear(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Happy path: a same-org orphanage_manager can be set at creation,
+    re-assigned via PATCH, and cleared with an explicit null."""
+    mgr1 = await _seed_org_user_id("orphanage_manager")
+    mgr2 = await _seed_org_user_id("orphanage_manager")
+
+    # create with a manager
+    r = await _create_dar(api, auth_headers, manager_user_id=mgr1)
+    assert r.status_code == 201, r.text
+    did = r.json()["id"]
+    assert r.json()["manager_user_id"] == mgr1
+
+    # PATCH → re-assign to a different manager
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"manager_user_id": mgr2},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["manager_user_id"] == mgr2
+
+    # PATCH explicit null → cleared
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"manager_user_id": None},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["manager_user_id"] is None
+
+
+async def test_assign_manager_via_patch_only(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A dar created without a manager can have one set later via PATCH."""
+    mgr = await _seed_org_user_id("orphanage_manager")
+    did = (await _create_dar(api, auth_headers)).json()["id"]
+
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"manager_user_id": mgr},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["manager_user_id"] == mgr
+
+
+async def test_assign_non_manager_role_rejected(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A same-org user whose role is NOT orphanage_manager → 400, on create
+    and on PATCH."""
+    viewer = await _seed_org_user_id("viewer")
+
+    r = await _create_dar(api, auth_headers, manager_user_id=viewer)
+    assert r.status_code == 400, r.text
+
+    did = (await _create_dar(api, auth_headers)).json()["id"]
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"manager_user_id": viewer},
+        headers=auth_headers,
+    )
+    assert r.status_code == 400, r.text
+
+
+async def test_assign_cross_org_manager_rejected(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """An orphanage_manager belonging to ANOTHER org cannot be assigned → 400."""
+    foreign_mgr = await _other_org_user_id("orphanage_manager")
+
+    r = await _create_dar(api, auth_headers, manager_user_id=foreign_mgr)
+    assert r.status_code == 400, r.text
+
+
+async def test_assign_manager_already_managing_rejected(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A manager already running one dar cannot be assigned to a second — on
+    create AND on PATCH — but re-asserting the SAME dar's manager is fine."""
+    mgr = await _seed_org_user_id("orphanage_manager")
+
+    first = await _create_dar(api, auth_headers, manager_user_id=mgr)
+    assert first.status_code == 201, first.text
+    first_id = first.json()["id"]
+
+    # second dar, create with the same manager → 400 (clean, not a 409)
+    r = await _create_dar(api, auth_headers, manager_user_id=mgr)
+    assert r.status_code == 400, r.text
+    assert "already manages" in r.json()["detail"]
+
+    # a second (unmanaged) dar cannot PATCH-grab the same manager → 400
+    second_id = (await _create_dar(api, auth_headers)).json()["id"]
+    r = await api.patch(
+        f"/api/v1/orphanages/{second_id}",
+        json={"manager_user_id": mgr},
+        headers=auth_headers,
+    )
+    assert r.status_code == 400, r.text
+
+    # re-asserting the SAME manager on the dar that already holds them is OK
+    # (the uniqueness check excludes the dar's own row).
+    r = await api.patch(
+        f"/api/v1/orphanages/{first_id}",
+        json={"manager_user_id": mgr},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["manager_user_id"] == mgr
