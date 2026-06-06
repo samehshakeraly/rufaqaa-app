@@ -25,6 +25,7 @@ from app.core.security import (
     hash_password,
 )
 from app.models.organization import Organization
+from app.models.partner import PartnerOrganization
 from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.common import Page
@@ -40,6 +41,10 @@ class UserInvite(BaseModel):
     first_name: str = Field(min_length=1, max_length=100)
     last_name: str = Field(min_length=1, max_length=100)
     role: str = Field(min_length=1, max_length=50)
+    # Optional: tie the user to a single partner organization (جهة). Validated
+    # against the caller's org on invite. Additive only — no role restriction
+    # and no scoping behaviour reads it yet.
+    partner_organization_id: UUID | None = None
 
 
 class UserInviteResponse(BaseModel):
@@ -51,6 +56,28 @@ class UserInviteResponse(BaseModel):
 class AcceptInvite(BaseModel):
     token: str
     password: str = Field(min_length=8, max_length=128)
+
+
+async def _assert_partner_in_org(
+    db: AsyncSession, partner_organization_id: UUID, organization_id: UUID
+) -> None:
+    """Reject a ``partner_organization_id`` that is not in ``organization_id``.
+
+    Mirrors the explicit in-org check in
+    ``services/orphans._assert_orphanage_in_org``: we validate here rather than
+    trusting RLS, since a Postgres superuser connection bypasses it and a
+    cross-org id would otherwise be silently accepted. Surfaced as a plain 404
+    (the same ``NotFound("Partner")`` idiom ``bank_transfers`` uses), which also
+    leaks nothing about another tenant's organisations.
+    """
+    owned = await db.scalar(
+        select(PartnerOrganization.id).where(
+            PartnerOrganization.id == partner_organization_id,
+            PartnerOrganization.organization_id == organization_id,
+        )
+    )
+    if owned is None:
+        raise NotFound("Partner organization")
 
 
 @router.get("", response_model=Page[UserAdminRead])
@@ -100,6 +127,10 @@ async def invite_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="A user with that email already exists",
         )
+    # Optional partner-org (جهة) link: validate ownership before creating
+    # anything so a cross-org id fails fast. No-op when the field is omitted.
+    if payload.partner_organization_id is not None:
+        await _assert_partner_in_org(db, payload.partner_organization_id, user.organization_id)
     invited = User(
         organization_id=user.organization_id,
         email=payload.email,
@@ -107,6 +138,7 @@ async def invite_user(
         first_name=payload.first_name,
         last_name=payload.last_name,
         role=payload.role,
+        partner_organization_id=payload.partner_organization_id,
         status="pending_verification",
     )
     db.add(invited)
@@ -119,7 +151,13 @@ async def invite_user(
         action="user.invited",
         entity_type="user",
         entity_id=invited.id,
-        new_values={"email": invited.email, "role": invited.role},
+        new_values={
+            "email": invited.email,
+            "role": invited.role,
+            "partner_organization_id": (
+                str(invited.partner_organization_id) if invited.partner_organization_id else None
+            ),
+        },
         is_sensitive=True,
     )
     await db.commit()

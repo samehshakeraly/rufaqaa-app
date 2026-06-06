@@ -6292,6 +6292,8 @@ export interface components {
             last_login_at: string | null;
             /** Last Name */
             last_name: string;
+            /** Partner Organization Id */
+            partner_organization_id: string | null;
             /** Role */
             role: string;
             /** Status */
@@ -6310,6 +6312,8 @@ export interface components {
             first_name: string;
             /** Last Name */
             last_name: string;
+            /** Partner Organization Id */
+            partner_organization_id?: string | null;
             /** Role */
             role: string;
         };

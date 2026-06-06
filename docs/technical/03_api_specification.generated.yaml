@@ -6592,6 +6592,12 @@ components:
         last_name:
           title: Last Name
           type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
         role:
           title: Role
           type: string
@@ -6607,6 +6613,7 @@ components:
       - first_name
       - last_name
       - role
+      - partner_organization_id
       - status
       - two_factor_enabled
       - last_login_at
@@ -6629,6 +6636,12 @@ components:
           minLength: 1
           title: Last Name
           type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
         role:
           maxLength: 50
           minLength: 1

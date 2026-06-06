@@ -754,6 +754,25 @@ table.oa-users-table tbody tr.invited:hover {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+/* Assigned partner org (جهة) — secondary line under the role chip */
+.oa-users-partner-org {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-block-start: 6px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+.oa-users-partner-org svg {
+  inline-size: 12px;
+  block-size: 12px;
+  stroke-width: 2;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
 .oa-users-role-chip.r-admin {
   background: var(--purple-50);
   color: var(--purple-700);

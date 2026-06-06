@@ -8,11 +8,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { listPartners, type Partner } from "@/lib/partners";
 import {
   inviteUser,
   listUsers,
@@ -230,6 +231,11 @@ function initials(first: string, last: string): string {
   return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
 }
 
+// ── Partner org (جهة) display name — language-aware ─────────────
+function partnerName(p: Partner, lang: string): string {
+  return lang.startsWith("en") && p.name_en ? p.name_en : p.name_ar;
+}
+
 // ── Status → chip class ─────────────────────────────────────────
 function statusChipClass(status: string): string {
   switch (status) {
@@ -282,7 +288,7 @@ const PLACEHOLDER = "—";
 // Main page
 // ════════════════════════════════════════════════════════════════
 export function UsersPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const { data: me } = useCurrentUser();
   const fmt = useFormatters();
@@ -321,6 +327,19 @@ export function UsersPage() {
     queryFn: () =>
       listUsers({ limit: pageSize, offset, ...(role ? { role } : {}) }),
   });
+
+  // Partner organisations (جهة) — reuse the PartnersPage data source to label
+  // each user's assigned جهة and to populate the invite selector.
+  const { data: partnersData } = useQuery({
+    queryKey: ["partners", { includeInactive: false }],
+    queryFn: () => listPartners(false),
+  });
+  const partners = useMemo(() => partnersData?.items ?? [], [partnersData]);
+  const partnerNameById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of partners) m.set(p.id, partnerName(p, i18n.language));
+    return m;
+  }, [partners, i18n.language]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["users"], exact: false });
 
@@ -723,12 +742,20 @@ export function UsersPage() {
                         </div>
                       </td>
 
-                      {/* Role */}
+                      {/* Role + assigned partner org (جهة) */}
                       <td>
                         <span className={`oa-users-role-chip ${roleChipClass(u.role)}`}>
                           <Icon>{roleIcon(u.role)}</Icon>
                           {t(`users.roles.${u.role}`, u.role)}
                         </span>
+                        {u.partner_organization_id && (
+                          <div className="oa-users-partner-org" title={t("users.partnerOrg")}>
+                            <Icon>{ICONS.building}</Icon>
+                            <span>
+                              {partnerNameById.get(u.partner_organization_id) ?? PLACEHOLDER}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       {/* Status */}
@@ -919,6 +946,7 @@ export function UsersPage() {
       {showInvite && (
         <InviteModal
           me={me}
+          partners={partners}
           onClose={() => setShowInvite(false)}
           onInvited={async () => {
             await invalidate();
@@ -935,18 +963,20 @@ export function UsersPage() {
 // ════════════════════════════════════════════════════════════════
 interface InviteModalProps {
   me: { first_name?: string } | undefined;
+  partners: Partner[];
   onClose: () => void;
   onInvited: (result: UserInviteResult) => void | Promise<void>;
 }
 
 const INVITE_DAYS = 7; // hardcoded per mockup
 
-function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
-  const { t } = useTranslation();
+function InviteModal({ me, partners, onClose, onInvited }: InviteModalProps) {
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName] = useState("");
   const [inviteRole, setInviteRole] = useState<InvitableRole>(INVITABLE_ROLES[0]);
+  const [partnerOrgId, setPartnerOrgId] = useState("");
   const [require2fa, setRequire2fa] = useState(true);
   const [sendWelcome, setSendWelcome] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -962,6 +992,7 @@ function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         role: inviteRole,
+        partner_organization_id: partnerOrgId || null,
       }),
     onSuccess: async (result) => {
       setServerError(null);
@@ -1076,6 +1107,27 @@ function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Partner organization (جهة) — optional, any role */}
+            <div className="oa-users-form-group">
+              <label className="oa-users-form-label" htmlFor="oa-invite-partner-org">
+                {t("users.partnerOrg")}{" "}
+                <span className="opt">{t("users.invite.fullNameOptional")}</span>
+              </label>
+              <select
+                id="oa-invite-partner-org"
+                className="oa-users-form-input"
+                value={partnerOrgId}
+                onChange={(e) => setPartnerOrgId(e.target.value)}
+              >
+                <option value="">{t("users.invite.partnerOrgNone")}</option>
+                {partners.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {partnerName(p, i18n.language)}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Settings toggles */}

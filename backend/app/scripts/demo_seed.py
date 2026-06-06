@@ -983,6 +983,22 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
             )
             donor.total_donated_currency = donor.preferred_currency
 
+        # ── Partner-org (جهة) link for partner users — defensive / no-op safe ─
+        # Tie any partner_manager / partner_staff demo users to the Kenya demo
+        # جهة. Those roles may not be seeded on the current main yet (their seed
+        # PR may be unmerged), so we assign over whatever already exists rather
+        # than creating users here — a clean no-op when none are present.
+        partner_users = (
+            await db.scalars(
+                select(User).where(
+                    User.organization_id == org_id,
+                    User.role.in_(("partner_manager", "partner_staff")),
+                )
+            )
+        ).all()
+        for pu in partner_users:
+            pu.partner_organization_id = kenya_partner.id
+
         await db.commit()
 
     return counts

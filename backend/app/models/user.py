@@ -19,6 +19,14 @@ class User(Base):
         ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
     )
+    # NULLABLE FK to the partner organization (جهة) a user belongs to. NULL =
+    # not tied to any one جهة (the default for every user). Additive foundation
+    # only — no visibility/scoping behaviour reads it yet.
+    partner_organization_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("partner_organizations.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     phone: Mapped[str | None] = mapped_column(String(30), unique=True)
