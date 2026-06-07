@@ -11,7 +11,7 @@ from sqlalchemy import case, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, PARTNER_SCOPED_ROLES, partner_scope_hides, require_roles
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.partner import MarketingChannel
@@ -33,6 +33,7 @@ from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
 from app.services.orphans import (
     _assert_orphanage_in_org,
+    _assert_orphanage_in_partner_org,
     create_orphan_record,
     recompute_profile_completion,
     stamp_available_since,
@@ -321,6 +322,13 @@ async def update_orphan(
     )
     if orphan is None:
         raise NotFound("Orphan")
+    # Partner-scoped callers must not even learn that an orphan outside their
+    # جهة exists: mirror PR-2's read 404 on this write path (the loader above is
+    # not partner-scoped). A scoped user with no جهة is hidden from every
+    # orphan. partner_organization_id is not a field on OrphanUpdate, so a
+    # scoped caller structurally cannot move an orphan off their جهة.
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
 
     data = payload.model_dump(exclude_unset=True)
     # orphanage_id is the one editable field that can point across tenants;
@@ -328,6 +336,14 @@ async def update_orphan(
     # bypasses RLS). An explicit null clears the assignment (always allowed).
     if data.get("orphanage_id") is not None:
         await _assert_orphanage_in_org(db, data["orphanage_id"], user.organization_id)
+        # Scoped callers may only attach a dar from their own جهة. Their جهة is
+        # guaranteed non-NULL here: partner_scope_hides above 404s a scoped user
+        # with no جهة before we ever reach this point.
+        if user.role in PARTNER_SCOPED_ROLES:
+            assert user.partner_organization_id is not None
+            await _assert_orphanage_in_partner_org(
+                db, data["orphanage_id"], user.partner_organization_id
+            )
 
     changes: dict[str, dict[str, str | None]] = {}
     for field, value in data.items():

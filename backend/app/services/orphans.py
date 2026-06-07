@@ -30,6 +30,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.authz import PARTNER_SCOPED_ROLES
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.user import User
@@ -131,6 +132,31 @@ async def _assert_orphanage_in_org(
         )
 
 
+async def _assert_orphanage_in_partner_org(
+    db: AsyncSession, orphanage_id: UUID, partner_organization_id: UUID
+) -> None:
+    """Reject an ``orphanage_id`` (dar) that does not belong to the caller's جهة.
+
+    The partner-scoped sibling of :func:`_assert_orphanage_in_org`: where that
+    one keeps a dar inside the tenant, this keeps it inside the caller's own
+    partner organization. Used for ``PARTNER_SCOPED_ROLES`` on the orphan
+    create/update paths so a scoped user can only attach a dar from their own
+    جهة. A dar with no جهة (``partner_organization_id`` NULL) can never match,
+    so it too is rejected — scoped users may only use their own جهة's dars.
+    """
+    owned = await db.scalar(
+        select(Orphanage.id).where(
+            Orphanage.id == orphanage_id,
+            Orphanage.partner_organization_id == partner_organization_id,
+        )
+    )
+    if owned is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="orphanage_id does not reference a dar in your partner organization",
+        )
+
+
 async def create_orphan_record(
     db: AsyncSession,
     *,
@@ -150,11 +176,29 @@ async def create_orphan_record(
     Raises ``409`` if it would violate the no-duplicate rule, or ``400`` if a
     cross-org ``orphanage_id`` is supplied.
     """
+    # Partner-scoped roles (partner_manager/partner_staff) are pinned to their
+    # own جهة on writes: they cannot create an orphan for another partner
+    # organization, so we OVERRIDE whatever partner_organization_id the payload
+    # carried with the caller's own. A scoped user with no جهة assigned has
+    # nothing to pin to and cannot create at all (403). Non-scoped roles
+    # (org_admin etc.) keep their existing freedom — the supplied id stands and
+    # is validated downstream by the caller.
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Your account is not assigned to a partner organization (جهة)",
+            )
+        partner_organization_id = user.partner_organization_id
+
     # Staff may pin the child to a dar at creation. Validate ownership before
     # anything else so a cross-org id fails fast with a clean 400. The guardian
     # self-service caller never passes orphanage_id, so this is a no-op there.
     if orphanage_id is not None:
         await _assert_orphanage_in_org(db, orphanage_id, user.organization_id)
+        # Scoped callers may only attach a dar from their own جهة.
+        if user.role in PARTNER_SCOPED_ROLES:
+            await _assert_orphanage_in_partner_org(db, orphanage_id, partner_organization_id)
 
     # Friendly pre-check: the DB unique index is the real guard, but looking up
     # the conflicting row first lets us return a clear 409 with the existing

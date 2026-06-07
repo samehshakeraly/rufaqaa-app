@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 
@@ -21,6 +22,11 @@ Role = str
 # Common role groupings — keep them short and centralised so the call sites
 # read fluently (`require_roles(STAFF_ROLES)`).
 ADMIN_ROLES: tuple[Role, ...] = ("super_admin", "org_admin")
+# Roles whose access is confined to a single partner organization (جهة): they
+# read and write only within their own جهة. ADMIN_ROLES and every other role
+# are NOT partner-scoped. The actual scoping lives at the call sites (explicit
+# checks, not RLS) — see ``partner_scope_hides`` and the orphan write paths.
+PARTNER_SCOPED_ROLES: tuple[Role, ...] = ("partner_manager", "partner_staff")
 # Finance-facing views (overdue donors, reconciliation lists).
 FINANCE_ROLES: tuple[Role, ...] = ("finance", *ADMIN_ROLES)
 # Marketing-facing views (channel goals / progress).
@@ -34,6 +40,23 @@ STAFF_ROLES: tuple[Role, ...] = (
     "finance",
 )
 DONOR_ROLE: Role = "donor"
+
+
+def partner_scope_hides(user: User, partner_organization_id: UUID | None) -> bool:
+    """Whether a partner-scoped caller must NOT see/touch a row owned by
+    ``partner_organization_id``.
+
+    The single predicate behind partner-جهة scoping. A caller outside
+    ``PARTNER_SCOPED_ROLES`` is never restricted (returns ``False``). A scoped
+    caller with no جهة assigned is hidden from *everything*; otherwise a row is
+    hidden unless it belongs to the caller's own جهة. Used to mirror PR-2's read
+    404 on the write paths so a foreign-جهة orphan never leaks its existence.
+    """
+    if user.role not in PARTNER_SCOPED_ROLES:
+        return False
+    if user.partner_organization_id is None:
+        return True
+    return partner_organization_id != user.partner_organization_id
 
 
 def require_roles(*allowed: Role) -> Callable[..., Awaitable[User]]:
