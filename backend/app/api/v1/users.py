@@ -25,6 +25,7 @@ from app.core.security import (
     hash_password,
 )
 from app.models.organization import Organization
+from app.models.partner import PartnerOrganization
 from app.models.session import UserSession
 from app.models.user import User
 from app.schemas.common import Page
@@ -40,6 +41,9 @@ class UserInvite(BaseModel):
     first_name: str = Field(min_length=1, max_length=100)
     last_name: str = Field(min_length=1, max_length=100)
     role: str = Field(min_length=1, max_length=50)
+    # Optional جهة link. When set it must belong to the caller's org (checked
+    # below). Foundation only — not restricted by role here.
+    partner_organization_id: UUID | None = None
 
 
 class UserInviteResponse(BaseModel):
@@ -51,6 +55,35 @@ class UserInviteResponse(BaseModel):
 class AcceptInvite(BaseModel):
     token: str
     password: str = Field(min_length=8, max_length=128)
+
+
+class UserUpdate(BaseModel):
+    # Present-and-null clears the assignment; an omitted key leaves it
+    # untouched (the orphanage-update convention).
+    partner_organization_id: UUID | None = None
+
+
+async def _assert_partner_org_in_org(
+    db: AsyncSession, partner_organization_id: UUID, organization_id: UUID
+) -> None:
+    """Reject a ``partner_organization_id`` that does not belong to ``organization_id``.
+
+    Mirrors the org-scoped ownership check in
+    ``services/orphans._assert_orphanage_in_org``: we validate explicitly rather
+    than trust RLS (a Postgres superuser connection bypasses it, so a cross-org
+    id would otherwise be silently accepted). Shared by invite + update.
+    """
+    owned = await db.scalar(
+        select(PartnerOrganization.id).where(
+            PartnerOrganization.id == partner_organization_id,
+            PartnerOrganization.organization_id == organization_id,
+        )
+    )
+    if owned is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="partner_organization_id does not reference a partner organization in this organization",
+        )
 
 
 @router.get("", response_model=Page[UserAdminRead])
@@ -100,6 +133,8 @@ async def invite_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="A user with that email already exists",
         )
+    if payload.partner_organization_id is not None:
+        await _assert_partner_org_in_org(db, payload.partner_organization_id, user.organization_id)
     invited = User(
         organization_id=user.organization_id,
         email=payload.email,
@@ -108,6 +143,7 @@ async def invite_user(
         last_name=payload.last_name,
         role=payload.role,
         status="pending_verification",
+        partner_organization_id=payload.partner_organization_id,
     )
     db.add(invited)
     await db.flush()
@@ -266,6 +302,45 @@ async def reactivate_user(
         entity_type="user",
         entity_id=target.id,
         new_values={"email": target.email},
+    )
+    await db.commit()
+    await db.refresh(target)
+    return UserAdminRead.model_validate(target)
+
+
+@router.patch("/{user_id}", response_model=UserAdminRead)
+async def update_user(
+    user_id: UUID,
+    payload: UserUpdate,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+) -> UserAdminRead:
+    """Patch a user's mutable admin fields.
+
+    Scoped for now to the partner organization (جهة) link — the foundation for
+    partner-scoped users. Mirrors ``update_orphanage``: a present, non-null
+    ``partner_organization_id`` is validated for org ownership before
+    assignment; a present null clears it; an omitted key leaves it untouched.
+    Purely additive — no role restriction or visibility logic here.
+    """
+    target = await _load_user_or_404(db, user_id)
+    updates = payload.model_dump(exclude_unset=True)
+    if updates.get("partner_organization_id") is not None:
+        await _assert_partner_org_in_org(
+            db, updates["partner_organization_id"], user.organization_id
+        )
+    for field, value in updates.items():
+        setattr(target, field, value)
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="user.updated",
+        entity_type="user",
+        entity_id=target.id,
+        # mode="json" keeps the audit JSONB-safe — partner_organization_id is a
+        # UUID rather than a plain string.
+        new_values=payload.model_dump(exclude_unset=True, mode="json"),
     )
     await db.commit()
     await db.refresh(target)

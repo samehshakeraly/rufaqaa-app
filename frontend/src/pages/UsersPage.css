@@ -724,6 +724,20 @@ table.oa-users-table tbody tr.invited:hover {
   margin-block-start: 1px;
   font-family: "IBM Plex Sans", sans-serif;
 }
+/* Assigned partner organization (جهة) — muted sub-line under the email */
+.oa-users-info .partner-org {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-block-start: 2px;
+}
+.oa-users-info .partner-org svg {
+  inline-size: 12px;
+  block-size: 12px;
+  flex-shrink: 0;
+}
 .oa-users-you-label {
   font-size: 10.5px;
   color: var(--trust-600);

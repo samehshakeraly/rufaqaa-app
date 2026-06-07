@@ -15,6 +15,7 @@ class UserAdminRead(BaseModel):
     first_name: str
     last_name: str
     role: str
+    partner_organization_id: UUID | None
     status: str
     two_factor_enabled: bool
     last_login_at: datetime | None

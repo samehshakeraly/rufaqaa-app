@@ -6592,6 +6592,12 @@ components:
         last_name:
           title: Last Name
           type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
         role:
           title: Role
           type: string
@@ -6607,6 +6613,7 @@ components:
       - first_name
       - last_name
       - role
+      - partner_organization_id
       - status
       - two_factor_enabled
       - last_login_at
@@ -6629,6 +6636,12 @@ components:
           minLength: 1
           title: Last Name
           type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
         role:
           maxLength: 50
           minLength: 1
@@ -6656,6 +6669,16 @@ components:
       - invite_token
       - expires_in_days
       title: UserInviteResponse
+      type: object
+    UserUpdate:
+      properties:
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
+      title: UserUpdate
       type: object
     ValidationError:
       properties:
@@ -12467,6 +12490,53 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Invite User
+      tags:
+      - users
+  /api/v1/users/{user_id}:
+    patch:
+      description: 'Patch a user''s mutable admin fields.
+
+
+        Scoped for now to the partner organization (جهة) link — the foundation for
+
+        partner-scoped users. Mirrors ``update_orphanage``: a present, non-null
+
+        ``partner_organization_id`` is validated for org ownership before
+
+        assignment; a present null clears it; an omitted key leaves it untouched.
+
+        Purely additive — no role restriction or visibility logic here.'
+      operationId: update_user_api_v1_users__user_id__patch
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          format: uuid
+          title: User Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdminRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update User
       tags:
       - users
   /api/v1/users/{user_id}/reactivate:
