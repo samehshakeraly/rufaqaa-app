@@ -69,6 +69,14 @@ MARKETING_USER = {"email": "marketing1@dev.rufaqaa.app", "password": "marketing1
 # Orphanage manager — linked to the demo dar below (orphanages.manager_user_id),
 # the foundation for the forthcoming manager portal.
 ORPHANAGE_MANAGER_USER = {"email": "manager1@dev.rufaqaa.app", "password": "manager12345"}
+# Back-office roles that previously had no demo login. Like every account here
+# they link to the org only via organization_id (the User model has no partner
+# association), so the standard _make_user helper below covers them as-is.
+SUPER_ADMIN_USER = {"email": "superadmin@dev.rufaqaa.app", "password": "superadmin12345"}
+PARTNER_MANAGER_USER = {"email": "partner1@dev.rufaqaa.app", "password": "partner12345"}
+PARTNER_STAFF_USER = {"email": "staff1@dev.rufaqaa.app", "password": "staff12345"}
+FINANCE_USER = {"email": "finance1@dev.rufaqaa.app", "password": "finance12345"}
+VIEWER_USER = {"email": "viewer1@dev.rufaqaa.app", "password": "viewer12345"}
 # Two donors get login accounts so donor↔guardian messages have a
 # resolvable from/to user (messages.from_user_id is NOT NULL).
 DONOR_USERS = [
@@ -82,6 +90,11 @@ DEMO_USER_EMAILS = [
     ORPHAN_USER["email"],
     MARKETING_USER["email"],
     ORPHANAGE_MANAGER_USER["email"],
+    SUPER_ADMIN_USER["email"],
+    PARTNER_MANAGER_USER["email"],
+    PARTNER_STAFF_USER["email"],
+    FINANCE_USER["email"],
+    VIEWER_USER["email"],
     *(u["email"] for u in DONOR_USERS),
 ]
 
@@ -474,6 +487,41 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
             "Demo",
             "Manager",
         )
+        super_admin_user_row = _make_user(
+            SUPER_ADMIN_USER["email"],
+            SUPER_ADMIN_USER["password"],
+            "super_admin",
+            "Demo",
+            "Super Admin",
+        )
+        partner_manager_user_row = _make_user(
+            PARTNER_MANAGER_USER["email"],
+            PARTNER_MANAGER_USER["password"],
+            "partner_manager",
+            "Demo",
+            "Partner Manager",
+        )
+        partner_staff_user_row = _make_user(
+            PARTNER_STAFF_USER["email"],
+            PARTNER_STAFF_USER["password"],
+            "partner_staff",
+            "Demo",
+            "Partner Staff",
+        )
+        finance_user_row = _make_user(
+            FINANCE_USER["email"],
+            FINANCE_USER["password"],
+            "finance",
+            "Demo",
+            "Finance",
+        )
+        viewer_user_row = _make_user(
+            VIEWER_USER["email"],
+            VIEWER_USER["password"],
+            "viewer",
+            "Demo",
+            "Viewer",
+        )
         donor_user_rows = [
             _make_user(u["email"], u["password"], "donor", "Demo", f"Donor {i + 1}")
             for i, u in enumerate(DONOR_USERS)
@@ -483,10 +531,17 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
             orphan_user_row,
             marketing_user_row,
             orphanage_manager_user_row,
+            super_admin_user_row,
+            partner_manager_user_row,
+            partner_staff_user_row,
+            finance_user_row,
+            viewer_user_row,
             *donor_user_rows,
         ):
             db.add(u)
-        counts["users"] = len(guardian_user_rows) + 3 + len(donor_user_rows)
+        # 8 singleton rows: orphan, marketing, orphanage_manager, super_admin,
+        # partner_manager, partner_staff, finance, viewer.
+        counts["users"] = len(guardian_user_rows) + 8 + len(donor_user_rows)
 
         # ── Partners (PS / EG / YE) ──────────────────────────────────────
         partners: list[PartnerOrganization] = []
@@ -1024,6 +1079,11 @@ async def main(force: bool) -> None:
     print(f"  orphan    → {ORPHAN_USER['email']} / {ORPHAN_USER['password']}")
     print(f"  marketing → {MARKETING_USER['email']} / {MARKETING_USER['password']}")
     print(f"  manager   → {ORPHANAGE_MANAGER_USER['email']} / {ORPHANAGE_MANAGER_USER['password']}")
+    print(f"  super     → {SUPER_ADMIN_USER['email']} / {SUPER_ADMIN_USER['password']}")
+    print(f"  partner   → {PARTNER_MANAGER_USER['email']} / {PARTNER_MANAGER_USER['password']}")
+    print(f"  staff     → {PARTNER_STAFF_USER['email']} / {PARTNER_STAFF_USER['password']}")
+    print(f"  finance   → {FINANCE_USER['email']} / {FINANCE_USER['password']}")
+    print(f"  viewer    → {VIEWER_USER['email']} / {VIEWER_USER['password']}")
     for u in DONOR_USERS:
         print(f"  donor     → {u['email']} / {u['password']}")
 
