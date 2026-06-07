@@ -243,6 +243,12 @@ export function AppLayout() {
 
   // Case-management surfaces — org admins and partner staff/managers.
   const isContentManager = isAdmin || isPartner;
+  // partner_staff is intake-only: it sees just the orphan list +
+  // registration. The full case-management nav (executive dashboard,
+  // donors, families, orphanages, sponsorships, partners) is reserved for
+  // every OTHER content manager — admins and partner_manager — whose nav
+  // is unchanged.
+  const isFullContentManager = isAdmin || isPartnerManager;
 
   function logout() {
     clear();
@@ -315,7 +321,8 @@ export function AppLayout() {
 
         <nav className="oa-nav" aria-label={t("nav.primary")}>
           {/* ── التنفيذية / Executive ──────────────────────────────── */}
-          {isContentManager && (
+          {/* Hidden from partner_staff (intake-only) via isFullContentManager. */}
+          {isFullContentManager && (
             <>
               <div className="oa-nav-section">{t("nav.section.executive")}</div>
               <NavLink to="/admin/dashboard" className={navItemClass}>
@@ -335,6 +342,8 @@ export function AppLayout() {
 
           {/* ── الإدارة / Administration ───────────────────────────── */}
           <div className="oa-nav-section">{t("nav.section.management")}</div>
+          {/* Orphan intake — the ONLY case-management surface partner_staff
+              (field researchers) reaches. Shown to every content manager. */}
           {isContentManager && (
             <>
               <NavLink to="/admin/orphans" end className={navItemClass}>
@@ -345,6 +354,11 @@ export function AppLayout() {
                 <NavIco>{ICONS.userPlus}</NavIco>
                 {t("nav.registerOrphan")}
               </NavLink>
+            </>
+          )}
+          {/* Rest of case management — hidden from partner_staff (intake-only). */}
+          {isFullContentManager && (
+            <>
               <NavLink to="/admin/donors" className={navItemClass}>
                 <NavIco>{ICONS.users}</NavIco>
                 {t("nav.donors")}
