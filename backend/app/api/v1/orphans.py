@@ -270,13 +270,26 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_orphans_csv(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     case_status: str | None = None,
 ) -> StreamingResponse:
     """Stream non-deleted orphans (optionally filtered by case_status)
     as CSV. Capped at 10 000 rows. Registered before /{orphan_id} so
     FastAPI doesn't try to parse 'export.csv' as a UUID."""
-    stmt = select(Orphan).where(Orphan.deleted_at.is_(None))
+    # Org + partner scoping mirrors list_orphans exactly — the export is the
+    # same visibility surface, so it must not become a back door around it.
+    stmt = select(Orphan).where(
+        Orphan.deleted_at.is_(None),
+        Orphan.organization_id == user.organization_id,
+    )
+    # Partner-scoped roles (PR-2) see only their own جهة; an unassigned caller
+    # (NULL جهة) sees nothing. Explicit filter on top of the org scope — never
+    # RLS (a superuser connection bypasses it).
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(Orphan.partner_organization_id == user.partner_organization_id)
     if case_status:
         stmt = stmt.where(Orphan.case_status == case_status)
     stmt = stmt.order_by(Orphan.created_at.desc()).limit(10_000)

@@ -12,6 +12,8 @@ build two جهات under the seeded DEV org.
 
 from __future__ import annotations
 
+import csv
+import io
 import uuid
 from datetime import date
 
@@ -123,9 +125,17 @@ async def _setup(api: AsyncClient) -> dict[str, str]:
             "dar_b": str(dar_b.id),
             "orphan_a": str(orphan_a.id),
             "orphan_b": str(orphan_b.id),
+            "orphan_a_code": orphan_a.code,
+            "orphan_b_code": orphan_b.code,
             "pm_email": pm_email,
             "staff_email": staff_email,
         }
+
+
+def _csv_codes(body: str) -> list[str]:
+    """The ``code`` column (first) of each data row in a CSV export body."""
+    rows = list(csv.reader(io.StringIO(body)))
+    return [r[0] for r in rows[1:] if r]  # skip header; drop any blank trailing row
 
 
 async def test_partner_manager_sees_only_own_jiha(
@@ -181,3 +191,26 @@ async def test_org_admin_visibility_unchanged(
     assert (
         await api.get(f"/api/v1/orphans/{ids['orphan_b']}", headers=auth_headers)
     ).status_code == 200
+
+
+async def test_csv_export_is_partner_scoped(api: AsyncClient, auth_headers: dict[str, str]) -> None:
+    """The CSV export is the same visibility surface as the list — it must obey
+    the same org + partner scoping, not become a back door around it."""
+    ids = await _setup(api)
+    pm = await _login(api, ids["pm_email"])
+    staff = await _login(api, ids["staff_email"])
+
+    # partner_manager (جهة A): export carries A's orphan, never B's.
+    pm_codes = _csv_codes((await api.get("/api/v1/orphans/export.csv", headers=pm)).text)
+    assert ids["orphan_a_code"] in pm_codes
+    assert ids["orphan_b_code"] not in pm_codes
+
+    # Unassigned partner user: header only, zero data rows.
+    staff_csv = (await api.get("/api/v1/orphans/export.csv", headers=staff)).text
+    assert _csv_codes(staff_csv) == []
+
+    # org_admin: both جهات present (unchanged).
+    admin_codes = _csv_codes(
+        (await api.get("/api/v1/orphans/export.csv", headers=auth_headers)).text
+    )
+    assert {ids["orphan_a_code"], ids["orphan_b_code"]} <= set(admin_codes)
