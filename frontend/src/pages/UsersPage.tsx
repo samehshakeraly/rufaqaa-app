@@ -8,16 +8,18 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { listPartners, type Partner } from "@/lib/partners";
 import {
   inviteUser,
   listUsers,
   reactivateUser,
   suspendUser,
+  updateUser,
   type AdminUser,
   type UserInviteResult,
 } from "@/lib/users";
@@ -297,6 +299,7 @@ export function UsersPage() {
   const [pageSize, setPageSize] = useState(PAGE_SIZE_DEFAULT);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showInvite, setShowInvite] = useState(false);
+  const [editUser, setEditUser] = useState<AdminUser | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   // Sync URL ?role= → local state
@@ -321,6 +324,19 @@ export function UsersPage() {
     queryFn: () =>
       listUsers({ limit: pageSize, offset, ...(role ? { role } : {}) }),
   });
+
+  // Partner organizations (جهة) — same data source PartnersPage uses, so the
+  // cache is shared. Drives the row label + the form selectors.
+  const { data: partnersData } = useQuery({
+    queryKey: ["partners", { includeInactive: true }],
+    queryFn: () => listPartners(true),
+  });
+  const partners: Partner[] = useMemo(() => partnersData?.items ?? [], [partnersData]);
+  const partnerNameById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of partners) m.set(p.id, p.name_ar);
+    return m;
+  }, [partners]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["users"], exact: false });
 
@@ -387,12 +403,13 @@ export function UsersPage() {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         if (showInvite) setShowInvite(false);
+        if (editUser) setEditUser(null);
         setOpenMenuId(null);
       }
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [showInvite]);
+  }, [showInvite, editUser]);
 
   // ── Stat strip counts  ──────────────────────────────────────
   // TODO(backend): /org/users returns `total` but no breakdown by status
@@ -719,6 +736,12 @@ export function UsersPage() {
                               )}
                             </div>
                             <div className="em">{u.email}</div>
+                            {u.partner_organization_id && (
+                              <div className="partner-org">
+                                <Icon>{ICONS.building}</Icon>
+                                {partnerNameById.get(u.partner_organization_id) ?? PLACEHOLDER}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -789,8 +812,12 @@ export function UsersPage() {
                               role="menu"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {/* TODO(backend): edit profile not yet implemented */}
-                              <button className="oa-users-menu-item" type="button" role="menuitem">
+                              <button
+                                className="oa-users-menu-item"
+                                type="button"
+                                role="menuitem"
+                                onClick={() => { setEditUser(u); setOpenMenuId(null); }}
+                              >
                                 <Icon>{ICONS.edit}</Icon>
                                 {t("users.actions.editProfile")}
                               </button>
@@ -919,10 +946,24 @@ export function UsersPage() {
       {showInvite && (
         <InviteModal
           me={me}
+          partners={partners}
           onClose={() => setShowInvite(false)}
           onInvited={async () => {
             await invalidate();
             setShowInvite(false);
+          }}
+        />
+      )}
+
+      {/* ── Edit user modal ───────────────────────────────────── */}
+      {editUser && (
+        <EditUserModal
+          user={editUser}
+          partners={partners}
+          onClose={() => setEditUser(null)}
+          onSaved={async () => {
+            await invalidate();
+            setEditUser(null);
           }}
         />
       )}
@@ -935,18 +976,20 @@ export function UsersPage() {
 // ════════════════════════════════════════════════════════════════
 interface InviteModalProps {
   me: { first_name?: string } | undefined;
+  partners: Partner[];
   onClose: () => void;
   onInvited: (result: UserInviteResult) => void | Promise<void>;
 }
 
 const INVITE_DAYS = 7; // hardcoded per mockup
 
-function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
+function InviteModal({ me, partners, onClose, onInvited }: InviteModalProps) {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName] = useState("");
   const [inviteRole, setInviteRole] = useState<InvitableRole>(INVITABLE_ROLES[0]);
+  const [partnerOrgId, setPartnerOrgId] = useState("");
   const [require2fa, setRequire2fa] = useState(true);
   const [sendWelcome, setSendWelcome] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -962,6 +1005,7 @@ function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         role: inviteRole,
+        partner_organization_id: partnerOrgId || null,
       }),
     onSuccess: async (result) => {
       setServerError(null);
@@ -1078,6 +1122,14 @@ function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
               </div>
             </div>
 
+            {/* Partner organization (جهة) — optional */}
+            <PartnerOrgSelect
+              id="oa-invite-partner-org"
+              partners={partners}
+              value={partnerOrgId}
+              onChange={setPartnerOrgId}
+            />
+
             {/* Settings toggles */}
             <div className="oa-users-form-group">
               <div className="oa-users-form-label">{t("users.invite.settingsLabel")}</div>
@@ -1138,6 +1190,141 @@ function InviteModal({ me, onClose, onInvited }: InviteModalProps) {
             >
               <Icon>{ICONS.envelope}</Icon>
               {mut.isPending ? t("common.saving") : t("users.invite.send")}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// Partner organization (جهة) selector — shared by invite + edit forms
+// ════════════════════════════════════════════════════════════════
+interface PartnerOrgSelectProps {
+  id: string;
+  partners: Partner[];
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function PartnerOrgSelect({ id, partners, value, onChange }: PartnerOrgSelectProps) {
+  const { t } = useTranslation();
+  return (
+    <div className="oa-users-form-group">
+      <label className="oa-users-form-label" htmlFor={id}>
+        {t("users.invite.partnerOrgLabel")}{" "}
+        <span className="opt">{t("users.invite.fullNameOptional")}</span>
+      </label>
+      <select
+        id={id}
+        className="oa-users-form-input"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">{t("users.invite.partnerOrgNone")}</option>
+        {partners.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name_ar}
+          </option>
+        ))}
+      </select>
+      <div className="oa-users-form-help">{t("users.invite.partnerOrgHelp")}</div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// Edit user modal — partner organization (جهة) assignment
+// ════════════════════════════════════════════════════════════════
+interface EditUserModalProps {
+  user: AdminUser;
+  partners: Partner[];
+  onClose: () => void;
+  onSaved: (result: AdminUser) => void | Promise<void>;
+}
+
+function EditUserModal({ user, partners, onClose, onSaved }: EditUserModalProps) {
+  const { t } = useTranslation();
+  const [partnerOrgId, setPartnerOrgId] = useState(user.partner_organization_id ?? "");
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const mut = useMutation({
+    mutationFn: () => updateUser(user.id, { partner_organization_id: partnerOrgId || null }),
+    onSuccess: async (result) => {
+      setServerError(null);
+      toast.success(t("users.editSaved"));
+      await onSaved(result);
+    },
+    onError: (err) => {
+      const msg = err instanceof AxiosError ? err.response?.data?.detail : null;
+      setServerError(typeof msg === "string" ? msg : t("common.createError"));
+    },
+  });
+
+  return (
+    <div
+      className="oa-users-scrim"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="oa-edit-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="oa-users-modal">
+        {/* Modal header */}
+        <div className="oa-users-modal-head">
+          <div>
+            <h2 id="oa-edit-title">
+              <Icon className="oa-icon oa-icon-md">{ICONS.edit}</Icon>
+              {t("users.actions.editProfile")}
+            </h2>
+            <p>
+              {user.first_name} {user.last_name} · {user.email}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="oa-users-modal-close"
+            aria-label={t("common.cancel")}
+            onClick={onClose}
+          >
+            <Icon className="oa-icon oa-icon-md">{ICONS.close}</Icon>
+          </button>
+        </div>
+
+        {/* Modal body */}
+        <div className="oa-users-modal-body">
+          <form id="oa-edit-form" onSubmit={(e) => { e.preventDefault(); mut.mutate(); }}>
+            <PartnerOrgSelect
+              id="oa-edit-partner-org"
+              partners={partners}
+              value={partnerOrgId}
+              onChange={setPartnerOrgId}
+            />
+            {serverError && (
+              <div className="oa-users-error" role="alert">{serverError}</div>
+            )}
+          </form>
+        </div>
+
+        {/* Modal footer */}
+        <div className="oa-users-modal-foot">
+          <span className="oa-users-modal-foot-note">
+            <Icon>{ICONS.info}</Icon>
+            {t("users.invite.permissionsNote")}
+          </span>
+          <div className="oa-users-modal-foot-actions">
+            <button type="button" className="oa-btn-secondary" onClick={onClose}>
+              {t("common.cancel")}
+            </button>
+            <button
+              type="submit"
+              form="oa-edit-form"
+              className="oa-btn-primary"
+              disabled={mut.isPending}
+            >
+              <Icon>{ICONS.check}</Icon>
+              {mut.isPending ? t("common.saving") : t("users.drawer.saveChanges")}
             </button>
           </div>
         </div>

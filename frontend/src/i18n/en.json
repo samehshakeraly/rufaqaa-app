@@ -2203,6 +2203,9 @@
       "sendWelcomeHelp": "With a message from {{name}}",
       "permissionsNote": "You can review permissions later.",
       "send": "Send Invitation",
+      "partnerOrgLabel": "Partner organization (جهة)",
+      "partnerOrgNone": "No organization",
+      "partnerOrgHelp": "Link the user to a single partner organization (optional).",
       "roleCards": {
         "org_admin": "Org Admin",
         "org_adminDesc": "Full access to everything",
@@ -2240,6 +2243,7 @@
       "sendNotification": "Send Notification",
       "disable": "Disable User"
     },
+    "editSaved": "Changes saved",
     "empty": "No users found"
   },
   "marketingChannels": {

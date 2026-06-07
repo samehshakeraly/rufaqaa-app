@@ -2722,6 +2722,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update User
+         * @description Patch a user's mutable admin fields.
+         *
+         *     Scoped for now to the partner organization (جهة) link — the foundation for
+         *     partner-scoped users. Mirrors ``update_orphanage``: a present, non-null
+         *     ``partner_organization_id`` is validated for org ownership before
+         *     assignment; a present null clears it; an omitted key leaves it untouched.
+         *     Purely additive — no role restriction or visibility logic here.
+         */
+        patch: operations["update_user_api_v1_users__user_id__patch"];
+        trace?: never;
+    };
     "/api/v1/users/{user_id}/reactivate": {
         parameters: {
             query?: never;
@@ -6292,6 +6318,8 @@ export interface components {
             last_login_at: string | null;
             /** Last Name */
             last_name: string;
+            /** Partner Organization Id */
+            partner_organization_id: string | null;
             /** Role */
             role: string;
             /** Status */
@@ -6310,6 +6338,8 @@ export interface components {
             first_name: string;
             /** Last Name */
             last_name: string;
+            /** Partner Organization Id */
+            partner_organization_id?: string | null;
             /** Role */
             role: string;
         };
@@ -6320,6 +6350,11 @@ export interface components {
             /** Invite Token */
             invite_token: string;
             user: components["schemas"]["UserAdminRead"];
+        };
+        /** UserUpdate */
+        UserUpdate: {
+            /** Partner Organization Id */
+            partner_organization_id?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -11248,6 +11283,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserInviteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_api_v1_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdminRead"];
                 };
             };
             /** @description Validation Error */

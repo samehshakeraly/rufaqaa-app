@@ -19,6 +19,14 @@ class User(Base):
         ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
     )
+    # Optional link tying a partner user (partner_manager / partner_staff) to a
+    # single جهة. NULL = not scoped to any one partner org. Foundation only —
+    # no visibility/scoping logic reads it yet (see migration 0013).
+    partner_organization_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("partner_organizations.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     phone: Mapped[str | None] = mapped_column(String(30), unique=True)

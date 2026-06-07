@@ -2203,6 +2203,9 @@
       "sendWelcomeHelp": "برسالة من {{name}}",
       "permissionsNote": "يمكنك مراجعة الصلاحيّات لاحقاً.",
       "send": "إرسال الدعوة",
+      "partnerOrgLabel": "الجهة الشريكة",
+      "partnerOrgNone": "بدون جهة",
+      "partnerOrgHelp": "اربط المستخدم بجهة شريكة واحدة (اختياري).",
       "roleCards": {
         "org_admin": "مدير المؤسسة",
         "org_adminDesc": "صلاحيّة كاملة على كل شيء",
@@ -2240,6 +2243,7 @@
       "sendNotification": "إرسال إشعار",
       "disable": "تعطيل المستخدم"
     },
+    "editSaved": "تم حفظ التغييرات",
     "empty": "لا يوجد مستخدمون"
   },
   "marketingChannels": {

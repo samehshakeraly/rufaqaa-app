@@ -695,6 +695,11 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
         # Link the demo orphanage_manager to this dar (manager_user_id). The
         # user was flushed above, so it already has an id.
         orphanage.manager_user_id = orphanage_manager_user_row.id
+        # Tie the partner-scoped demo users (partner_manager / partner_staff) to
+        # the Kenya جهة — the foundation for partner-scoped visibility. Both rows
+        # were flushed above, so the assignment is UPDATEd on the final commit.
+        partner_manager_user_row.partner_organization_id = kenya_partner.id
+        partner_staff_user_row.partner_organization_id = kenya_partner.id
         residents = [o for o in orphans if o.partner_organization_id == kenya_partner.id][:3]
         for o in residents:
             o.orphanage_id = orphanage.id

@@ -7,6 +7,7 @@ export interface AdminUser {
   first_name: string;
   last_name: string;
   role: string;
+  partner_organization_id: string | null;
   status: string;
   two_factor_enabled: boolean;
   last_login_at: string | null;
@@ -44,7 +45,16 @@ export async function inviteUser(payload: {
   first_name: string;
   last_name: string;
   role: string;
+  partner_organization_id?: string | null;
 }): Promise<UserInviteResult> {
   const { data } = await api.post<UserInviteResult>("/users/invite", payload);
+  return data;
+}
+
+export async function updateUser(
+  id: string,
+  payload: { partner_organization_id?: string | null },
+): Promise<AdminUser> {
+  const { data } = await api.patch<AdminUser>(`/users/${id}`, payload);
   return data;
 }
