@@ -255,6 +255,26 @@ async def test_partner_manager_patch_attach_dar_scoped_to_jiha(
     assert r.json()["orphanage_id"] == s["dar_a"]["id"]
 
 
+async def test_partner_manager_patch_foreign_jiha_orphan_404(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A partner_manager cannot modify an orphan in another جهة: the write path
+    404s (existence stays hidden, mirroring the detail GET) and nothing is
+    written."""
+    s = await _scenario(api, auth_headers)
+    pm = await _login_partner_manager(api, s["org_id"], s["jiha_a"])
+
+    r = await api.patch(
+        f"/api/v1/orphans/{s['orphan_b']['id']}",
+        json={"aspiration": "محاولة تعديل"},
+        headers=pm,
+    )
+    assert r.status_code == 404, r.text
+    # The foreign orphan was left untouched (read back as the org_admin).
+    after = await api.get(f"/api/v1/orphans/{s['orphan_b']['id']}", headers=auth_headers)
+    assert after.json()["aspiration"] != "محاولة تعديل"
+
+
 async def test_org_admin_unaffected_by_partner_scope(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:

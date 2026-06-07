@@ -349,6 +349,10 @@ async def update_orphan(
     )
     if orphan is None:
         raise NotFound("Orphan")
+    # Mirror get_orphan: a partner-scoped caller cannot modify (or even confirm
+    # the existence of) an orphan outside their جهة — 404, not 403.
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
 
     data = payload.model_dump(exclude_unset=True)
     # orphanage_id is the one editable field that can point across tenants;
