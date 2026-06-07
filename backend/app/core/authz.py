@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 
@@ -34,6 +35,35 @@ STAFF_ROLES: tuple[Role, ...] = (
     "finance",
 )
 DONOR_ROLE: Role = "donor"
+
+# Roles whose visibility is confined to a single جهة (partner organization).
+# Everyone else (org admins, super_admin, marketing/finance) sees the whole
+# org. These two roles only ever see rows belonging to their own
+# ``partner_organization_id`` — see :func:`partner_scope_hides`.
+PARTNER_SCOPED_ROLES: tuple[Role, ...] = ("partner_manager", "partner_staff")
+
+
+def partner_scope_hides(user: User, partner_organization_id: UUID | None) -> bool:
+    """True when partner-scoping should hide a row from ``user``.
+
+    For callers in :data:`PARTNER_SCOPED_ROLES` a row is visible only when it
+    belongs to the caller's own جهة:
+
+    * a scoped user with no جهة set (``partner_organization_id IS NULL``) sees
+      nothing — every row is hidden;
+    * otherwise a row is hidden whenever its ``partner_organization_id`` differs
+      from the caller's.
+
+    Non-scoped roles are never restricted here (org-level scoping already
+    applies), so this always returns ``False`` for them. Detail endpoints call
+    it to 404 a hidden row rather than leak its existence; list endpoints apply
+    the equivalent WHERE clause inline so pagination counts stay correct.
+    """
+    if user.role not in PARTNER_SCOPED_ROLES:
+        return False
+    if user.partner_organization_id is None:
+        return True
+    return partner_organization_id != user.partner_organization_id
 
 
 def require_roles(*allowed: Role) -> Callable[..., Awaitable[User]]:
