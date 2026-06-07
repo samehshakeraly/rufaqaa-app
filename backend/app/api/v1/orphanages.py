@@ -2,10 +2,11 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import false, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.core.authz import PARTNER_SCOPED_ROLES, partner_scope_hides
 from app.core.exceptions import NotFound
 from app.models.orphanage import Orphanage
 from app.models.user import User
@@ -80,6 +81,14 @@ async def list_orphanages(
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[OrphanageRead]:
     stmt = select(Orphanage).where(Orphanage.organization_id == user.organization_id)
+    # Partner-scoped roles (partner_manager / partner_staff) see only their own
+    # جهة's dars — layered on the org filter, never via RLS. A scoped user with
+    # no جهة set sees nothing. Applied before the count so pagination matches.
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(Orphanage.partner_organization_id == user.partner_organization_id)
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
         await db.scalars(stmt.order_by(Orphanage.created_at.desc()).limit(limit).offset(offset))
@@ -145,6 +154,9 @@ async def get_orphanage(
         )
     )
     if orphanage is None:
+        raise NotFound("Orphanage")
+    # Partner-scoped callers must not learn that a dar outside their جهة exists.
+    if partner_scope_hides(user, orphanage.partner_organization_id):
         raise NotFound("Orphanage")
     return OrphanageRead.model_validate(orphanage)
 

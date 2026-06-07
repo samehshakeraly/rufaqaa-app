@@ -7,11 +7,16 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import case, func, or_, select, text
+from sqlalchemy import case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import (
+    ADMIN_ROLES,
+    PARTNER_SCOPED_ROLES,
+    partner_scope_hides,
+    require_roles,
+)
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.partner import MarketingChannel
@@ -33,6 +38,7 @@ from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
 from app.services.orphans import (
     _assert_orphanage_in_org,
+    _assert_orphanage_in_partner_org,
     create_orphan_record,
     recompute_profile_completion,
     stamp_available_since,
@@ -147,6 +153,14 @@ async def list_orphans(
         Orphan.deleted_at.is_(None),
         Orphan.organization_id == user.organization_id,
     )
+    # Partner-scoped roles (partner_manager / partner_staff) see only their own
+    # جهة's orphans — layered on the org filter, never via RLS. A scoped user
+    # with no جهة set sees nothing. Applied before the count so pagination matches.
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(Orphan.partner_organization_id == user.partner_organization_id)
     if case_status:
         stmt = stmt.where(Orphan.case_status == case_status)
     if channel_id:
@@ -257,13 +271,23 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_orphans_csv(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     case_status: str | None = None,
 ) -> StreamingResponse:
     """Stream non-deleted orphans (optionally filtered by case_status)
     as CSV. Capped at 10 000 rows. Registered before /{orphan_id} so
     FastAPI doesn't try to parse 'export.csv' as a UUID."""
-    stmt = select(Orphan).where(Orphan.deleted_at.is_(None))
+    # Mirror list_orphans' scoping exactly: explicit org filter (defense-in-depth
+    # alongside RLS) plus the partner-scope block for partner_manager/partner_staff.
+    stmt = select(Orphan).where(
+        Orphan.deleted_at.is_(None),
+        Orphan.organization_id == user.organization_id,
+    )
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(Orphan.partner_organization_id == user.partner_organization_id)
     if case_status:
         stmt = stmt.where(Orphan.case_status == case_status)
     stmt = stmt.order_by(Orphan.created_at.desc()).limit(10_000)
@@ -299,12 +323,16 @@ async def export_orphans_csv(
 async def get_orphan(
     orphan_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> OrphanRead:
     orphan = await db.scalar(
         select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
     )
     if orphan is None:
+        raise NotFound("Orphan")
+    # Partner-scoped callers must not learn that an orphan outside their جهة
+    # exists — 404 rather than 403 so existence stays hidden.
+    if partner_scope_hides(user, orphan.partner_organization_id):
         raise NotFound("Orphan")
     return OrphanRead.model_validate(orphan)
 
@@ -326,8 +354,16 @@ async def update_orphan(
     # orphanage_id is the one editable field that can point across tenants;
     # validate ownership explicitly before applying (a superuser connection
     # bypasses RLS). An explicit null clears the assignment (always allowed).
+    # Partner-scoped callers (with a جهة set) must keep the child inside THEIR
+    # جهة, so they validate against the partner org rather than the whole org;
+    # everyone else keeps the org-level check.
     if data.get("orphanage_id") is not None:
-        await _assert_orphanage_in_org(db, data["orphanage_id"], user.organization_id)
+        if user.role in PARTNER_SCOPED_ROLES and user.partner_organization_id is not None:
+            await _assert_orphanage_in_partner_org(
+                db, data["orphanage_id"], user.partner_organization_id
+            )
+        else:
+            await _assert_orphanage_in_org(db, data["orphanage_id"], user.organization_id)
 
     changes: dict[str, dict[str, str | None]] = {}
     for field, value in data.items():

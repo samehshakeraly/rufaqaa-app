@@ -131,6 +131,30 @@ async def _assert_orphanage_in_org(
         )
 
 
+async def _assert_orphanage_in_partner_org(
+    db: AsyncSession, orphanage_id: UUID, partner_organization_id: UUID
+) -> None:
+    """Reject an ``orphanage_id`` that does not belong to ``partner_organization_id``.
+
+    Partner-scoped variant of :func:`_assert_orphanage_in_org`: a partner_manager
+    (or partner_staff) may only attach an orphan to a dar inside their own جهة,
+    not merely anywhere in the org. Validated explicitly (400) rather than via
+    RLS — same rationale as the org-scoped check, since a superuser connection
+    bypasses RLS and would otherwise let a cross-جهة dar through.
+    """
+    owned = await db.scalar(
+        select(Orphanage.id).where(
+            Orphanage.id == orphanage_id,
+            Orphanage.partner_organization_id == partner_organization_id,
+        )
+    )
+    if owned is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="orphanage_id does not reference an orphanage in this partner organization",
+        )
+
+
 async def create_orphan_record(
     db: AsyncSession,
     *,
