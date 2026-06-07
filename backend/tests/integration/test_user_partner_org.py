@@ -22,8 +22,10 @@ import uuid
 from httpx import AsyncClient
 
 from app.core.database import make_session
+from app.core.security import hash_password
 from app.models.organization import Organization
 from app.models.partner import PartnerOrganization
+from app.models.user import User
 
 
 async def _seed_partner_id(api: AsyncClient, auth_headers: dict[str, str]) -> str:
@@ -62,6 +64,33 @@ async def _make_foreign_partner() -> str:
         db.add(partner)
         await db.commit()
         return str(partner.id)
+
+
+async def _make_foreign_user() -> str:
+    """A user under a *different* organization (the cross-org case)."""
+    suffix = uuid.uuid4().hex[:6]
+    async with make_session() as db:
+        org = Organization(
+            code=f"FORU-{suffix}",
+            name_ar="منظمة أجنبية",
+            name_en="Foreign Org",
+            org_type="standalone",
+            deployment_mode="self_hosted",
+            country_code="KW",
+        )
+        db.add(org)
+        await db.flush()
+        user = User(
+            organization_id=org.id,
+            email=f"foreign-{suffix}@example.com",
+            password_hash=hash_password("foreignpass123"),
+            first_name="Foreign",
+            last_name="User",
+            role="viewer",
+        )
+        db.add(user)
+        await db.commit()
+        return str(user.id)
 
 
 async def test_invite_with_partner_org_persists(
@@ -154,3 +183,22 @@ async def test_update_user_foreign_org_partner_400(
         headers=auth_headers,
     )
     assert r.status_code == 400, r.text
+
+
+async def test_update_cross_org_user_404(api: AsyncClient, auth_headers: dict[str, str]) -> None:
+    """A user in another org is invisible to the caller — org-scoped 404, not a
+    cross-org write (``_load_user_or_404`` filters on the caller's org)."""
+    foreign_user_id = await _make_foreign_user()
+    r = await api.patch(
+        f"/api/v1/users/{foreign_user_id}",
+        json={},
+        headers=auth_headers,
+    )
+    assert r.status_code == 404, r.text
+
+
+async def test_suspend_cross_org_user_404(api: AsyncClient, auth_headers: dict[str, str]) -> None:
+    """Same org-scoping guards the existing suspend path."""
+    foreign_user_id = await _make_foreign_user()
+    r = await api.post(f"/api/v1/users/{foreign_user_id}/suspend", headers=auth_headers)
+    assert r.status_code == 404, r.text

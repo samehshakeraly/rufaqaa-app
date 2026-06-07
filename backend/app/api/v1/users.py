@@ -220,8 +220,22 @@ async def accept_invite(payload: AcceptInvite, db: DbSession) -> UserAdminRead:
     return UserAdminRead.model_validate(target)
 
 
-async def _load_user_or_404(db: AsyncSession, user_id: UUID) -> User:
-    target = await db.scalar(select(User).where(User.id == user_id, User.deleted_at.is_(None)))
+async def _load_user_or_404(db: AsyncSession, user_id: UUID, organization_id: UUID) -> User:
+    """Load a non-deleted user in the caller's org, or 404.
+
+    Scoped to ``organization_id`` explicitly rather than trusting RLS: the app
+    connects as a Postgres superuser that bypasses RLS, so an id-only lookup
+    would let an admin act on a user in another organization. Same org-ownership
+    posture as ``_assert_partner_org_in_org``. Shared by suspend / reactivate /
+    update.
+    """
+    target = await db.scalar(
+        select(User).where(
+            User.id == user_id,
+            User.organization_id == organization_id,
+            User.deleted_at.is_(None),
+        )
+    )
     if target is None:
         raise NotFound("User")
     return target
@@ -242,7 +256,7 @@ async def suspend_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You cannot suspend yourself",
         )
-    target = await _load_user_or_404(db, user_id)
+    target = await _load_user_or_404(db, user_id, user.organization_id)
     if target.status == "suspended":
         return UserAdminRead.model_validate(target)
 
@@ -285,7 +299,7 @@ async def reactivate_user(
 ) -> UserAdminRead:
     """Flip a suspended user back to active. Their refresh tokens stay
     revoked — they'll need to log in again."""
-    target = await _load_user_or_404(db, user_id)
+    target = await _load_user_or_404(db, user_id, user.organization_id)
     if target.status != "suspended":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -323,7 +337,7 @@ async def update_user(
     assignment; a present null clears it; an omitted key leaves it untouched.
     Purely additive — no role restriction or visibility logic here.
     """
-    target = await _load_user_or_404(db, user_id)
+    target = await _load_user_or_404(db, user_id, user.organization_id)
     updates = payload.model_dump(exclude_unset=True)
     if updates.get("partner_organization_id") is not None:
         await _assert_partner_org_in_org(
