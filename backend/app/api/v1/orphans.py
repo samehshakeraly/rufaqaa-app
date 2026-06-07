@@ -7,11 +7,16 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import case, func, or_, select, text
+from sqlalchemy import case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import (
+    ADMIN_ROLES,
+    PARTNER_SCOPED_ROLES,
+    partner_scope_hides,
+    require_roles,
+)
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.partner import MarketingChannel
@@ -147,6 +152,14 @@ async def list_orphans(
         Orphan.deleted_at.is_(None),
         Orphan.organization_id == user.organization_id,
     )
+    # Partner-scoped roles (PR-2) see only their own جهة; an unassigned caller
+    # (NULL جهة) sees nothing. Explicit filter on top of the org scope — never
+    # RLS (a superuser connection bypasses it).
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(Orphan.partner_organization_id == user.partner_organization_id)
     if case_status:
         stmt = stmt.where(Orphan.case_status == case_status)
     if channel_id:
@@ -299,12 +312,16 @@ async def export_orphans_csv(
 async def get_orphan(
     orphan_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> OrphanRead:
     orphan = await db.scalar(
         select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
     )
     if orphan is None:
+        raise NotFound("Orphan")
+    # A partner-scoped caller may not peek at another جهة's orphan — treat it as
+    # not found rather than 403 so existence isn't leaked (matches the list).
+    if partner_scope_hides(user, orphan.partner_organization_id):
         raise NotFound("Orphan")
     return OrphanRead.model_validate(orphan)
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 
@@ -34,6 +35,28 @@ STAFF_ROLES: tuple[Role, ...] = (
     "finance",
 )
 DONOR_ROLE: Role = "donor"
+# Roles whose VISIBILITY is restricted to their own جهة (partner organization).
+# A frozenset because it is only ever membership-tested (`role in ...`), never
+# splatted into require_roles. Everyone else is org-wide.
+PARTNER_SCOPED_ROLES: frozenset[Role] = frozenset({"partner_manager", "partner_staff"})
+
+
+def partner_scope_hides(user: User, row_partner_organization_id: UUID | None) -> bool:
+    """Whether a partner-scoped caller must NOT see a row with this
+    ``partner_organization_id``.
+
+    Partner-scoped roles (:data:`PARTNER_SCOPED_ROLES`) see only their own جهة;
+    a caller with no جهة assigned (NULL) sees nothing. Always ``False`` for
+    every other role — org-wide visibility is unchanged. Detail endpoints turn
+    a ``True`` into a 404 (don't leak existence); list endpoints express the
+    same rule as an explicit ``WHERE`` clause. Never relies on RLS.
+    """
+    if user.role not in PARTNER_SCOPED_ROLES:
+        return False
+    return (
+        user.partner_organization_id is None
+        or row_partner_organization_id != user.partner_organization_id
+    )
 
 
 def require_roles(*allowed: Role) -> Callable[..., Awaitable[User]]:
