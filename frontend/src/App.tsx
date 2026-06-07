@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AdminRoute } from "./components/AdminRoute";
 import { ContentRoute } from "./components/ContentRoute";
+import { FullContentRoute } from "./components/FullContentRoute";
 import { DonorRoute } from "./components/DonorRoute";
 import { FinanceRoute } from "./components/FinanceRoute";
 import { GuardianRoute } from "./components/GuardianRoute";
@@ -233,15 +234,22 @@ export function App() {
       >
         <Route index element={<Navigate to="dashboard" replace />} />
 
-        {/* Org-admin + partner case-management surfaces. Gated to
-            isAdmin || isPartner — finance & marketing roles are redirected
-            to their own home so they can't reach these screens. The admin
-            still lands on /admin/dashboard (login e2e smoke test). */}
+        {/* Orphan-intake surfaces — every content manager, INCLUDING the
+            intake-only partner_staff (field researchers). Gated to
+            isAdmin || isPartner; finance & marketing are redirected home. */}
         <Route element={<ContentRoute />}>
-          <Route path="dashboard" element={<DashboardHome />} />
           <Route path="orphans" element={<OrphansPage />} />
           <Route path="orphans/new" element={<RegisterOrphanPage />} />
           <Route path="orphans/:id" element={<OrphanDetailPage />} />
+        </Route>
+
+        {/* Wider case-management surfaces. Gated to isAdmin ||
+            isPartnerManager — partner_staff (intake-only) is redirected to
+            its home (the جهة-scoped orphan list), and finance & marketing
+            are redirected home, just as ContentRoute already did. The admin
+            still lands on /admin/dashboard (login e2e smoke test). */}
+        <Route element={<FullContentRoute />}>
+          <Route path="dashboard" element={<DashboardHome />} />
           <Route path="donors" element={<DonorsPage />} />
           <Route path="families" element={<FamiliesPage />} />
           <Route path="families/:id" element={<FamilyDetailPage />} />

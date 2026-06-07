@@ -75,6 +75,10 @@ ORPHANAGE_MANAGER_USER = {"email": "manager1@dev.rufaqaa.app", "password": "mana
 SUPER_ADMIN_USER = {"email": "superadmin@dev.rufaqaa.app", "password": "superadmin12345"}
 PARTNER_MANAGER_USER = {"email": "partner1@dev.rufaqaa.app", "password": "partner12345"}
 PARTNER_STAFF_USER = {"email": "staff1@dev.rufaqaa.app", "password": "staff12345"}
+# Dedicated field-researcher (intake) login for the Kenya جهة — a clean,
+# single-purpose account for the orphan-intake demo. Same role + جهة as
+# PARTNER_STAFF_USER, just a clearer email/name for that scenario.
+KENYA_INTAKE_USER = {"email": "kenya-intake@dev.rufaqaa.app", "password": "kenya12345"}
 FINANCE_USER = {"email": "finance1@dev.rufaqaa.app", "password": "finance12345"}
 VIEWER_USER = {"email": "viewer1@dev.rufaqaa.app", "password": "viewer12345"}
 # Two donors get login accounts so donor↔guardian messages have a
@@ -93,6 +97,7 @@ DEMO_USER_EMAILS = [
     SUPER_ADMIN_USER["email"],
     PARTNER_MANAGER_USER["email"],
     PARTNER_STAFF_USER["email"],
+    KENYA_INTAKE_USER["email"],
     FINANCE_USER["email"],
     VIEWER_USER["email"],
     *(u["email"] for u in DONOR_USERS),
@@ -508,6 +513,13 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
             "Demo",
             "Partner Staff",
         )
+        kenya_intake_user_row = _make_user(
+            KENYA_INTAKE_USER["email"],
+            KENYA_INTAKE_USER["password"],
+            "partner_staff",
+            "Kenya",
+            "Intake",
+        )
         finance_user_row = _make_user(
             FINANCE_USER["email"],
             FINANCE_USER["password"],
@@ -534,14 +546,15 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
             super_admin_user_row,
             partner_manager_user_row,
             partner_staff_user_row,
+            kenya_intake_user_row,
             finance_user_row,
             viewer_user_row,
             *donor_user_rows,
         ):
             db.add(u)
-        # 8 singleton rows: orphan, marketing, orphanage_manager, super_admin,
-        # partner_manager, partner_staff, finance, viewer.
-        counts["users"] = len(guardian_user_rows) + 8 + len(donor_user_rows)
+        # 9 singleton rows: orphan, marketing, orphanage_manager, super_admin,
+        # partner_manager, partner_staff, kenya_intake, finance, viewer.
+        counts["users"] = len(guardian_user_rows) + 9 + len(donor_user_rows)
 
         # ── Partners (PS / EG / YE) ──────────────────────────────────────
         partners: list[PartnerOrganization] = []
@@ -695,11 +708,13 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
         # Link the demo orphanage_manager to this dar (manager_user_id). The
         # user was flushed above, so it already has an id.
         orphanage.manager_user_id = orphanage_manager_user_row.id
-        # Tie the partner-scoped demo users (partner_manager / partner_staff) to
-        # the Kenya جهة — the foundation for partner-scoped visibility. Both rows
-        # were flushed above, so the assignment is UPDATEd on the final commit.
+        # Tie the partner-scoped demo users (partner_manager / partner_staff /
+        # kenya_intake) to the Kenya جهة — the foundation for partner-scoped
+        # visibility. All rows were flushed above, so the assignment is UPDATEd
+        # on the final commit.
         partner_manager_user_row.partner_organization_id = kenya_partner.id
         partner_staff_user_row.partner_organization_id = kenya_partner.id
+        kenya_intake_user_row.partner_organization_id = kenya_partner.id
         residents = [o for o in orphans if o.partner_organization_id == kenya_partner.id][:3]
         for o in residents:
             o.orphanage_id = orphanage.id
@@ -1087,6 +1102,7 @@ async def main(force: bool) -> None:
     print(f"  super     → {SUPER_ADMIN_USER['email']} / {SUPER_ADMIN_USER['password']}")
     print(f"  partner   → {PARTNER_MANAGER_USER['email']} / {PARTNER_MANAGER_USER['password']}")
     print(f"  staff     → {PARTNER_STAFF_USER['email']} / {PARTNER_STAFF_USER['password']}")
+    print(f"  kenya-intake → {KENYA_INTAKE_USER['email']} / {KENYA_INTAKE_USER['password']}")
     print(f"  finance   → {FINANCE_USER['email']} / {FINANCE_USER['password']}")
     print(f"  viewer    → {VIEWER_USER['email']} / {VIEWER_USER['password']}")
     for u in DONOR_USERS:
