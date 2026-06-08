@@ -7,13 +7,11 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   EDUCATION_STAGES,
   HEALTH_STATUSES,
-  NewOrphanForm,
   PRIORITY_LEVELS,
 } from "@/components/NewOrphanForm";
 import { Pagination } from "@/components/Pagination";
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
-import { listOrphanages } from "@/lib/orphanages";
 import {
   type EducationStage,
   type HealthStatus,
@@ -26,7 +24,6 @@ import {
   listOrphans,
   rejectOrphan,
 } from "@/lib/orphans";
-import { listPartners } from "@/lib/partners";
 import { toast } from "@/store/toasts";
 
 import "./OrphansPage.css";
@@ -125,7 +122,6 @@ export function OrphansPage() {
   // Hydrate caseStatus from URL ?status=… so navigation links land on
   // the filtered view (e.g. Approvals → ?status=pending_review).
   const urlStatus = searchParams.get("status") ?? "";
-  const [showForm, setShowForm] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [caseStatus, setCaseStatus] = useState<string>(urlStatus);
@@ -262,16 +258,6 @@ export function OrphansPage() {
         ...(sort ? { sort } : {}),
       }),
   });
-  const { data: partners } = useQuery({
-    queryKey: ["partners"],
-    queryFn: () => listPartners(),
-  });
-  // Org dars for the staff create picker (NewOrphanForm renders it only when
-  // this prop is passed — guardians never get it).
-  const { data: orphanages } = useQuery({
-    queryKey: ["orphanages"],
-    queryFn: () => listOrphanages({ limit: 100 }),
-  });
 
   const approveMut = useMutation({
     mutationFn: (id: string) => approveOrphan(id),
@@ -368,36 +354,8 @@ export function OrphansPage() {
               {t("nav.registerOrphan")}
             </Link>
           )}
-          {(isPartner || isAdmin) && (
-            <button
-              type="button"
-              className="ps-btn ps-btn-primary"
-              onClick={() => setShowForm((v) => !v)}
-            >
-              <svg className="ps-icon ps-icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              {showForm ? t("common.cancel") : t("orphans.addNew")}
-            </button>
-          )}
         </div>
       </div>
-
-      {showForm && (
-        <div style={{ marginBottom: 16 }}>
-          <NewOrphanForm
-            audience="staff"
-            partners={partners?.items ?? []}
-            orphanages={orphanages?.items ?? []}
-            onCreated={async () => {
-              await qc.invalidateQueries({ queryKey });
-              setShowForm(false);
-            }}
-            onCancel={() => setShowForm(false)}
-          />
-        </div>
-      )}
 
       {/* Status tabs */}
       <div className="ps-status-tabs" role="tablist" aria-label={t("orphans.status")}>
