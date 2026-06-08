@@ -10,10 +10,10 @@ import { z } from "zod";
 import { createOrphan, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 
-// Matches partner-issued orphan codes like ORF-12345 or ORF-ABCDE. The backend
+// Matches partner-issued orphan codes like ORF-12345 / ORP-ABCDE. The backend
 // embeds the existing record's code in the 409 detail string; we surface it as
 // a "view existing" link (where the caller allows one — see `duplicateHref`).
-const ORPHAN_CODE_PATTERN = /\bORF-[A-Z0-9]{3,}\b/;
+const ORPHAN_CODE_PATTERN = /\bOR[FP]-[A-Z0-9]{3,}\b/;
 
 // Enum option lists — mirror schema.gen.ts (OrphanCreate / GuardianOrphanCreate)
 // exactly. Used both for the zod validators and to render the <select> options.
