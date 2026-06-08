@@ -1,56 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════
-   PS-03 Register New Orphan — scoped styles
-   Ported from docs/design/screens/partner-staff/PS-03 Register New
-   Orphan.html. The real registration is a single-step create (shared
-   NewOrphanForm), so the multi-step wizard chrome is rendered as a
-   single styled section rather than fabricated steps. Field styling
-   from the mockup is applied via `.ps-register`-scoped overrides so
-   the shared form component is untouched elsewhere. Tokens only;
-   logical inline-start/-end for RTL-first.
+   PS-03 Register New Orphan — page chrome only.
+   The form itself is the shared NewOrphanForm (Design-System
+   `.card` / `.input` / `.btn-primary`), identical to the inline add
+   on OrphansPage and the guardian portal; this sheet styles only the
+   full-page chrome around it: header + back link, privacy note, and
+   the thin panel that frames the form. Tokens only; logical
+   inline-start/-end for RTL-first.
    ═══════════════════════════════════════════════════════════════ */
 
 .ps-register {
-  --snow-200: #eef5f8;
-  --tranquil-100: #eaf1f7;
-  --sky-300: #9cc3de;
-  --trust-300: #769fcd;
-  --trust-400: #5b85b8;
-  --trust-500: #426d9f;
-  --trust-600: #2d5683;
-  --trust-700: #1e4068;
-
   --gray-50: #fafbfc;
-  --gray-100: #f4f6f8;
   --gray-200: #e7ebef;
-  --gray-300: #d2d8df;
-  --gray-400: #a8b2bc;
-  --gray-500: #7a8590;
   --gray-600: #5a636e;
   --gray-700: #3f4750;
   --gray-900: #161a1f;
 
-  --success-50: #ecfdf5;
-  --success-100: #d1fae5;
-  --success-600: #059669;
-  --success-700: #047857;
-  --warning-50: #fffbeb;
-  --warning-100: #fef3c7;
-  --warning-700: #b45309;
-  --danger-50: #fef2f2;
-  --danger-600: #dc2626;
-  --danger-700: #b91c1c;
+  --sky-300: #9cc3de;
+  --trust-600: #2d5683;
+
   --info-50: #eff6ff;
   --info-100: #dbeafe;
   --info-700: #1d4ed8;
 
   --radius-md: 8px;
-  --radius-lg: 12px;
   --radius-xl: 16px;
-  --radius-full: 9999px;
-  --shadow-sm: 0 1px 3px rgba(11, 30, 51, 0.06), 0 1px 2px rgba(11, 30, 51, 0.04);
-  --shadow-focus: 0 0 0 3px rgba(118, 159, 205, 0.25);
   --transition: 200ms ease;
-  --transition-fast: 150ms ease;
 
   color: var(--gray-900);
   font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
@@ -96,239 +70,12 @@
   color: var(--trust-600);
 }
 
-/* ───────────── Section panel ───────────── */
-.ps-reg-panel {
-  background: white;
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-xl);
-  padding: 28px 30px;
-  max-width: 760px;
-}
-.ps-reg-head {
-  margin-bottom: 22px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--gray-100);
-}
-.ps-reg-head h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--gray-900);
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ps-reg-head h2 svg {
-  color: var(--trust-400);
-}
-.ps-reg-head p {
-  font-size: 13.5px;
-  color: var(--gray-600);
-  line-height: 1.6;
-}
-
-/* ───────────── Form ───────────── */
-.ps-reg-form {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Duplicate (409) alert — reactive nod to the mockup's duplicate-check step */
-.ps-dup-result {
-  display: grid;
-  grid-template-columns: 24px 1fr auto;
-  gap: 12px;
-  align-items: center;
-  background: var(--warning-50);
-  border: 1px solid var(--warning-100);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.ps-dup-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: white;
-  color: var(--warning-700);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ps-dup-title {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--warning-700);
-}
-.ps-dup-sub {
-  font-size: 11.5px;
-  color: var(--gray-700);
-  margin-top: 2px;
-}
-.ps-dup-btn {
-  font-size: 11.5px;
-  font-weight: 500;
-  background: white;
-  border: 1px solid var(--warning-100);
-  color: var(--warning-700);
-  padding: 5px 10px;
-  border-radius: var(--radius-md);
-  white-space: nowrap;
-  transition: var(--transition-fast);
-}
-.ps-dup-btn:hover {
-  background: var(--warning-700);
-  color: white;
-  border-color: var(--warning-700);
-}
-
-/* Section titles */
-.ps-section-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--gray-500);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin: 22px 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ps-section-title::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--gray-100);
-}
-.ps-section-title:first-of-type {
-  margin-top: 0;
-}
-.ps-section-title .ps-icon {
-  color: var(--trust-400);
-}
-
-/* Field grid */
-.ps-field-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 8px;
-}
-@media (max-width: 540px) {
-  .ps-field-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.ps-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-.ps-field.full {
-  grid-column: 1 / -1;
-}
-.ps-field label,
-.ps-field-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--gray-700);
-  letter-spacing: 0.02em;
-}
-.ps-req {
-  color: var(--danger-600);
-  font-weight: 700;
-}
-.ps-field input,
-.ps-field select {
-  width: 100%;
-  padding: 9px 12px;
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-family: inherit;
-  color: var(--gray-900);
-  transition: var(--transition);
-}
-.ps-field input.latin {
-  font-family: "IBM Plex Sans", sans-serif;
-  font-feature-settings: "tnum" 1;
-  letter-spacing: 0.02em;
-}
-.ps-field input:focus,
-.ps-field select:focus {
-  outline: none;
-  background: white;
-  border-color: var(--trust-300);
-  box-shadow: var(--shadow-focus);
-}
-.ps-field input[aria-invalid="true"],
-.ps-field select[aria-invalid="true"] {
-  border-color: var(--danger-600);
-}
-.ps-field-hint {
-  font-size: 11px;
-  color: var(--gray-500);
-}
-.ps-field-err {
-  font-size: 11px;
-  color: var(--danger-700);
-}
-
-/* Gender radio pills */
-.ps-radio-pills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.ps-radio-pill {
-  position: relative;
-  padding: 8px 16px;
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--gray-700);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-.ps-radio-pill input {
-  position: absolute;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
-  margin: 0;
-}
-.ps-radio-pill:hover {
-  background: white;
-  border-color: var(--sky-300);
-}
-.ps-radio-pill:has(input:checked) {
-  background: var(--trust-300);
-  border-color: var(--trust-300);
-  color: white;
-}
-.ps-radio-pill:has(input:focus-visible) {
-  box-shadow: var(--shadow-focus);
-}
-
-/* Server error */
-.ps-reg-error {
-  margin-top: 16px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: var(--danger-50);
-  color: var(--danger-700);
-  font-size: 13px;
-}
-
-/* Privacy note */
+/* ───────────── Privacy note ───────────── */
+/* A new case stays in review and is never shown to donors until a manager
+   approves it. Sits above the form, framed to the same column width. */
 .ps-reg-note {
-  margin-top: 18px;
+  max-width: 760px;
+  margin-bottom: 18px;
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -345,50 +92,15 @@
   margin-top: 1px;
 }
 
-/* Footer actions */
-.ps-reg-foot {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid var(--gray-100);
-}
-.ps-reg-cancel {
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
+/* ───────────── Form panel ───────────── */
+/* A thin frame around the shared NewOrphanForm `.card` (which carries its own
+   border/padding/shadow) — mirrors the guardian add-orphan page. */
+.ps-reg-panel {
+  background: white;
   border: 1px solid var(--gray-200);
-  background: transparent;
-  color: var(--gray-700);
-  font-size: 13.5px;
-  font-weight: 600;
-  transition: var(--transition);
-}
-.ps-reg-cancel:hover {
-  border-color: var(--gray-300);
-  background: var(--gray-50);
-}
-.ps-reg-submit {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--success-600);
-  background: var(--success-600);
-  color: white;
-  font-size: 13.5px;
-  font-weight: 600;
-  transition: var(--transition);
-}
-.ps-reg-submit:hover:not(:disabled) {
-  background: var(--success-700);
-  border-color: var(--success-700);
-}
-.ps-reg-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  border-radius: var(--radius-xl);
+  padding: 4px;
+  max-width: 760px;
 }
 
 /* ───────────── Icons ───────────── */
