@@ -18,6 +18,8 @@ export interface CurrentUser {
   id: string;
   email: string;
   organization_id: string;
+  /** The جهة this user is scoped to (partner_manager / partner_staff); null otherwise. */
+  partner_organization_id: string | null;
   role: string;
   first_name: string;
   last_name: string;

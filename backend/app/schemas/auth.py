@@ -45,6 +45,9 @@ class CurrentUser(BaseModel):
     id: UUID
     email: EmailStr
     organization_id: UUID
+    # The جهة (partner org) this user is scoped to, when their role is
+    # partner-scoped (partner_manager / partner_staff). NULL otherwise.
+    partner_organization_id: UUID | None = None
     role: str
     first_name: str
     last_name: str

@@ -549,6 +549,12 @@ components:
           format: uuid
           title: Organization Id
           type: string
+        partner_organization_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Partner Organization Id
         role:
           title: Role
           type: string
