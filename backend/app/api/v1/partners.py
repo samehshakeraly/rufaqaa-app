@@ -5,10 +5,15 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import false, func, select
 
 from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import (
+    ADMIN_ROLES,
+    FINANCE_ROLES,
+    PARTNER_SCOPED_ROLES,
+    require_roles,
+)
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
@@ -40,12 +45,28 @@ router = APIRouter()
 @router.get("", response_model=Page[PartnerRead])
 async def list_partners(
     db: DbSession,
-    _user: CurrentUser,
+    # Staff who legitimately need the partner list: admins (full in-org list),
+    # finance (bank-transfer screens), and partner-scoped roles (their own
+    # جهة only, for the orphan-intake form). Pure consumers (donor, orphan,
+    # guardian, viewer) are 403'd — the guardian intake form derives the
+    # partner server-side and never calls this endpoint.
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES, *PARTNER_SCOPED_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
     include_inactive: bool = False,
 ) -> Page[PartnerRead]:
-    stmt = select(PartnerOrganization)
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS, so without this filter partners leak across orgs.
+    stmt = select(PartnerOrganization).where(
+        PartnerOrganization.organization_id == user.organization_id
+    )
+    # Partner-scoped roles see only their own جهة. A scoped user with no جهة
+    # set sees nothing. Applied before the count so pagination matches.
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(PartnerOrganization.id == user.partner_organization_id)
     if not include_inactive:
         stmt = stmt.where(PartnerOrganization.status == "active")
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
