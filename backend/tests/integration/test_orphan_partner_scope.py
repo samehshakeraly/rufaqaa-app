@@ -13,6 +13,11 @@ caller is forced into their own جهة (the payload's value is ignored; no جه�
 → 403) and may pin the child only to a dar inside that جهة, while an admin keeps
 choosing the جهة from the payload as long as it belongs to their org.
 
+The case-status workflow (POST approve/reject/release) and the per-orphan
+timeline obey the same fence: an orphan in another جهة 404s — before the state
+check, so neither existence nor case_status leaks — while inside the caller's
+own جهة the workflow is unchanged and org_admin keeps acting on any جهة.
+
 Like the rest of ``tests/integration`` these need a real Postgres with the
 migrations applied (``RUFAQAA_TEST_DATABASE_URL``); otherwise they skip. They
 reuse the seeded DEV org + admin (``auth_headers``).
@@ -410,3 +415,104 @@ async def test_partner_staff_create_dar_must_be_in_jiha(
     assert r.status_code == 201, r.text
     assert r.json()["orphanage_id"] == s["dar_a"]["id"]
     assert r.json()["partner_organization_id"] == s["jiha_a"]
+
+
+# ── Case-status workflow (approve / reject / release) + timeline ───────
+
+
+async def test_partner_manager_transitions_foreign_jiha_404(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A partner_manager in جهة A cannot approve/reject/release a جهة-B orphan:
+    every transition 404s and the row is left untouched."""
+    s = await _scenario(api, auth_headers)
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
+    orphan_b = s["orphan_b"]["id"]
+
+    # The جهة-B orphan is still pending_review. release from that state would
+    # be a 409 if only the state check ran — the 404 proves the جهة fence
+    # fires first, so neither existence nor case_status leaks.
+    for action, body in (("approve", {}), ("reject", {"reason": "محاولة"}), ("release", {})):
+        r = await api.post(f"/api/v1/orphans/{orphan_b}/{action}", json=body, headers=pm)
+        assert r.status_code == 404, f"{action}: expected 404, got {r.status_code}: {r.text}"
+
+    after = await api.get(f"/api/v1/orphans/{orphan_b}", headers=auth_headers)
+    assert after.json()["case_status"] == "pending_review"
+
+    # Move it to approved (as org_admin) — release from جهة A still 404s and
+    # writes nothing.
+    r = await api.post(f"/api/v1/orphans/{orphan_b}/approve", json={}, headers=auth_headers)
+    assert r.status_code == 200, r.text
+    r = await api.post(f"/api/v1/orphans/{orphan_b}/release", json={}, headers=pm)
+    assert r.status_code == 404, r.text
+    after = await api.get(f"/api/v1/orphans/{orphan_b}", headers=auth_headers)
+    assert after.json()["case_status"] == "approved"
+
+
+async def test_partner_manager_transitions_own_jiha_succeed(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Inside their own جهة the workflow is unchanged: a partner_manager
+    approves a pending case, releases the approved one, and rejects another."""
+    s = await _scenario(api, auth_headers)
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
+    orphan_a = s["orphan_a"]["id"]
+
+    r = await api.post(f"/api/v1/orphans/{orphan_a}/approve", json={}, headers=pm)
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "approved"
+
+    r = await api.post(f"/api/v1/orphans/{orphan_a}/release", json={}, headers=pm)
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "available"
+
+    pending = await _create_orphan(api, auth_headers, s["jiha_a"])
+    r = await api.post(
+        f"/api/v1/orphans/{pending['id']}/reject", json={"reason": "بيانات ناقصة"}, headers=pm
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "rejected"
+
+
+async def test_org_admin_transitions_any_jiha(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """org_admin keeps deciding on cases in every جهة of its org — the fence
+    binds only the partner-scoped roles."""
+    s = await _scenario(api, auth_headers)
+
+    r = await api.post(
+        f"/api/v1/orphans/{s['orphan_b']['id']}/approve", json={}, headers=auth_headers
+    )
+    assert r.status_code == 200, r.text
+    r = await api.post(
+        f"/api/v1/orphans/{s['orphan_b']['id']}/release", json={}, headers=auth_headers
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "available"
+
+    r = await api.post(
+        f"/api/v1/orphans/{s['orphan_a']['id']}/reject",
+        json={"reason": "مرفوض"},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "rejected"
+
+
+async def test_partner_manager_timeline_scoped_to_jiha(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """GET /orphans/{id}/timeline obeys the fence: own جهة reads fine, another
+    جهة's orphan 404s (existence stays hidden), org_admin is unaffected."""
+    s = await _scenario(api, auth_headers)
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
+
+    r = await api.get(f"/api/v1/orphans/{s['orphan_a']['id']}/timeline", headers=pm)
+    assert r.status_code == 200, r.text
+
+    r = await api.get(f"/api/v1/orphans/{s['orphan_b']['id']}/timeline", headers=pm)
+    assert r.status_code == 404, r.text
+
+    r = await api.get(f"/api/v1/orphans/{s['orphan_b']['id']}/timeline", headers=auth_headers)
+    assert r.status_code == 200, r.text

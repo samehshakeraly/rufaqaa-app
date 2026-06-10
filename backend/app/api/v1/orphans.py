@@ -572,6 +572,11 @@ async def approve_orphan(
     but cannot self-approve, same separation the report workflow uses.
     """
     orphan = await _load_orphan_or_404(db, orphan_id)
+    # Mirror update_orphan: a partner_manager may only decide on cases inside
+    # their own جهة — 404 (never 403, and before the state check so a 409
+    # can't leak case_status) keeps an out-of-جهة orphan's existence hidden.
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
     _check_case_transition(orphan, ("pending_review",))
 
     old_status = orphan.case_status
@@ -603,6 +608,9 @@ async def reject_orphan(
     """Reject a pending_review orphan. Reason is required and stored on
     the row so reviewers can see why this case didn't move forward."""
     orphan = await _load_orphan_or_404(db, orphan_id)
+    # Same جهة fence as approve_orphan: out-of-جهة cases 404 before the state check.
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
     _check_case_transition(orphan, ("pending_review",))
 
     old_status = orphan.case_status
@@ -633,6 +641,9 @@ async def release_orphan(
     clearing any marketing-channel assignment. Used when a reservation
     lapses or a channel is reshuffled."""
     orphan = await _load_orphan_or_404(db, orphan_id)
+    # Same جهة fence as approve_orphan: out-of-جهة cases 404 before the state check.
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
     _check_case_transition(orphan, ("approved", "reserved"))
 
     old_status = orphan.case_status
@@ -663,7 +674,7 @@ async def release_orphan(
 async def orphan_timeline(
     orphan_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> Timeline:
     """Chronological feed of everything that has happened around an orphan:
     sponsorships, payments, and reports. Newest first, capped at 200
@@ -672,6 +683,10 @@ async def orphan_timeline(
         select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
     )
     if orphan is None:
+        raise NotFound("Orphan")
+    # Mirror get_orphan: partner-scoped callers must not read (or even confirm
+    # the existence of) the timeline of an orphan outside their جهة — 404, not 403.
+    if partner_scope_hides(user, orphan.partner_organization_id):
         raise NotFound("Orphan")
 
     sponsorships = (
