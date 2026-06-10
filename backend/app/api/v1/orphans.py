@@ -11,6 +11,7 @@ from sqlalchemy import case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.v1.users import _assert_partner_org_in_org
 from app.core.authz import (
     ADMIN_ROLES,
     PARTNER_SCOPED_ROLES,
@@ -230,11 +231,18 @@ async def list_orphans(
     )
 
 
+# Roles that may register an orphan via this staff endpoint: the partner-scoped
+# submitters plus org admins. Guardians use the separate, resource-gated
+# POST /guardian/me/orphans route, so they never pass through this gate; pure
+# consumers (donor / orphan / viewer) and the marketing/finance roles are 403'd.
+ORPHAN_CREATOR_ROLES: tuple[str, ...] = (*PARTNER_SCOPED_ROLES, *ADMIN_ROLES)
+
+
 @router.post("", response_model=OrphanRead, status_code=status.HTTP_201_CREATED)
 async def create_orphan(
     payload: OrphanCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*ORPHAN_CREATOR_ROLES))],
 ) -> OrphanRead:
     """Register an orphan (lands ``pending_review``).
 
@@ -242,11 +250,36 @@ async def create_orphan(
     the guardian self-service endpoint — so both obey the same no-duplicate
     rule (a violation of ``idx_orphans_no_duplicate`` comes back as a 409).
     """
+    # The orphan's جهة is resolved server-side — mirroring the partner scoping
+    # the read/update surfaces already enforce — never trusted from the client.
+    if user.role in PARTNER_SCOPED_ROLES:
+        # A partner-scoped caller creates inside their own جهة or not at all;
+        # whatever جهة the payload carries is ignored.
+        if user.partner_organization_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Your account has no partner organization assigned",
+            )
+        partner_organization_id = user.partner_organization_id
+        # Same جهة fence as PATCH /orphans/{id}: the child may only be pinned
+        # to a dar inside the caller's own جهة, not merely anywhere in the org.
+        if payload.orphanage_id is not None:
+            await _assert_orphanage_in_partner_org(
+                db, payload.orphanage_id, partner_organization_id
+            )
+    else:
+        # Admins pick the جهة from the payload, but only inside their own
+        # organization (same ownership posture as users.py). Their dar keeps
+        # the org-level check, applied inside create_orphan_record — an admin
+        # may attach a dar from any جهة in the org, exactly as on PATCH.
+        partner_organization_id = payload.partner_organization_id
+        await _assert_partner_org_in_org(db, partner_organization_id, user.organization_id)
+
     orphan = await create_orphan_record(
         db,
         user=user,
         data=payload,
-        partner_organization_id=payload.partner_organization_id,
+        partner_organization_id=partner_organization_id,
         family_id=payload.family_id,
         via="staff",
         orphanage_id=payload.orphanage_id,

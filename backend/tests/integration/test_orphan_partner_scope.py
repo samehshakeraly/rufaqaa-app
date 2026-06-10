@@ -7,6 +7,12 @@ no جهة set sees nothing. PATCH /orphans/{id} may only attach a dar inside the
 caller's جهة. org_admin is unaffected — it keeps full org-level visibility and
 the org-level dar check.
 
+POST /orphans enforces the same scoping server-side: only admins + the
+partner-scoped roles may create at all (consumers are 403'd), a partner-scoped
+caller is forced into their own جهة (the payload's value is ignored; no جهة set
+→ 403) and may pin the child only to a dar inside that جهة, while an admin keeps
+choosing the جهة from the payload as long as it belongs to their org.
+
 Like the rest of ``tests/integration`` these need a real Postgres with the
 migrations applied (``RUFAQAA_TEST_DATABASE_URL``); otherwise they skip. They
 reuse the seeded DEV org + admin (``auth_headers``).
@@ -24,6 +30,7 @@ from sqlalchemy import select
 
 from app.core.database import make_session
 from app.core.security import hash_password
+from app.models.organization import Organization
 from app.models.partner import PartnerOrganization
 from app.models.user import User
 from app.scripts.seed import SEED_ADMIN_EMAIL
@@ -35,6 +42,25 @@ async def _seed_org_id() -> UUID:
         admin = await db.scalar(select(User).where(User.email == SEED_ADMIN_EMAIL))
         assert admin is not None
         return admin.organization_id
+
+
+async def _make_org() -> UUID:
+    """Create a separate (foreign) organization and return its id. It has no
+    users or rows of its own — it exists only so a test can build a جهة that
+    does NOT belong to the DEV org."""
+    suffix = uuid4().hex[:6]
+    async with make_session() as db:
+        org = Organization(
+            code=f"PSO-{suffix}",
+            name_ar=f"منظمة-{suffix}",
+            name_en=f"Org {suffix}",
+            org_type="standalone",
+            country_code="KW",
+        )
+        db.add(org)
+        await db.commit()
+        await db.refresh(org)
+        return org.id
 
 
 async def _make_partner_org(org_id: UUID) -> str:
@@ -54,14 +80,14 @@ async def _make_partner_org(org_id: UUID) -> str:
         return str(partner.id)
 
 
-async def _login_partner_manager(
-    api: AsyncClient, org_id: UUID, partner_org_id: str | None
+async def _login_user(
+    api: AsyncClient, org_id: UUID, partner_org_id: str | None, role: str = "partner_manager"
 ) -> dict[str, str]:
-    """Create a partner_manager in ``org_id`` scoped to ``partner_org_id``
+    """Create an active ``role`` user in ``org_id`` scoped to ``partner_org_id``
     (or NULL) and return its auth headers."""
     suffix = uuid4().hex[:8]
-    email = f"pm-{suffix}@dev.example.com"
-    password = "managerpw123456"
+    email = f"{role}-{suffix}@dev.example.com"
+    password = "scopeduserpw123456"
     async with make_session() as db:
         db.add(
             User(
@@ -69,9 +95,9 @@ async def _login_partner_manager(
                 partner_organization_id=UUID(partner_org_id) if partner_org_id else None,
                 email=email,
                 password_hash=hash_password(password),
-                first_name="Partner",
-                last_name="Manager",
-                role="partner_manager",
+                first_name="Test",
+                last_name=role,
+                role=role,
                 status="active",
             )
         )
@@ -143,7 +169,7 @@ async def test_partner_manager_list_scoped_to_jiha(
     """A partner_manager in جهة A sees only جهة A's orphans and dars in the
     lists — never جهة B's."""
     s = await _scenario(api, auth_headers)
-    pm = await _login_partner_manager(api, s["org_id"], s["jiha_a"])
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
 
     r = await api.get("/api/v1/orphans?limit=100", headers=pm)
     assert r.status_code == 200, r.text
@@ -169,7 +195,7 @@ async def test_partner_manager_detail_scoped_to_jiha(
     """Detail of an own-جهة row is 200; a row in another جهة 404s (its
     existence must not leak)."""
     s = await _scenario(api, auth_headers)
-    pm = await _login_partner_manager(api, s["org_id"], s["jiha_a"])
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
 
     r = await api.get(f"/api/v1/orphans/{s['orphan_a']['id']}", headers=pm)
     assert r.status_code == 200, r.text
@@ -190,7 +216,7 @@ async def test_partner_manager_csv_scoped_to_jiha(
 ) -> None:
     """The CSV export mirrors the list: only جهة A's codes appear."""
     s = await _scenario(api, auth_headers)
-    pm = await _login_partner_manager(api, s["org_id"], s["jiha_a"])
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
 
     r = await api.get("/api/v1/orphans/export.csv", headers=pm)
     assert r.status_code == 200, r.text
@@ -205,7 +231,7 @@ async def test_null_jiha_scoped_user_sees_nothing(
     """A partner-scoped user with no جهة set sees empty lists/CSV, and every
     real row 404s for them."""
     s = await _scenario(api, auth_headers)
-    pm = await _login_partner_manager(api, s["org_id"], None)
+    pm = await _login_user(api, s["org_id"], None)
 
     r = await api.get("/api/v1/orphans?limit=100", headers=pm)
     assert r.status_code == 200, r.text
@@ -233,7 +259,7 @@ async def test_partner_manager_patch_attach_dar_scoped_to_jiha(
     """PATCH may attach a dar only inside the caller's جهة: a جهة-B dar is
     rejected, a جهة-A dar succeeds."""
     s = await _scenario(api, auth_headers)
-    pm = await _login_partner_manager(api, s["org_id"], s["jiha_a"])
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
 
     # Cross-جهة dar → rejected; the orphan stays unassigned.
     r = await api.patch(
@@ -262,7 +288,7 @@ async def test_partner_manager_patch_foreign_jiha_orphan_404(
     404s (existence stays hidden, mirroring the detail GET) and nothing is
     written."""
     s = await _scenario(api, auth_headers)
-    pm = await _login_partner_manager(api, s["org_id"], s["jiha_a"])
+    pm = await _login_user(api, s["org_id"], s["jiha_a"])
 
     r = await api.patch(
         f"/api/v1/orphans/{s['orphan_b']['id']}",
@@ -304,3 +330,83 @@ async def test_org_admin_unaffected_by_partner_scope(
     )
     assert r.status_code == 200, r.text
     assert r.json()["orphanage_id"] == s["dar_b"]["id"]
+
+
+# ── POST /orphans — server-side جهة enforcement on create ──────────────
+
+
+async def test_partner_staff_create_ignores_payload_jiha(api: AsyncClient) -> None:
+    """partner_staff naming ANOTHER جهة in the payload still creates the orphan
+    under their OWN جهة — the client's value is ignored, not trusted."""
+    org_id = await _seed_org_id()
+    jiha_own = await _make_partner_org(org_id)
+    jiha_other = await _make_partner_org(org_id)
+    staff = await _login_user(api, org_id, jiha_own, role="partner_staff")
+
+    r = await api.post("/api/v1/orphans", json=_orphan_body(jiha_other), headers=staff)
+    assert r.status_code == 201, r.text
+    assert r.json()["partner_organization_id"] == jiha_own
+
+
+async def test_partner_staff_without_jiha_cannot_create(api: AsyncClient) -> None:
+    """A partner-scoped user with no جهة assigned cannot create at all → 403."""
+    org_id = await _seed_org_id()
+    jiha = await _make_partner_org(org_id)
+    staff = await _login_user(api, org_id, None, role="partner_staff")
+
+    r = await api.post("/api/v1/orphans", json=_orphan_body(jiha), headers=staff)
+    assert r.status_code == 403, r.text
+
+
+async def test_consumer_roles_cannot_create(api: AsyncClient) -> None:
+    """Pure consumers (donor / orphan / viewer) are 403'd by the role gate —
+    creating orphans is for admins + partner-scoped staff only."""
+    org_id = await _seed_org_id()
+    jiha = await _make_partner_org(org_id)
+    for role in ("donor", "orphan", "viewer"):
+        consumer = await _login_user(api, org_id, None, role=role)
+        r = await api.post("/api/v1/orphans", json=_orphan_body(jiha), headers=consumer)
+        assert r.status_code == 403, f"{role}: expected 403, got {r.status_code}: {r.text}"
+
+
+async def test_admin_create_jiha_must_be_in_org(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """org_admin keeps choosing the جهة from the payload — accepted inside their
+    org, rejected (400) for a جهة belonging to another organization."""
+    org_id = await _seed_org_id()
+    in_org_jiha = await _make_partner_org(org_id)
+    r = await api.post("/api/v1/orphans", json=_orphan_body(in_org_jiha), headers=auth_headers)
+    assert r.status_code == 201, r.text
+    assert r.json()["partner_organization_id"] == in_org_jiha
+
+    foreign_org_id = await _make_org()
+    foreign_jiha = await _make_partner_org(foreign_org_id)
+    r = await api.post("/api/v1/orphans", json=_orphan_body(foreign_jiha), headers=auth_headers)
+    assert r.status_code == 400, r.text
+
+
+async def test_partner_staff_create_dar_must_be_in_jiha(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """On create, partner_staff may pin the child only to a dar inside their
+    own جهة — the same fence PATCH applies: a جهة-B dar is rejected, a جهة-A
+    dar succeeds."""
+    s = await _scenario(api, auth_headers)
+    staff = await _login_user(api, s["org_id"], s["jiha_a"], role="partner_staff")
+
+    r = await api.post(
+        "/api/v1/orphans",
+        json=_orphan_body(s["jiha_a"], orphanage_id=s["dar_b"]["id"]),
+        headers=staff,
+    )
+    assert r.status_code == 400, r.text
+
+    r = await api.post(
+        "/api/v1/orphans",
+        json=_orphan_body(s["jiha_a"], orphanage_id=s["dar_a"]["id"]),
+        headers=staff,
+    )
+    assert r.status_code == 201, r.text
+    assert r.json()["orphanage_id"] == s["dar_a"]["id"]
+    assert r.json()["partner_organization_id"] == s["jiha_a"]
