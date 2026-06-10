@@ -71,7 +71,8 @@ async def _assert_partner_org_in_org(
     Mirrors the org-scoped ownership check in
     ``services/orphans._assert_orphanage_in_org``: we validate explicitly rather
     than trust RLS (a Postgres superuser connection bypasses it, so a cross-org
-    id would otherwise be silently accepted). Shared by invite + update.
+    id would otherwise be silently accepted). Shared by invite + update, and
+    reused by the staff orphan create (``POST /orphans``).
     """
     owned = await db.scalar(
         select(PartnerOrganization.id).where(
