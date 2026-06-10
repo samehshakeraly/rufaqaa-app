@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { createOrphan, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 
@@ -172,17 +173,36 @@ export function NewOrphanForm({
   });
   const partners = partnersProp ?? partnersQuery.data?.items ?? [];
 
+  // Partner-scoped staff (partner_manager / partner_staff) only ever register
+  // orphans under their own جهة, so the picker is pointless for them — it is
+  // replaced by a locked read-only field pre-filled with their جهة.
+  const { data: currentUser } = useCurrentUser();
+  const isPartnerScoped =
+    currentUser?.role === "partner_manager" || currentUser?.role === "partner_staff";
+  const lockedPartnerId =
+    showPartnerSelect && isPartnerScoped ? (currentUser?.partner_organization_id ?? null) : null;
+  // Misconfigured account: partner-scoped but no جهة assigned. The backend
+  // would 403 the create, so surface that instead of an empty picker.
+  const partnerMissing = showPartnerSelect && isPartnerScoped && !lockedPartnerId;
+
   const schema = useMemo(() => makeSchema(showPartnerSelect), [showPartnerSelect]);
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { gender: "M", mother_status: "unknown", priority_level: "normal" },
   });
+
+  useEffect(() => {
+    if (lockedPartnerId) {
+      setValue("partner_organization_id", lockedPartnerId, { shouldValidate: true });
+    }
+  }, [lockedPartnerId, setValue]);
 
   // Guardians get a lighter form: the three sensitive fields below are hidden
   // and never registered, so they can't be submitted.
@@ -212,6 +232,11 @@ export function NewOrphanForm({
     mutationFn: (v: OrphanCreateInput) => create(v),
     onSuccess: async (created) => {
       reset();
+      // reset() falls back to defaultValues, which can't know the جهة —
+      // re-pin it so a follow-up create still submits the locked partner.
+      if (lockedPartnerId) {
+        setValue("partner_organization_id", lockedPartnerId);
+      }
       setTags([]);
       setTagInput("");
       await onCreated(created);
@@ -336,22 +361,52 @@ export function NewOrphanForm({
             </select>
           </Field>
         )}
-        {showPartnerSelect && (
-          <Field
-            label={t("orphans.partner")}
-            error={errors.partner_organization_id?.message}
-            className="sm:col-span-2"
-          >
-            <select className="input" {...register("partner_organization_id")}>
-              <option value="">{t("orphans.selectPartner")}</option>
-              {partners.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {i18n.language === "ar" ? p.name_ar : (p.name_en ?? p.name_ar)}
-                </option>
-              ))}
-            </select>
-          </Field>
-        )}
+        {showPartnerSelect &&
+          (lockedPartnerId ? (
+            // Partner-scoped user: their جهة is fixed — show it read-only.
+            // The hidden input keeps the value registered so it validates
+            // and submits exactly like the select would.
+            <Field
+              label={t("orphans.partner")}
+              error={errors.partner_organization_id?.message}
+              className="sm:col-span-2"
+            >
+              <input type="hidden" {...register("partner_organization_id")} />
+              <input
+                className="input cursor-not-allowed bg-tranquil text-gray-700"
+                value={(() => {
+                  const p = partners.find((x) => x.id === lockedPartnerId);
+                  if (!p) return "";
+                  return i18n.language === "ar" ? p.name_ar : (p.name_en ?? p.name_ar);
+                })()}
+                readOnly
+                disabled
+              />
+              <p className="mt-1 text-xs text-gray-500">{t("orphans.partnerLockedHint")}</p>
+            </Field>
+          ) : partnerMissing ? (
+            // Partner-scoped user with no جهة on their account — the backend
+            // would reject the create, so explain instead of an empty picker.
+            <Field label={t("orphans.partner")} className="sm:col-span-2">
+              <input className="input cursor-not-allowed bg-tranquil" value="" readOnly disabled />
+              <p className="mt-1 text-xs text-warning-700">{t("orphans.partnerNotAssigned")}</p>
+            </Field>
+          ) : (
+            <Field
+              label={t("orphans.partner")}
+              error={errors.partner_organization_id?.message}
+              className="sm:col-span-2"
+            >
+              <select className="input" {...register("partner_organization_id")}>
+                <option value="">{t("orphans.selectPartner")}</option>
+                {partners.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {i18n.language === "ar" ? p.name_ar : (p.name_en ?? p.name_ar)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          ))}
         {orphanages && (
           <Field label={t("orphans.orphanage.label")} className="sm:col-span-2">
             <select className="input" {...register("orphanage_id")}>
@@ -492,7 +547,9 @@ export function NewOrphanForm({
       )}
 
       <div className="flex gap-2">
-        <button type="submit" className="btn-primary" disabled={isSubmitting}>
+        {/* No جهة on a partner-scoped account → the create can only fail;
+            block submit rather than surfacing an unfixable validation error. */}
+        <button type="submit" className="btn-primary" disabled={isSubmitting || partnerMissing}>
           {isSubmitting ? t("common.saving") : t("common.save")}
         </button>
         {onCancel && (

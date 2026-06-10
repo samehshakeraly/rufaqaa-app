@@ -250,6 +250,7 @@ async def me(user: CurrentUser) -> CurrentUserSchema:
         id=user.id,
         email=user.email,
         organization_id=user.organization_id,
+        partner_organization_id=user.partner_organization_id,
         role=user.role,
         first_name=user.first_name,
         last_name=user.last_name,

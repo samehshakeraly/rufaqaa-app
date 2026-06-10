@@ -3159,6 +3159,8 @@ export interface components {
              * Format: uuid
              */
             organization_id: string;
+            /** Partner Organization Id */
+            partner_organization_id?: string | null;
             /** Role */
             role: string;
         };

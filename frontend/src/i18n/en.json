@@ -1352,6 +1352,8 @@
     "view": "View",
     "actionsCol": "Actions",
     "selectPartner": "Choose a partner",
+    "partnerLockedHint": "Your account is linked to this partner organization; new orphans are registered under it.",
+    "partnerNotAssigned": "No partner organization is assigned to your account — contact an administrator.",
     "orphanage": {
       "label": "Orphanage",
       "familyHome": "— Family home (no orphanage) —",
