@@ -23,11 +23,13 @@ router = APIRouter()
 @router.get("", response_model=Page[FamilyRead])
 async def list_families(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[FamilyRead]:
-    stmt = select(Family)
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS, so without this filter families leak across orgs.
+    stmt = select(Family).where(Family.organization_id == user.organization_id)
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
         await db.scalars(stmt.order_by(Family.created_at.desc()).limit(limit).offset(offset))
@@ -85,9 +87,16 @@ async def create_family(
 async def get_family(
     family_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> FamilyRead:
-    family = await db.scalar(select(Family).where(Family.id == family_id))
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org id falls through to 404, never revealing it.
+    family = await db.scalar(
+        select(Family).where(
+            Family.id == family_id,
+            Family.organization_id == user.organization_id,
+        )
+    )
     if family is None:
         raise NotFound("Family")
     return FamilyRead.model_validate(family)
@@ -101,11 +110,18 @@ async def get_family(
 async def list_guardians(
     family_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[GuardianRead]:
-    family = await db.scalar(select(Family).where(Family.id == family_id))
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org family id falls through to 404.
+    family = await db.scalar(
+        select(Family).where(
+            Family.id == family_id,
+            Family.organization_id == user.organization_id,
+        )
+    )
     if family is None:
         raise NotFound("Family")
     stmt = select(Guardian).where(Guardian.family_id == family_id)
@@ -132,7 +148,14 @@ async def create_guardian(
     db: DbSession,
     user: CurrentUser,
 ) -> GuardianRead:
-    family = await db.scalar(select(Family).where(Family.id == family_id))
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org family id falls through to 404.
+    family = await db.scalar(
+        select(Family).where(
+            Family.id == family_id,
+            Family.organization_id == user.organization_id,
+        )
+    )
     if family is None:
         raise NotFound("Family")
     guardian = Guardian(

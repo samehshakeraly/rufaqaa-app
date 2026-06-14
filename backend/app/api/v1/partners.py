@@ -120,10 +120,15 @@ async def create_partner(
 async def get_partner(
     partner_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> PartnerRead:
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org id falls through to 404, never revealing it.
     partner = await db.scalar(
-        select(PartnerOrganization).where(PartnerOrganization.id == partner_id)
+        select(PartnerOrganization).where(
+            PartnerOrganization.id == partner_id,
+            PartnerOrganization.organization_id == user.organization_id,
+        )
     )
     if partner is None:
         raise NotFound("Partner")
@@ -137,8 +142,13 @@ async def update_partner(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> PartnerRead:
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org id falls through to 404, never revealing it.
     partner = await db.scalar(
-        select(PartnerOrganization).where(PartnerOrganization.id == partner_id)
+        select(PartnerOrganization).where(
+            PartnerOrganization.id == partner_id,
+            PartnerOrganization.organization_id == user.organization_id,
+        )
     )
     if partner is None:
         raise NotFound("Partner")
@@ -170,8 +180,13 @@ async def archive_partner(
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> None:
     """Soft-archive a partner organization."""
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org id falls through to 404, never revealing it.
     partner = await db.scalar(
-        select(PartnerOrganization).where(PartnerOrganization.id == partner_id)
+        select(PartnerOrganization).where(
+            PartnerOrganization.id == partner_id,
+            PartnerOrganization.organization_id == user.organization_id,
+        )
     )
     if partner is None:
         raise NotFound("Partner")
@@ -192,13 +207,18 @@ async def archive_partner(
 async def get_partner_stats(
     partner_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> PartnerStats:
     """Rollup for a single partner: orphan counts, active/overdue
     sponsorships, and 30-day payment totals. All scoped by partner via
     the orphans.partner_organization_id FK."""
+    # Explicit org scoping, never RLS — the app's superuser connection
+    # bypasses RLS. A cross-org id falls through to 404, never revealing it.
     partner = await db.scalar(
-        select(PartnerOrganization).where(PartnerOrganization.id == partner_id)
+        select(PartnerOrganization).where(
+            PartnerOrganization.id == partner_id,
+            PartnerOrganization.organization_id == user.organization_id,
+        )
     )
     if partner is None:
         raise NotFound("Partner")
