@@ -15,9 +15,10 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import select, text
+from sqlalchemy import text
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.config import settings
 from app.core.exceptions import NotFound
@@ -74,11 +75,9 @@ async def upload_orphan_photo(
     user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     file: Annotated[UploadFile, File()],
 ) -> MediaUploadResponse:
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org-scoped existence guard — a cross-org orphan id 404s, so a photo can
+    # never be attached to (or its existence inferred from) another org's orphan.
+    await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
 
     if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise HTTPException(
@@ -163,27 +162,27 @@ class OrphanPhoto(BaseModel):
 async def list_orphan_photos(
     orphan_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> list[OrphanPhoto]:
     """Photos attached to an orphan, newest first. Each row carries a
     fresh presigned URL so the UI can render the image without exposing
     the bucket."""
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org-scoped existence guard — a cross-org orphan id 404s before any photo
+    # is listed; the media query is scoped to the same org for defense-in-depth.
+    await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     rows = (
         await db.execute(
             text(
                 """
                 SELECT id, file_url, file_size_bytes, moderation_status, created_at
                 FROM media
-                WHERE orphan_id = :orphan AND media_type = 'photo'
+                WHERE orphan_id = :orphan
+                  AND organization_id = :org
+                  AND media_type = 'photo'
                 ORDER BY created_at DESC
                 """
             ),
-            {"orphan": str(orphan_id)},
+            {"orphan": str(orphan_id), "org": str(user.organization_id)},
         )
     ).all()
 
@@ -255,13 +254,15 @@ async def upload_generic_file(
 async def get_media_presigned_url(
     media_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> dict[str, str]:
     """Return a short-lived presigned URL for an uploaded media object."""
+    # Explicit org scope, never RLS — the superuser connection bypasses it. A
+    # cross-org media id 404s, so no other org's object URL can be minted.
     row = (
         await db.execute(
-            text("SELECT file_url FROM media WHERE id = :id"),
-            {"id": str(media_id)},
+            text("SELECT file_url FROM media WHERE id = :id AND organization_id = :org"),
+            {"id": str(media_id), "org": str(user.organization_id)},
         )
     ).first()
     if row is None:
@@ -399,16 +400,18 @@ async def moderate_media(
     `donor_only` so sponsoring donors can render the photo; rejecting
     leaves visibility untouched so the item stays hidden.
     """
+    # Explicit org scope, never RLS — the superuser connection bypasses it. A
+    # cross-org media id 404s here, never revealing or moderating another org's item.
     row = (
         await db.execute(
             text(
                 """
                 SELECT id, moderation_status, visibility
                 FROM media
-                WHERE id = :id
+                WHERE id = :id AND organization_id = :org
                 """
             ),
-            {"id": str(media_id)},
+            {"id": str(media_id), "org": str(user.organization_id)},
         )
     ).first()
     if row is None:
@@ -439,7 +442,7 @@ async def moderate_media(
                    moderated_by      = :moderator,
                    moderated_at      = :now,
                    visibility        = :visibility
-             WHERE id = :id
+             WHERE id = :id AND organization_id = :org
             """
         ),
         {
@@ -449,6 +452,7 @@ async def moderate_media(
             "now": now,
             "visibility": new_visibility,
             "id": str(media_id),
+            "org": str(user.organization_id),
         },
     )
     record_audit(
