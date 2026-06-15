@@ -9,8 +9,8 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, require_roles
-from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
@@ -25,11 +25,13 @@ router = APIRouter()
 @router.get("", response_model=Page[DonorRead])
 async def list_donors(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[DonorRead]:
-    stmt = select(Donor).where(Donor.deleted_at.is_(None))
+    stmt = select(Donor).where(
+        Donor.organization_id == user.organization_id, Donor.deleted_at.is_(None)
+    )
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
         await db.scalars(stmt.order_by(Donor.created_at.desc()).limit(limit).offset(offset))
@@ -61,14 +63,17 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_donors_csv(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> StreamingResponse:
     """Stream every non-deleted donor in this org as CSV, capped at
     10 000 rows. Tighten the org / future filters if you need to export
     more — pagination won't help with CSV."""
     stmt = (
         select(Donor)
-        .where(Donor.deleted_at.is_(None))
+        .where(
+            Donor.organization_id == user.organization_id,
+            Donor.deleted_at.is_(None),
+        )
         .order_by(Donor.created_at.desc())
         .limit(10_000)
     )
@@ -141,11 +146,9 @@ async def create_donor(
 async def get_donor(
     donor_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> DonorRead:
-    donor = await db.scalar(select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_(None)))
-    if donor is None:
-        raise NotFound("Donor")
+    donor = await get_in_org_or_404(db, Donor, donor_id, user, Donor.deleted_at.is_(None))
     return DonorRead.model_validate(donor)
 
 
@@ -156,9 +159,7 @@ async def update_donor(
     db: DbSession,
     user: CurrentUser,
 ) -> DonorRead:
-    donor = await db.scalar(select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_(None)))
-    if donor is None:
-        raise NotFound("Donor")
+    donor = await get_in_org_or_404(db, Donor, donor_id, user, Donor.deleted_at.is_(None))
 
     changes: dict[str, dict[str, object]] = {}
     for field, value in payload.model_dump(exclude_unset=True).items():
@@ -194,11 +195,7 @@ async def restore_donor(
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> DonorRead:
     """Clear deleted_at so a soft-deleted donor is visible again."""
-    donor = await db.scalar(
-        select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_not(None))
-    )
-    if donor is None:
-        raise NotFound("Deleted donor")
+    donor = await get_in_org_or_404(db, Donor, donor_id, user, Donor.deleted_at.is_not(None))
     donor.deleted_at = None
     record_audit(
         db,
@@ -223,9 +220,7 @@ async def soft_delete_donor(
     """Soft-delete a donor. Refuses if any sponsorship is still active —
     cancel those first so the audit trail is honest about why money stops.
     """
-    donor = await db.scalar(select(Donor).where(Donor.id == donor_id, Donor.deleted_at.is_(None)))
-    if donor is None:
-        raise NotFound("Donor")
+    donor = await get_in_org_or_404(db, Donor, donor_id, user, Donor.deleted_at.is_(None))
 
     active = await db.scalar(
         select(func.count(Sponsorship.id)).where(

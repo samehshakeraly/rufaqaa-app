@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, FINANCE_ROLES, require_roles
 from app.core.config import settings
 from app.core.exceptions import NotFound
@@ -149,17 +150,11 @@ async def create_payment(
     For gateway-initiated payments use the webhook endpoint instead — this
     handler is for staff entering offline payments by hand.
     """
-    donor = await db.scalar(select(Donor).where(Donor.id == payload.donor_id))
-    if donor is None:
-        raise NotFound("Donor")
+    await get_in_org_or_404(db, Donor, payload.donor_id, user)
 
     sponsorship: Sponsorship | None = None
     if payload.sponsorship_id is not None:
-        sponsorship = await db.scalar(
-            select(Sponsorship).where(Sponsorship.id == payload.sponsorship_id)
-        )
-        if sponsorship is None:
-            raise NotFound("Sponsorship")
+        sponsorship = await get_in_org_or_404(db, Sponsorship, payload.sponsorship_id, user)
 
     now = datetime.now(UTC)
     payment = Payment(
@@ -222,19 +217,11 @@ async def admin_initiate_on_behalf(
     """Admin-driven MyFatoorah checkout. The Payment row records BOTH
     the real donor and the admin who initiated. The webhook-side
     completion flow is unchanged."""
-    donor = await db.scalar(
-        select(Donor).where(Donor.id == payload.donor_id, Donor.deleted_at.is_(None))
-    )
-    if donor is None:
-        raise NotFound("Donor")
+    donor = await get_in_org_or_404(db, Donor, payload.donor_id, user, Donor.deleted_at.is_(None))
 
     sponsorship: Sponsorship | None = None
     if payload.sponsorship_id is not None:
-        sponsorship = await db.scalar(
-            select(Sponsorship).where(Sponsorship.id == payload.sponsorship_id)
-        )
-        if sponsorship is None:
-            raise NotFound("Sponsorship")
+        sponsorship = await get_in_org_or_404(db, Sponsorship, payload.sponsorship_id, user)
         if sponsorship.donor_id != donor.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -337,11 +324,7 @@ async def initiate_payment(
     page — it never touches our server. The webhook handler picks up
     the resulting completion and flips this same row to ``completed``.
     """
-    donor = await db.scalar(
-        select(Donor).where(Donor.id == payload.donor_id, Donor.deleted_at.is_(None))
-    )
-    if donor is None:
-        raise NotFound("Donor")
+    donor = await get_in_org_or_404(db, Donor, payload.donor_id, user, Donor.deleted_at.is_(None))
 
     # Authorization split:
     #   - Donors can only initiate payments tied to their own Donor row,
@@ -361,11 +344,7 @@ async def initiate_payment(
 
     sponsorship: Sponsorship | None = None
     if payload.sponsorship_id is not None:
-        sponsorship = await db.scalar(
-            select(Sponsorship).where(Sponsorship.id == payload.sponsorship_id)
-        )
-        if sponsorship is None:
-            raise NotFound("Sponsorship")
+        sponsorship = await get_in_org_or_404(db, Sponsorship, payload.sponsorship_id, user)
         if sponsorship.donor_id != donor.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -468,9 +447,7 @@ async def refund_payment(
     (the gateway has nothing to refund otherwise). On success the row
     moves to ``refunded`` (full) or ``partially_refunded`` (partial) —
     the difference is the requested amount vs the original."""
-    payment = await db.scalar(select(Payment).where(Payment.id == payment_id))
-    if payment is None:
-        raise NotFound("Payment")
+    payment = await get_in_org_or_404(db, Payment, payment_id, user)
     if payment.payment_gateway != "myfatoorah":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -536,9 +513,7 @@ async def update_payment_status(
 ) -> PaymentRead:
     """Admin override: change a payment's status manually. Audits the
     before/after so any reconciliation question has a paper trail."""
-    payment = await db.scalar(select(Payment).where(Payment.id == payment_id))
-    if payment is None:
-        raise NotFound("Payment")
+    payment = await get_in_org_or_404(db, Payment, payment_id, user)
     old_status = payment.status
     if old_status == payload.status:
         return PaymentRead.model_validate(payment)
@@ -586,15 +561,13 @@ _CSV_COLUMNS = (
 async def payment_receipt(
     payment_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> PaymentReceipt:
     """One-shot bundle for the print-friendly receipt page.
 
     Joins donor / orphan / sponsorship / org so the receipt renders
     from a single response instead of fanning out."""
-    payment = await db.scalar(select(Payment).where(Payment.id == payment_id))
-    if payment is None:
-        raise NotFound("Payment")
+    payment = await get_in_org_or_404(db, Payment, payment_id, user)
     donor = await db.scalar(select(Donor).where(Donor.id == payment.donor_id))
     if donor is None:
         raise NotFound("Donor")
@@ -646,7 +619,7 @@ async def payment_receipt(
 @router.get("/export.csv")
 async def export_payments_csv(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     donor_id: UUID | None = None,
     sponsorship_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
@@ -655,7 +628,7 @@ async def export_payments_csv(
     CSV. Useful for finance ops who need to reconcile in Excel.
     Capped at 10 000 rows to keep memory bounded; tighten the filters
     if the response would exceed that."""
-    stmt = select(Payment)
+    stmt = select(Payment).where(Payment.organization_id == user.organization_id)
     if donor_id:
         stmt = stmt.where(Payment.donor_id == donor_id)
     if sponsorship_id:

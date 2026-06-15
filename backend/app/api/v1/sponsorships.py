@@ -10,8 +10,8 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import FINANCE_ROLES, require_roles
-from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.orphan import Orphan
 from app.models.sponsorship import Sponsorship
@@ -117,14 +117,8 @@ async def create_sponsorship(
     db: DbSession,
     user: CurrentUser,
 ) -> SponsorshipRead:
-    donor = await db.scalar(select(Donor).where(Donor.id == payload.donor_id))
-    if donor is None:
-        raise NotFound("Donor")
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == payload.orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    await get_in_org_or_404(db, Donor, payload.donor_id, user)
+    await get_in_org_or_404(db, Orphan, payload.orphan_id, user, Orphan.deleted_at.is_(None))
 
     existing = await db.scalar(
         select(Sponsorship).where(
@@ -181,7 +175,7 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_sponsorships_csv(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     donor_id: UUID | None = None,
     orphan_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
@@ -189,7 +183,7 @@ async def export_sponsorships_csv(
     """Stream sponsorships matching the same filters as the list endpoint,
     as CSV. Registered before /{sponsorship_id} so FastAPI doesn't try
     to parse 'export.csv' as a UUID. Capped at 10 000 rows."""
-    stmt = select(Sponsorship)
+    stmt = select(Sponsorship).where(Sponsorship.organization_id == user.organization_id)
     if donor_id:
         stmt = stmt.where(Sponsorship.donor_id == donor_id)
     if orphan_id:
@@ -233,11 +227,9 @@ async def export_sponsorships_csv(
 async def get_sponsorship(
     sponsorship_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> SponsorshipRead:
-    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
-    if sp is None:
-        raise NotFound("Sponsorship")
+    sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     donor = await db.scalar(select(Donor).where(Donor.id == sp.donor_id))
     orphan = await db.scalar(select(Orphan).where(Orphan.id == sp.orphan_id))
     return _enrich(sp, donor, orphan)
@@ -248,15 +240,13 @@ async def update_sponsorship(
     sponsorship_id: UUID,
     payload: SponsorshipUpdate,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> SponsorshipRead:
     """Edit non-status fields on an active sponsorship.
 
     Cancelled / completed sponsorships are immutable so the historical
     record stays clean."""
-    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
-    if sp is None:
-        raise NotFound("Sponsorship")
+    sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status in ("cancelled", "completed"):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -273,11 +263,9 @@ async def update_sponsorship(
 async def pause_sponsorship(
     sponsorship_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> SponsorshipRead:
-    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
-    if sp is None:
-        raise NotFound("Sponsorship")
+    sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status != "active":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -293,11 +281,9 @@ async def pause_sponsorship(
 async def resume_sponsorship(
     sponsorship_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> SponsorshipRead:
-    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
-    if sp is None:
-        raise NotFound("Sponsorship")
+    sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status != "paused":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -314,11 +300,9 @@ async def cancel_sponsorship(
     sponsorship_id: UUID,
     payload: SponsorshipCancel,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> SponsorshipRead:
-    sp = await db.scalar(select(Sponsorship).where(Sponsorship.id == sponsorship_id))
-    if sp is None:
-        raise NotFound("Sponsorship")
+    sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status in ("cancelled", "completed"):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
