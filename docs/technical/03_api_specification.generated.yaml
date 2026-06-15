@@ -9084,13 +9084,13 @@ paths:
       description: 'List messages the caller can see.
 
 
-        Moderators get everything in their org (RLS-scoped). Everyone else
+        Moderators get everything in their org; everyone else sees only
 
-        sees only messages where they''re sender (any status) or recipient
+        messages where they''re sender (any status) or recipient (approved
 
-        (approved only). Use `orphan_id` to narrow to one conversation;
+        only). Use `orphan_id` to narrow to one conversation; `unread_only`
 
-        `unread_only` filters to incoming approved+unread.'
+        filters to incoming approved+unread.'
       operationId: list_messages_api_v1_messages_get
       parameters:
       - in: query
@@ -9180,9 +9180,9 @@ paths:
       - messages
   /api/v1/messages/pending:
     get:
-      description: 'Moderation queue. Returns org-wide pending messages, newest
+      description: 'Moderation queue. Returns the caller-org''s pending messages, newest
 
-        first. RLS keeps this org-scoped automatically.'
+        first.'
       operationId: list_pending_messages_api_v1_messages_pending_get
       parameters:
       - in: query
