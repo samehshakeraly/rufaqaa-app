@@ -42,9 +42,7 @@ async def list_marketing_channels(
 ) -> Page[MarketingChannelRead]:
     # Explicit org scope on the base statement — the app's superuser DB
     # connection bypasses RLS, so without this filter channels leak across orgs.
-    stmt = select(MarketingChannel).where(
-        MarketingChannel.organization_id == user.organization_id
-    )
+    stmt = select(MarketingChannel).where(MarketingChannel.organization_id == user.organization_id)
     if not include_inactive:
         stmt = stmt.where(MarketingChannel.status == "active")
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0

@@ -318,7 +318,9 @@ async def test_messages_cross_tenant_isolation(api: AsyncClient) -> None:
     msg_a_pending = await _make_message(
         org_a, donor_a, recipient_a, orphan_a, moderation_status="pending"
     )
-    msg_b = await _make_message(org_b, sender_b, recipient_b, orphan_b, moderation_status="approved")
+    msg_b = await _make_message(
+        org_b, sender_b, recipient_b, orphan_b, moderation_status="approved"
+    )
     await _make_message(org_b, sender_b, recipient_b, orphan_b, moderation_status="pending")
 
     _, headers_a = await _login_as(api, org_a, "org_admin")  # a message moderator
