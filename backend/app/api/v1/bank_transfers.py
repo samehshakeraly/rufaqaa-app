@@ -17,6 +17,7 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.bank_transfer import BankTransfer
@@ -37,13 +38,13 @@ router = APIRouter()
 @router.get("", response_model=Page[BankTransferRead])
 async def list_bank_transfers(
     db: DbSession,
-    _user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
     partner_id: UUID | None = None,
 ) -> Page[BankTransferRead]:
-    stmt = select(BankTransfer)
+    stmt = select(BankTransfer).where(BankTransfer.organization_id == user.organization_id)
     if status_filter:
         stmt = stmt.where(BankTransfer.status == status_filter)
     if partner_id:
@@ -111,11 +112,15 @@ async def create_bank_transfer(
     return BankTransferRead.model_validate(transfer)
 
 
-async def _load_or_404(db: AsyncSession, transfer_id: UUID) -> BankTransfer:
-    transfer = await db.scalar(select(BankTransfer).where(BankTransfer.id == transfer_id))
-    if transfer is None:
-        raise NotFound("Bank transfer")
-    return transfer
+async def _load_or_404(db: AsyncSession, transfer_id: UUID, user: User) -> BankTransfer:
+    """Load a transfer in the caller's org, or 404.
+
+    Org-scoped via :func:`get_in_org_or_404` — never RLS, which the app's
+    superuser connection bypasses — so a cross-org transfer id 404s rather than
+    exposing or mutating another org's payout. Shared by every state-change
+    handler (approve / mark-completed / cancel / confirm-receipt).
+    """
+    return await get_in_org_or_404(db, BankTransfer, transfer_id, user)
 
 
 async def _transition(
@@ -129,7 +134,7 @@ async def _transition(
     set_executed: bool = False,
     set_partner_confirmed: bool = False,
 ) -> BankTransfer:
-    transfer = await _load_or_404(db, transfer_id)
+    transfer = await _load_or_404(db, transfer_id, user)
     if transfer.status not in allowed_from:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -216,7 +221,7 @@ async def partner_confirm_receipt(
     via confirmation_document_id and a free-text note. Does not
     change `status` — a transfer can be `completed` without partner
     confirmation."""
-    transfer = await _load_or_404(db, transfer_id)
+    transfer = await _load_or_404(db, transfer_id, user)
     if transfer.status != "completed":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

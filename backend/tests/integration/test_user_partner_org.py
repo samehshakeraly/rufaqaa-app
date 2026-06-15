@@ -187,7 +187,7 @@ async def test_update_user_foreign_org_partner_400(
 
 async def test_update_cross_org_user_404(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """A user in another org is invisible to the caller — org-scoped 404, not a
-    cross-org write (``_load_user_or_404`` filters on the caller's org)."""
+    cross-org write (``get_in_org_or_404`` filters on the caller's org)."""
     foreign_user_id = await _make_foreign_user()
     r = await api.patch(
         f"/api/v1/users/{foreign_user_id}",
