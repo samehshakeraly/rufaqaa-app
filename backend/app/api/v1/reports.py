@@ -23,6 +23,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.family import Guardian
@@ -57,13 +58,15 @@ def _now() -> datetime:
 @router.get("", response_model=Page[ReportRead])
 async def list_reports(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     orphan_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
 ) -> Page[ReportRead]:
-    stmt = select(OrphanReport)
+    # Explicit org scope on the base statement — the app's superuser DB
+    # connection bypasses RLS, so without this filter reports leak across orgs.
+    stmt = select(OrphanReport).where(OrphanReport.organization_id == user.organization_id)
     if orphan_id:
         stmt = stmt.where(OrphanReport.orphan_id == orphan_id)
     if status_filter:
@@ -136,7 +139,7 @@ async def get_report(
     db: DbSession,
     user: CurrentUser,
 ) -> ReportRead:
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     await _check_report_access(report, user, db)
     return ReportRead.model_validate(report)
 
@@ -149,7 +152,7 @@ async def update_report(
     user: CurrentUser,
 ) -> ReportRead:
     """Fill in or revise a draft report's content sections."""
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     await _check_report_access(report, user, db)
     if report.status != "draft":
         raise HTTPException(
@@ -164,11 +167,15 @@ async def update_report(
     return ReportRead.model_validate(report)
 
 
-async def _load_or_404(db: AsyncSession, report_id: UUID) -> OrphanReport:
-    report = await db.scalar(select(OrphanReport).where(OrphanReport.id == report_id))
-    if report is None:
-        raise NotFound("Report")
-    return report
+async def _load_or_404(db: AsyncSession, report_id: UUID, user: User) -> OrphanReport:
+    """Org-scoped fetch-by-id for the per-report endpoints.
+
+    Explicit org scoping, never RLS — the app's superuser DB connection
+    bypasses it — so a report in another org 404s here, before any workflow
+    or ownership check runs. The guardian family-ownership check in
+    :func:`_check_report_access` still applies on top for guardians.
+    """
+    return await get_in_org_or_404(db, OrphanReport, report_id, user)
 
 
 async def _check_report_access(report: OrphanReport, user: User, db: AsyncSession) -> None:
@@ -215,7 +222,7 @@ async def submit_report(report_id: UUID, db: DbSession, user: CurrentUser) -> Re
     submit the draft; partner/admin staff can also submit on their
     behalf.
     """
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     await _check_report_access(report, user, db)
     _check_transition(report, "draft")
     report.status = _NEXT["draft"]
@@ -232,7 +239,7 @@ async def approve_partner(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
 ) -> ReportRead:
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     _check_transition(report, "pending_partner_approval")
     report.status = "pending_org_approval"
     report.partner_approved_by = user.id
@@ -248,7 +255,7 @@ async def approve_org(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
 ) -> ReportRead:
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     _check_transition(report, "pending_org_approval")
     report.status = "org_approved"
     report.org_approved_by = user.id
@@ -262,9 +269,9 @@ async def approve_org(
 async def publish_report(
     report_id: UUID,
     db: DbSession,
-    _user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
+    user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
 ) -> ReportRead:
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     _check_transition(report, "org_approved")
     report.status = "published_to_donor"
     report.published_at = _now()
@@ -288,9 +295,9 @@ async def reject_report(
     report_id: UUID,
     payload: ReportTransition,
     db: DbSession,
-    _user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
+    user: Annotated[User, Depends(require_roles(*REPORT_REVIEWER_ROLES))],
 ) -> ReportRead:
-    report = await _load_or_404(db, report_id)
+    report = await _load_or_404(db, report_id, user)
     if report.status in ("published_to_donor", "rejected"):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

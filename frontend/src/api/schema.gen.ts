@@ -1184,10 +1184,10 @@ export interface paths {
          * List Messages
          * @description List messages the caller can see.
          *
-         *     Moderators get everything in their org (RLS-scoped). Everyone else
-         *     sees only messages where they're sender (any status) or recipient
-         *     (approved only). Use `orphan_id` to narrow to one conversation;
-         *     `unread_only` filters to incoming approved+unread.
+         *     Moderators get everything in their org; everyone else sees only
+         *     messages where they're sender (any status) or recipient (approved
+         *     only). Use `orphan_id` to narrow to one conversation; `unread_only`
+         *     filters to incoming approved+unread.
          */
         get: operations["list_messages_api_v1_messages_get"];
         put?: never;
@@ -1215,8 +1215,8 @@ export interface paths {
         };
         /**
          * List Pending Messages
-         * @description Moderation queue. Returns org-wide pending messages, newest
-         *     first. RLS keeps this org-scoped automatically.
+         * @description Moderation queue. Returns the caller-org's pending messages, newest
+         *     first.
          */
         get: operations["list_pending_messages_api_v1_messages_pending_get"];
         put?: never;
