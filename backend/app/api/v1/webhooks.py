@@ -1,12 +1,22 @@
 """Inbound webhooks from external services.
 
-Currently only a MyFatoorah stub: validates a shared-secret header, records
-the payment, and bumps sponsorship totals. Real signature verification will
-be added when we move beyond the sandbox.
+MyFatoorah posts payment and refund status updates here. Every delivery is
+verified **fail-closed** by `_verify_myfatoorah_signature` before it is
+processed: when `MYFATOORAH_WEBHOOK_SECRET` is configured we require a valid
+hex HMAC-SHA256 of the raw body; when it is empty we reject the request
+outright (HTTP 503) outside `development` rather than silently trusting an
+anonymous caller.
 
 Every inbound delivery — success, validation failure, or processing error
 — is recorded in `inbound_webhook_log` so operators can replay them
 later from the admin UI.
+
+Follow-ups (deliberately out of scope here):
+  * Match MyFatoorah's real production signature format — header name, hex
+    vs base64, and which fields are signed — against their official webhook
+    documentation.
+  * Add a startup guard that refuses to boot in production/staging when
+    `MYFATOORAH_WEBHOOK_SECRET` is empty.
 """
 
 from __future__ import annotations
@@ -19,6 +29,7 @@ from decimal import Decimal
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
+import structlog
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import desc, func, select, text
@@ -39,6 +50,8 @@ from app.utils.codes import generate_code
 
 router = APIRouter()
 
+_log = structlog.get_logger("rufaqaa.webhooks")
+
 # A subset of MyFatoorah's payment statuses, mapped to our internal enum.
 _STATUS_MAP = {
     "Paid": "completed",
@@ -56,15 +69,46 @@ def _sign_payload(secret: str, body: bytes) -> str:
 
 
 def _verify_myfatoorah_signature(raw_body: bytes, signature: str | None) -> None:
-    expected = getattr(settings, "MYFATOORAH_WEBHOOK_SECRET", None)
-    if not expected:
+    """Verify an inbound MyFatoorah webhook signature, failing closed.
+
+    Behaviour (the secret is `settings.MYFATOORAH_WEBHOOK_SECRET`):
+
+      * secret set, signature header missing      -> 401
+      * secret set, signature present and valid    -> pass (returns None)
+      * secret set, signature present but invalid  -> 401
+      * secret empty, ENVIRONMENT != "development" -> 503 + CRITICAL log
+        (a server misconfiguration; we never silently accept)
+      * secret empty, ENVIRONMENT == "development" -> pass, but a WARNING
+        is logged on every call so it is never silent
+
+    The signature is a hex HMAC-SHA256 of the raw request body (see
+    `_sign_payload`). There is intentionally no static-secret fallback.
+
+    Follow-up (out of scope here): align this with MyFatoorah's real
+    production signature format — header name, hex vs base64, and which
+    fields are signed — per their official webhook documentation.
+    """
+    secret = settings.MYFATOORAH_WEBHOOK_SECRET
+    if not secret:
+        if settings.ENVIRONMENT != "development":
+            _log.critical(
+                "myfatoorah_webhook_secret_not_configured",
+                environment=settings.ENVIRONMENT,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Webhook secret not configured",
+            )
+        _log.warning(
+            "myfatoorah_webhook_signature_unverified",
+            environment=settings.ENVIRONMENT,
+            reason="secret_not_configured",
+        )
         return
+
     if signature is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    sig_ok = hmac.compare_digest(
-        signature, _sign_payload(expected, raw_body)
-    ) or hmac.compare_digest(signature, expected)
-    if not sig_ok:
+    if not hmac.compare_digest(signature, _sign_payload(secret, raw_body)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
