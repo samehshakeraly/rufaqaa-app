@@ -27,6 +27,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.message import Message
@@ -182,22 +183,14 @@ async def send_message(
             detail="Only donors and guardians can send messages here",
         )
 
-    # Validate recipient exists in the same org (RLS handles org scope,
-    # but we want a clean 400 rather than a constraint error).
-    recipient = await db.scalar(
-        select(User).where(User.id == payload.to_user_id, User.deleted_at.is_(None))
+    # Recipient + orphan must belong to the caller's org. Resolve both via the
+    # org-scoped helper — the app's superuser DB connection bypasses RLS, so
+    # without an explicit organization_id filter a message could target another
+    # org's user or orphan. A cross-org (or missing/deleted) id 404s here.
+    await get_in_org_or_404(db, User, payload.to_user_id, user, User.deleted_at.is_(None))
+    await get_in_org_or_404(
+        db, Orphan, payload.related_orphan_id, user, Orphan.deleted_at.is_(None)
     )
-    if recipient is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Recipient user not found",
-        )
-
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == payload.related_orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
 
     msg = Message(
         organization_id=user.organization_id,
@@ -240,12 +233,16 @@ async def list_messages(
 ) -> Page[MessageRead]:
     """List messages the caller can see.
 
-    Moderators get everything in their org (RLS-scoped). Everyone else
-    sees only messages where they're sender (any status) or recipient
-    (approved only). Use `orphan_id` to narrow to one conversation;
-    `unread_only` filters to incoming approved+unread.
+    Moderators get everything in their org; everyone else sees only
+    messages where they're sender (any status) or recipient (approved
+    only). Use `orphan_id` to narrow to one conversation; `unread_only`
+    filters to incoming approved+unread.
     """
-    stmt = select(Message)
+    # Explicit org scope on the base statement — the app's superuser DB
+    # connection bypasses RLS, so without this a moderator would see every
+    # org's messages. Non-moderators are narrowed to their own rows below
+    # (already in-org, since a user belongs to a single org).
+    stmt = select(Message).where(Message.organization_id == user.organization_id)
     if not _is_moderator(user):
         # Sender sees any status; recipient sees only approved.
         stmt = stmt.where(
@@ -282,9 +279,14 @@ async def list_pending_messages(
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[MessageRead]:
-    """Moderation queue. Returns org-wide pending messages, newest
-    first. RLS keeps this org-scoped automatically."""
-    stmt = select(Message).where(Message.moderation_status == "pending")
+    """Moderation queue. Returns the caller-org's pending messages, newest
+    first."""
+    # Explicit org scope — the superuser DB connection bypasses RLS, so the
+    # organization_id filter (not RLS) is what keeps the queue per-tenant.
+    stmt = select(Message).where(
+        Message.organization_id == user.organization_id,
+        Message.moderation_status == "pending",
+    )
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
         await db.scalars(stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset))
@@ -306,7 +308,7 @@ async def _load_message_or_404(db: AsyncSession, message_id: UUID) -> Message:
 
 @router.get("/{message_id}", response_model=MessageRead)
 async def get_message(message_id: UUID, db: DbSession, user: CurrentUser) -> MessageRead:
-    msg = await _load_message_or_404(db, message_id)
+    msg = await get_in_org_or_404(db, Message, message_id, user)
     if not _viewer_can_see(msg, user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -323,7 +325,7 @@ async def mark_message_read(message_id: UUID, db: DbSession, user: CurrentUser) 
     (anything else hasn't been delivered yet). Idempotent — re-reading
     leaves `read_at` at the first mark.
     """
-    msg = await _load_message_or_404(db, message_id)
+    msg = await get_in_org_or_404(db, Message, message_id, user)
     if msg.to_user_id != user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

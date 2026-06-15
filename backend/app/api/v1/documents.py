@@ -15,6 +15,7 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.document import Document
@@ -46,8 +47,10 @@ async def list_orphan_documents(
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[DocumentRead]:
-    await _load_orphan_or_404(db, orphan_id)
-    _ = user
+    # Scope the parent orphan to the caller's org via the helper (the superuser
+    # DB connection bypasses RLS): a cross-org orphan_id 404s before any
+    # document is read, so another org's documents are never listed.
+    await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     stmt = (
         select(Document).where(Document.orphan_id == orphan_id).order_by(desc(Document.created_at))
     )
@@ -118,10 +121,9 @@ async def list_guardian_documents(
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[DocumentRead]:
-    guardian = await db.scalar(select(Guardian).where(Guardian.id == guardian_id))
-    if guardian is None:
-        raise NotFound("Guardian")
-    _ = user
+    # Scope the parent guardian to the caller's org via the helper — a cross-org
+    # guardian_id 404s before any document is read.
+    await get_in_org_or_404(db, Guardian, guardian_id, user)
     stmt = (
         select(Document)
         .where(Document.guardian_id == guardian_id)
@@ -273,9 +275,7 @@ async def verify_document(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> DocumentRead:
-    doc = await db.scalar(select(Document).where(Document.id == document_id))
-    if doc is None:
-        raise NotFound("Document")
+    doc = await get_in_org_or_404(db, Document, document_id, user)
     old_status = doc.verification_status
     doc.verification_status = payload.status
     doc.verification_notes = payload.notes
@@ -305,9 +305,7 @@ async def delete_document(
 ) -> None:
     """Hard delete — the file in object storage is the source of truth
     and is not removed here. Operators handle storage GC out of band."""
-    doc = await db.scalar(select(Document).where(Document.id == document_id))
-    if doc is None:
-        raise NotFound("Document")
+    doc = await get_in_org_or_404(db, Document, document_id, user)
     record_audit(
         db,
         organization_id=doc.organization_id,

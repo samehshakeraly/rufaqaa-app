@@ -1,8 +1,11 @@
 """Aggregate metrics for the dashboard.
 
 A single endpoint returns headline counts so the frontend can render the
-dashboard with one round trip. Numbers are scoped by RLS (the
-organization the caller belongs to).
+dashboard with one round trip. Numbers are scoped to the caller's
+organization by an explicit ``organization_id`` filter on every aggregate
+query — the app's superuser DB connection bypasses RLS, so the filter (not
+RLS) is what keeps the dashboard per-tenant. The ``platform/*`` endpoints
+below are the deliberate exception: super-admin-only and cross-org.
 """
 
 from datetime import UTC, date, datetime, timedelta
@@ -54,34 +57,50 @@ class DashboardSummary(BaseModel):
 
 
 @router.get("/summary", response_model=DashboardSummary)
-async def dashboard_summary(db: DbSession, _user: CurrentUser) -> DashboardSummary:
+async def dashboard_summary(db: DbSession, user: CurrentUser) -> DashboardSummary:
     thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
+    org_id = user.organization_id
 
     orphans_total = await db.scalar(
-        select(func.count(Orphan.id)).where(Orphan.deleted_at.is_(None))
+        select(func.count(Orphan.id)).where(
+            Orphan.organization_id == org_id, Orphan.deleted_at.is_(None)
+        )
     )
     orphans_sponsored = await db.scalar(
         select(func.count(Orphan.id)).where(
-            Orphan.deleted_at.is_(None), Orphan.case_status == "sponsored"
+            Orphan.organization_id == org_id,
+            Orphan.deleted_at.is_(None),
+            Orphan.case_status == "sponsored",
         )
     )
     orphans_available = await db.scalar(
         select(func.count(Orphan.id)).where(
-            Orphan.deleted_at.is_(None), Orphan.case_status == "available"
+            Orphan.organization_id == org_id,
+            Orphan.deleted_at.is_(None),
+            Orphan.case_status == "available",
         )
     )
-    donors_total = await db.scalar(select(func.count(Donor.id)).where(Donor.deleted_at.is_(None)))
+    donors_total = await db.scalar(
+        select(func.count(Donor.id)).where(
+            Donor.organization_id == org_id, Donor.deleted_at.is_(None)
+        )
+    )
     sponsorships_active = await db.scalar(
-        select(func.count(Sponsorship.id)).where(Sponsorship.status == "active")
+        select(func.count(Sponsorship.id)).where(
+            Sponsorship.organization_id == org_id, Sponsorship.status == "active"
+        )
     )
     sponsorships_overdue = await db.scalar(
-        select(func.count(Sponsorship.id)).where(Sponsorship.status == "overdue")
+        select(func.count(Sponsorship.id)).where(
+            Sponsorship.organization_id == org_id, Sponsorship.status == "overdue"
+        )
     )
     last_30 = await db.execute(
         select(
             func.coalesce(func.sum(Payment.amount), 0),
             func.count(Payment.id),
         ).where(
+            Payment.organization_id == org_id,
             Payment.status == "completed",
             Payment.completed_at >= thirty_days_ago,
         )
@@ -111,19 +130,24 @@ class PaymentsTimeseries(BaseModel):
 
 
 @router.get("/payments-timeseries", response_model=PaymentsTimeseries)
-async def payments_timeseries(db: DbSession, _user: CurrentUser) -> PaymentsTimeseries:
+async def payments_timeseries(db: DbSession, user: CurrentUser) -> PaymentsTimeseries:
     """Total paid + count grouped by month for the last 12 months."""
     cutoff = datetime.now(UTC).replace(
         day=1, hour=0, minute=0, second=0, microsecond=0
     ) - timedelta(days=365)
     month = func.date_trunc("month", Payment.completed_at).label("month")
+    # Explicit org scope (superuser DB connection bypasses RLS).
     stmt = (
         select(
             month,
             func.coalesce(func.sum(Payment.amount), 0).label("total"),
             func.count(Payment.id).label("count"),
         )
-        .where(Payment.status == "completed", Payment.completed_at >= cutoff)
+        .where(
+            Payment.organization_id == user.organization_id,
+            Payment.status == "completed",
+            Payment.completed_at >= cutoff,
+        )
         .group_by(month)
         .order_by(month)
     )
@@ -150,12 +174,14 @@ class SponsorshipsByStatus(BaseModel):
 
 
 @router.get("/sponsorships-by-status", response_model=SponsorshipsByStatus)
-async def sponsorships_by_status(db: DbSession, _user: CurrentUser) -> SponsorshipsByStatus:
+async def sponsorships_by_status(db: DbSession, user: CurrentUser) -> SponsorshipsByStatus:
     """One row per status enum that currently has at least one
     sponsorship attached. The frontend renders this as a small donut."""
+    # Explicit org scope (superuser DB connection bypasses RLS).
     rows = (
         await db.execute(
             select(Sponsorship.status, func.count(Sponsorship.id))
+            .where(Sponsorship.organization_id == user.organization_id)
             .group_by(Sponsorship.status)
             .order_by(Sponsorship.status)
         )
@@ -179,7 +205,7 @@ class DonationsByPartner(BaseModel):
 
 
 @router.get("/donations-by-partner", response_model=DonationsByPartner)
-async def donations_by_partner(db: DbSession, _user: CurrentUser) -> DonationsByPartner:
+async def donations_by_partner(db: DbSession, user: CurrentUser) -> DonationsByPartner:
     """Completed payments rolled up by the orphan's partner
     organization over the last 90 days. Top 10 partners by total,
     descending. Payments not linked to an orphan (e.g. general
@@ -197,6 +223,7 @@ async def donations_by_partner(db: DbSession, _user: CurrentUser) -> DonationsBy
         .join(Orphan, Orphan.partner_organization_id == PartnerOrganization.id)
         .join(Payment, Payment.orphan_id == Orphan.id)
         .where(
+            Payment.organization_id == user.organization_id,
             Payment.status == "completed",
             Payment.completed_at >= cutoff,
             Orphan.deleted_at.is_(None),

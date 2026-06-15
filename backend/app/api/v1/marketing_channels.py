@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, MARKETING_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.partner import MarketingChannel
@@ -34,12 +35,16 @@ router = APIRouter()
 @router.get("", response_model=Page[MarketingChannelRead])
 async def list_marketing_channels(
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
     include_inactive: bool = False,
 ) -> Page[MarketingChannelRead]:
-    stmt = select(MarketingChannel)
+    # Explicit org scope on the base statement — the app's superuser DB
+    # connection bypasses RLS, so without this filter channels leak across orgs.
+    stmt = select(MarketingChannel).where(
+        MarketingChannel.organization_id == user.organization_id
+    )
     if not include_inactive:
         stmt = stmt.where(MarketingChannel.status == "active")
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
@@ -90,11 +95,9 @@ async def create_marketing_channel(
 async def get_marketing_channel(
     channel_id: UUID,
     db: DbSession,
-    _user: CurrentUser,
+    user: CurrentUser,
 ) -> MarketingChannelRead:
-    channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
-    if channel is None:
-        raise NotFound("Marketing channel")
+    channel = await get_in_org_or_404(db, MarketingChannel, channel_id, user)
     return MarketingChannelRead.model_validate(channel)
 
 
@@ -196,9 +199,7 @@ async def update_marketing_channel(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> MarketingChannelRead:
-    channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
-    if channel is None:
-        raise NotFound("Marketing channel")
+    channel = await get_in_org_or_404(db, MarketingChannel, channel_id, user)
     changes: dict[str, Any] = {}
     for field in ("name_ar", "name_en", "channel_type", "description", "status"):
         v = getattr(payload, field)
@@ -226,9 +227,7 @@ async def archive_marketing_channel(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> None:
-    channel = await db.scalar(select(MarketingChannel).where(MarketingChannel.id == channel_id))
-    if channel is None:
-        raise NotFound("Marketing channel")
+    channel = await get_in_org_or_404(db, MarketingChannel, channel_id, user)
     channel.status = "archived"
     record_audit(
         db,
