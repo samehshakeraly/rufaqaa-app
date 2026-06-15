@@ -300,7 +300,7 @@ async def _login_as(api: AsyncClient, org_id: UUID, role: str) -> tuple[UUID, di
 
 
 async def test_messages_cross_tenant_isolation(api: AsyncClient) -> None:
-    """A moderator sees only its org's messages; cross-org fetch/read/send 404."""
+    """A moderator sees only its org's messages; cross-org fetch/read/send/moderate 404."""
     org_a = await _make_org()
     org_b = await _make_org()
     partner_a = await _make_partner(org_a)
@@ -321,7 +321,9 @@ async def test_messages_cross_tenant_isolation(api: AsyncClient) -> None:
     msg_b = await _make_message(
         org_b, sender_b, recipient_b, orphan_b, moderation_status="approved"
     )
-    await _make_message(org_b, sender_b, recipient_b, orphan_b, moderation_status="pending")
+    msg_b_pending = await _make_message(
+        org_b, sender_b, recipient_b, orphan_b, moderation_status="pending"
+    )
 
     _, headers_a = await _login_as(api, org_a, "org_admin")  # a message moderator
 
@@ -343,6 +345,22 @@ async def test_messages_cross_tenant_isolation(api: AsyncClient) -> None:
     r = await api.get(f"/api/v1/messages/{msg_b}", headers=headers_a)
     assert r.status_code == 404, r.text
     r = await api.post(f"/api/v1/messages/{msg_b}/read", headers=headers_a)
+    assert r.status_code == 404, r.text
+
+    # Moderation (MESSAGE_MODERATOR_ROLES). Baseline: org A moderates its own
+    # pending message. A cross-org pending message 404s on the org guard, before
+    # the status check — so another org's message is never moderated.
+    r = await api.post(
+        f"/api/v1/messages/{msg_a_pending}/moderate",
+        json={"decision": "approve"},
+        headers=headers_a,
+    )
+    assert r.status_code == 200, r.text
+    r = await api.post(
+        f"/api/v1/messages/{msg_b_pending}/moderate",
+        json={"decision": "approve"},
+        headers=headers_a,
+    )
     assert r.status_code == 404, r.text
 
     # send_message: baseline same-org send succeeds, so the cross-org 404s below
@@ -373,7 +391,7 @@ async def test_messages_cross_tenant_isolation(api: AsyncClient) -> None:
 
 
 async def test_documents_cross_tenant_isolation(api: AsyncClient) -> None:
-    """Document lists are scoped to an in-org parent; cross-org fetch/verify/delete 404."""
+    """Document lists scope to an in-org parent; cross-org verify/delete/attach 404."""
     org_a = await _make_org()
     org_b = await _make_org()
     partner_a = await _make_partner(org_a)
@@ -423,6 +441,23 @@ async def test_documents_cross_tenant_isolation(api: AsyncClient) -> None:
     )
     assert r.status_code == 404, r.text
     r = await api.delete(f"/api/v1/documents/{doc_b}", headers=headers_a)
+    assert r.status_code == 404, r.text
+
+    # attach_document_to_orphan / attach_document_to_guardian (write holes):
+    # baseline same-org attach succeeds; a cross-org parent 404s, so a document
+    # can't be attached to another org's orphan/guardian.
+    doc_payload = {"document_type": "other", "file_url": "https://example.com/new.pdf"}
+    r = await api.post(f"/api/v1/orphans/{orphan_a}/documents", json=doc_payload, headers=headers_a)
+    assert r.status_code == 201, r.text
+    r = await api.post(
+        f"/api/v1/guardians/{guardian_a}/documents", json=doc_payload, headers=headers_a
+    )
+    assert r.status_code == 201, r.text
+    r = await api.post(f"/api/v1/orphans/{orphan_b}/documents", json=doc_payload, headers=headers_a)
+    assert r.status_code == 404, r.text
+    r = await api.post(
+        f"/api/v1/guardians/{guardian_b}/documents", json=doc_payload, headers=headers_a
+    )
     assert r.status_code == 404, r.text
 
 

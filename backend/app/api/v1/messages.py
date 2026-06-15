@@ -29,7 +29,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import CurrentUser, DbSession
 from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, require_roles
-from app.core.exceptions import NotFound
 from app.models.message import Message
 from app.models.orphan import Orphan
 from app.models.user import User
@@ -299,13 +298,6 @@ async def list_pending_messages(
     )
 
 
-async def _load_message_or_404(db: AsyncSession, message_id: UUID) -> Message:
-    msg = await db.scalar(select(Message).where(Message.id == message_id))
-    if msg is None:
-        raise NotFound("Message")
-    return msg
-
-
 @router.get("/{message_id}", response_model=MessageRead)
 async def get_message(message_id: UUID, db: DbSession, user: CurrentUser) -> MessageRead:
     msg = await get_in_org_or_404(db, Message, message_id, user)
@@ -357,7 +349,10 @@ async def moderate_message(
     trail. Sender keeps seeing it (with the reject note); the recipient
     never does.
     """
-    msg = await _load_message_or_404(db, message_id)
+    # Org-scope the fetch via the helper — moderators only act on their own
+    # org's messages (superuser conn bypasses RLS); a cross-org id 404s before
+    # the status check, so another org's message is never moderated.
+    msg = await get_in_org_or_404(db, Message, message_id, user)
     if msg.moderation_status not in ("pending",):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

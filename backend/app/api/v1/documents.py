@@ -12,7 +12,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import desc, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
@@ -28,15 +27,6 @@ from app.services.audit import record_audit
 from app.services.storage import presigned_get_url
 
 router = APIRouter()
-
-
-async def _load_orphan_or_404(db: AsyncSession, orphan_id: UUID) -> Orphan:
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
-    return orphan
 
 
 @router.get("/orphans/{orphan_id}/documents", response_model=Page[DocumentRead])
@@ -75,7 +65,9 @@ async def attach_document_to_orphan(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> DocumentRead:
-    orphan = await _load_orphan_or_404(db, orphan_id)
+    # Org-scope the parent orphan via the helper so a cross-org orphan_id can't
+    # attach a document to another org's orphan (superuser conn bypasses RLS).
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     doc = Document(
         organization_id=orphan.organization_id,
         orphan_id=orphan.id,
@@ -150,9 +142,9 @@ async def attach_document_to_guardian(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> DocumentRead:
-    guardian = await db.scalar(select(Guardian).where(Guardian.id == guardian_id))
-    if guardian is None:
-        raise NotFound("Guardian")
+    # Org-scope the parent guardian via the helper — a cross-org guardian_id
+    # can't attach a document to another org's guardian.
+    guardian = await get_in_org_or_404(db, Guardian, guardian_id, user)
     doc = Document(
         organization_id=guardian.organization_id,
         guardian_id=guardian.id,
