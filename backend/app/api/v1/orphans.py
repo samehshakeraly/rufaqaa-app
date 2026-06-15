@@ -11,6 +11,7 @@ from sqlalchemy import case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.scoping import get_in_org_or_404
 from app.api.v1.users import _assert_partner_org_in_org
 from app.core.authz import (
     ADMIN_ROLES,
@@ -358,11 +359,9 @@ async def get_orphan(
     db: DbSession,
     user: CurrentUser,
 ) -> OrphanRead:
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org filter is the outer gate for every role (a cross-org id 404s here);
+    # partner_scope_hides() then narrows within the org for partner-scoped roles.
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     # Partner-scoped callers must not learn that an orphan outside their جهة
     # exists — 404 rather than 403 so existence stays hidden.
     if partner_scope_hides(user, orphan.partner_organization_id):
@@ -377,11 +376,9 @@ async def update_orphan(
     db: DbSession,
     user: CurrentUser,
 ) -> OrphanRead:
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org filter is the outer gate for every role (a cross-org id 404s here);
+    # partner_scope_hides() then narrows within the org for partner-scoped roles.
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     # Mirror get_orphan: a partner-scoped caller cannot modify (or even confirm
     # the existence of) an orphan outside their جهة — 404, not 403.
     if partner_scope_hides(user, orphan.partner_organization_id):
@@ -445,11 +442,8 @@ async def delete_orphan(
     user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
 ) -> None:
     """Soft-delete an orphan record. Restricted to org admins."""
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org-scoped fetch — a cross-org id 404s, never deleting another org's row.
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     orphan.deleted_at = datetime.now(UTC)
     record_audit(
         db,
@@ -480,11 +474,9 @@ async def assign_orphan_channel(
     """Attach (or detach) an orphan to a marketing channel. Validates
     that the channel belongs to the same organization and is active;
     null clears the assignment."""
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org-scoped fetch — a cross-org id 404s. The channel below is then required
+    # to share this (in-org) orphan's organization_id, so it cannot cross tenants.
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
 
     if payload.channel_id is not None:
         channel = await db.scalar(
@@ -540,13 +532,11 @@ class OrphanRejectPayload(BaseModel):
     reason: str = Field(min_length=1, max_length=1000)
 
 
-async def _load_orphan_or_404(db: AsyncSession, orphan_id: UUID) -> Orphan:
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
-    return orphan
+async def _load_orphan_or_404(db: AsyncSession, orphan_id: UUID, user: User) -> Orphan:
+    # Explicit org scope, never RLS — the app's superuser connection bypasses
+    # RLS. A cross-org id 404s here (existence never leaks), the outer gate for
+    # all roles; the partner_scope_hides() check layers on top, within the org.
+    return await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
 
 
 def _check_case_transition(orphan: Orphan, expected_from: tuple[str, ...]) -> None:
@@ -571,7 +561,7 @@ async def approve_orphan(
     Only partner_manager + org admins may approve — partner_staff submits
     but cannot self-approve, same separation the report workflow uses.
     """
-    orphan = await _load_orphan_or_404(db, orphan_id)
+    orphan = await _load_orphan_or_404(db, orphan_id, user)
     # Mirror update_orphan: a partner_manager may only decide on cases inside
     # their own جهة — 404 (never 403, and before the state check so a 409
     # can't leak case_status) keeps an out-of-جهة orphan's existence hidden.
@@ -607,7 +597,7 @@ async def reject_orphan(
 ) -> OrphanRead:
     """Reject a pending_review orphan. Reason is required and stored on
     the row so reviewers can see why this case didn't move forward."""
-    orphan = await _load_orphan_or_404(db, orphan_id)
+    orphan = await _load_orphan_or_404(db, orphan_id, user)
     # Same جهة fence as approve_orphan: out-of-جهة cases 404 before the state check.
     if partner_scope_hides(user, orphan.partner_organization_id):
         raise NotFound("Orphan")
@@ -640,7 +630,7 @@ async def release_orphan(
     """Move an approved or reserved orphan back to the available pool —
     clearing any marketing-channel assignment. Used when a reservation
     lapses or a channel is reshuffled."""
-    orphan = await _load_orphan_or_404(db, orphan_id)
+    orphan = await _load_orphan_or_404(db, orphan_id, user)
     # Same جهة fence as approve_orphan: out-of-جهة cases 404 before the state check.
     if partner_scope_hides(user, orphan.partner_organization_id):
         raise NotFound("Orphan")
@@ -679,11 +669,9 @@ async def orphan_timeline(
     """Chronological feed of everything that has happened around an orphan:
     sponsorships, payments, and reports. Newest first, capped at 200
     events."""
-    orphan = await db.scalar(
-        select(Orphan).where(Orphan.id == orphan_id, Orphan.deleted_at.is_(None))
-    )
-    if orphan is None:
-        raise NotFound("Orphan")
+    # Org filter is the outer gate for every role (a cross-org id 404s here);
+    # partner_scope_hides() then narrows within the org for partner-scoped roles.
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
     # Mirror get_orphan: partner-scoped callers must not read (or even confirm
     # the existence of) the timeline of an orphan outside their جهة — 404, not 403.
     if partner_scope_hides(user, orphan.partner_organization_id):
