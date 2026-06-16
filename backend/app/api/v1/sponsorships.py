@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
 from app.core.authz import FINANCE_ROLES, require_roles
 from app.models.donor import Donor
@@ -115,7 +115,7 @@ async def list_sponsorships(
 async def create_sponsorship(
     payload: SponsorshipCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> SponsorshipRead:
     await get_in_org_or_404(db, Donor, payload.donor_id, user)
     await get_in_org_or_404(db, Orphan, payload.orphan_id, user, Orphan.deleted_at.is_(None))
@@ -175,7 +175,7 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_sponsorships_csv(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
     donor_id: UUID | None = None,
     orphan_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
@@ -227,7 +227,7 @@ async def export_sponsorships_csv(
 async def get_sponsorship(
     sponsorship_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> SponsorshipRead:
     sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     donor = await db.scalar(select(Donor).where(Donor.id == sp.donor_id))
@@ -240,7 +240,7 @@ async def update_sponsorship(
     sponsorship_id: UUID,
     payload: SponsorshipUpdate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> SponsorshipRead:
     """Edit non-status fields on an active sponsorship.
 
@@ -263,7 +263,7 @@ async def update_sponsorship(
 async def pause_sponsorship(
     sponsorship_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> SponsorshipRead:
     sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status != "active":
@@ -281,7 +281,7 @@ async def pause_sponsorship(
 async def resume_sponsorship(
     sponsorship_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> SponsorshipRead:
     sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status != "paused":
@@ -300,7 +300,7 @@ async def cancel_sponsorship(
     sponsorship_id: UUID,
     payload: SponsorshipCancel,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> SponsorshipRead:
     sp = await get_in_org_or_404(db, Sponsorship, sponsorship_id, user)
     if sp.status in ("cancelled", "completed"):

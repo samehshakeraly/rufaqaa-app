@@ -1,12 +1,14 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func, select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
+from app.core.authz import STAFF_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.family import Family, Guardian
+from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.family import (
     FamilyCreate,
@@ -23,7 +25,7 @@ router = APIRouter()
 @router.get("", response_model=Page[FamilyRead])
 async def list_families(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[FamilyRead]:
@@ -46,7 +48,7 @@ async def list_families(
 async def create_family(
     payload: FamilyCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> FamilyRead:
     family = Family(
         organization_id=user.organization_id,
@@ -87,7 +89,7 @@ async def create_family(
 async def get_family(
     family_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> FamilyRead:
     # Explicit org scoping, never RLS — the app's superuser connection
     # bypasses RLS. A cross-org id falls through to 404, never revealing it.
@@ -110,7 +112,7 @@ async def get_family(
 async def list_guardians(
     family_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[GuardianRead]:
@@ -146,7 +148,7 @@ async def create_guardian(
     family_id: UUID,
     payload: GuardianCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> GuardianRead:
     # Explicit org scoping, never RLS — the app's superuser connection
     # bypasses RLS. A cross-org family id falls through to 404.

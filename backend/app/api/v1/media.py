@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, 
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.config import settings
@@ -162,7 +162,7 @@ class OrphanPhoto(BaseModel):
 async def list_orphan_photos(
     orphan_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> list[OrphanPhoto]:
     """Photos attached to an orphan, newest first. Each row carries a
     fresh presigned URL so the UI can render the image without exposing
@@ -254,7 +254,7 @@ async def upload_generic_file(
 async def get_media_presigned_url(
     media_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> dict[str, str]:
     """Return a short-lived presigned URL for an uploaded media object."""
     # Explicit org scope, never RLS — the superuser connection bypasses it. A

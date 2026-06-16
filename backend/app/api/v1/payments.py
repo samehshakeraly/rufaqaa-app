@@ -143,7 +143,7 @@ async def list_payments(
 async def create_payment(
     payload: PaymentCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> PaymentRead:
     """Record a manual / cash / cheque payment.
 
@@ -561,7 +561,7 @@ _CSV_COLUMNS = (
 async def payment_receipt(
     payment_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> PaymentReceipt:
     """One-shot bundle for the print-friendly receipt page.
 
@@ -619,7 +619,7 @@ async def payment_receipt(
 @router.get("/export.csv")
 async def export_payments_csv(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
     donor_id: UUID | None = None,
     sponsorship_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,

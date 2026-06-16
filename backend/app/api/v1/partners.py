@@ -7,11 +7,12 @@ from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel
 from sqlalchemy import false, func, select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
 from app.core.authz import (
     ADMIN_ROLES,
     FINANCE_ROLES,
     PARTNER_SCOPED_ROLES,
+    STAFF_ROLES,
     require_roles,
 )
 from app.core.exceptions import NotFound
@@ -120,7 +121,7 @@ async def create_partner(
 async def get_partner(
     partner_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> PartnerRead:
     # Explicit org scoping, never RLS — the app's superuser connection
     # bypasses RLS. A cross-org id falls through to 404, never revealing it.
@@ -207,7 +208,7 @@ async def archive_partner(
 async def get_partner_stats(
     partner_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> PartnerStats:
     """Rollup for a single partner: orphan counts, active/overdue
     sponsorships, and 30-day payment totals. All scoped by partner via
