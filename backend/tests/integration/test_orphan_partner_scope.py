@@ -500,6 +500,33 @@ async def test_org_admin_transitions_any_jiha(
     assert r.json()["case_status"] == "rejected"
 
 
+async def test_partner_manager_cannot_approve_own_submission(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Segregation of duties: the partner_manager who CREATED an orphan cannot
+    approve their own submission (403) — even though the role may approve in
+    general — while a DIFFERENT partner_manager in the same جهة still approves
+    it. (org admins are exempt; the admin-creates-then-approves path stays green
+    via test_approve_pending_orphan in test_orphan_workflow.)"""
+    org_id = await _seed_org_id()
+    jiha = await _make_partner_org(org_id)
+    creator = await _login_user(api, org_id, jiha, role="partner_manager")
+    other = await _login_user(api, org_id, jiha, role="partner_manager")
+
+    # created_by is stamped to the calling partner_manager on create.
+    orphan = await _create_orphan(api, creator, jiha)
+
+    # The creator hits the SoD fence — 403 — and the case never transitions.
+    r = await api.post(f"/api/v1/orphans/{orphan['id']}/approve", json={}, headers=creator)
+    assert r.status_code == 403, r.text
+
+    # A different partner_manager in the same جهة may still approve it (the 200
+    # also proves the 403 above left the record in pending_review).
+    r = await api.post(f"/api/v1/orphans/{orphan['id']}/approve", json={}, headers=other)
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "approved"
+
+
 async def test_partner_manager_timeline_scoped_to_jiha(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
