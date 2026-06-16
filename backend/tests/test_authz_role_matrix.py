@@ -124,6 +124,7 @@ NEWLY_GATED: list[tuple[str, str]] = [
     ("GET", "/api/v1/stats/payments-timeseries"),
     ("GET", "/api/v1/stats/sponsorships-by-status"),
     ("GET", "/api/v1/stats/donations-by-partner"),
+    ("GET", "/api/v1/reports"),
     # MARKETING_ROLES — marketing channels
     ("GET", "/api/v1/marketing-channels"),
     ("GET", f"/api/v1/marketing-channels/{_OID}"),

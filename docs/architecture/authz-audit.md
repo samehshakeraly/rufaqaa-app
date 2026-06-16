@@ -81,6 +81,7 @@ Tenant-scoping mechanisms referenced below:
 | GET | `/api/v1/stats/payments-timeseries` | `payments_timeseries` | `STAFF_ROLES` | explicit org filter |
 | GET | `/api/v1/stats/sponsorships-by-status` | `sponsorships_by_status` | `STAFF_ROLES` | explicit org filter |
 | GET | `/api/v1/stats/donations-by-partner` | `donations_by_partner` | `STAFF_ROLES` | explicit org filter |
+| GET | `/api/v1/reports` | `list_reports` | `STAFF_ROLES` | explicit org filter |
 | GET | `/api/v1/marketing-channels` | `list_marketing_channels` | `MARKETING_ROLES` | explicit org filter |
 | GET | `/api/v1/marketing-channels/{channel_id}` | `get_marketing_channel` | `MARKETING_ROLES` | `get_in_org_or_404` |
 | GET | `/api/v1/audit` | `list_audit` | `ADMIN_ROLES` | explicit org filter |
@@ -171,13 +172,18 @@ tool here.
 
 ## Reviewed and intentionally not gated (out of this PR's scope)
 
-- **`reports.py`** (`list`/`create`/`get`/`update`/`submit` reports): a
-  **guardian-reachable** surface. `_check_report_access` scopes guardians to
-  reports for orphans in their own family and lets staff pass through, on top of
-  `get_in_org_or_404`. Like `messages`, a `STAFF_ROLES` gate would lock out
-  guardians. The reviewer/workflow transitions
-  (`approve-partner`/`approve-org`/`publish`/`reject`) are already gated to
-  `REPORT_REVIEWER_ROLES`. Not in the audit's gate list — left unchanged.
+- **`reports.py`** — **single-report** access only. `GET /reports`
+  (`list_reports`) is the org-wide collection and is now **gated to
+  `STAFF_ROLES`** (see the gated table above), matching the staff reads on
+  orphans/families. What remains guardian-reachable is per-report access:
+  `GET`/`PATCH /reports/{id}` and `POST /reports/{id}/submit` keep
+  `_check_report_access` (guardians touch only reports for orphans in their own
+  family; staff pass through), and `POST /reports` (`create_report`) keeps its
+  own inline family-scope check — all on top of `get_in_org_or_404` /
+  explicit org filter. A `STAFF_ROLES` gate on those single-report routes would
+  lock out guardians, so they are left unchanged. The reviewer/workflow
+  transitions (`approve-partner`/`approve-org`/`publish`/`reject`) remain gated
+  to `REPORT_REVIEWER_ROLES`.
 - **`POST /api/v1/payments/initiate`** (`initiate_payment`): donor-reachable by
   design (a donor pays for themselves; staff may initiate on behalf). Guarded by
   an in-body split (`user.role == "donor"` → must own the donor row + verified
