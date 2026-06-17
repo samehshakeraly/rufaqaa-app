@@ -8,10 +8,21 @@
 # "give me one VPS" path.
 #
 # Required env vars (typically via an .env file in this directory):
-#   POSTGRES_PASSWORD       postgres password (no default)
-#   SECRET_KEY              backend secret key (no default)
-#   JWT_SECRET_KEY          jwt signing key  (no default)
-#   PUBLIC_HOST             host/domain serving the app (no default)
+#   POSTGRES_PASSWORD          postgres password (no default)
+#   SECRET_KEY                 backend secret key (no default)
+#   JWT_SECRET_KEY             jwt signing key  (no default)
+#   PUBLIC_HOST                host/domain serving the app (no default)
+#   S3_ENDPOINT                external object-storage endpoint (no default)
+#   S3_ACCESS_KEY              object-storage access key (no default)
+#   S3_SECRET_KEY              object-storage secret key (no default)
+#   MYFATOORAH_API_URL         LIVE MyFatoorah base URL (no default)
+#   MYFATOORAH_API_KEY         MyFatoorah API key (no default)
+#   MYFATOORAH_WEBHOOK_SECRET  MyFatoorah webhook secret (no default)
+#
+# The backend startup guard refuses to boot in production when
+# SECRET_KEY, JWT_SECRET_KEY, S3_ACCESS_KEY, S3_SECRET_KEY,
+# MYFATOORAH_API_KEY or MYFATOORAH_WEBHOOK_SECRET is empty or left at a
+# development default, so all six must be forwarded below.
 #
 # Usage:
 #   cd infrastructure/docker/production
@@ -38,6 +49,24 @@ x-backend-env: &backend-env
   CORS_ORIGIN_REGEX: ""
   LOG_FORMAT: json
   LOG_LEVEL: INFO
+  # Public base URL for transactional-email links and the MyFatoorah
+  # payment callback / redirect URLs (the app default is localhost).
+  APP_BASE_URL: https://${PUBLIC_HOST}
+  # Object storage. No S3/MinIO service runs in this stack, so these
+  # point at an external provider. Endpoint and keys are required; the
+  # bucket names and region fall back to the app defaults when unset.
+  S3_ENDPOINT: ${S3_ENDPOINT}
+  S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+  S3_SECRET_KEY: ${S3_SECRET_KEY}
+  S3_BUCKET_PRIVATE: ${S3_BUCKET_PRIVATE:-rufaqaa-private}
+  S3_BUCKET_PUBLIC: ${S3_BUCKET_PUBLIC:-rufaqaa-public}
+  S3_REGION: ${S3_REGION:-us-east-1}
+  # Payment gateway. MYFATOORAH_API_URL must be the LIVE base URL in
+  # production (the app default is the apitest sandbox).
+  MYFATOORAH_API_URL: ${MYFATOORAH_API_URL}
+  MYFATOORAH_API_KEY: ${MYFATOORAH_API_KEY}
+  MYFATOORAH_WEBHOOK_SECRET: ${MYFATOORAH_WEBHOOK_SECRET}
 
 services:
   postgres:
