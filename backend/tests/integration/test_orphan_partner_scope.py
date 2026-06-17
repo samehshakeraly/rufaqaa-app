@@ -500,6 +500,34 @@ async def test_org_admin_transitions_any_jiha(
     assert r.json()["case_status"] == "rejected"
 
 
+# ── Segregation of duties: no self-approval on approve ─────────────────
+
+
+async def test_partner_manager_cannot_approve_own_orphan(api: AsyncClient) -> None:
+    """Segregation of duties: a partner_manager who registered an orphan cannot
+    approve their own submission (403), but a DIFFERENT partner_manager in the
+    same جهة can. The blocked attempt writes nothing, so the case is still
+    pending_review when the second manager approves. The admin exemption is
+    covered by test_orphan_workflow.test_approve_pending_orphan, where the
+    seeded org_admin both creates and approves the same record."""
+    org_id = await _seed_org_id()
+    jiha = await _make_partner_org(org_id)
+    creator = await _login_user(api, org_id, jiha)  # partner_manager (default role)
+    approver = await _login_user(api, org_id, jiha)  # a DIFFERENT partner_manager
+
+    # The creating manager registers the orphan → orphans.created_by = creator.id.
+    orphan = await _create_orphan(api, creator, jiha)
+
+    # Self-approval is blocked: the same actor created the record and would approve it.
+    r = await api.post(f"/api/v1/orphans/{orphan['id']}/approve", json={}, headers=creator)
+    assert r.status_code == 403, r.text
+
+    # The 403 left the case in pending_review — a different manager approves cleanly.
+    r = await api.post(f"/api/v1/orphans/{orphan['id']}/approve", json={}, headers=approver)
+    assert r.status_code == 200, r.text
+    assert r.json()["case_status"] == "approved"
+
+
 async def test_partner_manager_timeline_scoped_to_jiha(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
