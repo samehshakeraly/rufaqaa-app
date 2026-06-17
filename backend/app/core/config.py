@@ -1,8 +1,13 @@
 from functools import cached_property, lru_cache
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field, PostgresDsn
+from pydantic import Field, PostgresDsn, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Shared insecure default for SECRET_KEY / JWT_SECRET_KEY. It lives in source
+# control, so it is public knowledge — the production guard below refuses to
+# boot if it (or an empty value) survives into a non-development environment.
+_INSECURE_SECRET_DEFAULT = "development_only_change_in_production"
 
 
 class Settings(BaseSettings):
@@ -33,8 +38,8 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
-    SECRET_KEY: str = "development_only_change_in_production"
-    JWT_SECRET_KEY: str = "development_only_change_in_production"
+    SECRET_KEY: str = _INSECURE_SECRET_DEFAULT
+    JWT_SECRET_KEY: str = _INSECURE_SECRET_DEFAULT
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -97,6 +102,37 @@ class Settings(BaseSettings):
     SENTRY_DSN: str = ""
     SENTRY_TRACES_SAMPLE_RATE: float = 0.0
     SENTRY_RELEASE: str = ""
+
+    @model_validator(mode="after")
+    def _enforce_production_secrets(self) -> Self:
+        """Fail closed when security secrets are unset/default outside dev.
+
+        A default or empty JWT signing key — or app ``SECRET_KEY``, or
+        MyFatoorah webhook secret — in a non-development environment is
+        catastrophic: the insecure default ships in source control, so anyone
+        could forge valid auth tokens or webhook signatures. Refuse to boot
+        rather than silently run an exploitable service. Development keeps the
+        defaults so local setup stays zero-config.
+        """
+        if self.ENVIRONMENT == "development":
+            return self
+
+        insecure: list[str] = []
+        if not self.SECRET_KEY or self.SECRET_KEY == _INSECURE_SECRET_DEFAULT:
+            insecure.append("SECRET_KEY")
+        if not self.JWT_SECRET_KEY or self.JWT_SECRET_KEY == _INSECURE_SECRET_DEFAULT:
+            insecure.append("JWT_SECRET_KEY")
+        if not self.MYFATOORAH_WEBHOOK_SECRET:
+            insecure.append("MYFATOORAH_WEBHOOK_SECRET")
+
+        if insecure:
+            raise ValueError(
+                f"ENVIRONMENT={self.ENVIRONMENT!r}: refusing to start with unset "
+                f"or insecure-default secrets: {', '.join(insecure)}. Set a strong, "
+                "unique value for each via environment variables (generate one with "
+                '`python -c "import secrets; print(secrets.token_urlsafe(64))"`).'
+            )
+        return self
 
     @cached_property
     def cors_origins_list(self) -> list[str]:
