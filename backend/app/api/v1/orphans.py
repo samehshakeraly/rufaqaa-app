@@ -560,6 +560,14 @@ async def approve_orphan(
 
     Only partner_manager + org admins may approve — partner_staff submits
     but cannot self-approve, same separation the report workflow uses.
+
+    Segregation of duties: a non-admin approver may not approve a record they
+    created themselves (``created_by == user.id``) — that's a 403. This closes
+    the partner_manager dual-role of registering an orphan and then approving
+    their own submission. :data:`ADMIN_ROLES` (super_admin / org_admin) are
+    exempt — they are the escalation path, and exempting them keeps a
+    single-admin org from deadlocking. Only approval is fenced this way; reject
+    and release are not.
     """
     orphan = await _load_orphan_or_404(db, orphan_id, user)
     # Mirror update_orphan: a partner_manager may only decide on cases inside
@@ -567,6 +575,16 @@ async def approve_orphan(
     # can't leak case_status) keeps an out-of-جهة orphan's existence hidden.
     if partner_scope_hides(user, orphan.partner_organization_id):
         raise NotFound("Orphan")
+    # Segregation of duties: the creator of a record may not also approve it.
+    # created_by is stamped at creation (services/orphans.py), so the data is
+    # always present; a NULL created_by never equals a real user id, so an
+    # orphan with no recorded creator is never blocked. Admins are exempt — the
+    # escalation path that prevents a one-admin org from deadlocking.
+    if user.role not in ADMIN_ROLES and orphan.created_by == user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You cannot approve an orphan record you created",
+        )
     _check_case_transition(orphan, ("pending_review",))
 
     old_status = orphan.case_status

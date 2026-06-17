@@ -1653,6 +1653,14 @@ export interface paths {
          *
          *     Only partner_manager + org admins may approve — partner_staff submits
          *     but cannot self-approve, same separation the report workflow uses.
+         *
+         *     Segregation of duties: a non-admin approver may not approve a record they
+         *     created themselves (``created_by == user.id``) — that's a 403. This closes
+         *     the partner_manager dual-role of registering an orphan and then approving
+         *     their own submission. :data:`ADMIN_ROLES` (super_admin / org_admin) are
+         *     exempt — they are the escalation path, and exempting them keeps a
+         *     single-admin org from deadlocking. Only approval is fenced this way; reject
+         *     and release are not.
          */
         post: operations["approve_orphan_api_v1_orphans__orphan_id__approve_post"];
         delete?: never;
