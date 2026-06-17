@@ -8,9 +8,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, FINANCE_ROLES, require_roles
 from app.models.donor import Donor
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
@@ -25,7 +25,7 @@ router = APIRouter()
 @router.get("", response_model=Page[DonorRead])
 async def list_donors(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[DonorRead]:
@@ -63,7 +63,7 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_donors_csv(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> StreamingResponse:
     """Stream every non-deleted donor in this org as CSV, capped at
     10 000 rows. Tighten the org / future filters if you need to export
@@ -110,7 +110,7 @@ async def export_donors_csv(
 async def create_donor(
     payload: DonorCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> DonorRead:
     donor = Donor(
         organization_id=user.organization_id,
@@ -146,7 +146,7 @@ async def create_donor(
 async def get_donor(
     donor_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> DonorRead:
     donor = await get_in_org_or_404(db, Donor, donor_id, user, Donor.deleted_at.is_(None))
     return DonorRead.model_validate(donor)
@@ -157,7 +157,7 @@ async def update_donor(
     donor_id: UUID,
     payload: DonorUpdate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
 ) -> DonorRead:
     donor = await get_in_org_or_404(db, Donor, donor_id, user, Donor.deleted_at.is_(None))
 

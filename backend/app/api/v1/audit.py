@@ -1,11 +1,13 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
+from app.core.authz import ADMIN_ROLES, require_roles
 from app.models.audit import AuditLogEntry
+from app.models.user import User
 from app.schemas.audit import AuditLogRead
 from app.schemas.common import Page
 
@@ -15,7 +17,7 @@ router = APIRouter()
 @router.get("", response_model=Page[AuditLogRead])
 async def list_audit(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*ADMIN_ROLES))],
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
     entity_type: str | None = None,

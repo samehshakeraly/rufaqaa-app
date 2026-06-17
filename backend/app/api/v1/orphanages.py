@@ -1,12 +1,17 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import false, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import CurrentUser, DbSession
-from app.core.authz import PARTNER_SCOPED_ROLES, partner_scope_hides
+from app.api.deps import DbSession
+from app.core.authz import (
+    PARTNER_SCOPED_ROLES,
+    STAFF_ROLES,
+    partner_scope_hides,
+    require_roles,
+)
 from app.core.exceptions import NotFound
 from app.models.orphanage import Orphanage
 from app.models.user import User
@@ -76,7 +81,7 @@ async def _assert_user_can_manage(
 @router.get("", response_model=Page[OrphanageRead])
 async def list_orphanages(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[OrphanageRead]:
@@ -105,7 +110,7 @@ async def list_orphanages(
 async def create_orphanage(
     payload: OrphanageCreate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> OrphanageRead:
     if payload.manager_user_id is not None:
         await _assert_user_can_manage(db, payload.manager_user_id, user.organization_id)
@@ -145,7 +150,7 @@ async def create_orphanage(
 async def get_orphanage(
     orphanage_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> OrphanageRead:
     orphanage = await db.scalar(
         select(Orphanage).where(
@@ -166,7 +171,7 @@ async def update_orphanage(
     orphanage_id: UUID,
     payload: OrphanageUpdate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> OrphanageRead:
     orphanage = await db.scalar(
         select(Orphanage).where(
