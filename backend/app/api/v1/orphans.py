@@ -10,12 +10,13 @@ from pydantic import BaseModel, Field
 from sqlalchemy import case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
 from app.api.v1.users import _assert_partner_org_in_org
 from app.core.authz import (
     ADMIN_ROLES,
     PARTNER_SCOPED_ROLES,
+    STAFF_ROLES,
     partner_scope_hides,
     require_roles,
 )
@@ -94,7 +95,7 @@ def _resolve_order_by(sort: OrphanSort | None, q: str | None) -> list[Any]:
 @router.get("", response_model=Page[OrphanRead])
 async def list_orphans(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     case_status: str | None = None,
@@ -305,7 +306,7 @@ _CSV_COLUMNS = (
 @router.get("/export.csv")
 async def export_orphans_csv(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     case_status: str | None = None,
 ) -> StreamingResponse:
     """Stream non-deleted orphans (optionally filtered by case_status)
@@ -357,7 +358,7 @@ async def export_orphans_csv(
 async def get_orphan(
     orphan_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> OrphanRead:
     # Org filter is the outer gate for every role (a cross-org id 404s here);
     # partner_scope_hides() then narrows within the org for partner-scoped roles.
@@ -374,7 +375,7 @@ async def update_orphan(
     orphan_id: UUID,
     payload: OrphanUpdate,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> OrphanRead:
     # Org filter is the outer gate for every role (a cross-org id 404s here);
     # partner_scope_hides() then narrows within the org for partner-scoped roles.
@@ -664,7 +665,7 @@ async def release_orphan(
 async def orphan_timeline(
     orphan_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> Timeline:
     """Chronological feed of everything that has happened around an orphan:
     sponsorships, payments, and reports. Newest first, capped at 200

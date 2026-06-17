@@ -7,8 +7,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
-from app.api.deps import CurrentUser, DbSession
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.api.deps import DbSession
+from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.organization import Organization
 from app.models.user import User
@@ -21,7 +21,7 @@ router = APIRouter()
 @router.get("", response_model=OrganizationRead)
 async def get_current_organization(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
 ) -> OrganizationRead:
     org = await db.scalar(select(Organization).where(Organization.id == user.organization_id))
     if org is None:

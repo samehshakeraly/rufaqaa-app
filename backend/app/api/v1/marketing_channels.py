@@ -12,7 +12,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func, select
 
-from app.api.deps import CurrentUser, DbSession
+from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, MARKETING_ROLES, require_roles
 from app.core.exceptions import NotFound
@@ -35,7 +35,7 @@ router = APIRouter()
 @router.get("", response_model=Page[MarketingChannelRead])
 async def list_marketing_channels(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*MARKETING_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
     include_inactive: bool = False,
@@ -93,7 +93,7 @@ async def create_marketing_channel(
 async def get_marketing_channel(
     channel_id: UUID,
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*MARKETING_ROLES))],
 ) -> MarketingChannelRead:
     channel = await get_in_org_or_404(db, MarketingChannel, channel_id, user)
     return MarketingChannelRead.model_validate(channel)

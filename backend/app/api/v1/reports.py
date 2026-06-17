@@ -24,7 +24,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.api.scoping import get_in_org_or_404
-from app.core.authz import ADMIN_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.exceptions import NotFound
 from app.models.family import Guardian
 from app.models.orphan import Orphan
@@ -58,7 +58,7 @@ def _now() -> datetime:
 @router.get("", response_model=Page[ReportRead])
 async def list_reports(
     db: DbSession,
-    user: CurrentUser,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     orphan_id: UUID | None = None,

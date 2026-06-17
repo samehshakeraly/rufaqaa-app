@@ -17,8 +17,8 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from app.api.deps import CurrentUser, DbSession
-from app.core.authz import require_roles
+from app.api.deps import DbSession
+from app.core.authz import STAFF_ROLES, require_roles
 from app.models.donor import Donor
 from app.models.organization import Organization
 from app.models.orphan import Orphan
@@ -57,7 +57,9 @@ class DashboardSummary(BaseModel):
 
 
 @router.get("/summary", response_model=DashboardSummary)
-async def dashboard_summary(db: DbSession, user: CurrentUser) -> DashboardSummary:
+async def dashboard_summary(
+    db: DbSession, user: Annotated[User, Depends(require_roles(*STAFF_ROLES))]
+) -> DashboardSummary:
     thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
     org_id = user.organization_id
 
@@ -130,7 +132,9 @@ class PaymentsTimeseries(BaseModel):
 
 
 @router.get("/payments-timeseries", response_model=PaymentsTimeseries)
-async def payments_timeseries(db: DbSession, user: CurrentUser) -> PaymentsTimeseries:
+async def payments_timeseries(
+    db: DbSession, user: Annotated[User, Depends(require_roles(*STAFF_ROLES))]
+) -> PaymentsTimeseries:
     """Total paid + count grouped by month for the last 12 months."""
     cutoff = datetime.now(UTC).replace(
         day=1, hour=0, minute=0, second=0, microsecond=0
@@ -174,7 +178,9 @@ class SponsorshipsByStatus(BaseModel):
 
 
 @router.get("/sponsorships-by-status", response_model=SponsorshipsByStatus)
-async def sponsorships_by_status(db: DbSession, user: CurrentUser) -> SponsorshipsByStatus:
+async def sponsorships_by_status(
+    db: DbSession, user: Annotated[User, Depends(require_roles(*STAFF_ROLES))]
+) -> SponsorshipsByStatus:
     """One row per status enum that currently has at least one
     sponsorship attached. The frontend renders this as a small donut."""
     # Explicit org scope (superuser DB connection bypasses RLS).
@@ -205,7 +211,9 @@ class DonationsByPartner(BaseModel):
 
 
 @router.get("/donations-by-partner", response_model=DonationsByPartner)
-async def donations_by_partner(db: DbSession, user: CurrentUser) -> DonationsByPartner:
+async def donations_by_partner(
+    db: DbSession, user: Annotated[User, Depends(require_roles(*STAFF_ROLES))]
+) -> DonationsByPartner:
     """Completed payments rolled up by the orphan's partner
     organization over the last 90 days. Top 10 partners by total,
     descending. Payments not linked to an orphan (e.g. general
