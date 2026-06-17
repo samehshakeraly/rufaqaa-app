@@ -12,6 +12,7 @@ from app.core.errors import CatchAllExceptionMiddleware, register_exception_hand
 from app.core.logging import RequestLogMiddleware, configure_logging
 from app.core.ratelimit import RateLimitMiddleware
 from app.core.sentry import init_sentry
+from app.core.startup_checks import assert_production_secrets
 
 # Init Sentry BEFORE configuring logging so its breadcrumbs pick up
 # every log record. No-op when SENTRY_DSN is empty.
@@ -21,6 +22,9 @@ configure_logging()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    # Fail closed: refuse to boot in staging/production when a
+    # production-critical secret is empty or still at its dev default.
+    assert_production_secrets(settings)
     yield
     await engine.dispose()
 
