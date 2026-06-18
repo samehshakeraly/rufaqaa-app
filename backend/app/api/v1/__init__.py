@@ -4,6 +4,7 @@ from app.api.v1 import (
     audit,
     auth,
     bank_transfers,
+    countries,
     documents,
     donor_portal,
     donor_self,
@@ -50,6 +51,7 @@ api_router.include_router(stats.router, prefix="/stats", tags=["stats"])
 api_router.include_router(media.router, prefix="/media", tags=["media"])
 api_router.include_router(families.router, prefix="/families", tags=["families"])
 api_router.include_router(orphanages.router, prefix="/orphanages", tags=["orphanages"])
+api_router.include_router(countries.router, prefix="/countries", tags=["countries"])
 api_router.include_router(donor_portal.router, prefix="/me", tags=["donor-portal"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(organization.router, prefix="/organization", tags=["organization"])

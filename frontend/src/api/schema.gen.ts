@@ -393,6 +393,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/countries/{code}/requirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Country Requirements
+         * @description Resolved registration requirements for ``code`` (ISO alpha-2).
+         *
+         *     404 only when ``code`` is not a country in ``countries``; a valid country
+         *     with no ``country_requirements`` row resolves to the permissive baseline
+         *     (``profile="baseline"``), never a 404.
+         */
+        get: operations["get_country_requirements_api_v1_countries__code__requirements_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/documents": {
         parameters: {
             query?: never;
@@ -3126,6 +3150,32 @@ export interface components {
             /** Monthly Goal Count */
             monthly_goal_count?: number | null;
         };
+        /**
+         * CountryFieldFlags
+         * @description Which intake sections/fields a country's profile turns on.
+         */
+        CountryFieldFlags: {
+            /** Requires Gps */
+            requires_gps: boolean;
+            /** Show Conflict Fields */
+            show_conflict_fields: boolean;
+            /** Show Housing */
+            show_housing: boolean;
+            /** Show Wash Fields */
+            show_wash_fields: boolean;
+        };
+        /** CountryRequirementsResponse */
+        CountryRequirementsResponse: {
+            /** Country Code */
+            country_code: string;
+            fields: components["schemas"]["CountryFieldFlags"];
+            national_id: components["schemas"]["NationalIdRequirements"];
+            phone: components["schemas"]["PhoneRequirements"];
+            /** Profile */
+            profile: string;
+            /** Required Documents */
+            required_documents: string[];
+        };
         /** CreatedAdmin */
         CreatedAdmin: {
             /** Email */
@@ -4331,6 +4381,15 @@ export interface components {
             payments_count: number;
             /** Payments Total */
             payments_total: string;
+        };
+        /** NationalIdRequirements */
+        NationalIdRequirements: {
+            /** Length */
+            length: number | null;
+            /** Regex */
+            regex: string | null;
+            /** Required */
+            required: boolean;
         };
         /**
          * NotificationPreferences
@@ -5566,6 +5625,11 @@ export interface components {
         PaymentsTimeseries: {
             /** Months */
             months: components["schemas"]["MonthlyPoint"][];
+        };
+        /** PhoneRequirements */
+        PhoneRequirements: {
+            /** Regex */
+            regex: string | null;
         };
         /** PlatformByOrg */
         PlatformByOrg: {
@@ -7033,6 +7097,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BankTransferRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_country_requirements_api_v1_countries__code__requirements_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CountryRequirementsResponse"];
                 };
             };
             /** @description Validation Error */

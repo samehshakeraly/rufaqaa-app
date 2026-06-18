@@ -493,6 +493,56 @@ components:
       - monthly_achieved_amount
       title: ChannelProgress
       type: object
+    CountryFieldFlags:
+      description: Which intake sections/fields a country's profile turns on.
+      properties:
+        requires_gps:
+          title: Requires Gps
+          type: boolean
+        show_conflict_fields:
+          title: Show Conflict Fields
+          type: boolean
+        show_housing:
+          title: Show Housing
+          type: boolean
+        show_wash_fields:
+          title: Show Wash Fields
+          type: boolean
+      required:
+      - show_conflict_fields
+      - requires_gps
+      - show_housing
+      - show_wash_fields
+      title: CountryFieldFlags
+      type: object
+    CountryRequirementsResponse:
+      properties:
+        country_code:
+          title: Country Code
+          type: string
+        fields:
+          $ref: '#/components/schemas/CountryFieldFlags'
+        national_id:
+          $ref: '#/components/schemas/NationalIdRequirements'
+        phone:
+          $ref: '#/components/schemas/PhoneRequirements'
+        profile:
+          title: Profile
+          type: string
+        required_documents:
+          items:
+            type: string
+          title: Required Documents
+          type: array
+      required:
+      - country_code
+      - profile
+      - fields
+      - national_id
+      - phone
+      - required_documents
+      title: CountryRequirementsResponse
+      type: object
     CreatedAdmin:
       properties:
         email:
@@ -2832,6 +2882,27 @@ components:
       - payments_total
       - payments_count
       title: MonthlyPoint
+      type: object
+    NationalIdRequirements:
+      properties:
+        length:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Length
+        regex:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Regex
+        required:
+          title: Required
+          type: boolean
+      required:
+      - required
+      - length
+      - regex
+      title: NationalIdRequirements
       type: object
     NotificationPreferences:
       description: 'Channel-level toggles for transactional and marketing notifications.
@@ -5305,6 +5376,17 @@ components:
       - months
       title: PaymentsTimeseries
       type: object
+    PhoneRequirements:
+      properties:
+        regex:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Regex
+      required:
+      - regex
+      title: PhoneRequirements
+      type: object
     PlatformByOrg:
       properties:
         items:
@@ -7368,6 +7450,42 @@ paths:
       summary: Mark Bank Transfer Completed
       tags:
       - bank-transfers
+  /api/v1/countries/{code}/requirements:
+    get:
+      description: 'Resolved registration requirements for ``code`` (ISO alpha-2).
+
+
+        404 only when ``code`` is not a country in ``countries``; a valid country
+
+        with no ``country_requirements`` row resolves to the permissive baseline
+
+        (``profile="baseline"``), never a 404.'
+      operationId: get_country_requirements_api_v1_countries__code__requirements_get
+      parameters:
+      - in: path
+        name: code
+        required: true
+        schema:
+          title: Code
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryRequirementsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Country Requirements
+      tags:
+      - countries
   /api/v1/documents:
     post:
       description: 'Create a documents row without an orphan/guardian/family link.
