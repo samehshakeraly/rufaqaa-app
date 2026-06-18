@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { HeartIcon } from "@/components/public/icons";
+import { useLogout } from "@/hooks/useLogout";
 import { useRole } from "@/hooks/useRole";
 import { isTokenValid, useAuthStore } from "@/store/auth";
 
@@ -32,7 +33,7 @@ const NAV_LINKS: { to: string; key: string; end?: boolean }[] = [
 
 export function PublicNav() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const logout = useLogout();
   const token = useAuthStore((s) => s.accessToken);
   const { homePath } = useRole();
 
@@ -43,11 +44,6 @@ export function PublicNav() {
   // Roles whose dashboard isn't built yet fall back to "/" in useRole.
   // For them we show a disabled "coming soon" chip instead of a link.
   const hasArea = homePath !== "/";
-
-  const handleLogout = () => {
-    useAuthStore.getState().clear();
-    navigate("/login");
-  };
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `rounded-lg px-3 py-2 text-sm font-medium transition ${
@@ -126,7 +122,7 @@ export function PublicNav() {
               )}
               <button
                 type="button"
-                onClick={handleLogout}
+                onClick={() => logout()}
                 aria-label={t("public.nav.logout")}
                 className="inline-flex items-center rounded-lg border border-sky-200 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-tranquil-100 hover:text-trust-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 focus-visible:ring-offset-2 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
               >

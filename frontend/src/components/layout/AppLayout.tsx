@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useLogout } from "@/hooks/useLogout";
 import { useRole } from "@/hooks/useRole";
 import { fetchOrganization } from "@/lib/organization";
-import { useAuthStore } from "@/store/auth";
 
 import "./AppLayout.css";
 
@@ -199,9 +199,8 @@ function initialsOf(...parts: Array<string | null | undefined>): string {
 
 export function AppLayout() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const location = useLocation();
-  const clear = useAuthStore((s) => s.clear);
+  const logout = useLogout();
   const { data: me } = useCurrentUser();
   const {
     role,
@@ -249,11 +248,6 @@ export function AppLayout() {
   // every OTHER content manager — admins and partner_manager — whose nav
   // is unchanged.
   const isFullContentManager = isAdmin || isPartnerManager;
-
-  function logout() {
-    clear();
-    navigate("/login", { replace: true });
-  }
 
   // Display name: prefer the real first+last name, fall back to a neutral
   // label (never empty) — the seeded "Dev Admin" is real data, not a stub.
@@ -537,7 +531,7 @@ export function AppLayout() {
           <div className="oa-topbar-actions">
             <ThemeToggle />
             <LanguageSwitcher />
-            <button type="button" onClick={logout} className="oa-logout-btn">
+            <button type="button" onClick={() => logout()} className="oa-logout-btn">
               <NavIco>{ICONS.signOut}</NavIco>
               {t("nav.logout")}
             </button>

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,6 +28,7 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>;
  * a child-facing screen, so it carries no financial/donor/identity data. */
 export function OrphanLoginPage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { t } = useTranslation();
   const token = useAuthStore((s) => s.accessToken);
   const setTokens = useAuthStore((s) => s.setTokens);
@@ -46,6 +47,8 @@ export function OrphanLoginPage() {
   const mutation = useMutation({
     mutationFn: (v: FormValues) => login(v.email, v.password),
     onSuccess: (data) => {
+      // Clear any prior user's cached queries before this session begins.
+      qc.clear();
       setTokens(data.access_token, data.refresh_token);
       navigate("/orphan", { replace: true });
     },

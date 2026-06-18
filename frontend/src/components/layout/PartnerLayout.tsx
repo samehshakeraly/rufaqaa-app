@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Icon, PM_ICONS } from "@/components/partner/icons";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useAuthStore } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 import "./PartnerLayout.css";
 
@@ -20,14 +20,8 @@ import "./PartnerLayout.css";
  */
 export function PartnerLayout() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const clear = useAuthStore((s) => s.clear);
+  const logout = useLogout();
   const { data: me } = useCurrentUser();
-
-  function logout() {
-    clear();
-    navigate("/login", { replace: true });
-  }
 
   const initials = me
     ? `${me.first_name?.charAt(0) ?? ""}${me.last_name?.charAt(0) ?? ""}`
@@ -105,7 +99,7 @@ export function PartnerLayout() {
           <button
             type="button"
             className="pm-sidebar-logout"
-            onClick={logout}
+            onClick={() => logout()}
             aria-label={t("nav.logout")}
             title={t("nav.logout")}
           >

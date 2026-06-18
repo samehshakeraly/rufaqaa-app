@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useAuthStore } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 import "./GuardianLayout.css";
 
@@ -18,15 +18,9 @@ import "./GuardianLayout.css";
  * The chrome itself carries no financial figures or donor identity.
  */
 export function GuardianLayout() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const clear = useAuthStore((s) => s.clear);
+  const logout = useLogout();
   const { data: me } = useCurrentUser();
-
-  function logout() {
-    clear();
-    navigate("/guardian/login", { replace: true });
-  }
 
   const name = me?.first_name?.trim() || t("guardian.layout.fallbackName");
   const initials = name.slice(0, 2);
@@ -66,7 +60,7 @@ export function GuardianLayout() {
               </span>
               <span className="glay-chip-name">{name}</span>
             </span>
-            <button type="button" onClick={logout} className="glay-logout">
+            <button type="button" onClick={() => logout("/guardian/login")} className="glay-logout">
               {t("nav.logout")}
             </button>
           </div>

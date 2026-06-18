@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { type ReactElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -55,6 +55,7 @@ const ROLE_ICONS: Record<Role, ReactElement> = {
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const location = useLocation();
   const { t } = useTranslation();
   const token = useAuthStore((s) => s.accessToken);
@@ -77,6 +78,10 @@ export function LoginPage() {
   const mutation = useMutation({
     mutationFn: (v: FormValues) => login(v.email, v.password),
     onSuccess: (data) => {
+      // Drop any prior user's cached queries before this session begins, so a
+      // re-login never surfaces the previous account's data (notably the
+      // /auth/me response behind useCurrentUser/useRole).
+      qc.clear();
       setTokens(data.access_token, data.refresh_token);
       const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
       // Land on `/` — the root route dispatches by role (admin →
