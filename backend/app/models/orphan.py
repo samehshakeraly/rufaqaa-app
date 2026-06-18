@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -14,7 +15,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, TIMESTAMP
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -84,6 +85,18 @@ class Orphan(Base):
     )
     priority_level: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default=text("'normal'"), default="normal"
+    )
+
+    # Country-aware registration (see migration 0014). ``national_id`` mirrors
+    # ``guardians.national_id``; the matching ``national_id_encrypted`` BYTEA is
+    # intentionally NOT mapped — like Guardian, the encrypted blob is handled by
+    # the encryption layer, not the ORM. ``parental_status`` is a NULLABLE coded
+    # column (its allowed set is enforced by a DB CHECK). ``country_specific``
+    # holds the per-country intake answers as a JSONB bag.
+    national_id: Mapped[str | None] = mapped_column(String(50))
+    parental_status: Mapped[str | None] = mapped_column(String(20))
+    country_specific: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb"), default=dict
     )
 
     assigned_to_channel_id: Mapped[UUID | None] = mapped_column(
