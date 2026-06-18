@@ -16,10 +16,10 @@ from sqlalchemy import text
 from app.api.deps import DbSession
 from app.api.v1.orphans import ORPHAN_CREATOR_ROLES
 from app.core.authz import require_roles
-from app.core.country_requirements import CountryRequirementsRow
 from app.core.exceptions import NotFound
 from app.models.user import User
 from app.schemas.country import CountryRequirementsResponse
+from app.services.country_requirements import load_requirements_row
 
 router = APIRouter()
 
@@ -47,31 +47,7 @@ async def get_country_requirements(
     if country is None:
         raise NotFound("Country")
 
-    record = (
-        (
-            await db.execute(
-                text(
-                    "SELECT profile, national_id_required, national_id_length, "
-                    "national_id_regex, phone_regex, required_documents "
-                    "FROM country_requirements WHERE country_code = :code"
-                ),
-                {"code": norm},
-            )
-        )
-        .mappings()
-        .first()
-    )
-
-    row = (
-        None
-        if record is None
-        else CountryRequirementsRow(
-            profile=record["profile"],
-            national_id_required=record["national_id_required"],
-            national_id_length=record["national_id_length"],
-            national_id_regex=record["national_id_regex"],
-            phone_regex=record["phone_regex"],
-            required_documents=list(record["required_documents"]),
-        )
-    )
+    # Shared with the conditional national_id validation in create_orphan_record:
+    # a country with no row resolves to the permissive baseline, never a 404.
+    row = await load_requirements_row(db, norm)
     return CountryRequirementsResponse.resolve(norm, row)

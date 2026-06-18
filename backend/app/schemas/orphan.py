@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
@@ -90,6 +90,18 @@ class OrphanCreateFields(OrphanBase):
     model_config = ConfigDict(str_strip_whitespace=True)
 
     father_name: str = Field(min_length=1, max_length=255)
+
+    # Country-aware intake (see migration 0014). Shared by both create paths —
+    # the staff ``POST /orphans`` and the guardian self-service create — so each
+    # accepts the same two fields. ``national_id`` is NOT validated here: the
+    # rule is country-conditional (it depends on ``nationality``) and is enforced
+    # centrally in ``services.orphans.create_orphan_record`` so both callers
+    # obey it. It is stored as PLAINTEXT, mirroring ``guardians.national_id``
+    # (this codebase has no encryption layer; the ``*_encrypted`` columns are
+    # unused). ``country_specific`` is the free per-country JSONB bag — its
+    # contents are deliberately not validated, only persisted verbatim.
+    national_id: str | None = Field(default=None, max_length=50)
+    country_specific: dict[str, Any] = Field(default_factory=dict)
 
 
 class OrphanCreate(OrphanCreateFields):
