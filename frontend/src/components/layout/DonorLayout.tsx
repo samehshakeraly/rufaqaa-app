@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useAuthStore } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 const navItemClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition ${
@@ -15,15 +15,9 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
 
 /** Chrome for the authenticated donor area (post-signup, verified). */
 export function DonorLayout() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const clear = useAuthStore((s) => s.clear);
+  const logout = useLogout();
   const { data: me } = useCurrentUser();
-
-  function logout() {
-    clear();
-    navigate("/login", { replace: true });
-  }
 
   return (
     <div className="min-h-screen bg-snow dark:bg-slate-900">
@@ -62,7 +56,7 @@ export function DonorLayout() {
             <LanguageSwitcher />
             <button
               type="button"
-              onClick={logout}
+              onClick={() => logout()}
               className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               {t("nav.logout")}

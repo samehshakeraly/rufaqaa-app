@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLogout } from "@/hooks/useLogout";
 import { useRole } from "@/hooks/useRole";
 import { getOrphanMe, isAgeGateError } from "@/lib/orphanSelf";
 import { useAuthStore } from "@/store/auth";
@@ -52,13 +53,7 @@ export function OrphanRoute({ children }: { children: ReactNode }) {
 /** Warm, content-free screen shown to under-12 accounts. */
 function OrphanAgeGate() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const clear = useAuthStore((s) => s.clear);
-
-  function logout() {
-    clear();
-    navigate("/orphan/login", { replace: true });
-  }
+  const logout = useLogout();
 
   return (
     <div className="flex min-h-screen flex-col bg-tranquil-100 dark:bg-gray-900">
@@ -83,7 +78,7 @@ function OrphanAgeGate() {
         </p>
         <button
           type="button"
-          onClick={logout}
+          onClick={() => logout("/orphan/login")}
           className="btn-primary mt-8"
         >
           {t("nav.logout")}

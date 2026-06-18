@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useAuthStore } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 /**
  * Chrome for the orphan self-portal — deliberately separate from the
@@ -13,15 +13,9 @@ import { useAuthStore } from "@/store/auth";
  * simple and encouraging; this portal serves 12–17 year-olds.
  */
 export function OrphanLayout() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const clear = useAuthStore((s) => s.clear);
+  const logout = useLogout();
   const { data: me } = useCurrentUser();
-
-  function logout() {
-    clear();
-    navigate("/orphan/login", { replace: true });
-  }
 
   const initial = me?.first_name?.trim().charAt(0) ?? "🌟";
 
@@ -45,7 +39,7 @@ export function OrphanLayout() {
             <LanguageSwitcher />
             <button
               type="button"
-              onClick={logout}
+              onClick={() => logout("/orphan/login")}
               className="rounded-xl border border-sky-200 px-3 py-1.5 text-sm text-gray-700 transition hover:bg-tranquil-200 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
             >
               {t("nav.logout")}

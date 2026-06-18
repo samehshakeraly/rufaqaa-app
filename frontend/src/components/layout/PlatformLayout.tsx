@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useAuthStore } from "@/store/auth";
+import { useLogout } from "@/hooks/useLogout";
 
 const navItemClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition ${
@@ -24,15 +24,9 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
  * for an org_admin.
  */
 export function PlatformLayout() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const clear = useAuthStore((s) => s.clear);
+  const logout = useLogout();
   const { data: me } = useCurrentUser();
-
-  function logout() {
-    clear();
-    navigate("/login", { replace: true });
-  }
 
   return (
     <div className="min-h-screen bg-snow dark:bg-gray-900">
@@ -78,7 +72,7 @@ export function PlatformLayout() {
             </Link>
             <button
               type="button"
-              onClick={logout}
+              onClick={() => logout()}
               className="rounded-lg border border-white/40 px-3 py-1 text-sm text-white hover:bg-white/10"
             >
               {t("nav.logout")}
