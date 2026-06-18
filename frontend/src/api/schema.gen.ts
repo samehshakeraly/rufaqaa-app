@@ -3087,7 +3087,7 @@ export interface components {
              * Document Type
              * @enum {string}
              */
-            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other";
+            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other" | "custody_declaration" | "inheritance_decree" | "dwelling_photo" | "displacement_proof";
             /** File */
             file: string;
             /** Title */
@@ -3263,7 +3263,7 @@ export interface components {
              * Document Type
              * @enum {string}
              */
-            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other";
+            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other" | "custody_declaration" | "inheritance_decree" | "dwelling_photo" | "displacement_proof";
             /** Expiry Date */
             expiry_date?: string | null;
             /** File Hash */
@@ -3296,7 +3296,7 @@ export interface components {
              * Document Type
              * @enum {string}
              */
-            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other";
+            document_type: "birth_certificate" | "death_certificate" | "national_id" | "passport" | "bank_statement" | "school_certificate" | "medical_report" | "photo_id" | "family_record" | "other" | "custody_declaration" | "inheritance_decree" | "dwelling_photo" | "displacement_proof";
             /** Expiry Date */
             expiry_date: string | null;
             /** File Mime Type */
