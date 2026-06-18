@@ -15,6 +15,12 @@ DocumentType = Literal[
     "photo_id",
     "family_record",
     "other",
+    # Country-aware registration additions (kept in sync with the
+    # ``ck_documents_document_type`` DB CHECK; see migration 0017).
+    "custody_declaration",
+    "inheritance_decree",
+    "dwelling_photo",
+    "displacement_proof",
 ]
 
 VerificationStatus = Literal["pending", "verified", "rejected", "expired"]

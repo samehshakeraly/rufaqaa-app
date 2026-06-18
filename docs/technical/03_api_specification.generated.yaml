@@ -363,6 +363,10 @@ components:
           - photo_id
           - family_record
           - other
+          - custody_declaration
+          - inheritance_decree
+          - dwelling_photo
+          - displacement_proof
           title: Document Type
           type: string
         file:
@@ -691,6 +695,10 @@ components:
           - photo_id
           - family_record
           - other
+          - custody_declaration
+          - inheritance_decree
+          - dwelling_photo
+          - displacement_proof
           title: Document Type
           type: string
         expiry_date:
@@ -774,6 +782,10 @@ components:
           - photo_id
           - family_record
           - other
+          - custody_declaration
+          - inheritance_decree
+          - dwelling_photo
+          - displacement_proof
           title: Document Type
           type: string
         expiry_date:
