@@ -18,10 +18,40 @@ from app.api.v1.orphans import ORPHAN_CREATOR_ROLES
 from app.core.authz import require_roles
 from app.core.exceptions import NotFound
 from app.models.user import User
-from app.schemas.country import CountryRequirementsResponse
+from app.schemas.country import CountryListItem, CountryRequirementsResponse
 from app.services.country_requirements import load_requirements_row
 
 router = APIRouter()
+
+
+@router.get("", response_model=list[CountryListItem])
+async def list_countries(
+    db: DbSession,
+    # Same gate as GET /{code}/requirements (mirror POST /orphans): this list is
+    # the first field of that intake form, so it is authenticated, never public.
+    user: Annotated[User, Depends(require_roles(*ORPHAN_CREATOR_ROLES))],
+) -> list[CountryListItem]:
+    """Active countries for the registration country dropdown, by English name.
+
+    Inactive countries are omitted so the form never offers one the platform does
+    not register in. ``code`` is the ISO alpha-2; no pagination (small set).
+    """
+    rows = (
+        (
+            await db.execute(
+                text(
+                    "SELECT code_alpha2 AS code, name_ar, name_en "
+                    "FROM countries WHERE is_active = true ORDER BY name_en"
+                )
+            )
+        )
+        .mappings()
+        .all()
+    )
+    return [
+        CountryListItem(code=row["code"], name_ar=row["name_ar"], name_en=row["name_en"])
+        for row in rows
+    ]
 
 
 @router.get("/{code}/requirements", response_model=CountryRequirementsResponse)

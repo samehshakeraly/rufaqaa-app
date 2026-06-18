@@ -519,6 +519,31 @@ components:
       - show_wash_fields
       title: CountryFieldFlags
       type: object
+    CountryListItem:
+      description: 'One active country for the registration country dropdown.
+
+
+        ``code`` is the ISO alpha-2 (``countries.code_alpha2``); ``name_ar`` /
+
+        ``name_en`` are the localized labels the form renders. Only active countries
+
+        are listed, so a client never offers one the platform does not register in.'
+      properties:
+        code:
+          title: Code
+          type: string
+        name_ar:
+          title: Name Ar
+          type: string
+        name_en:
+          title: Name En
+          type: string
+      required:
+      - code
+      - name_ar
+      - name_en
+      title: CountryListItem
+      type: object
     CountryRequirementsResponse:
       properties:
         country_code:
@@ -7482,6 +7507,30 @@ paths:
       summary: Mark Bank Transfer Completed
       tags:
       - bank-transfers
+  /api/v1/countries:
+    get:
+      description: 'Active countries for the registration country dropdown, by English name.
+
+
+        Inactive countries are omitted so the form never offers one the platform does
+
+        not register in. ``code`` is the ISO alpha-2; no pagination (small set).'
+      operationId: list_countries_api_v1_countries_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CountryListItem'
+                title: Response List Countries Api V1 Countries Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Countries
+      tags:
+      - countries
   /api/v1/countries/{code}/requirements:
     get:
       description: 'Resolved registration requirements for ``code`` (ISO alpha-2).

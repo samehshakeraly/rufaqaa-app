@@ -18,6 +18,19 @@ from app.core.country_requirements import (
 )
 
 
+class CountryListItem(BaseModel):
+    """One active country for the registration country dropdown.
+
+    ``code`` is the ISO alpha-2 (``countries.code_alpha2``); ``name_ar`` /
+    ``name_en`` are the localized labels the form renders. Only active countries
+    are listed, so a client never offers one the platform does not register in.
+    """
+
+    code: str
+    name_ar: str
+    name_en: str
+
+
 class CountryFieldFlags(BaseModel):
     """Which intake sections/fields a country's profile turns on."""
 

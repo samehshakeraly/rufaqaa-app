@@ -393,6 +393,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/countries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Countries
+         * @description Active countries for the registration country dropdown, by English name.
+         *
+         *     Inactive countries are omitted so the form never offers one the platform does
+         *     not register in. ``code`` is the ISO alpha-2; no pagination (small set).
+         */
+        get: operations["list_countries_api_v1_countries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/countries/{code}/requirements": {
         parameters: {
             query?: never;
@@ -3163,6 +3186,22 @@ export interface components {
             show_housing: boolean;
             /** Show Wash Fields */
             show_wash_fields: boolean;
+        };
+        /**
+         * CountryListItem
+         * @description One active country for the registration country dropdown.
+         *
+         *     ``code`` is the ISO alpha-2 (``countries.code_alpha2``); ``name_ar`` /
+         *     ``name_en`` are the localized labels the form renders. Only active countries
+         *     are listed, so a client never offers one the platform does not register in.
+         */
+        CountryListItem: {
+            /** Code */
+            code: string;
+            /** Name Ar */
+            name_ar: string;
+            /** Name En */
+            name_en: string;
         };
         /** CountryRequirementsResponse */
         CountryRequirementsResponse: {
@@ -7118,6 +7157,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_countries_api_v1_countries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CountryListItem"][];
                 };
             };
         };
