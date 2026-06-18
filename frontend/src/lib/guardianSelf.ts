@@ -132,6 +132,10 @@ export async function createMyOrphan(payload: OrphanCreateInput): Promise<Guardi
     gender: payload.gender,
     father_name: payload.father_name,
     ...(payload.nationality ? { nationality: payload.nationality } : {}),
+    ...(payload.national_id ? { national_id: payload.national_id } : {}),
+    ...(payload.country_specific && Object.keys(payload.country_specific).length > 0
+      ? { country_specific: payload.country_specific }
+      : {}),
     ...(payload.middle_name ? { middle_name: payload.middle_name } : {}),
     ...(payload.full_name_en ? { full_name_en: payload.full_name_en } : {}),
     ...(payload.father_death_date ? { father_death_date: payload.father_death_date } : {}),

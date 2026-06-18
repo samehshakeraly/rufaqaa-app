@@ -1359,6 +1359,49 @@
       "familyHome": "— Family home (no orphanage) —",
       "resident": "Orphanage resident"
     },
+    "country": {
+      "label": "Country",
+      "placeholder": "Select a country",
+      "required": "Please select a country",
+      "loadError": "Couldn't load the countries list — please try again."
+    },
+    "nationalId": {
+      "label": "National ID",
+      "requiredHint": "Required for the selected country.",
+      "optionalHint": "Optional.",
+      "errors": {
+        "required": "National ID is required for the selected country.",
+        "length": "National ID must be exactly {{length}} characters.",
+        "format": "National ID format is not valid for the selected country."
+      }
+    },
+    "countrySpecific": {
+      "section": "Country-specific details",
+      "damageType": "Property damage",
+      "damageTypeOptions": {
+        "total": "Total",
+        "partial": "Partial",
+        "severe": "Severe"
+      },
+      "originalAddress": "Original address",
+      "waterSource": "Water source",
+      "malnutritionStatus": "Malnutrition status",
+      "malnutritionStatusOptions": {
+        "none": "None",
+        "moderate": "Moderate",
+        "severe": "Severe"
+      },
+      "childLabor": "Child labor",
+      "childLaborOptions": {
+        "none": "None",
+        "part_time": "Part-time",
+        "full_time": "Full-time"
+      }
+    },
+    "requiredDocuments": {
+      "title": "Documents to prepare",
+      "hint": "You can upload these from the case page after the orphan is saved."
+    },
     "balance": "Current balance",
     "timeline": "Timeline",
     "bulkSelected": "{{count}} selected",
@@ -2457,7 +2500,11 @@
       "medical_report": "Medical report",
       "photo_id": "Photo ID",
       "family_record": "Family record",
-      "other": "Other"
+      "other": "Other",
+      "custody_declaration": "Custody declaration",
+      "inheritance_decree": "Inheritance decree",
+      "dwelling_photo": "Dwelling photo",
+      "displacement_proof": "Displacement proof"
     }
   },
   "walkIn": {

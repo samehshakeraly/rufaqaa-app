@@ -1,12 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useEffect, useMemo, useState } from "react";
+import type { TFunction } from "i18next";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
+import {
+  getCountryRequirements,
+  listCountries,
+  type CountryFieldFlags,
+  type NationalIdRequirements,
+} from "@/lib/countries";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { createOrphan, type OrphanCreateInput } from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
@@ -38,6 +45,34 @@ export const HEALTH_COVERAGES = ["none", "government", "private", "charity"] as 
 export const MOTHER_STATUSES = ["alive", "deceased", "unknown"] as const;
 export const PRIORITY_LEVELS = ["normal", "high", "urgent"] as const;
 
+// country_specific option lists — these feed the conditional sections a
+// country can turn on (show_conflict_fields / show_wash_fields). The backend
+// persists country_specific as a free JSON bag, so these vocabularies are
+// owned by the form; only the values below are ever rendered/sent.
+export const DAMAGE_TYPES = ["total", "partial", "severe"] as const;
+export const MALNUTRITION_STATUSES = ["none", "moderate", "severe"] as const;
+export const CHILD_LABOR_STATUSES = ["none", "part_time", "full_time"] as const;
+
+// Baseline used until a country's requirements resolve (or on 404 / error):
+// no conditional sections, national_id optional. Mirrors the server baseline.
+const NO_COUNTRY_FLAGS: CountryFieldFlags = {
+  requires_gps: false,
+  show_conflict_fields: false,
+  show_housing: false,
+  show_wash_fields: false,
+};
+
+// Full-match a country's national_id regex (anchored both ends). UX-only — an
+// unparseable server pattern never blocks the user, since the server is the
+// authority and re-validates on submit.
+function nationalIdMatchesPattern(regex: string, value: string): boolean {
+  try {
+    return new RegExp(`^(?:${regex})$`).test(value);
+  } catch {
+    return true;
+  }
+}
+
 // Optional free-text: empty string is left as-is here and dropped at submit
 // time (truthiness gate), so we never send "" to the API.
 const optionalText = z.string().trim().optional();
@@ -46,18 +81,62 @@ const optionalText = z.string().trim().optional();
 // partner_organization_id is only collected on the staff path; the guardian
 // portal derives it server-side, so it is dropped from validation there.
 // The extended profile fields are ALL optional, on both paths.
-function makeSchema(requirePartner: boolean) {
+//
+// `nationalIdRule` (the selected country's resolved requirements, or null for
+// the baseline) drives the dynamic national_id validation; `t` localizes the
+// resulting messages. The schema is rebuilt whenever either changes — react-
+// hook-form reads the latest resolver on every validation pass.
+function makeSchema(
+  requirePartner: boolean,
+  nationalIdRule: NationalIdRequirements | null,
+  t: TFunction,
+) {
   return z.object({
     first_name: z.string().trim().min(1),
     family_name: z.string().trim().min(1),
     date_of_birth: z.string().min(4),
     gender: z.enum(["M", "F"]),
     father_name: z.string().trim().min(1),
+    // Country is REQUIRED — it drives the dynamic national_id + country_specific
+    // sections. The field name stays `nationality` (the persisted column); the
+    // value is the ISO alpha-2 code chosen from the country <select>.
     nationality: z
+      .string({ required_error: t("orphans.country.required") })
+      .trim()
+      .min(1, { message: t("orphans.country.required") })
+      .length(2),
+    // national_id — shape depends on the selected country's rule. Empty is fine
+    // unless the country marks it required; when present it must match the exact
+    // length and full regex. The server stays authoritative (this is UX only).
+    national_id: z
       .string()
-      .length(2)
+      .trim()
       .optional()
-      .or(z.literal("").transform(() => undefined)),
+      .superRefine((value, ctx) => {
+        const v = (value ?? "").trim();
+        if (!nationalIdRule) return; // baseline: nothing extra required
+        if (!v) {
+          if (nationalIdRule.required) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t("orphans.nationalId.errors.required"),
+            });
+          }
+          return;
+        }
+        if (nationalIdRule.length != null && v.length !== nationalIdRule.length) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("orphans.nationalId.errors.length", { length: nationalIdRule.length }),
+          });
+        }
+        if (nationalIdRule.regex && !nationalIdMatchesPattern(nationalIdRule.regex, v)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("orphans.nationalId.errors.format"),
+          });
+        }
+      }),
     partner_organization_id: requirePartner
       ? z.string().uuid()
       : z
@@ -107,6 +186,24 @@ function makeSchema(requirePartner: boolean) {
     // Profile
     aspiration: optionalText,
     challenges: optionalText,
+    // country_specific (free per-country bag) — registered here so the values
+    // are tracked/reset like any other field; rendered only when the country's
+    // flags turn the section on, and gated again at submit so a hidden value
+    // can never leak into the payload.
+    damage_type: z
+      .enum(DAMAGE_TYPES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    original_address: optionalText,
+    water_source: optionalText,
+    malnutrition_status: z
+      .enum(MALNUTRITION_STATUSES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+    child_labor: z
+      .enum(CHILD_LABOR_STATUSES)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
   });
 }
 
@@ -185,24 +282,73 @@ export function NewOrphanForm({
   // would 403 the create, so surface that instead of an empty picker.
   const partnerMissing = showPartnerSelect && isPartnerScoped && !lockedPartnerId;
 
-  const schema = useMemo(() => makeSchema(showPartnerSelect), [showPartnerSelect]);
+  // Country drives everything: the list feeds the REQUIRED selector, and the
+  // selected code resolves that country's requirements (national_id rule +
+  // conditional sections + documents). `countryCode` is local UI state that
+  // mirrors the registered `nationality` field (kept in sync by the select's
+  // onChange, cleared on a successful create) so it can drive the queries and
+  // the schema before react-hook-form is initialised below.
+  const [countryCode, setCountryCode] = useState("");
+  const countriesQuery = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => listCountries(),
+  });
+  const countries = countriesQuery.data ?? [];
+
+  const requirementsQuery = useQuery({
+    queryKey: ["country-requirements", countryCode],
+    queryFn: () => getCountryRequirements(countryCode),
+    enabled: countryCode.length === 2,
+    retry: false, // a 404 / unconfigured country just falls through to baseline
+  });
+  // Baseline while loading or on 404 / unconfigured / error: nothing extra
+  // required, national_id optional, no conditional sections, no documents.
+  const requirements = requirementsQuery.data ?? null;
+  const nationalIdRule = requirements?.national_id ?? null;
+  const countryFlags = requirements?.fields ?? NO_COUNTRY_FLAGS;
+  const requiredDocs = requirements?.required_documents ?? [];
+
+  const schema = useMemo(
+    () => makeSchema(showPartnerSelect, nationalIdRule, t),
+    [showPartnerSelect, nationalIdRule, t],
+  );
 
   const {
     register,
     handleSubmit,
     reset,
+    resetField,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { gender: "M", mother_status: "unknown", priority_level: "normal" },
   });
+  // register the country selector once so we can layer our own onChange on top.
+  const nationalityField = register("nationality");
 
   useEffect(() => {
     if (lockedPartnerId) {
       setValue("partner_organization_id", lockedPartnerId, { shouldValidate: true });
     }
   }, [lockedPartnerId, setValue]);
+
+  // When the country changes, clear the now-stale dependent fields (national_id
+  // + every country_specific input, including any kept by an unmounted section)
+  // and their errors, so a value entered for a previous country can never linger
+  // in form state or slip into a later submit.
+  const prevCountry = useRef<string | null>(null);
+  useEffect(() => {
+    if (prevCountry.current !== null && prevCountry.current !== countryCode) {
+      resetField("national_id");
+      resetField("damage_type");
+      resetField("original_address");
+      resetField("water_source");
+      resetField("malnutrition_status");
+      resetField("child_labor");
+    }
+    prevCountry.current = countryCode;
+  }, [countryCode, resetField]);
 
   // Guardians get a lighter form: the three sensitive fields below are hidden
   // and never registered, so they can't be submitted.
@@ -239,6 +385,7 @@ export function NewOrphanForm({
       }
       setTags([]);
       setTagInput("");
+      setCountryCode(""); // drop the resolved requirements so the next case starts clean
       await onCreated(created);
     },
     onError: (err) => {
@@ -263,6 +410,20 @@ export function NewOrphanForm({
     setServerError(null);
     setDuplicateError(null);
     setDuplicateCode(null);
+    // country_specific — collect ONLY the fields the selected country's flags
+    // turn on (and only when populated). Gating on the live flags here is the
+    // last line of defence: even if a hidden field kept a stale value, it can
+    // never reach the payload for a country that doesn't ask for it.
+    const countrySpecific: Record<string, unknown> = {};
+    if (countryFlags.show_conflict_fields) {
+      if (v.damage_type) countrySpecific.damage_type = v.damage_type;
+      if (v.original_address) countrySpecific.original_address = v.original_address;
+    }
+    if (countryFlags.show_wash_fields) {
+      if (v.water_source) countrySpecific.water_source = v.water_source;
+      if (v.malnutrition_status) countrySpecific.malnutrition_status = v.malnutrition_status;
+      if (v.child_labor) countrySpecific.child_labor = v.child_labor;
+    }
     const payload: OrphanCreateInput = {
       first_name: v.first_name,
       family_name: v.family_name,
@@ -277,7 +438,13 @@ export function NewOrphanForm({
       // Staff-only: only sent when the picker was rendered (orphanages prop
       // present). Guardians never pass the prop, so it can't slip in here.
       ...(orphanages && v.orphanage_id ? { orphanage_id: v.orphanage_id } : {}),
-      ...(v.nationality ? { nationality: v.nationality } : {}),
+      // Country is required, so always sent. national_id + country_specific are
+      // country-driven and sent for BOTH audiences (never staff-gated).
+      nationality: v.nationality,
+      ...(v.national_id ? { national_id: v.national_id } : {}),
+      ...(Object.keys(countrySpecific).length > 0
+        ? { country_specific: countrySpecific }
+        : {}),
       // Extended profile — only sent when populated; numbers as numbers,
       // tags only when non-empty.
       ...(v.education_stage ? { education_stage: v.education_stage } : {}),
@@ -320,6 +487,53 @@ export function NewOrphanForm({
         </div>
       )}
       <div className="grid gap-4 sm:grid-cols-2">
+        {/* Country FIRST — it is required and drives the dynamic national_id +
+            country_specific sections below. */}
+        <Field
+          label={t("orphans.country.label")}
+          error={errors.nationality?.message}
+          className="sm:col-span-2"
+        >
+          <select
+            className="input"
+            disabled={countriesQuery.isLoading}
+            {...nationalityField}
+            onChange={(e) => {
+              void nationalityField.onChange(e); // keep react-hook-form in sync
+              setCountryCode(e.target.value); // drive requirements + schema
+            }}
+          >
+            <option value="">{t("orphans.country.placeholder")}</option>
+            {countries.map((c) => (
+              <option key={c.code} value={c.code}>
+                {i18n.language === "ar" ? c.name_ar : (c.name_en || c.name_ar)}
+              </option>
+            ))}
+          </select>
+          {countriesQuery.isError && (
+            <p className="mt-1 text-xs text-warning-700">{t("orphans.country.loadError")}</p>
+          )}
+        </Field>
+        {/* national_id — appears once a country is chosen; its rule comes from
+            that country's requirements (or the permissive baseline). */}
+        {countryCode.length === 2 && (
+          <Field
+            label={t("orphans.nationalId.label")}
+            error={errors.national_id?.message}
+            className="sm:col-span-2"
+          >
+            <input
+              className="input"
+              maxLength={nationalIdRule?.length ?? undefined}
+              {...register("national_id")}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              {nationalIdRule?.required
+                ? t("orphans.nationalId.requiredHint")
+                : t("orphans.nationalId.optionalHint")}
+            </p>
+          </Field>
+        )}
         <Field label={t("orphans.firstName")} error={errors.first_name?.message}>
           <input className="input" {...register("first_name")} />
         </Field>
@@ -337,9 +551,6 @@ export function NewOrphanForm({
         </Field>
         <Field label={t("orphans.fatherName")} error={errors.father_name?.message}>
           <input className="input" {...register("father_name")} />
-        </Field>
-        <Field label={t("orphans.nationality")}>
-          <input className="input" placeholder="KW" maxLength={2} {...register("nationality")} />
         </Field>
         <Field label={t("orphans.profile.motherStatus")}>
           <select className="input" {...register("mother_status")}>
@@ -420,6 +631,72 @@ export function NewOrphanForm({
           </Field>
         )}
       </div>
+
+      {/* ── Country-specific (conflict / WASH) ─────────────── */}
+      {/* Rendered only for flags THIS form can persist. requires_gps and
+          show_housing are family-level (separate flow) and out of scope here. */}
+      {(countryFlags.show_conflict_fields || countryFlags.show_wash_fields) && (
+        <Section title={t("orphans.countrySpecific.section")}>
+          {countryFlags.show_conflict_fields && (
+            <>
+              <Field label={t("orphans.countrySpecific.damageType")}>
+                <select className="input" {...register("damage_type")}>
+                  <option value="">{t("orphans.profile.notSpecified")}</option>
+                  {DAMAGE_TYPES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`orphans.countrySpecific.damageTypeOptions.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t("orphans.countrySpecific.originalAddress")}>
+                <input className="input" {...register("original_address")} />
+              </Field>
+            </>
+          )}
+          {countryFlags.show_wash_fields && (
+            <>
+              <Field label={t("orphans.countrySpecific.waterSource")}>
+                <input className="input" {...register("water_source")} />
+              </Field>
+              <Field label={t("orphans.countrySpecific.malnutritionStatus")}>
+                <select className="input" {...register("malnutrition_status")}>
+                  <option value="">{t("orphans.profile.notSpecified")}</option>
+                  {MALNUTRITION_STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`orphans.countrySpecific.malnutritionStatusOptions.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t("orphans.countrySpecific.childLabor")}>
+                <select className="input" {...register("child_labor")}>
+                  <option value="">{t("orphans.profile.notSpecified")}</option>
+                  {CHILD_LABOR_STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`orphans.countrySpecific.childLaborOptions.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </>
+          )}
+        </Section>
+      )}
+
+      {/* ── Required documents (read-only guidance) ────────── */}
+      {/* Just what to gather — upload happens after the orphan exists. */}
+      {requiredDocs.length > 0 && (
+        <div className="rounded-lg bg-tranquil px-3 py-2 text-sm text-gray-700">
+          <p className="font-medium">{t("orphans.requiredDocuments.title")}</p>
+          <ul className="mt-1 list-inside list-disc space-y-0.5">
+            {requiredDocs.map((d) => (
+              <li key={d}>{t(`documents.types.${d}`, { defaultValue: d })}</li>
+            ))}
+          </ul>
+          <p className="mt-1 text-xs text-gray-500">{t("orphans.requiredDocuments.hint")}</p>
+        </div>
+      )}
 
       {/* ── Education ─────────────────────────────────────── */}
       <Section title={t("orphans.profile.educationSection")}>

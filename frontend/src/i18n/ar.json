@@ -1359,6 +1359,49 @@
       "familyHome": "— بقي في بيت الأسرة —",
       "resident": "مقيم في دار"
     },
+    "country": {
+      "label": "الدولة",
+      "placeholder": "اختر الدولة",
+      "required": "يرجى اختيار الدولة",
+      "loadError": "تعذّر تحميل قائمة الدول — حاول مرّة أخرى."
+    },
+    "nationalId": {
+      "label": "الرقم الوطني",
+      "requiredHint": "مطلوب للدولة المختارة.",
+      "optionalHint": "اختياري.",
+      "errors": {
+        "required": "الرقم الوطني مطلوب للدولة المختارة.",
+        "length": "يجب أن يتكوّن الرقم الوطني من {{length}} خانة بالضبط.",
+        "format": "صيغة الرقم الوطني غير صحيحة للدولة المختارة."
+      }
+    },
+    "countrySpecific": {
+      "section": "تفاصيل خاصة بالدولة",
+      "damageType": "الأضرار بالممتلكات",
+      "damageTypeOptions": {
+        "total": "كلّي",
+        "partial": "جزئي",
+        "severe": "بالغ"
+      },
+      "originalAddress": "العنوان الأصلي",
+      "waterSource": "مصدر المياه",
+      "malnutritionStatus": "حالة سوء التغذية",
+      "malnutritionStatusOptions": {
+        "none": "لا يوجد",
+        "moderate": "متوسطة",
+        "severe": "شديدة"
+      },
+      "childLabor": "عمالة الأطفال",
+      "childLaborOptions": {
+        "none": "لا يوجد",
+        "part_time": "دوام جزئي",
+        "full_time": "دوام كامل"
+      }
+    },
+    "requiredDocuments": {
+      "title": "المستندات المطلوب تجهيزها",
+      "hint": "يمكنك رفعها من صفحة الحالة بعد حفظ بيانات اليتيم."
+    },
     "balance": "الرصيد الحالي",
     "timeline": "السجلّ الزمني",
     "bulkSelected": "تم اختيار {{count}}",
@@ -2457,7 +2500,11 @@
       "medical_report": "تقرير طبي",
       "photo_id": "صورة شخصية",
       "family_record": "سجل عائلي",
-      "other": "أخرى"
+      "other": "أخرى",
+      "custody_declaration": "إقرار حضانة",
+      "inheritance_decree": "إعلام وراثة",
+      "dwelling_photo": "صورة المسكن",
+      "displacement_proof": "إثبات نزوح"
     }
   },
   "walkIn": {
