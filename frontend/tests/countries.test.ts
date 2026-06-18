@@ -1,6 +1,14 @@
-import { describe, expect, it } from "vitest";
+import MockAdapter from "axios-mock-adapter";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { COUNTRY_CODES, countryOptions, flagEmoji } from "@/lib/countries";
+import { api } from "@/lib/api";
+import {
+  COUNTRY_CODES,
+  countryOptions,
+  flagEmoji,
+  getCountryRequirements,
+  listCountries,
+} from "@/lib/countries";
 
 // The label is `${flag} ${name}`; the flag has no internal space, so the
 // localized name is everything after the first space.
@@ -55,5 +63,59 @@ describe("countryOptions", () => {
     // construction; every label then degrades to the bare code.
     const kw = countryOptions("!bad").find((o) => o.code === "KW");
     expect(kw?.label).toBe("🇰🇼 KW");
+  });
+});
+
+describe("registration country API helpers", () => {
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(api);
+  });
+  afterEach(() => {
+    mock.restore();
+  });
+
+  it("listCountries GETs /countries and returns the localized list", async () => {
+    const items = [
+      { code: "PS", name_ar: "فلسطين", name_en: "Palestine" },
+      { code: "KW", name_ar: "الكويت", name_en: "Kuwait" },
+    ];
+    mock.onGet("/countries").reply(200, items);
+
+    const result = await listCountries();
+
+    expect(result).toEqual(items);
+    expect(mock.history.get[0]?.url).toBe("/countries");
+  });
+
+  it("getCountryRequirements GETs the per-country requirements and returns the config", async () => {
+    const config = {
+      country_code: "PS",
+      profile: "conflict",
+      fields: {
+        requires_gps: true,
+        show_conflict_fields: true,
+        show_housing: true,
+        show_wash_fields: false,
+      },
+      national_id: { required: true, length: 9, regex: "^\\d{9}$" },
+      phone: { regex: null },
+      required_documents: ["displacement_proof"],
+    };
+    mock.onGet("/countries/PS/requirements").reply(200, config);
+
+    const result = await getCountryRequirements("PS");
+
+    expect(result).toEqual(config);
+    expect(result.national_id.required).toBe(true);
+  });
+
+  it("propagates a 404 so the caller can fall back to the permissive baseline", async () => {
+    mock.onGet("/countries/ZZ/requirements").reply(404);
+
+    await expect(getCountryRequirements("ZZ")).rejects.toMatchObject({
+      response: { status: 404 },
+    });
   });
 });

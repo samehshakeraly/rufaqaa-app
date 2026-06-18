@@ -1,10 +1,19 @@
 /**
  * ISO 3166-1 alpha-2 country data for the platform org forms.
  *
- * Frontend-only: the value persisted server-side stays the raw two-letter
- * code (`country_code`). This module just turns that code into a localized,
- * flag-prefixed label for a native <select>.
+ * Two layers live here:
+ *   1. A static, frontend-only label helper (`countryOptions` / `flagEmoji`)
+ *      that turns a stored two-letter `country_code` into a localized,
+ *      flag-prefixed label for a native <select> (used by the org forms).
+ *   2. Server-backed registration helpers (`listCountries`,
+ *      `getCountryRequirements`) that drive the country-aware orphan form —
+ *      the API only offers ACTIVE countries and resolves each one's intake
+ *      requirements (national_id rule, conditional fields, documents).
  */
+
+import type { components } from "@/api/schema.gen";
+
+import { api } from "./api";
 
 // Complete ISO 3166-1 alpha-2 list (249 officially assigned codes), uppercase.
 export const COUNTRY_CODES: string[] = [
@@ -93,4 +102,37 @@ export function countryOptions(locale: string): CountryOption[] {
   const result = options.map(({ code, label }) => ({ code, label }));
   optionsCache.set(locale, result);
   return result;
+}
+
+// ── Registration country data (server-backed) ─────────────────────────────
+// Thin API wrappers, mirroring lib/orphans.ts. Distinct from the static label
+// helpers above: these hit the backend so the orphan registration form only
+// ever offers active countries and can resolve each country's requirements.
+
+/** One active country for the registration <select> (ISO alpha-2 + labels). */
+export type CountryListItem = components["schemas"]["CountryListItem"];
+/** Resolved registration requirements for a country. */
+export type CountryRequirements = components["schemas"]["CountryRequirementsResponse"];
+/** national_id rule (required / exact length / full-match regex). */
+export type NationalIdRequirements = components["schemas"]["NationalIdRequirements"];
+/** Which conditional intake sections a country turns on. */
+export type CountryFieldFlags = components["schemas"]["CountryFieldFlags"];
+
+/** GET /countries — active countries for the registration dropdown. */
+export async function listCountries(): Promise<CountryListItem[]> {
+  const { data } = await api.get<CountryListItem[]>("/countries");
+  return data;
+}
+
+/**
+ * GET /countries/{code}/requirements — resolved intake config for `code`
+ * (ISO alpha-2). 404 when `code` is not a known country; a known country with
+ * no configured row resolves server-side to the permissive baseline. Callers
+ * treat any failure as that baseline (nothing extra required).
+ */
+export async function getCountryRequirements(code: string): Promise<CountryRequirements> {
+  const { data } = await api.get<CountryRequirements>(
+    `/countries/${encodeURIComponent(code)}/requirements`,
+  );
+  return data;
 }

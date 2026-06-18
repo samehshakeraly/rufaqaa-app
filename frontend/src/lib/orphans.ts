@@ -86,6 +86,14 @@ export interface OrphanCreateInput {
   /** Staff-only dar assignment. Omitted by the guardian self-service path. */
   orphanage_id?: string;
   nationality?: string;
+  /** Country national ID. Optional unless the selected country's requirements
+   * mark it required; the server re-validates against the same rule. Sent on
+   * both the staff and guardian paths. */
+  national_id?: string;
+  /** Free per-country bag of extra intake fields (conflict / WASH details).
+   * Persisted as-is server-side; the shape varies by country. Sent on both
+   * the staff and guardian paths. */
+  country_specific?: Record<string, unknown>;
   // Extended profile fields (all optional). Mirror schema.gen.ts
   // OrphanCreate / GuardianOrphanCreate.
   education_stage?:
