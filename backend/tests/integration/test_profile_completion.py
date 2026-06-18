@@ -92,6 +92,10 @@ async def test_patch_adding_fields_increases_percentage(
                 "partner_organization_id": partner_id,
                 "father_name": f"أب-{suffix}",
                 "nationality": "EG",
+                # EG is a documented country: its national_id is now required at
+                # create (PR-3b). It is not a profile-completion field, so this
+                # does not change the percentages asserted below.
+                "national_id": "12345678901234",
             },
             headers=auth_headers,
         )

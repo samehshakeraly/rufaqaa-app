@@ -22,6 +22,7 @@ identical concurrent creates — never an unhandled 500.
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 from uuid import UUID
 
@@ -33,8 +34,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.user import User
+from app.schemas.country import CountryRequirementsResponse
 from app.schemas.orphan import OrphanCreateFields
 from app.services.audit import record_audit
+from app.services.country_requirements import load_requirements_row
 from app.utils.codes import generate_code
 
 # Name of the canonical partial-unique index (see module docstring). We match
@@ -155,6 +158,54 @@ async def _assert_orphanage_in_partner_org(
         )
 
 
+async def _validate_national_id(db: AsyncSession, data: OrphanCreateFields) -> None:
+    """Conditionally validate ``national_id`` against the orphan's country.
+
+    Resolved from the country's ``country_requirements`` row (shared loader +
+    resolver, same source the read endpoint uses), the rule is **fail-closed**:
+
+    * required by the country but missing/blank          -> 422
+    * present, and a configured length does not match    -> 422
+    * present, and a configured regex does not match      -> 422
+    * no nationality / no row / not required / no format -> accept
+
+    A missing ``nationality`` or a valid-but-unconfigured country resolves to the
+    permissive baseline (nothing required, no format), so any value — including
+    none — is accepted. The free ``country_specific`` bag is never validated.
+    """
+    if not data.nationality:
+        return  # No country to key requirements off → permissive baseline.
+
+    row = await load_requirements_row(db, data.nationality)
+    rules = CountryRequirementsResponse.resolve(data.nationality, row).national_id
+
+    # national_id is whitespace-stripped by the schema, so a blank submission is
+    # the empty string here; treat None and "" alike as "absent".
+    national_id = data.national_id or ""
+    if not national_id:
+        if rules.required:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"national_id is required for nationality {data.nationality.upper()}",
+            )
+        return  # Not required and absent → accept.
+
+    if rules.length is not None and len(national_id) != rules.length:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=(
+                f"national_id must be exactly {rules.length} characters "
+                f"for nationality {data.nationality.upper()}"
+            ),
+        )
+    # fullmatch (not search): the whole value must satisfy the configured pattern.
+    if rules.regex is not None and re.fullmatch(rules.regex, national_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"national_id format is invalid for nationality {data.nationality.upper()}",
+        )
+
+
 async def create_orphan_record(
     db: AsyncSession,
     *,
@@ -180,6 +231,11 @@ async def create_orphan_record(
     if orphanage_id is not None:
         await _assert_orphanage_in_org(db, orphanage_id, user.organization_id)
 
+    # Country-aware gate: enforce the national_id rule for data.nationality here,
+    # the shared chokepoint, so BOTH the staff create and the guardian
+    # self-service create obey it identically (422 on a violation).
+    await _validate_national_id(db, data)
+
     # Friendly pre-check: the DB unique index is the real guard, but looking up
     # the conflicting row first lets us return a clear 409 with the existing
     # code. Runs in the request's RLS org context, so it is org-scoped.
@@ -203,6 +259,12 @@ async def create_orphan_record(
         date_of_birth=data.date_of_birth,
         gender=data.gender,
         nationality=data.nationality,
+        # Country-aware intake (validated above). national_id is stored PLAINTEXT,
+        # mirroring guardians (no encryption layer; national_id_encrypted stays
+        # NULL). A blank value normalises to NULL so the column is a real id or
+        # nothing. country_specific is the free per-country bag, persisted as-is.
+        national_id=data.national_id or None,
+        country_specific=data.country_specific,
         father_name=data.father_name,
         father_death_date=data.father_death_date,
         education_stage=data.education_stage,

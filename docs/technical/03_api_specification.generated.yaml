@@ -1937,6 +1937,10 @@ components:
           - type: string
           - type: 'null'
           title: Chronic Conditions
+        country_specific:
+          additionalProperties: true
+          title: Country Specific
+          type: object
         date_of_birth:
           format: date
           title: Date Of Birth
@@ -2022,6 +2026,12 @@ components:
           - unknown
           title: Mother Status
           type: string
+        national_id:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: National Id
         nationality:
           anyOf:
           - maxLength: 2
@@ -3224,6 +3234,10 @@ components:
           - type: string
           - type: 'null'
           title: Chronic Conditions
+        country_specific:
+          additionalProperties: true
+          title: Country Specific
+          type: object
         date_of_birth:
           format: date
           title: Date Of Birth
@@ -3315,6 +3329,12 @@ components:
           - unknown
           title: Mother Status
           type: string
+        national_id:
+          anyOf:
+          - maxLength: 50
+            type: string
+          - type: 'null'
+          title: National Id
         nationality:
           anyOf:
           - maxLength: 2

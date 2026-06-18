@@ -3848,6 +3848,10 @@ export interface components {
             challenges?: string | null;
             /** Chronic Conditions */
             chronic_conditions?: string | null;
+            /** Country Specific */
+            country_specific?: {
+                [key: string]: unknown;
+            };
             /**
              * Date Of Birth
              * Format: date
@@ -3882,6 +3886,8 @@ export interface components {
              * @enum {string}
              */
             mother_status: "alive" | "deceased" | "unknown";
+            /** National Id */
+            national_id?: string | null;
             /** Nationality */
             nationality?: string | null;
             /**
@@ -4575,6 +4581,10 @@ export interface components {
             challenges?: string | null;
             /** Chronic Conditions */
             chronic_conditions?: string | null;
+            /** Country Specific */
+            country_specific?: {
+                [key: string]: unknown;
+            };
             /**
              * Date Of Birth
              * Format: date
@@ -4611,6 +4621,8 @@ export interface components {
              * @enum {string}
              */
             mother_status: "alive" | "deceased" | "unknown";
+            /** National Id */
+            national_id?: string | null;
             /** Nationality */
             nationality?: string | null;
             /** Orphanage Id */
