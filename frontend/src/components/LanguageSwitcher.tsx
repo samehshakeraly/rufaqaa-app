@@ -2,22 +2,36 @@ import { useTranslation } from "react-i18next";
 
 import { SUPPORTED_LANGS, type Lang } from "@/i18n";
 
+// A language name is conventionally shown as its own autonym (each in its own
+// script), so these labels stay constant regardless of the active UI locale and
+// need no translation keys.
+const LANG_LABELS: Record<Lang, string> = {
+  ar: "العربية",
+  en: "English",
+  fr: "Français",
+};
+
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  const current = (SUPPORTED_LANGS as readonly string[]).includes(i18n.language)
+  const current: Lang = (SUPPORTED_LANGS as readonly string[]).includes(i18n.language)
     ? (i18n.language as Lang)
     : "ar";
 
-  const next: Lang = current === "ar" ? "en" : "ar";
-
+  // A compact <select> scales to the three supported languages (ar / en / fr)
+  // in a single control. Choosing a language persists it via i18next's
+  // LanguageDetector cache (the "rufaqaa.lang" localStorage key).
   return (
-    <button
-      type="button"
-      onClick={() => void i18n.changeLanguage(next)}
-      className="rounded-lg border border-sky px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
-      aria-label="toggle language"
+    <select
+      value={current}
+      onChange={(e) => void i18n.changeLanguage(e.target.value)}
+      className="rounded-lg border border-sky bg-white px-3 py-1 text-sm text-slate-700 hover:bg-tranquil"
+      aria-label="Select language"
     >
-      {next === "ar" ? "العربية" : "English"}
-    </button>
+      {SUPPORTED_LANGS.map((lng) => (
+        <option key={lng} value={lng}>
+          {LANG_LABELS[lng]}
+        </option>
+      ))}
+    </select>
   );
 }
