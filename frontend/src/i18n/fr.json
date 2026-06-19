@@ -1,0 +1,340 @@
+{
+  "app": {
+    "name": "Rufaqaa",
+    "tagline": "Plateforme de gestion du parrainage d'orphelins"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "orphans": "Orphelins",
+    "donors": "Donateurs",
+    "partners": "Partenaires",
+    "families": "Familles",
+    "orphanages": "Orphelinats",
+    "sponsorships": "Parrainages",
+    "payments": "Paiements",
+    "bankTransfers": "Virements bancaires",
+    "reports": "Rapports",
+    "users": "Utilisateurs",
+    "marketingChannels": "Canaux",
+    "audit": "Journal d'audit",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter",
+    "language": "Français",
+    "approvals": "Validations",
+    "mediaReview": "Révision des médias",
+    "partnerStaff": "Personnel partenaire",
+    "registerOrphan": "Enregistrer un orphelin",
+    "finance": "Finances",
+    "financeOverdue": "En retard",
+    "financeReports": "Rapports financiers",
+    "businessRules": "Règles métier",
+    "brandSubtitle": "Administration de l'organisation",
+    "primary": "Navigation principale",
+    "skipToContent": "Aller au contenu",
+    "tenantRegion": "Organisation actuelle",
+    "userFallback": "Utilisateur",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "soon": "Bientôt",
+    "executiveDashboard": "Tableau de bord exécutif",
+    "fullReports": "Rapports complets",
+    "transparency": "Écran de transparence",
+    "approvalsCenter": "Centre de validation",
+    "notifications": "Notifications",
+    "assistant": "Assistant Rufaqaa",
+    "help": "Centre d'aide",
+    "section": {
+      "executive": "Direction",
+      "management": "Administration",
+      "finance": "Finances",
+      "oversight": "Supervision",
+      "system": "Système"
+    }
+  },
+  "auth": {
+    "loginTitle": "Se connecter",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "...",
+    "invalidEmail": "Adresse e-mail invalide",
+    "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères",
+    "invalidCredentials": "E-mail ou mot de passe invalide",
+    "serverError": "Impossible de joindre le serveur",
+    "forgotLink": "Mot de passe oublié ?",
+    "forgotTitle": "Réinitialiser votre mot de passe",
+    "forgotDescription": "Saisissez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+    "forgotSubmit": "Envoyer le lien de réinitialisation",
+    "forgotSent": "Vérifiez votre e-mail — si un compte existe pour cette adresse, un lien de réinitialisation a été envoyé.",
+    "devTokenNotice": "Mode dev : utilisez ce jeton directement pour réinitialiser votre mot de passe.",
+    "resetTitle": "Choisissez un nouveau mot de passe",
+    "resetToken": "Jeton de réinitialisation",
+    "resetSubmit": "Réinitialiser le mot de passe",
+    "resetDone": "Votre mot de passe a été mis à jour. Vous pouvez maintenant vous connecter.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "backToLogin": "Retour à la connexion",
+    "forgotHeading": "Mot de passe oublié ?",
+    "checkEmailTitle": "Vérifiez votre e-mail",
+    "resetLinkSentBody": "Si l'e-mail est enregistré, nous avons envoyé un lien pour réinitialiser votre mot de passe.",
+    "resetPrivacyNote": "Pour votre sécurité, nous ne révélons pas si un e-mail est enregistré. Si vous ne voyez pas le message, vérifiez votre dossier spam.",
+    "resendLink": "Renvoyer",
+    "resendCooldown": "Renvoyer dans {{seconds}} s",
+    "resetSubtitle": "Choisissez un mot de passe fort que vous n'utilisez nulle part ailleurs.",
+    "logoutOtherDevices": "La modification de votre mot de passe déconnectera tous les autres appareils.",
+    "changePassword": "Modifier le mot de passe",
+    "resetDoneTitle": "Mot de passe modifié",
+    "goToDashboard": "Aller à mon tableau de bord",
+    "login": {
+      "brandName": "Rufaqaa",
+      "brandTagline": "Une plateforme mondiale de parrainage d'orphelins",
+      "rolesLabel": "Type de compte",
+      "roles": {
+        "guardian": "Tuteur",
+        "donor": "Parrain",
+        "partner": "Organisation partenaire",
+        "admin": "Administrateur"
+      },
+      "greeting": {
+        "guardian": {
+          "title": "Bienvenue, tuteur",
+          "sub": "Connectez-vous pour suivre vos orphelins et déposer leurs rapports"
+        },
+        "donor": {
+          "title": "Bon retour",
+          "sub": "Connectez-vous pour suivre vos parrainages et les rapports des orphelins"
+        },
+        "partner": {
+          "title": "Bienvenue, partenaire",
+          "sub": "Connectez-vous pour gérer les orphelins et assurer leur suivi"
+        },
+        "admin": {
+          "title": "Bienvenue, administrateur",
+          "sub": "Tableau de bord d'administration et de supervision de la plateforme"
+        }
+      },
+      "emailPlaceholder": "vous@exemple.com",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Afficher/masquer le mot de passe",
+      "remember": "Se souvenir de moi",
+      "loginButton": "Se connecter",
+      "or": "ou",
+      "continueWithGoogle": "Continuer avec Google",
+      "continueWithApple": "Continuer avec Apple",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signupCta": "S'inscrire comme nouveau parrain",
+      "help": {
+        "title": "Vous n'avez pas encore reçu vos identifiants ?",
+        "before": "Contactez l'organisation responsable du parrainage de vos orphelins, ou",
+        "contact": "contactez-nous",
+        "after": "et nous vous aiderons."
+      },
+      "illustration": {
+        "eyebrowBefore": "Plus de",
+        "eyebrowAfter": "orphelins pris en charge par Rufaqaa actuellement",
+        "eyebrowCount": "12 000",
+        "headline": "Soutenir un orphelin inscrit de la lumière dans votre registre.",
+        "verse": "Quiconque prend en charge un orphelin, le sien ou celui d'un autre, lui et moi serons comme ces deux-là au Paradis",
+        "verseAttr": "— Sahih Muslim",
+        "stats": {
+          "orphans": "orphelins parrainés",
+          "donors": "parrains actifs",
+          "orgs": "organisations partenaires",
+          "countries": "pays"
+        },
+        "partnersLabel": "Organisations partenaires",
+        "partners": {
+          "fajr": "Association Al-Fajr",
+          "amal": "Association Al-Amal",
+          "karam": "Association Al-Karam",
+          "ihsan": "Ihsan"
+        }
+      }
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "total": "Total",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "retry": "Réessayer",
+    "add": "Ajouter",
+    "empty": "Aucune donnée pour le moment",
+    "noResults": "Aucun résultat correspondant",
+    "loadError": "Impossible de charger les données",
+    "createError": "Impossible d'enregistrer",
+    "required": "Ce champ est obligatoire",
+    "comingSoon": "Bientôt disponible",
+    "close": "Fermer",
+    "viewFullSize": "Voir en taille réelle"
+  },
+  "orphans": {
+    "firstName": "Prénom",
+    "familyName": "Nom de famille",
+    "fatherName": "Nom du père",
+    "dateOfBirth": "Date de naissance",
+    "gender": "Sexe",
+    "male": "Masculin",
+    "female": "Féminin",
+    "nationality": "Nationalité",
+    "partner": "Organisation partenaire",
+    "selectPartner": "Choisir un partenaire",
+    "partnerLockedHint": "Votre compte est lié à cette organisation partenaire ; les nouveaux orphelins y sont enregistrés.",
+    "partnerNotAssigned": "Aucune organisation partenaire n'est associée à votre compte — contactez un administrateur.",
+    "orphanage": {
+      "label": "Orphelinat",
+      "familyHome": "— Foyer familial (sans orphelinat) —",
+      "resident": "Résident d'un orphelinat"
+    },
+    "country": {
+      "label": "Pays",
+      "placeholder": "Sélectionner un pays",
+      "required": "Veuillez sélectionner un pays",
+      "loadError": "Impossible de charger la liste des pays — veuillez réessayer."
+    },
+    "nationalId": {
+      "label": "Numéro national d'identité",
+      "requiredHint": "Obligatoire pour le pays sélectionné.",
+      "optionalHint": "Facultatif.",
+      "errors": {
+        "required": "Le numéro national d'identité est obligatoire pour le pays sélectionné.",
+        "length": "Le numéro national d'identité doit comporter exactement {{length}} caractères.",
+        "format": "Le format du numéro national d'identité n'est pas valide pour le pays sélectionné."
+      }
+    },
+    "countrySpecific": {
+      "section": "Détails spécifiques au pays",
+      "damageType": "Dommages matériels",
+      "damageTypeOptions": {
+        "total": "Total",
+        "partial": "Partiel",
+        "severe": "Grave"
+      },
+      "originalAddress": "Adresse d'origine",
+      "waterSource": "Source d'eau",
+      "malnutritionStatus": "État de malnutrition",
+      "malnutritionStatusOptions": {
+        "none": "Aucune",
+        "moderate": "Modérée",
+        "severe": "Sévère"
+      },
+      "childLabor": "Travail des enfants",
+      "childLaborOptions": {
+        "none": "Aucun",
+        "part_time": "Temps partiel",
+        "full_time": "Temps plein"
+      }
+    },
+    "requiredDocuments": {
+      "title": "Documents à préparer",
+      "hint": "Vous pourrez les téléverser depuis la page du dossier après l'enregistrement de l'orphelin."
+    },
+    "register": {
+      "title": "Enregistrer un nouvel orphelin",
+      "subtitle": "Ajoutez un nouveau dossier au registre de votre organisation. Le dossier est soumis à l'approbation d'un responsable.",
+      "sectionBasic": "Informations de base",
+      "sectionBasicDesc": "Saisissez les informations d'identité essentielles de l'orphelin. Vous pourrez ajouter des documents et des photos depuis la page du dossier après l'enregistrement.",
+      "sectionName": "Nom",
+      "sectionPersonal": "Informations personnelles",
+      "sectionOrg": "Organisation",
+      "nationalityHint": "Code pays à deux lettres (par ex. KW).",
+      "submit": "Soumettre pour approbation",
+      "privacyNote": "Jusqu'à l'approbation d'un responsable, ce dossier reste en cours d'examen — il n'est montré à aucun donateur et personne en dehors de votre organisation ne peut le voir.",
+      "duplicate": "Doublon possible — ce dossier ressemble à un enregistrement existant",
+      "viewExisting": "Voir l'enregistrement existant",
+      "back": "Retour aux orphelins"
+    },
+    "profile": {
+      "educationSection": "Éducation",
+      "educationStage": "Niveau de scolarité",
+      "educationStageOptions": {
+        "not_enrolled": "Non scolarisé",
+        "kindergarten": "Maternelle",
+        "primary": "Primaire",
+        "preparatory": "Collège",
+        "secondary": "Lycée",
+        "university": "Université",
+        "vocational": "Formation professionnelle",
+        "graduated": "Diplômé"
+      },
+      "academicLevel": "Niveau scolaire",
+      "schoolName": "Nom de l'école",
+      "quranSection": "Coran",
+      "quranJuzMemorized": "Juz' mémorisés",
+      "quranNote": "Note de mémorisation",
+      "healthSection": "Santé",
+      "healthStatus": "État de santé",
+      "healthStatusOptions": {
+        "good": "Bon",
+        "chronic_condition": "Maladie chronique",
+        "disability": "Handicap",
+        "under_treatment": "Sous traitement"
+      },
+      "healthCoverage": "Couverture santé",
+      "healthCoverageOptions": {
+        "none": "Aucune",
+        "government": "Publique",
+        "private": "Privée",
+        "charity": "Caritative"
+      },
+      "motherStatus": "Statut de la mère",
+      "motherStatusOptions": {
+        "alive": "Vivante",
+        "deceased": "Décédée",
+        "unknown": "Inconnu"
+      },
+      "priorityLevel": "Priorité",
+      "priorityLevelOptions": {
+        "normal": "Normale",
+        "high": "Élevée",
+        "urgent": "Urgente"
+      },
+      "chronicConditions": "Maladies chroniques",
+      "profileSection": "Profil",
+      "aspiration": "Aspiration",
+      "challenges": "Difficultés",
+      "tagsSection": "Étiquettes",
+      "notSpecified": "Non spécifié",
+      "title": "Profil",
+      "edit": "Modifier",
+      "notSet": "Non renseigné",
+      "isHafiz": "Hafiz",
+      "saved": "Profil mis à jour",
+      "tags": {
+        "label": "Étiquettes",
+        "placeholder": "Saisissez une étiquette et appuyez sur Entrée",
+        "add": "Ajouter",
+        "remove": "Supprimer {{tag}}"
+      }
+    }
+  },
+  "documents": {
+    "types": {
+      "birth_certificate": "Acte de naissance",
+      "death_certificate": "Acte de décès",
+      "national_id": "Carte nationale d'identité",
+      "passport": "Passeport",
+      "bank_statement": "Relevé bancaire",
+      "school_certificate": "Certificat de scolarité",
+      "medical_report": "Rapport médical",
+      "photo_id": "Pièce d'identité avec photo",
+      "family_record": "Livret de famille",
+      "other": "Autre",
+      "custody_declaration": "Déclaration de garde",
+      "inheritance_decree": "Acte de succession",
+      "dwelling_photo": "Photo du logement",
+      "displacement_proof": "Justificatif de déplacement"
+    }
+  },
+  "guardian": {
+    "addOrphan": {
+      "back": "Retour à l'accueil",
+      "title": "Ajouter un nouvel orphelin",
+      "subtitle": "Enregistrez un nouvel orphelin dans votre famille. Le dossier est soumis à l'examen de l'organisation avant approbation.",
+      "pendingNote": "Après l'envoi, le dossier est examiné par l'organisation avant approbation. Il apparaîtra dans votre liste avec la mention « En cours d'examen ».",
+      "success": "Les informations de {{name}} ont été envoyées — le dossier est maintenant en cours d'examen"
+    }
+  }
+}
