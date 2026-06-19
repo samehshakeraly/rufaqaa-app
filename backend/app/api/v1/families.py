@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 
 from app.api.deps import DbSession
 from app.core.authz import STAFF_ROLES, require_roles
+from app.core.crypto import decrypt_field, encrypt_field
 from app.core.exceptions import NotFound
 from app.models.family import Family, Guardian
 from app.models.user import User
@@ -108,6 +109,21 @@ async def get_family(
 # family. A separate router would be over-engineering for now.
 
 
+def _serialize_guardian(guardian: Guardian) -> GuardianRead:
+    """Project a Guardian to ``GuardianRead``, decrypting national_id on read.
+
+    national_id is encrypted at rest in ``national_id_encrypted`` and the
+    plaintext column is NULL, so ``model_validate`` alone would surface a null
+    id. We decrypt the blob back onto the response (None -> None) and never
+    expose the ciphertext. The fallback to the plaintext column keeps any
+    not-yet-backfilled legacy row readable.
+    """
+    read = GuardianRead.model_validate(guardian)
+    if guardian.national_id_encrypted is not None:
+        read.national_id = decrypt_field(guardian.national_id_encrypted)
+    return read
+
+
 @router.get("/{family_id}/guardians", response_model=Page[GuardianRead])
 async def list_guardians(
     family_id: UUID,
@@ -132,7 +148,7 @@ async def list_guardians(
         await db.scalars(stmt.order_by(Guardian.created_at.desc()).limit(limit).offset(offset))
     ).all()
     return Page(
-        items=[GuardianRead.model_validate(r) for r in rows],
+        items=[_serialize_guardian(r) for r in rows],
         total=total,
         limit=limit,
         offset=offset,
@@ -164,7 +180,9 @@ async def create_guardian(
         organization_id=user.organization_id,
         family_id=family_id,
         full_name=payload.full_name,
-        national_id=payload.national_id,
+        # Encrypt national_id at rest; leave the plaintext column NULL. The
+        # staff read paths decrypt it back via _serialize_guardian.
+        national_id_encrypted=encrypt_field(payload.national_id) if payload.national_id else None,
         date_of_birth=payload.date_of_birth,
         gender=payload.gender,
         relation=payload.relation,
@@ -188,4 +206,4 @@ async def create_guardian(
     )
     await db.commit()
     await db.refresh(guardian)
-    return GuardianRead.model_validate(guardian)
+    return _serialize_guardian(guardian)

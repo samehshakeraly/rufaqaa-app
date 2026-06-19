@@ -20,9 +20,13 @@ from app.core.startup_checks import assert_production_secrets
 # The well-known development defaults. A misconfigured boot must name
 # these *fields* but must never echo any of these *values*.
 _DEV_SECRET = "development_only_change_in_production"
+# The development-default Fernet key (see config.FIELD_ENCRYPTION_KEY); guarded
+# like the others — flagged outside development, value never echoed.
+_DEV_FIELD_KEY = "XXyCXLqmy2OX2kkb3eml_J_ZnY7tma4cf4XhaIAK0C0="
 _EXPECTED_FIELDS = (
     "SECRET_KEY",
     "JWT_SECRET_KEY",
+    "FIELD_ENCRYPTION_KEY",
     "S3_ACCESS_KEY",
     "S3_SECRET_KEY",
     "MYFATOORAH_API_KEY",
@@ -30,6 +34,7 @@ _EXPECTED_FIELDS = (
 )
 _DEV_SECRET_VALUES = (
     _DEV_SECRET,
+    _DEV_FIELD_KEY,
     "rufaqaa_admin",
     "rufaqaa_dev_secret_change_me",
 )
@@ -40,6 +45,7 @@ def _make_settings(
     environment: Literal["development", "staging", "production"],
     secret_key: str = _DEV_SECRET,
     jwt_secret_key: str = _DEV_SECRET,
+    field_encryption_key: str = _DEV_FIELD_KEY,
     s3_access_key: str = "rufaqaa_admin",
     s3_secret_key: str = "rufaqaa_dev_secret_change_me",
     myfatoorah_api_key: str = "",
@@ -52,6 +58,7 @@ def _make_settings(
         ENVIRONMENT=environment,
         SECRET_KEY=secret_key,
         JWT_SECRET_KEY=jwt_secret_key,
+        FIELD_ENCRYPTION_KEY=field_encryption_key,
         S3_ACCESS_KEY=s3_access_key,
         S3_SECRET_KEY=s3_secret_key,
         MYFATOORAH_API_KEY=myfatoorah_api_key,
@@ -68,6 +75,7 @@ def _secure_settings(
         environment=environment,
         secret_key="x" * 64,
         jwt_secret_key="y" * 64,
+        field_encryption_key="prod-field-encryption-key-value",
         s3_access_key="prod-access-key",
         s3_secret_key="prod-secret-key-value",
         myfatoorah_api_key="mf-live-api-key",
@@ -117,6 +125,7 @@ def test_partial_misconfiguration_names_only_offending_fields() -> None:
         environment="production",
         secret_key="x" * 64,
         jwt_secret_key="y" * 64,
+        field_encryption_key="prod-field-encryption-key-value",
         s3_access_key="prod-access-key",
         s3_secret_key="prod-secret-key-value",
         # The MyFatoorah pair is left empty -> the only offenders.

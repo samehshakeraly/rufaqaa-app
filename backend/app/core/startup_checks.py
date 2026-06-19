@@ -32,6 +32,7 @@ _log = structlog.get_logger("rufaqaa.startup")
 _REQUIRED_SECRETS: tuple[tuple[str, str], ...] = (
     ("SECRET_KEY", "development_only_change_in_production"),
     ("JWT_SECRET_KEY", "development_only_change_in_production"),
+    ("FIELD_ENCRYPTION_KEY", "XXyCXLqmy2OX2kkb3eml_J_ZnY7tma4cf4XhaIAK0C0="),
     ("S3_ACCESS_KEY", "rufaqaa_admin"),
     ("S3_SECRET_KEY", "rufaqaa_dev_secret_change_me"),
     ("MYFATOORAH_API_KEY", ""),
