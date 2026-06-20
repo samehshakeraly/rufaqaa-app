@@ -96,10 +96,11 @@ class OrphanCreateFields(OrphanBase):
     # accepts the same two fields. ``national_id`` is NOT validated here: the
     # rule is country-conditional (it depends on ``nationality``) and is enforced
     # centrally in ``services.orphans.create_orphan_record`` so both callers
-    # obey it. It is stored as PLAINTEXT, mirroring ``guardians.national_id``
-    # (this codebase has no encryption layer; the ``*_encrypted`` columns are
-    # unused). ``country_specific`` is the free per-country JSONB bag — its
-    # contents are deliberately not validated, only persisted verbatim.
+    # obey it. It is accepted as input but encrypted at rest into
+    # ``orphans.national_id_encrypted`` (see app.core.crypto); it is write-only
+    # and never returned in any read schema. ``country_specific`` is the free
+    # per-country JSONB bag — its contents are deliberately not validated, only
+    # persisted verbatim.
     national_id: str | None = Field(default=None, max_length=50)
     country_specific: dict[str, Any] = Field(default_factory=dict)
 

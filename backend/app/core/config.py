@@ -35,6 +35,15 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str = "development_only_change_in_production"
     JWT_SECRET_KEY: str = "development_only_change_in_production"
+    # Symmetric key for field-level encryption at rest (Fernet — see
+    # app.core.crypto). Encrypts PII columns such as ``national_id`` on
+    # guardians and orphans so the plaintext is never persisted. MUST be a
+    # urlsafe-base64 32-byte Fernet key. The development default below is
+    # well-known and is rejected outside ``development`` by the startup secrets
+    # guard; generate a real one with
+    # ``python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"``
+    # and supply it via the environment in staging/production.
+    FIELD_ENCRYPTION_KEY: str = "XXyCXLqmy2OX2kkb3eml_J_ZnY7tma4cf4XhaIAK0C0="
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7

@@ -31,6 +31,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.crypto import encrypt_field
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.user import User
@@ -259,11 +260,13 @@ async def create_orphan_record(
         date_of_birth=data.date_of_birth,
         gender=data.gender,
         nationality=data.nationality,
-        # Country-aware intake (validated above). national_id is stored PLAINTEXT,
-        # mirroring guardians (no encryption layer; national_id_encrypted stays
-        # NULL). A blank value normalises to NULL so the column is a real id or
-        # nothing. country_specific is the free per-country bag, persisted as-is.
-        national_id=data.national_id or None,
+        # Country-aware intake (validated above). national_id is encrypted at
+        # rest into national_id_encrypted (see app.core.crypto); the plaintext
+        # column is left NULL. A blank value normalises to no ciphertext, so the
+        # column holds a real encrypted id or nothing. Orphan national_id is
+        # write-only (not in any read schema), so there is no decrypt-on-read.
+        # country_specific is the free per-country bag, persisted as-is.
+        national_id_encrypted=encrypt_field(data.national_id) if data.national_id else None,
         country_specific=data.country_specific,
         father_name=data.father_name,
         father_death_date=data.father_death_date,
