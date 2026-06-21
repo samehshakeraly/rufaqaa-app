@@ -117,6 +117,9 @@ backend-seed: ## 🌱 إنشاء مؤسسة + مسؤول التطوير (إذا 
 backend-demo-seed: ## 🎭 بيانات تجريبية (6 أيتام، 5 متبرعين، 4 كفالات، 8 مدفوعات)
 	@cd backend && python -m app.scripts.demo_seed
 
+backend-staging-seed: ## 🌐 بيانات تجريبية مصغّرة لنشر العرض (staging) — منظمتان
+	@cd backend && python -m app.scripts.staging_seed
+
 worker-dev: ## ⚙️  تشغيل Celery worker للتطوير
 	@cd backend && celery -A app.workers.celery_app worker --loglevel=info
 
