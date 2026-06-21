@@ -90,12 +90,11 @@ class Orphan(Base):
 
     # Country-aware registration (see migration 0014). ``national_id`` is
     # encrypted at rest into ``national_id_encrypted`` (BYTEA Fernet token) by
-    # the write path (see app.core.crypto / services.orphans); the plaintext
-    # column is left NULL and kept only for the later drop. The ciphertext is
-    # NEVER serialised — orphan national_id is write-only (not in any read
-    # schema). ``country_specific`` holds the per-country intake answers as a
-    # JSONB bag.
-    national_id: Mapped[str | None] = mapped_column(String(50))
+    # the write path (see app.core.crypto / services.orphans); the original
+    # plaintext column was dropped in 0020 once encryption fully replaced it. The
+    # ciphertext is NEVER serialised — orphan national_id is write-only (not in
+    # any read schema). ``country_specific`` holds the per-country intake answers
+    # as a JSONB bag.
     national_id_encrypted: Mapped[bytes | None] = mapped_column(LargeBinary)
     country_specific: Mapped[dict[str, Any]] = mapped_column(
         JSONB, nullable=False, server_default=text("'{}'::jsonb"), default=dict

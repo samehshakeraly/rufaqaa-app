@@ -130,9 +130,9 @@ async def test_staff_create_encrypts_national_id_and_persists_country_specific(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """A staff create encrypts national_id at rest — national_id_encrypted holds
-    the decryptable token and the plaintext column is left NULL — and round-trips
-    the country_specific bag verbatim. national_id is write-only: it is never
-    echoed back in the response."""
+    the decryptable token (the plaintext column was dropped in 0020) — and
+    round-trips the country_specific bag verbatim. national_id is write-only: it
+    is never echoed back in the response."""
     partner_id = await _seed_partner_id()
     bag = {"housing": "rented", "siblings": 3, "guardian_note": "ملاحظة", "nested": {"k": [1, 2]}}
     r = await _staff_create(
@@ -152,7 +152,6 @@ async def test_staff_create_encrypts_national_id_and_persists_country_specific(
         orphan = await db.get(Orphan, uuid.UUID(orphan_id))
         assert orphan is not None
         assert orphan.country_specific == bag  # JSONB bag round-trips intact
-        assert orphan.national_id is None  # plaintext column left NULL
         assert orphan.national_id_encrypted is not None  # ciphertext persisted
         # The stored token decrypts back to exactly the submitted id.
         assert decrypt_field(orphan.national_id_encrypted) == "12345678901234"
@@ -162,7 +161,7 @@ async def test_staff_create_country_specific_defaults_to_empty_object(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """Omitting both fields persists the empty-object default for
-    country_specific (never NULL) and a NULL national_id."""
+    country_specific (never NULL) and no national_id ciphertext."""
     partner_id = await _seed_partner_id()
     r = await _staff_create(api, auth_headers, partner_id, nationality="KW")
     assert r.status_code == 201, r.text
@@ -170,7 +169,7 @@ async def test_staff_create_country_specific_defaults_to_empty_object(
         orphan = await db.get(Orphan, uuid.UUID(r.json()["id"]))
     assert orphan is not None
     assert orphan.country_specific == {}
-    assert orphan.national_id is None  # omitted/blank normalises to NULL
+    assert orphan.national_id_encrypted is None  # omitted id → no ciphertext stored
 
 
 # ── Guardian self-service path (POST /guardian/me/orphans) ──────────────
@@ -200,8 +199,8 @@ async def test_guardian_create_encrypts_national_id_and_persists_country_specifi
 ) -> None:
     """The country_specific bag persists and national_id is encrypted at rest on
     the guardian self-service path too (shared create_orphan_record chokepoint):
-    national_id_encrypted holds the decryptable token, the plaintext column is
-    NULL."""
+    national_id_encrypted holds the decryptable token (the plaintext column was
+    dropped in 0020)."""
     partner_id = await _seed_partner_id()
     family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
     await _link_family_to_partner(family_id, partner_id)
@@ -215,6 +214,5 @@ async def test_guardian_create_encrypts_national_id_and_persists_country_specifi
         orphan = await db.get(Orphan, uuid.UUID(r.json()["id"]))
     assert orphan is not None
     assert orphan.country_specific == bag
-    assert orphan.national_id is None  # plaintext column left NULL
     assert orphan.national_id_encrypted is not None  # ciphertext persisted
     assert decrypt_field(orphan.national_id_encrypted) == "123456789"

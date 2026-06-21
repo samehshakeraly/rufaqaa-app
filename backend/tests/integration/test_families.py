@@ -65,9 +65,9 @@ async def test_guardian_create_404_for_unknown_family(
 async def test_guardian_national_id_encrypted_at_rest_decrypted_on_read(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
-    """national_id is encrypted at rest (national_id_encrypted holds the token,
-    the plaintext column is NULL) yet the staff create and list reads return the
-    decrypted value — never the ciphertext."""
+    """national_id is encrypted at rest (national_id_encrypted holds the token;
+    the plaintext column was dropped in 0020) yet the staff create and list reads
+    return the decrypted value — never the ciphertext."""
     suffix = uuid.uuid4().hex[:6]
     national_id = "29900112233445"
     r = await api.post(
@@ -89,11 +89,11 @@ async def test_guardian_national_id_encrypted_at_rest_decrypted_on_read(
     assert created["national_id"] == national_id
     guardian_id = created["id"]
 
-    # At rest: plaintext column NULL, ciphertext present and decryptable.
+    # At rest: only the ciphertext is stored (no plaintext column exists), and it
+    # is present and decryptable back to the submitted id.
     async with make_session() as db:
         guardian = await db.get(Guardian, uuid.UUID(guardian_id))
         assert guardian is not None
-        assert guardian.national_id is None
         assert guardian.national_id_encrypted is not None
         assert decrypt_field(guardian.national_id_encrypted) == national_id
 
@@ -107,8 +107,8 @@ async def test_guardian_national_id_encrypted_at_rest_decrypted_on_read(
 async def test_guardian_create_without_national_id_returns_null(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
-    """Omitting national_id leaves both columns NULL and the read returns null —
-    no ciphertext is fabricated for an absent id."""
+    """Omitting national_id leaves national_id_encrypted NULL and the read
+    returns null — no ciphertext is fabricated for an absent id."""
     suffix = uuid.uuid4().hex[:6]
     r = await api.post(
         "/api/v1/families",
@@ -129,5 +129,4 @@ async def test_guardian_create_without_national_id_returns_null(
     async with make_session() as db:
         guardian = await db.get(Guardian, uuid.UUID(created["id"]))
         assert guardian is not None
-        assert guardian.national_id is None
         assert guardian.national_id_encrypted is None

@@ -112,11 +112,11 @@ async def get_family(
 def _serialize_guardian(guardian: Guardian) -> GuardianRead:
     """Project a Guardian to ``GuardianRead``, decrypting national_id on read.
 
-    national_id is encrypted at rest in ``national_id_encrypted`` and the
-    plaintext column is NULL, so ``model_validate`` alone would surface a null
-    id. We decrypt the blob back onto the response (None -> None) and never
-    expose the ciphertext. The fallback to the plaintext column keeps any
-    not-yet-backfilled legacy row readable.
+    national_id is stored only as the Fernet ciphertext in
+    ``national_id_encrypted`` (the plaintext column was dropped in 0020), so
+    ``GuardianRead.model_validate`` leaves the response's national_id at its
+    ``None`` default. We decrypt the blob back onto the response when one is
+    present (absent -> None) and never expose the ciphertext.
     """
     read = GuardianRead.model_validate(guardian)
     if guardian.national_id_encrypted is not None:
@@ -180,8 +180,9 @@ async def create_guardian(
         organization_id=user.organization_id,
         family_id=family_id,
         full_name=payload.full_name,
-        # Encrypt national_id at rest; leave the plaintext column NULL. The
-        # staff read paths decrypt it back via _serialize_guardian.
+        # Encrypt national_id at rest into national_id_encrypted (the plaintext
+        # column was dropped in 0020). The staff read paths decrypt it back via
+        # _serialize_guardian.
         national_id_encrypted=encrypt_field(payload.national_id) if payload.national_id else None,
         date_of_birth=payload.date_of_birth,
         gender=payload.gender,

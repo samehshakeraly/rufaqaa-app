@@ -261,11 +261,12 @@ async def create_orphan_record(
         gender=data.gender,
         nationality=data.nationality,
         # Country-aware intake (validated above). national_id is encrypted at
-        # rest into national_id_encrypted (see app.core.crypto); the plaintext
-        # column is left NULL. A blank value normalises to no ciphertext, so the
-        # column holds a real encrypted id or nothing. Orphan national_id is
-        # write-only (not in any read schema), so there is no decrypt-on-read.
-        # country_specific is the free per-country bag, persisted as-is.
+        # rest into national_id_encrypted (see app.core.crypto); the original
+        # plaintext column was dropped in 0020. A blank value normalises to no
+        # ciphertext, so the column holds a real encrypted id or nothing. Orphan
+        # national_id is write-only (not in any read schema), so there is no
+        # decrypt-on-read. country_specific is the free per-country bag, persisted
+        # as-is.
         national_id_encrypted=encrypt_field(data.national_id) if data.national_id else None,
         country_specific=data.country_specific,
         father_name=data.father_name,
