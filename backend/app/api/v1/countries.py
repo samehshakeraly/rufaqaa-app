@@ -39,9 +39,15 @@ async def list_countries(
     rows = (
         (
             await db.execute(
+                # lower(name_en): case-insensitive alphabetical order. The DB is
+                # initialised with the C collation (docker-compose / CI initdb),
+                # under which a bare ORDER BY name_en is byte-ordered — all-caps
+                # codes (UAE/UK/USA) would sort before a mixed-case name like
+                # Uganda — so lower() first to get the locale-agnostic order the
+                # dropdown (and test_lists_active_countries) expects.
                 text(
                     "SELECT code_alpha2 AS code, name_ar, name_en "
-                    "FROM countries WHERE is_active = true ORDER BY name_en"
+                    "FROM countries WHERE is_active = true ORDER BY lower(name_en)"
                 )
             )
         )
