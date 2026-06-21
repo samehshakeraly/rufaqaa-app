@@ -1,0 +1,138 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa Platform — Production / Staging override
+# ═══════════════════════════════════════════════════════════════
+#
+# Layers on top of docker-compose.yml for a single-host demo / staging
+# deployment (a KVM VPS with Docker). It is NOT a standalone file — always
+# combine it with the base compose:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# What it changes vs. the dev stack:
+#   • Built images only — no source bind-mounts, no hot-reload.
+#   • Only Caddy publishes host ports (80/443). Postgres, Redis, MinIO,
+#     the backend and the frontend are reachable only on the internal
+#     network (`!reset []` drops the host port publishing the base file does).
+#   • Frontend is built (Vite inlines VITE_API_URL at build time) and served
+#     by nginx; the backend serves behind Caddy.
+#   • Adminer and MailHog are parked behind a `debug` profile so they do not
+#     start in production.
+#
+# Requires Docker Compose v2.24.4+ (the `!reset` merge tag). All secrets come
+# from `.env` (see .env.prod.example) — nothing sensitive is committed here.
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  # ─── PostgreSQL — internal only (no published host port) ────
+  postgres:
+    restart: unless-stopped
+    ports: !reset [] # reachable in-cluster as `postgres:5432`
+
+  # ─── Redis — internal only ─────────────────────────────────
+  redis:
+    restart: unless-stopped
+    ports: !reset [] # reachable in-cluster as `redis:6379`
+
+  # ─── MinIO — internal only; public media flows through Caddy ─
+  minio:
+    restart: unless-stopped
+    ports: !reset [] # reachable in-cluster as `minio:9000`
+
+  # ─── Backend API (FastAPI) — built image, behind Caddy ─────
+  backend:
+    image: rufaqaa-backend:demo
+    restart: unless-stopped
+    ports: !reset [] # only Caddy is published; backend is `backend:8000`
+    volumes: !reset [] # code is baked into the image — no source mounts
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-rufaqaa}:${POSTGRES_PASSWORD:-rufaqaa_dev_password}@postgres:5432/${POSTGRES_DB:-rufaqaa}
+      REDIS_URL: redis://redis:6379/0
+      # MinIO is reached internally; presigned URLs are rewritten to the
+      # browser-facing origin so _swap_presigned_host can hand the donor a
+      # link their browser can actually load (served by Caddy at /media).
+      S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: https://${DOMAIN:-demo.rufaqaa.app}/media
+      # Activates the boot-time secrets guard (assert_production_secrets):
+      # the app refuses to start if any production-critical secret is unset
+      # or still at its development default.
+      ENVIRONMENT: ${ENVIRONMENT:-staging}
+      DEBUG: "false"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  # ─── Celery worker — built image, no host ports ────────────
+  worker:
+    image: rufaqaa-backend:demo
+    restart: unless-stopped
+    volumes: !reset []
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-rufaqaa}:${POSTGRES_PASSWORD:-rufaqaa_dev_password}@postgres:5432/${POSTGRES_DB:-rufaqaa}
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: https://${DOMAIN:-demo.rufaqaa.app}/media
+      ENVIRONMENT: ${ENVIRONMENT:-staging}
+      DEBUG: "false"
+
+  # ─── Celery beat (scheduler) ───────────────────────────────
+  beat:
+    image: rufaqaa-backend:demo
+    restart: unless-stopped
+    volumes: !reset []
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      ENVIRONMENT: ${ENVIRONMENT:-staging}
+      DEBUG: "false"
+
+  # ─── Frontend (Vite → nginx) — built image, behind Caddy ───
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Vite inlines env at BUILD time, so the public API base must be
+        # baked into the bundle here (not supplied at runtime).
+        VITE_API_URL: "https://${DOMAIN:-demo.rufaqaa.app}/api/v1"
+    image: rufaqaa-frontend:demo
+    restart: unless-stopped
+    command: !reset null # use the nginx image CMD, not the dev `npm run dev`
+    environment: !reset null # VITE_API_URL is a build arg now, not runtime
+    ports: !reset [] # served to the public only via Caddy (`frontend:80`)
+    volumes: !reset [] # static bundle is baked into the image
+
+  # ─── Caddy reverse proxy — the only publicly exposed service ─
+  caddy:
+    image: caddy:2-alpine
+    container_name: rufaqaa-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      DOMAIN: ${DOMAIN:-demo.rufaqaa.app}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data # persisted Let's Encrypt certs/keys
+      - caddy-config:/config
+    depends_on:
+      - backend
+      - frontend
+      - minio
+    networks:
+      - rufaqaa-net
+
+  # ─── Dev-only conveniences: parked behind a profile in prod ─
+  # `profiles` is appended by Compose merge, so these only start when you
+  # explicitly run `--profile debug`; a plain `up` leaves them off.
+  adminer:
+    profiles: ["debug"]
+  mailhog:
+    profiles: ["debug"]
+
+# Named volumes are merged with the base file's set.
+volumes:
+  caddy-data:
+    name: rufaqaa-caddy-data
+  caddy-config:
+    name: rufaqaa-caddy-config

@@ -1,0 +1,54 @@
+# ═══════════════════════════════════════════════════════════════
+# Rufaqaa Platform — Caddy reverse proxy (demo / staging)
+# ═══════════════════════════════════════════════════════════════
+#
+# The single public entrypoint for the stack. Caddy terminates TLS
+# (automatic HTTPS via Let's Encrypt) and routes:
+#
+#   /api/*    → backend  (FastAPI)
+#   /media/*  → minio    (S3 presigned object reads)
+#   /*        → frontend (built SPA served by nginx)
+#
+# {$DOMAIN} is substituted from the container environment (set by
+# docker-compose.prod.yml from the .env DOMAIN value); it falls back to
+# demo.rufaqaa.app when unset.
+# ═══════════════════════════════════════════════════════════════
+
+{$DOMAIN:demo.rufaqaa.app} {
+	encode zstd gzip
+
+	# ── Presigned MinIO media ─────────────────────────────────
+	# The backend rewrites presigned URLs from the internal origin
+	# (http://minio:9000) to https://{$DOMAIN}/media via S3_PUBLIC_ENDPOINT
+	# (see app.services.storage._swap_presigned_host). `handle_path` strips
+	# the /media prefix so MinIO receives the exact /<bucket>/<key> path it
+	# signed over, and we force the upstream Host back to the value boto3
+	# signed against (minio:9000) so the path-style SigV4 signature stays
+	# valid through the proxy. The X-Amz-* query string is forwarded as-is.
+	handle_path /media/* {
+		reverse_proxy minio:9000 {
+			header_up Host minio:9000
+		}
+	}
+
+	# ── API ───────────────────────────────────────────────────
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	# ── SPA (everything else) ─────────────────────────────────
+	# nginx inside the frontend image already does the SPA history
+	# fallback (try_files … /index.html), so a hard refresh on a
+	# client-side route keeps working.
+	handle {
+		reverse_proxy frontend:80
+	}
+
+	# Sensible baseline security headers for the app shell.
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}
