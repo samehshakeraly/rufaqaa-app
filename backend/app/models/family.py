@@ -64,11 +64,10 @@ class Guardian(Base):
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     # ``national_id`` is encrypted at rest into ``national_id_encrypted`` (BYTEA
     # Fernet token) by the write path (see app.core.crypto / api.v1.families);
-    # the plaintext column is left NULL and kept only for the later drop. Unlike
-    # the orphan, the guardian national_id IS exposed via ``GuardianRead``, so
-    # those staff endpoints decrypt it on read — the ciphertext is never
-    # serialised.
-    national_id: Mapped[str | None] = mapped_column(String(50))
+    # the original plaintext column was dropped in 0020 once encryption fully
+    # replaced it. Unlike the orphan, the guardian national_id IS exposed via
+    # ``GuardianRead``, so those staff endpoints decrypt it on read — the
+    # ciphertext is never serialised.
     national_id_encrypted: Mapped[bytes | None] = mapped_column(LargeBinary)
     date_of_birth: Mapped[date | None] = mapped_column(Date)
     gender: Mapped[str | None] = mapped_column(String(1))
