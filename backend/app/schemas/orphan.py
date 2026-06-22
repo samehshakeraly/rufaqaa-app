@@ -149,6 +149,35 @@ class OrphanCreateFields(OrphanBase):
         return v
 
 
+class OrphanHomeAddress(BaseModel):
+    """Optional family-residence address captured on the STAFF orphan-create
+    path when the child lives with family (``lives_with`` ∈ {mother, relative}).
+
+    Every field is optional and whitespace-trimmed (model config). When at least
+    one is non-empty AND the create payload pins no ``family_id``, the staff
+    create service materialises a :class:`~app.models.family.Family` from this
+    address in the same transaction and links the orphan to it (see
+    ``services.orphans.create_orphan_record``). An all-empty address creates no
+    family; a supplied ``family_id`` makes this block a no-op. These columns
+    already exist on ``families`` (migration 0021) — no new migration.
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    city: str | None = Field(default=None, max_length=100)
+    village: str | None = Field(default=None, max_length=100)
+    district: str | None = Field(default=None, max_length=100)
+    street: str | None = Field(default=None, max_length=255)
+    house_number: str | None = Field(default=None, max_length=20)
+    floor: str | None = Field(default=None, max_length=20)
+
+    def has_content(self) -> bool:
+        """True when at least one field carries a non-empty (post-trim) value."""
+        return any(
+            (self.city, self.village, self.district, self.street, self.house_number, self.floor)
+        )
+
+
 class OrphanCreate(OrphanCreateFields):
     partner_organization_id: UUID
     family_id: UUID | None = None
@@ -156,6 +185,12 @@ class OrphanCreate(OrphanCreateFields):
     # self-service path never sets it. Coexists with family_id by design
     # (family = background, dar = current sponsor). Org-validated server-side.
     orphanage_id: UUID | None = None
+    # Optional family-residence address — STAFF-ONLY (the guardian self-service
+    # schema GuardianOrphanCreate has no such field). When it carries ≥1
+    # non-empty field and no family_id is pinned, the create service builds a
+    # Family from it and links the orphan (see services.orphans). Ignored when
+    # family_id is already set; absent entirely creates no family.
+    home_address: OrphanHomeAddress | None = None
 
 
 class OrphanUpdate(BaseModel):

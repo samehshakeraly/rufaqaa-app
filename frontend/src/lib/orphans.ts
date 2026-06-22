@@ -102,6 +102,18 @@ export interface OrphanCreateInput {
   /** Optional richer-intake fields (migration 0021). */
   mother_name?: string;
   lives_with?: LivesWith;
+  /** Optional family-residence address — STAFF path only. When it carries ≥1
+   * non-empty field and no family_id is set, the API materialises a Family from
+   * it (in the orphan's transaction) and links the orphan. Mirrors
+   * schema.gen.ts OrphanHomeAddress. */
+  home_address?: {
+    city?: string;
+    village?: string;
+    district?: string;
+    street?: string;
+    house_number?: string;
+    floor?: string;
+  };
   // Extended profile fields (all optional). Mirror schema.gen.ts
   // OrphanCreate / GuardianOrphanCreate.
   education_stage?: EducationStage;

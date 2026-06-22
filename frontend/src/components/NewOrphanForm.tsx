@@ -35,6 +35,11 @@ export const EDUCATION_STAGES = [
 export const ACADEMIC_LEVELS = ["weak", "good", "excellent"] as const;
 // Who the child currently lives with (optional). Mirrors the LivesWith enum.
 export const LIVES_WITH_OPTIONS = ["mother", "relative", "orphanage", "other"] as const;
+// The lives_with values that mean the child resides with family. The staff form
+// collects a home (family-residence) address only for these — the server then
+// materialises a Family from it (see services.orphans). Kept as a Set so the
+// render gate and the reset effect share one source of truth.
+const FAMILY_RESIDENCE_LIVES_WITH: ReadonlySet<string> = new Set(["mother", "relative"]);
 export const HEALTH_STATUSES = [
   "good",
   "chronic_condition",
@@ -224,6 +229,19 @@ function makeSchema(
       .enum(CHILD_LABOR_STATUSES)
       .optional()
       .or(z.literal("").transform(() => undefined)),
+    // Home address (family residence) — STAFF path only, rendered only when
+    // lives_with ∈ {mother, relative}. Optional nested object, every field
+    // trimmed; gated again at submit so it's sent only when ≥1 field is filled.
+    home_address: z
+      .object({
+        city: optionalText,
+        village: optionalText,
+        district: optionalText,
+        street: optionalText,
+        house_number: optionalText,
+        floor: optionalText,
+      })
+      .optional(),
   });
 }
 
@@ -404,6 +422,30 @@ export function NewOrphanForm({
     prevCountry.current = countryCode;
   }, [countryCode, resetField]);
 
+  // Home address (family residence) — shown only on the STAFF path (the partner
+  // picker context) AND when the child lives with family. The address feeds a
+  // server-side Family; for any other lives_with it must never be sent.
+  const livesWith = watch("lives_with");
+  const showHomeAddress =
+    showPartnerSelect && FAMILY_RESIDENCE_LIVES_WITH.has(livesWith ?? "");
+
+  // When lives_with leaves {mother, relative}, hide AND clear the home-address
+  // fields (react-hook-form keeps unmounted values by default) so a residence
+  // address entered earlier can never linger in form state or slip into submit.
+  const prevLivesWith = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const inFamilyResidence = FAMILY_RESIDENCE_LIVES_WITH.has(livesWith ?? "");
+    if (prevLivesWith.current !== livesWith && !inFamilyResidence) {
+      resetField("home_address.city");
+      resetField("home_address.village");
+      resetField("home_address.district");
+      resetField("home_address.street");
+      resetField("home_address.house_number");
+      resetField("home_address.floor");
+    }
+    prevLivesWith.current = livesWith;
+  }, [livesWith, resetField]);
+
   // Guardians get a lighter form: the three sensitive fields below are hidden
   // and never registered, so they can't be submitted.
   const isStaff = audience === "staff";
@@ -478,6 +520,19 @@ export function NewOrphanForm({
       if (v.malnutrition_status) countrySpecific.malnutrition_status = v.malnutrition_status;
       if (v.child_labor) countrySpecific.child_labor = v.child_labor;
     }
+    // Home address — collect the non-empty fields, but ONLY when the section is
+    // live (staff path + family-resident lives_with). Sent only when at least
+    // one field is filled, so an empty address never spins up a blank Family.
+    const homeAddress: NonNullable<OrphanCreateInput["home_address"]> = {};
+    if (showHomeAddress && v.home_address) {
+      const ha = v.home_address;
+      if (ha.city) homeAddress.city = ha.city;
+      if (ha.village) homeAddress.village = ha.village;
+      if (ha.district) homeAddress.district = ha.district;
+      if (ha.street) homeAddress.street = ha.street;
+      if (ha.house_number) homeAddress.house_number = ha.house_number;
+      if (ha.floor) homeAddress.floor = ha.floor;
+    }
     const payload: OrphanCreateInput = {
       first_name: v.first_name,
       family_name: v.family_name,
@@ -502,6 +557,8 @@ export function NewOrphanForm({
       ...(Object.keys(countrySpecific).length > 0
         ? { country_specific: countrySpecific }
         : {}),
+      // Family-residence address — staff path only; sent only when populated.
+      ...(Object.keys(homeAddress).length > 0 ? { home_address: homeAddress } : {}),
       // Extended profile — only sent when populated; numbers as numbers,
       // tags only when non-empty.
       ...(v.education_stage ? { education_stage: v.education_stage } : {}),
@@ -709,6 +766,33 @@ export function NewOrphanForm({
           </Field>
         )}
       </div>
+
+      {/* ── Home address (family residence) ────────────────── */}
+      {/* STAFF path only, and only when the child lives with family
+          (lives_with ∈ {mother, relative}). All fields optional — the server
+          materialises a Family from them only when ≥1 is filled. */}
+      {showHomeAddress && (
+        <Section title={t("orphans.homeAddress.section")}>
+          <Field label={t("orphans.homeAddress.city")}>
+            <input className="input" {...register("home_address.city")} />
+          </Field>
+          <Field label={t("orphans.homeAddress.village")}>
+            <input className="input" {...register("home_address.village")} />
+          </Field>
+          <Field label={t("orphans.homeAddress.district")}>
+            <input className="input" {...register("home_address.district")} />
+          </Field>
+          <Field label={t("orphans.homeAddress.street")}>
+            <input className="input" {...register("home_address.street")} />
+          </Field>
+          <Field label={t("orphans.homeAddress.house_number")}>
+            <input className="input" {...register("home_address.house_number")} />
+          </Field>
+          <Field label={t("orphans.homeAddress.floor")}>
+            <input className="input" {...register("home_address.floor")} />
+          </Field>
+        </Section>
+      )}
 
       {/* ── Country-specific (conflict / WASH) ─────────────── */}
       {/* Rendered only for flags THIS form can persist. requires_gps and
