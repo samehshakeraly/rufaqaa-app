@@ -58,6 +58,12 @@ class Orphan(Base):
     father_death_date: Mapped[date | None] = mapped_column(Date)
     father_death_certificate: Mapped[str | None] = mapped_column(String(100))
 
+    # Richer registration intake (see migration 0021). ``lives_with`` is
+    # enum-coded and validated only in the Pydantic layer (no DB CHECK), the
+    # same pattern as the education_stage/academic_level fields below.
+    mother_name: Mapped[str | None] = mapped_column(String(255))
+    lives_with: Mapped[str | None] = mapped_column(String(20))
+
     # Optional profile enrichment (see migration 0008). Enum-coded fields are
     # validated in the Pydantic layer, not the DB.
     education_stage: Mapped[str | None] = mapped_column(String(30))
@@ -99,6 +105,14 @@ class Orphan(Base):
     country_specific: Mapped[dict[str, Any]] = mapped_column(
         JSONB, nullable=False, server_default=text("'{}'::jsonb"), default=dict
     )
+    # Deterministic HMAC-SHA256 of the normalised national_id (see
+    # app.core.crypto.national_id_blind_index and migration 0021). Like
+    # national_id itself it is WRITE-ONLY — never serialised in any read schema —
+    # but, unlike the per-write-randomised ciphertext above, it is deterministic,
+    # so it backs the per-org partial-unique ``uq_orphans_national_id_per_org``:
+    # the same id cannot be registered twice in one organization even though
+    # every Fernet token differs. The derived HMAC key MUST stay stable.
+    national_id_blind_index: Mapped[bytes | None] = mapped_column(LargeBinary)
 
     assigned_to_channel_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("marketing_channels.id")

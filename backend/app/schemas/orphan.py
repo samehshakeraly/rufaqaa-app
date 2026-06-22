@@ -31,6 +31,9 @@ HealthStatus = Literal["good", "chronic_condition", "disability", "under_treatme
 HealthCoverage = Literal["none", "government", "private", "charity"]
 MotherStatus = Literal["alive", "deceased", "unknown"]
 PriorityLevel = Literal["normal", "high", "urgent"]
+# Who the child currently lives with. Enum-coded like the profile fields above;
+# validated here in Pydantic only (no DB CHECK — mirrors education_stage).
+LivesWith = Literal["mother", "relative", "orphanage", "other"]
 
 # Sort options for the staff orphan list (GET /orphans). ``balanced`` is
 # intentionally excluded here — it lands in a later batch.
@@ -53,6 +56,11 @@ class OrphanBase(BaseModel):
     nationality: str | None = Field(default=None, min_length=2, max_length=2)
     father_name: str | None = Field(default=None, max_length=255)
     father_death_date: date | None = None
+
+    # Richer registration intake (see migration 0021). Optional everywhere, so
+    # both create paths and OrphanRead carry them; national_id stays write-only.
+    mother_name: str | None = Field(default=None, max_length=255)
+    lives_with: LivesWith | None = None
 
     # Optional profile enrichment (see migration 0008). All optional so neither
     # the staff create path nor the light guardian intake is forced to set them.
@@ -127,6 +135,8 @@ class OrphanUpdate(BaseModel):
     nationality: str | None = Field(default=None, min_length=2, max_length=2)
     father_name: str | None = Field(default=None, max_length=255)
     father_death_date: date | None = None
+    mother_name: str | None = Field(default=None, max_length=255)
+    lives_with: LivesWith | None = None
 
     education_stage: EducationStage | None = None
     academic_level: str | None = Field(default=None, max_length=50)

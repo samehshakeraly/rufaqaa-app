@@ -30,6 +30,12 @@ class FamilyBase(BaseModel):
     city: str | None = Field(default=None, max_length=100)
     district: str | None = Field(default=None, max_length=100)
     address_details: str | None = None
+    # Finer-grained address (see migration 0021), following the same optional
+    # pattern as city/district/address_details above.
+    village: str | None = Field(default=None, max_length=100)
+    street: str | None = Field(default=None, max_length=255)
+    house_number: str | None = Field(default=None, max_length=20)
+    floor: str | None = Field(default=None, max_length=20)
     monthly_income: Decimal | None = Field(default=None, max_digits=10, decimal_places=2)
     income_currency: str | None = Field(default=None, min_length=3, max_length=3)
     housing_status: HousingStatus | None = None

@@ -32,21 +32,40 @@ from tests.integration.test_guardian_self import (
     _seed_partner_id,
 )
 
-# (nationality, national_id, expected_status) — the identical matrix runs through
-# both create paths so the staff and guardian routes stay in lock-step.
-_NATIONAL_ID_MATRIX: list[tuple[str, str | None, int]] = [
-    # EG (documented): required, exactly 14 digits.
-    ("EG", None, 422),  # required & missing → rejected
-    ("EG", "123", 422),  # present but wrong length (and wrong format)
-    ("EG", "12345678901234", 201),  # 14 digits → created
-    # PS (conflict): not required; length 9 when present, no regex.
-    ("PS", None, 201),  # missing & not required → created
-    ("PS", "123456789", 201),  # 9 digits → created
-    ("PS", "12345678", 422),  # 8 digits → length mismatch
-    # KW (valid but unconfigured): permissive baseline accepts anything.
-    ("KW", None, 201),
-    ("KW", "anything-goes", 201),
-]
+
+def _unique_eg_id() -> str:
+    """A fresh EG-valid national id (exactly 14 digits, ``^[0-9]{14}$``)."""
+    return f"{uuid.uuid4().int % 10**14:014d}"
+
+
+def _unique_ps_id() -> str:
+    """A fresh PS-valid national id (exactly 9 digits)."""
+    return f"{uuid.uuid4().int % 10**9:09d}"
+
+
+def _national_id_matrix() -> list[tuple[str, str | None, int]]:
+    """(nationality, national_id, expected_status), regenerated per call.
+
+    The identical matrix runs through both create paths so the staff and guardian
+    routes stay in lock-step. Each VALID id is freshly generated: orphan
+    national_id is now unique per org (the blind index, PR A), so a fixed id
+    reused across the two runs in the shared seed org would otherwise 409. The
+    invalid rows keep their fixed bad values (they never insert); the null rows
+    need no id at all.
+    """
+    return [
+        # EG (documented): required, exactly 14 digits.
+        ("EG", None, 422),  # required & missing → rejected
+        ("EG", "123", 422),  # present but wrong length (and wrong format)
+        ("EG", _unique_eg_id(), 201),  # 14 digits → created
+        # PS (conflict): not required; length 9 when present, no regex.
+        ("PS", None, 201),  # missing & not required → created
+        ("PS", _unique_ps_id(), 201),  # 9 digits → created
+        ("PS", "12345678", 422),  # 8 digits → length mismatch
+        # KW (valid but unconfigured): permissive baseline accepts anything.
+        ("KW", None, 201),
+        ("KW", f"kw-{uuid.uuid4().hex[:8]}", 201),
+    ]
 
 
 def _identity_payload(**overrides: Any) -> dict[str, Any]:
@@ -115,7 +134,7 @@ async def test_staff_create_national_id_matrix(
     matrix row (EG required/shaped, PS optional/length-checked, KW baseline)."""
     partner_id = await _seed_partner_id()
     failures: list[str] = []
-    for nationality, national_id, expected in _NATIONAL_ID_MATRIX:
+    for nationality, national_id, expected in _national_id_matrix():
         r = await _staff_create(
             api, auth_headers, partner_id, nationality=nationality, national_id=national_id
         )
@@ -134,13 +153,14 @@ async def test_staff_create_encrypts_national_id_and_persists_country_specific(
     round-trips the country_specific bag verbatim. national_id is write-only: it
     is never echoed back in the response."""
     partner_id = await _seed_partner_id()
+    nid = _unique_eg_id()
     bag = {"housing": "rented", "siblings": 3, "guardian_note": "ملاحظة", "nested": {"k": [1, 2]}}
     r = await _staff_create(
         api,
         auth_headers,
         partner_id,
         nationality="EG",
-        national_id="12345678901234",
+        national_id=nid,
         country_specific=bag,
     )
     assert r.status_code == 201, r.text
@@ -154,7 +174,7 @@ async def test_staff_create_encrypts_national_id_and_persists_country_specific(
         assert orphan.country_specific == bag  # JSONB bag round-trips intact
         assert orphan.national_id_encrypted is not None  # ciphertext persisted
         # The stored token decrypts back to exactly the submitted id.
-        assert decrypt_field(orphan.national_id_encrypted) == "12345678901234"
+        assert decrypt_field(orphan.national_id_encrypted) == nid
 
 
 async def test_staff_create_country_specific_defaults_to_empty_object(
@@ -185,7 +205,7 @@ async def test_guardian_create_national_id_matrix(
     await _link_family_to_partner(family_id, partner_id)
 
     failures: list[str] = []
-    for nationality, national_id, expected in _NATIONAL_ID_MATRIX:
+    for nationality, national_id, expected in _national_id_matrix():
         r = await _guardian_create(api, headers, nationality=nationality, national_id=national_id)
         if r.status_code != expected:
             failures.append(
@@ -205,9 +225,10 @@ async def test_guardian_create_encrypts_national_id_and_persists_country_specifi
     family_id, _, headers = await _create_family_and_guardian(api, auth_headers)
     await _link_family_to_partner(family_id, partner_id)
 
+    nid = _unique_ps_id()
     bag = {"shelter": "tent", "displaced": True, "members": 5}
     r = await _guardian_create(
-        api, headers, nationality="PS", national_id="123456789", country_specific=bag
+        api, headers, nationality="PS", national_id=nid, country_specific=bag
     )
     assert r.status_code == 201, r.text
     async with make_session() as db:
@@ -215,4 +236,4 @@ async def test_guardian_create_encrypts_national_id_and_persists_country_specifi
     assert orphan is not None
     assert orphan.country_specific == bag
     assert orphan.national_id_encrypted is not None  # ciphertext persisted
-    assert decrypt_field(orphan.national_id_encrypted) == "123456789"
+    assert decrypt_field(orphan.national_id_encrypted) == nid
