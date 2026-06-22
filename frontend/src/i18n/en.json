@@ -1338,6 +1338,14 @@
     "firstName": "First name",
     "familyName": "Family name",
     "fatherName": "Father's name",
+    "motherName": "Mother's name",
+    "livesWith": "Lives with",
+    "livesWithOptions": {
+      "mother": "Mother",
+      "relative": "Relative",
+      "orphanage": "Orphanage",
+      "other": "Other"
+    },
     "dateOfBirth": "Date of birth",
     "gender": "Gender",
     "age": "Age",
@@ -1471,6 +1479,7 @@
       "educationSection": "Education",
       "educationStage": "Education stage",
       "educationStageOptions": {
+        "pre_kindergarten": "Pre-kindergarten",
         "not_enrolled": "Not enrolled",
         "kindergarten": "Kindergarten",
         "primary": "Primary",
@@ -1481,6 +1490,11 @@
         "graduated": "Graduated"
       },
       "academicLevel": "Academic level",
+      "academicLevelOptions": {
+        "weak": "Weak",
+        "good": "Good",
+        "excellent": "Excellent"
+      },
       "schoolName": "School name",
       "quranSection": "Qur'an",
       "quranJuzMemorized": "Juz' memorized",

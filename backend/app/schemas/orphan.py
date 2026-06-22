@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 Gender = Literal["M", "F"]
 CaseStatus = Literal[
@@ -17,16 +17,22 @@ CaseStatus = Literal[
     "deceased",
     "archived",
 ]
+# Coded education stages accepted on the create/update paths. Deliberately
+# narrowed to these five — not_enrolled/university/vocational/graduated were
+# dropped from intake. ``OrphanRead`` keeps ``education_stage`` permissive
+# (plain ``str``) so legacy rows carrying a now-removed value still serialise
+# without a 422.
 EducationStage = Literal[
-    "not_enrolled",
+    "pre_kindergarten",
     "kindergarten",
     "primary",
     "preparatory",
     "secondary",
-    "university",
-    "vocational",
-    "graduated",
 ]
+# Academic performance band, coded on create/update (replaces the old free
+# text). ``OrphanRead`` keeps ``academic_level`` permissive (plain ``str``) so
+# legacy free-text rows still serialise.
+AcademicLevel = Literal["weak", "good", "excellent"]
 HealthStatus = Literal["good", "chronic_condition", "disability", "under_treatment"]
 HealthCoverage = Literal["none", "government", "private", "charity"]
 MotherStatus = Literal["alive", "deceased", "unknown"]
@@ -64,7 +70,12 @@ class OrphanBase(BaseModel):
 
     # Optional profile enrichment (see migration 0008). All optional so neither
     # the staff create path nor the light guardian intake is forced to set them.
-    education_stage: EducationStage | None = None
+    # Permissive on the base (and therefore on ``OrphanRead``): the create/
+    # update paths narrow ``education_stage`` and ``academic_level`` to their
+    # coded sets, but a row written before that narrowing may still hold a
+    # now-removed stage ('university') or free-text level. Keeping the base
+    # ``str`` lets those legacy rows serialise without a 422.
+    education_stage: str | None = Field(default=None, max_length=30)
     academic_level: str | None = Field(default=None, max_length=50)
     school_name: str | None = Field(default=None, max_length=255)
     quran_juz_memorized: int | None = Field(default=None, ge=0, le=30)
@@ -99,6 +110,12 @@ class OrphanCreateFields(OrphanBase):
 
     father_name: str = Field(min_length=1, max_length=255)
 
+    # Coded on the create paths (both staff and guardian-self): narrow the
+    # permissive ``OrphanBase`` strings to their fixed vocabularies. Out-of-set
+    # values are rejected with a 422. ``OrphanRead`` keeps the wider ``str``.
+    education_stage: EducationStage | None = None
+    academic_level: AcademicLevel | None = None
+
     # Country-aware intake (see migration 0014). Shared by both create paths —
     # the staff ``POST /orphans`` and the guardian self-service create — so each
     # accepts the same two fields. ``national_id`` is NOT validated here: the
@@ -111,6 +128,25 @@ class OrphanCreateFields(OrphanBase):
     # persisted verbatim.
     national_id: str | None = Field(default=None, max_length=50)
     country_specific: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("national_id")
+    @classmethod
+    def _national_id_latin_only(cls, v: str | None) -> str | None:
+        """Reject non-Latin characters in ``national_id`` — most importantly
+        Arabic-Indic digits (٠-٩), which look numeric but break the encrypted
+        store, the blind index, and every per-country regex.
+
+        Runs *after* ``str_strip_whitespace`` has trimmed the value (model
+        config), so the per-country length/regex checks downstream (in
+        ``services.orphans._validate_national_id``) only ever see Latin input.
+        An empty/None value is "absent" and left untouched.
+        """
+        if v and not v.isascii():
+            raise ValueError(
+                "national_id must use Latin (ASCII) characters; "
+                "Arabic-Indic digits (٠-٩) are not allowed"
+            )
+        return v
 
 
 class OrphanCreate(OrphanCreateFields):
@@ -139,7 +175,7 @@ class OrphanUpdate(BaseModel):
     lives_with: LivesWith | None = None
 
     education_stage: EducationStage | None = None
-    academic_level: str | None = Field(default=None, max_length=50)
+    academic_level: AcademicLevel | None = None
     school_name: str | None = Field(default=None, max_length=255)
     quran_juz_memorized: int | None = Field(default=None, ge=0, le=30)
     quran_note: str | None = None

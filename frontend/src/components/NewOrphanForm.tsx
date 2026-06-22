@@ -26,15 +26,15 @@ const ORPHAN_CODE_PATTERN = /\bOR[FP]-[A-Z0-9]{3,}\b/;
 // Enum option lists — mirror schema.gen.ts (OrphanCreate / GuardianOrphanCreate)
 // exactly. Used both for the zod validators and to render the <select> options.
 export const EDUCATION_STAGES = [
-  "not_enrolled",
+  "pre_kindergarten",
   "kindergarten",
   "primary",
   "preparatory",
   "secondary",
-  "university",
-  "vocational",
-  "graduated",
 ] as const;
+export const ACADEMIC_LEVELS = ["weak", "good", "excellent"] as const;
+// Who the child currently lives with (optional). Mirrors the LivesWith enum.
+export const LIVES_WITH_OPTIONS = ["mother", "relative", "orphanage", "other"] as const;
 export const HEALTH_STATUSES = [
   "good",
   "chronic_condition",
@@ -73,6 +73,16 @@ function nationalIdMatchesPattern(regex: string, value: string): boolean {
   }
 }
 
+// Convert Arabic-Indic (٠-٩, U+0660–0669) and Extended Arabic-Indic / Persian
+// (۰-۹, U+06F0–06F9) digits to Latin (0-9). Applied to the national_id input on
+// change so submissions are always Latin — the backend rejects any non-Latin
+// national_id, and every per-country regex is written against Latin digits.
+function toLatinDigits(value: string): string {
+  return value
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+}
+
 // Optional free-text: empty string is left as-is here and dropped at submit
 // time (truthiness gate), so we never send "" to the API.
 const optionalText = z.string().trim().optional();
@@ -97,6 +107,13 @@ function makeSchema(
     date_of_birth: z.string().min(4),
     gender: z.enum(["M", "F"]),
     father_name: z.string().trim().min(1),
+    // mother_name is OPTIONAL on both paths (persists via OrphanCreate).
+    mother_name: z.string().trim().max(255).optional(),
+    // Who the child currently lives with (optional, coded).
+    lives_with: z
+      .enum(LIVES_WITH_OPTIONS)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
     // Country is REQUIRED — it drives the dynamic national_id + country_specific
     // sections. The field name stays `nationality` (the persisted column); the
     // value is the ISO alpha-2 code chosen from the country <select>.
@@ -165,7 +182,10 @@ function makeSchema(
       .enum(EDUCATION_STAGES)
       .optional()
       .or(z.literal("").transform(() => undefined)),
-    academic_level: optionalText,
+    academic_level: z
+      .enum(ACADEMIC_LEVELS)
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
     school_name: optionalText,
     // Qur'an
     quran_juz_memorized: z.preprocess(
@@ -263,13 +283,6 @@ export function NewOrphanForm({
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const [duplicateCode, setDuplicateCode] = useState<string | null>(null);
 
-  const partnersQuery = useQuery({
-    queryKey: ["partners"],
-    queryFn: () => listPartners(),
-    enabled: showPartnerSelect && !partnersProp,
-  });
-  const partners = partnersProp ?? partnersQuery.data?.items ?? [];
-
   // Partner-scoped staff (partner_manager / partner_staff) only ever register
   // orphans under their own جهة, so the picker is pointless for them — it is
   // replaced by a locked read-only field pre-filled with their جهة.
@@ -289,6 +302,25 @@ export function NewOrphanForm({
   // onChange, cleared on a successful create) so it can drive the queries and
   // the schema before react-hook-form is initialised below.
   const [countryCode, setCountryCode] = useState("");
+
+  // The partner picker is country-filtered: pass the selected nationality (ISO
+  // alpha-2, upper-cased) so only that country's جهات are listed, refetching on
+  // change. Partner-scoped staff are exempt — they always get just their own
+  // جهة, and filtering it by a mismatched country would hide it.
+  const partnerCountryFilter =
+    showPartnerSelect && !isPartnerScoped && countryCode.length === 2
+      ? countryCode.toUpperCase()
+      : undefined;
+  const partnersQuery = useQuery({
+    queryKey: ["partners", partnerCountryFilter ?? null],
+    queryFn: () => listPartners(false, partnerCountryFilter),
+    enabled: showPartnerSelect && !partnersProp,
+  });
+  const partners = useMemo(
+    () => partnersProp ?? partnersQuery.data?.items ?? [],
+    [partnersProp, partnersQuery.data],
+  );
+
   const countriesQuery = useQuery({
     queryKey: ["countries"],
     queryFn: () => listCountries(),
@@ -319,6 +351,7 @@ export function NewOrphanForm({
     reset,
     resetField,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -326,12 +359,33 @@ export function NewOrphanForm({
   });
   // register the country selector once so we can layer our own onChange on top.
   const nationalityField = register("nationality");
+  // Same for national_id — we layer an Arabic-Indic → Latin digit conversion.
+  const nationalIdField = register("national_id");
 
   useEffect(() => {
     if (lockedPartnerId) {
       setValue("partner_organization_id", lockedPartnerId, { shouldValidate: true });
     }
   }, [lockedPartnerId, setValue]);
+
+  // When the country filter narrows the partner list, drop a selected partner
+  // that is no longer in it — a جهة from a previous country can't be submitted.
+  // Skipped for the locked partner-scoped field and the caller-supplied list.
+  const selectedPartnerId = watch("partner_organization_id");
+  useEffect(() => {
+    if (lockedPartnerId || partnersProp || partnersQuery.isLoading) return;
+    if (!selectedPartnerId) return;
+    if (!partners.some((p) => p.id === selectedPartnerId)) {
+      setValue("partner_organization_id", "", { shouldValidate: false });
+    }
+  }, [
+    partners,
+    selectedPartnerId,
+    lockedPartnerId,
+    partnersProp,
+    partnersQuery.isLoading,
+    setValue,
+  ]);
 
   // When the country changes, clear the now-stale dependent fields (national_id
   // + every country_specific input, including any kept by an unmounted section)
@@ -430,6 +484,9 @@ export function NewOrphanForm({
       date_of_birth: v.date_of_birth,
       gender: v.gender,
       father_name: v.father_name,
+      // Optional richer-intake fields — only sent when populated, both audiences.
+      ...(v.mother_name ? { mother_name: v.mother_name } : {}),
+      ...(v.lives_with ? { lives_with: v.lives_with } : {}),
       // Non-sensitive: always sent (defaults to "unknown"), both audiences.
       mother_status: v.mother_status,
       ...(showPartnerSelect && v.partner_organization_id
@@ -525,7 +582,14 @@ export function NewOrphanForm({
             <input
               className="input"
               maxLength={nationalIdRule?.length ?? undefined}
-              {...register("national_id")}
+              {...nationalIdField}
+              onChange={(e) => {
+                // Normalise Arabic-Indic digits to Latin as the user types so
+                // the submitted value is always Latin (backend rejects others).
+                const latin = toLatinDigits(e.target.value);
+                if (latin !== e.target.value) e.target.value = latin;
+                void nationalIdField.onChange(e);
+              }}
             />
             <p className="mt-1 text-xs text-gray-500">
               {nationalIdRule?.required
@@ -534,11 +598,18 @@ export function NewOrphanForm({
             </p>
           </Field>
         )}
+        {/* Name fields, in domain order: first → father → family → mother. */}
         <Field label={t("orphans.firstName")} error={errors.first_name?.message}>
           <input className="input" {...register("first_name")} />
         </Field>
+        <Field label={t("orphans.fatherName")} error={errors.father_name?.message}>
+          <input className="input" {...register("father_name")} />
+        </Field>
         <Field label={t("orphans.familyName")} error={errors.family_name?.message}>
           <input className="input" {...register("family_name")} />
+        </Field>
+        <Field label={t("orphans.motherName")} error={errors.mother_name?.message}>
+          <input className="input" maxLength={255} {...register("mother_name")} />
         </Field>
         <Field label={t("orphans.dateOfBirth")} error={errors.date_of_birth?.message}>
           <input type="date" className="input" {...register("date_of_birth")} />
@@ -549,8 +620,15 @@ export function NewOrphanForm({
             <option value="F">{t("orphans.female")}</option>
           </select>
         </Field>
-        <Field label={t("orphans.fatherName")} error={errors.father_name?.message}>
-          <input className="input" {...register("father_name")} />
+        <Field label={t("orphans.livesWith")}>
+          <select className="input" {...register("lives_with")}>
+            <option value="">{t("orphans.profile.notSpecified")}</option>
+            {LIVES_WITH_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {t(`orphans.livesWithOptions.${s}`)}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label={t("orphans.profile.motherStatus")}>
           <select className="input" {...register("mother_status")}>
@@ -711,7 +789,14 @@ export function NewOrphanForm({
           </select>
         </Field>
         <Field label={t("orphans.profile.academicLevel")}>
-          <input className="input" {...register("academic_level")} />
+          <select className="input" {...register("academic_level")}>
+            <option value="">{t("orphans.profile.notSpecified")}</option>
+            {ACADEMIC_LEVELS.map((s) => (
+              <option key={s} value={s}>
+                {t(`orphans.profile.academicLevelOptions.${s}`)}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label={t("orphans.profile.schoolName")} className="sm:col-span-2">
           <input className="input" {...register("school_name")} />
@@ -724,14 +809,14 @@ export function NewOrphanForm({
           label={t("orphans.profile.quranJuzMemorized")}
           error={errors.quran_juz_memorized?.message}
         >
-          <input
-            type="number"
-            min={0}
-            max={30}
-            step={1}
-            className="input"
-            {...register("quran_juz_memorized")}
-          />
+          <select className="input" {...register("quran_juz_memorized")}>
+            <option value="">{t("orphans.profile.notSpecified")}</option>
+            {Array.from({ length: 31 }, (_, i) => i).map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label={t("orphans.profile.quranNote")}>
           <input className="input" {...register("quran_note")} />

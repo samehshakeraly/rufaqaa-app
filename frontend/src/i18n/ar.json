@@ -1338,6 +1338,14 @@
     "firstName": "الاسم الأول",
     "familyName": "اسم العائلة",
     "fatherName": "اسم الأب",
+    "motherName": "اسم الأم",
+    "livesWith": "يعيش مع",
+    "livesWithOptions": {
+      "mother": "الأم",
+      "relative": "قريب",
+      "orphanage": "دار أيتام",
+      "other": "أخرى"
+    },
     "dateOfBirth": "تاريخ الميلاد",
     "gender": "الجنس",
     "age": "العمر",
@@ -1471,8 +1479,9 @@
       "educationSection": "التعليم",
       "educationStage": "المرحلة الدراسية",
       "educationStageOptions": {
+        "pre_kindergarten": "قبل الروضة",
         "not_enrolled": "غير ملتحق",
-        "kindergarten": "روضة",
+        "kindergarten": "الروضة",
         "primary": "ابتدائي",
         "preparatory": "إعدادي",
         "secondary": "ثانوي",
@@ -1481,6 +1490,11 @@
         "graduated": "متخرّج"
       },
       "academicLevel": "المستوى الدراسي",
+      "academicLevelOptions": {
+        "weak": "ضعيف",
+        "good": "جيد",
+        "excellent": "ممتاز"
+      },
       "schoolName": "اسم المدرسة",
       "quranSection": "القرآن الكريم",
       "quranJuzMemorized": "عدد الأجزاء المحفوظة",

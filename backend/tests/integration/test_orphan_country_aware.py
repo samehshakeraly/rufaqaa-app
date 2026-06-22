@@ -192,6 +192,29 @@ async def test_staff_create_country_specific_defaults_to_empty_object(
     assert orphan.national_id_encrypted is None  # omitted id → no ciphertext stored
 
 
+async def test_national_id_rejects_arabic_indic_digits(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Arabic-Indic digits (٠-٩) in national_id are rejected (422) — the schema
+    enforces Latin-only input before the country rule even runs. Tested at the
+    KW permissive baseline so the rejection is purely the Latin-digit rule, and
+    the equivalent Latin id at the same baseline is accepted."""
+    partner_id = await _seed_partner_id()
+
+    # ٠١٢٣٤٥٦٧٨٩ — Arabic-Indic digits that would be a valid id if Latinised.
+    arabic_indic = "٠١٢٣٤٥٦٧٨٩"
+    r = await _staff_create(
+        api, auth_headers, partner_id, nationality="KW", national_id=arabic_indic
+    )
+    assert r.status_code == 422, r.text
+
+    # The Latin-digit equivalent is fine at the permissive KW baseline.
+    r_ok = await _staff_create(
+        api, auth_headers, partner_id, nationality="KW", national_id="0123456789"
+    )
+    assert r_ok.status_code == 201, r_ok.text
+
+
 # ── Guardian self-service path (POST /guardian/me/orphans) ──────────────
 
 
