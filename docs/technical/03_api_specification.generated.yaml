@@ -3404,6 +3404,10 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        home_address:
+          anyOf:
+          - $ref: '#/components/schemas/OrphanHomeAddress'
+          - type: 'null'
         lives_with:
           anyOf:
           - enum:
@@ -3496,6 +3500,64 @@ components:
       - father_name
       - partner_organization_id
       title: OrphanCreate
+      type: object
+    OrphanHomeAddress:
+      description: 'Optional family-residence address captured on the STAFF orphan-create
+
+        path when the child lives with family (``lives_with`` ∈ {mother, relative}).
+
+
+        Every field is optional and whitespace-trimmed (model config). When at least
+
+        one is non-empty AND the create payload pins no ``family_id``, the staff
+
+        create service materialises a :class:`~app.models.family.Family` from this
+
+        address in the same transaction and links the orphan to it (see
+
+        ``services.orphans.create_orphan_record``). An all-empty address creates no
+
+        family; a supplied ``family_id`` makes this block a no-op. These columns
+
+        already exist on ``families`` (migration 0021) — no new migration.'
+      properties:
+        city:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: City
+        district:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: District
+        floor:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: Floor
+        house_number:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: House Number
+        street:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Street
+        village:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Village
+      title: OrphanHomeAddress
       type: object
     OrphanMeRead:
       description: 'The orphan''s own profile.

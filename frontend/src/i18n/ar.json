@@ -1367,6 +1367,15 @@
       "familyHome": "— بقي في بيت الأسرة —",
       "resident": "مقيم في دار"
     },
+    "homeAddress": {
+      "section": "عنوان السكن",
+      "city": "المدينة",
+      "village": "القرية",
+      "district": "الحي",
+      "street": "الشارع",
+      "house_number": "رقم المنزل",
+      "floor": "الطابق"
+    },
     "country": {
       "label": "الدولة",
       "placeholder": "اختر الدولة",

@@ -4672,6 +4672,7 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            home_address?: components["schemas"]["OrphanHomeAddress"] | null;
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -4709,6 +4710,33 @@ export interface components {
             school_name?: string | null;
             /** Tags */
             tags?: string[];
+        };
+        /**
+         * OrphanHomeAddress
+         * @description Optional family-residence address captured on the STAFF orphan-create
+         *     path when the child lives with family (``lives_with`` ∈ {mother, relative}).
+         *
+         *     Every field is optional and whitespace-trimmed (model config). When at least
+         *     one is non-empty AND the create payload pins no ``family_id``, the staff
+         *     create service materialises a :class:`~app.models.family.Family` from this
+         *     address in the same transaction and links the orphan to it (see
+         *     ``services.orphans.create_orphan_record``). An all-empty address creates no
+         *     family; a supplied ``family_id`` makes this block a no-op. These columns
+         *     already exist on ``families`` (migration 0021) — no new migration.
+         */
+        OrphanHomeAddress: {
+            /** City */
+            city?: string | null;
+            /** District */
+            district?: string | null;
+            /** Floor */
+            floor?: string | null;
+            /** House Number */
+            house_number?: string | null;
+            /** Street */
+            street?: string | null;
+            /** Village */
+            village?: string | null;
         };
         /**
          * OrphanMeRead

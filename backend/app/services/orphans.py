@@ -39,11 +39,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.crypto import encrypt_field, national_id_blind_index
+from app.models.family import Family
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.user import User
 from app.schemas.country import CountryRequirementsResponse
-from app.schemas.orphan import OrphanCreateFields
+from app.schemas.orphan import OrphanCreate, OrphanCreateFields
 from app.services.audit import record_audit
 from app.services.country_requirements import load_requirements_row
 from app.utils.codes import generate_code
@@ -258,6 +259,35 @@ async def create_orphan_record(
             status_code=status.HTTP_409_CONFLICT,
             detail=_duplicate_detail(existing.code),
         )
+
+    # Conditional family materialisation — STAFF path only. When the staff
+    # registration form captured a home address for a family-resident child
+    # (lives_with ∈ {mother, relative}) and the payload pins no family_id, spin
+    # up a Family from that address in THIS transaction and link the orphan to
+    # it. home_address rides only on OrphanCreate; the guardian self-service
+    # schema (GuardianOrphanCreate) has no such field, so the isinstance gate
+    # leaves the guardian path untouched. The family is flushed here only to
+    # obtain its id — it shares the orphan's transaction, so the IntegrityError
+    # rollback below (a race on the duplicate/national_id indexes) discards this
+    # Family too; nothing is committed separately.
+    home_address = data.home_address if isinstance(data, OrphanCreate) else None
+    if family_id is None and home_address is not None and home_address.has_content():
+        family = Family(
+            organization_id=user.organization_id,
+            partner_organization_id=partner_organization_id,
+            code=generate_code("FAM"),
+            country_code=data.nationality.upper() if data.nationality else None,
+            city=home_address.city or None,
+            village=home_address.village or None,
+            district=home_address.district or None,
+            street=home_address.street or None,
+            house_number=home_address.house_number or None,
+            floor=home_address.floor or None,
+            created_by=user.id,
+        )
+        db.add(family)
+        await db.flush()
+        family_id = family.id
 
     orphan = Orphan(
         organization_id=user.organization_id,

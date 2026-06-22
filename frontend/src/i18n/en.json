@@ -1367,6 +1367,15 @@
       "familyHome": "— Family home (no orphanage) —",
       "resident": "Orphanage resident"
     },
+    "homeAddress": {
+      "section": "Home address",
+      "city": "City",
+      "village": "Village",
+      "district": "District",
+      "street": "Street",
+      "house_number": "House number",
+      "floor": "Floor"
+    },
     "country": {
       "label": "Country",
       "placeholder": "Select a country",
