@@ -3675,6 +3675,56 @@ components:
       - is_mine
       title: OrphanMessageRead
       type: object
+    OrphanNameMatch:
+      description: 'One soft-duplicate hit for the advisory name-matches lookup
+
+        (``GET /orphans/name-matches``).
+
+
+        The staff create form calls that endpoint before registering an orphan that
+
+        carries no ``national_id`` and, if it returns any rows, warns that a child
+
+        with this name already exists so the user can confirm it is not a duplicate.
+
+        This shape carries ONLY the non-sensitive identity fields needed to eyeball
+
+        that — the ``code`` (so the existing record can be opened), the name parts
+
+        and the date of birth. It deliberately NEVER exposes ``national_id`` (or its
+
+        blind index): the advisory is name-only, and the id stays write-only as
+
+        everywhere else. ``father_name`` is nullable to match legacy rows (the model
+
+        column allows NULL even though the create schema requires it).'
+      properties:
+        code:
+          title: Code
+          type: string
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        family_name:
+          title: Family Name
+          type: string
+        father_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Father Name
+        first_name:
+          title: First Name
+          type: string
+      required:
+      - code
+      - first_name
+      - father_name
+      - family_name
+      - date_of_birth
+      title: OrphanNameMatch
+      type: object
     OrphanPhoto:
       properties:
         created_at:
@@ -10494,6 +10544,76 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Export Orphans Csv
+      tags:
+      - orphans
+  /api/v1/orphans/name-matches:
+    get:
+      description: 'Advisory soft-duplicate lookup behind the staff registration form.
+
+
+        Returns the non-deleted orphans in the caller''s organization whose
+
+        ``first_name`` + ``family_name`` match (case-insensitive). The form calls
+
+        this BEFORE submitting an orphan that carries no ``national_id``: when it
+
+        returns any rows, the form warns that a child with this name already exists
+
+        and lets the user confirm it is not a duplicate before proceeding. It is
+
+        purely advisory and read-only — it never blocks a create, and the hard
+
+        guards (the name/DOB/father composite index and the national_id blind index)
+
+        still return 409 on the create itself.
+
+
+        Gated to the orphan-creator roles (same as ``POST /orphans``) and org-scoped,
+
+        mirroring the duplicate pre-check in
+
+        :func:`~app.services.orphans._find_duplicate`. Registered before the
+
+        ``/{orphan_id}`` route so ``name-matches`` is never parsed as an id. Only the
+
+        non-sensitive identity fields are returned — never ``national_id``.'
+      operationId: list_orphan_name_matches_api_v1_orphans_name_matches_get
+      parameters:
+      - in: query
+        name: first_name
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 1
+          title: First Name
+          type: string
+      - in: query
+        name: family_name
+        required: true
+        schema:
+          maxLength: 100
+          minLength: 1
+          title: Family Name
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrphanNameMatch'
+                title: Response List Orphan Name Matches Api V1 Orphans Name Matches Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Name Matches
       tags:
       - orphans
   /api/v1/orphans/{orphan_id}:

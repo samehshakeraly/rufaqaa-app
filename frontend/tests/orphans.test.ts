@@ -2,7 +2,7 @@ import MockAdapter from "axios-mock-adapter";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { api } from "@/lib/api";
-import { listOrphans } from "@/lib/orphans";
+import { findOrphanNameMatches, listOrphans } from "@/lib/orphans";
 
 const EMPTY_PAGE = { items: [], total: 0, limit: 20, offset: 0 };
 
@@ -53,5 +53,36 @@ describe("listOrphans query serialization", () => {
 
     const params = mock.history.get[0]?.params as URLSearchParams | undefined;
     expect(params?.toString() ?? "").toBe("");
+  });
+});
+
+describe("findOrphanNameMatches", () => {
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(api);
+  });
+  afterEach(() => {
+    mock.restore();
+  });
+
+  it("GETs /orphans/name-matches with the first + family name and returns the rows", async () => {
+    const rows = [
+      {
+        code: "ORF-EXISTS",
+        first_name: "Sara",
+        father_name: "Hassan",
+        family_name: "Ali",
+        date_of_birth: "2014-01-02",
+      },
+    ];
+    mock.onGet("/orphans/name-matches").reply(200, rows);
+
+    const result = await findOrphanNameMatches("Sara", "Ali");
+
+    const params = mock.history.get[0]?.params as Record<string, string>;
+    expect(params.first_name).toBe("Sara");
+    expect(params.family_name).toBe("Ali");
+    expect(result).toEqual(rows);
   });
 });

@@ -400,3 +400,34 @@ async def _find_duplicate(
         )
     )
     return match
+
+
+# Cap on the advisory name-matches lookup — enough to flag a likely duplicate
+# without ever streaming the whole register back to the form.
+_NAME_MATCH_LIMIT = 10
+
+
+async def find_name_matches(
+    db: AsyncSession, organization_id: UUID, first_name: str, family_name: str
+) -> list[Orphan]:
+    """Non-deleted orphans in ``organization_id`` whose first + family name match
+    (case-insensitive) — the data behind the soft duplicate-name advisory shown
+    when a staff user registers an orphan WITHOUT a national_id.
+
+    Mirrors :func:`_find_duplicate`'s org-scope + ``LOWER()`` comparison, but on
+    the name pair alone (no date_of_birth / father_name), so it is a strictly
+    wider, purely advisory net than the hard ``idx_orphans_no_duplicate`` guard —
+    it never affects creation. Newest first, capped at ``_NAME_MATCH_LIMIT`` rows.
+    """
+    rows = await db.scalars(
+        select(Orphan)
+        .where(
+            Orphan.organization_id == organization_id,
+            func.lower(Orphan.first_name) == first_name.lower(),
+            func.lower(Orphan.family_name) == family_name.lower(),
+            Orphan.deleted_at.is_(None),
+        )
+        .order_by(Orphan.created_at.desc(), Orphan.id.asc())
+        .limit(_NAME_MATCH_LIMIT)
+    )
+    return list(rows.all())
