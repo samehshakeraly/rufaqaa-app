@@ -1543,12 +1543,24 @@ components:
             type: string
           - type: 'null'
           title: Father Death Date
+        floor:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: Floor
         governorate:
           anyOf:
           - maxLength: 100
             type: string
           - type: 'null'
           title: Governorate
+        house_number:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: House Number
         housing_status:
           anyOf:
           - enum:
@@ -1584,6 +1596,18 @@ components:
             type: string
           - type: 'null'
           title: Partner Organization Id
+        street:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Street
+        village:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Village
       title: FamilyCreate
       type: object
     FamilyRead:
@@ -1643,12 +1667,24 @@ components:
             type: string
           - type: 'null'
           title: Father Death Date
+        floor:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: Floor
         governorate:
           anyOf:
           - maxLength: 100
             type: string
           - type: 'null'
           title: Governorate
+        house_number:
+          anyOf:
+          - maxLength: 20
+            type: string
+          - type: 'null'
+          title: House Number
         housing_status:
           anyOf:
           - enum:
@@ -1691,10 +1727,22 @@ components:
             type: string
           - type: 'null'
           title: Partner Organization Id
+        street:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Street
         updated_at:
           format: date-time
           title: Updated At
           type: string
+        village:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Village
       required:
       - id
       - code
@@ -2037,12 +2085,28 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        lives_with:
+          anyOf:
+          - enum:
+            - mother
+            - relative
+            - orphanage
+            - other
+            type: string
+          - type: 'null'
+          title: Lives With
         middle_name:
           anyOf:
           - maxLength: 100
             type: string
           - type: 'null'
           title: Middle Name
+        mother_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Mother Name
         mother_status:
           default: unknown
           enum:
@@ -3340,12 +3404,28 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        lives_with:
+          anyOf:
+          - enum:
+            - mother
+            - relative
+            - orphanage
+            - other
+            type: string
+          - type: 'null'
+          title: Lives With
         middle_name:
           anyOf:
           - maxLength: 100
             type: string
           - type: 'null'
           title: Middle Name
+        mother_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Mother Name
         mother_status:
           default: unknown
           enum:
@@ -3725,12 +3805,28 @@ components:
         is_sponsored:
           title: Is Sponsored
           type: boolean
+        lives_with:
+          anyOf:
+          - enum:
+            - mother
+            - relative
+            - orphanage
+            - other
+            type: string
+          - type: 'null'
+          title: Lives With
         middle_name:
           anyOf:
           - maxLength: 100
             type: string
           - type: 'null'
           title: Middle Name
+        mother_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Mother Name
         mother_status:
           default: unknown
           enum:
@@ -3962,12 +4058,28 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        lives_with:
+          anyOf:
+          - enum:
+            - mother
+            - relative
+            - orphanage
+            - other
+            type: string
+          - type: 'null'
+          title: Lives With
         middle_name:
           anyOf:
           - maxLength: 100
             type: string
           - type: 'null'
           title: Middle Name
+        mother_name:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Mother Name
         mother_status:
           anyOf:
           - enum:

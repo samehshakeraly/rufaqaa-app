@@ -18,6 +18,13 @@ two ways: a pre-insert lookup gives the friendly message (with the existing
 ``ORF-`` code embedded so the UI can link to it) in the common case, and the
 ``IntegrityError`` is also caught as a backstop for the rare race between two
 identical concurrent creates — never an unhandled 500.
+
+A second, independent rule (migration 0021) rejects a duplicate ``national_id``
+within an organization. Because the id is Fernet-encrypted — and Fernet is
+randomised per write, so the ciphertext can't be compared — uniqueness is keyed
+on a deterministic blind index (``app.core.crypto.national_id_blind_index``)
+via the partial-unique ``uq_orphans_national_id_per_org``. That violation is
+mapped to its own clean ``409`` here too, so both create paths obey it.
 """
 
 from __future__ import annotations
@@ -31,7 +38,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.crypto import encrypt_field
+from app.core.crypto import encrypt_field, national_id_blind_index
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.user import User
@@ -45,6 +52,11 @@ from app.utils.codes import generate_code
 # on this specifically so an unrelated unique violation (e.g. the random
 # ``code``) is NOT mistaken for a duplicate orphan and still raises a 500.
 _DUPLICATE_INDEX = "idx_orphans_no_duplicate"
+
+# Per-org partial-unique index on the national_id blind index (migration 0021).
+# A violation means the same national_id is already registered in this org; we
+# surface it as a clean 409 with a message distinct from the name composite.
+_NATIONAL_ID_INDEX = "uq_orphans_national_id_per_org"
 
 
 def stamp_available_since(orphan: Orphan) -> None:
@@ -268,9 +280,18 @@ async def create_orphan_record(
         # decrypt-on-read. country_specific is the free per-country bag, persisted
         # as-is.
         national_id_encrypted=encrypt_field(data.national_id) if data.national_id else None,
+        # Deterministic blind index over the SAME national_id, persisted only
+        # when one is supplied (NULL otherwise, kept consistent with the
+        # ciphertext). It is what the per-org unique index keys on, so the same
+        # id can't be registered twice even though each Fernet token differs.
+        national_id_blind_index=(
+            national_id_blind_index(data.national_id) if data.national_id else None
+        ),
         country_specific=data.country_specific,
         father_name=data.father_name,
         father_death_date=data.father_death_date,
+        mother_name=data.mother_name,
+        lives_with=data.lives_with,
         education_stage=data.education_stage,
         academic_level=data.academic_level,
         school_name=data.school_name,
@@ -297,12 +318,22 @@ async def create_orphan_record(
     try:
         await db.flush()
     except IntegrityError as exc:
-        # Backstop for the race between two identical concurrent creates that
-        # both passed the pre-check. The IntegrityError aborts the transaction,
-        # so roll back and return a 409 (without re-querying — the session is
-        # poisoned and its RLS context was discarded by the rollback).
+        # Backstop for a unique violation at flush time. The IntegrityError
+        # aborts the transaction, so roll back and return a clean 409 (without
+        # re-querying — the session is poisoned and its RLS context was
+        # discarded by the rollback). Two distinct conflicts map to two distinct
+        # messages; anything else is a genuine 500. This chokepoint serves both
+        # the staff and guardian self-service creates, so both are covered.
         await db.rollback()
-        if _DUPLICATE_INDEX in str(exc.orig):
+        orig = str(exc.orig)
+        if _NATIONAL_ID_INDEX in orig:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="An orphan with this national id already exists in this organization",
+            ) from exc
+        if _DUPLICATE_INDEX in orig:
+            # Race between two identical concurrent creates that both passed the
+            # name/DOB/father pre-check.
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=_duplicate_detail(None),

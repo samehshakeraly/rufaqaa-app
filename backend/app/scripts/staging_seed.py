@@ -43,7 +43,7 @@ from uuid import uuid4
 from sqlalchemy import delete, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.crypto import encrypt_field
+from app.core.crypto import encrypt_field, national_id_blind_index
 from app.core.database import make_session
 from app.core.security import hash_password
 from app.models.document import Document
@@ -236,7 +236,10 @@ async def _seed_org_bundle(
             # national_id is written ONLY through the field-encryption path
             # (encrypt_field → national_id_encrypted BYTEA). The value is a
             # clearly-fake string; raw ciphertext is never inserted directly.
+            # The deterministic blind index is stored alongside it (same as the
+            # real create path) so demo rows match the ciphertext↔index invariant.
             national_id_encrypted=encrypt_field(f"DEMO-NID-{suffix}-{i + 1}"),
+            national_id_blind_index=national_id_blind_index(f"DEMO-NID-{suffix}-{i + 1}"),
             education_stage="primary",
             school_name="مدرسة تجريبية",
             quran_juz_memorized=i + 1,

@@ -94,8 +94,9 @@ async def test_patch_adding_fields_increases_percentage(
                 "nationality": "EG",
                 # EG is a documented country: its national_id is now required at
                 # create (PR-3b). It is not a profile-completion field, so this
-                # does not change the percentages asserted below.
-                "national_id": "12345678901234",
+                # does not change the percentages asserted below. A fresh 14-digit
+                # id keeps it unique per org (PR A's blind-index uniqueness).
+                "national_id": f"{uuid.uuid4().int % 10**14:014d}",
             },
             headers=auth_headers,
         )

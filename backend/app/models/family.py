@@ -33,6 +33,12 @@ class Family(Base):
     city: Mapped[str | None] = mapped_column(String(100))
     district: Mapped[str | None] = mapped_column(String(100))
     address_details: Mapped[str | None] = mapped_column(Text)
+    # Finer-grained address (see migration 0021), alongside the broader
+    # governorate/city/district above.
+    village: Mapped[str | None] = mapped_column(String(100))
+    street: Mapped[str | None] = mapped_column(String(255))
+    house_number: Mapped[str | None] = mapped_column(String(20))
+    floor: Mapped[str | None] = mapped_column(String(20))
 
     monthly_income: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
     income_currency: Mapped[str | None] = mapped_column(String(3))

@@ -3688,8 +3688,12 @@ export interface components {
             father_death_cause?: string | null;
             /** Father Death Date */
             father_death_date?: string | null;
+            /** Floor */
+            floor?: string | null;
             /** Governorate */
             governorate?: string | null;
+            /** House Number */
+            house_number?: string | null;
             /** Housing Status */
             housing_status?: ("owned" | "rented" | "donated" | "homeless") | null;
             /** Income Currency */
@@ -3700,6 +3704,10 @@ export interface components {
             notes?: string | null;
             /** Partner Organization Id */
             partner_organization_id?: string | null;
+            /** Street */
+            street?: string | null;
+            /** Village */
+            village?: string | null;
         };
         /** FamilyRead */
         FamilyRead: {
@@ -3726,8 +3734,12 @@ export interface components {
             father_death_cause?: string | null;
             /** Father Death Date */
             father_death_date?: string | null;
+            /** Floor */
+            floor?: string | null;
             /** Governorate */
             governorate?: string | null;
+            /** House Number */
+            house_number?: string | null;
             /** Housing Status */
             housing_status?: ("owned" | "rented" | "donated" | "homeless") | null;
             /**
@@ -3748,11 +3760,15 @@ export interface components {
             organization_id: string;
             /** Partner Organization Id */
             partner_organization_id: string | null;
+            /** Street */
+            street?: string | null;
             /**
              * Updated At
              * Format: date-time
              */
             updated_at: string;
+            /** Village */
+            village?: string | null;
         };
         /**
          * FileUploadResponse
@@ -3917,8 +3933,12 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Lives With */
+            lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /** Mother Name */
+            mother_name?: string | null;
             /**
              * Mother Status
              * @default unknown
@@ -4652,8 +4672,12 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Lives With */
+            lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /** Mother Name */
+            mother_name?: string | null;
             /**
              * Mother Status
              * @default unknown
@@ -4855,8 +4879,12 @@ export interface components {
             readonly is_hafiz: boolean;
             /** Is Sponsored */
             is_sponsored: boolean;
+            /** Lives With */
+            lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /** Mother Name */
+            mother_name?: string | null;
             /**
              * Mother Status
              * @default unknown
@@ -4954,8 +4982,12 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Lives With */
+            lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
             middle_name?: string | null;
+            /** Mother Name */
+            mother_name?: string | null;
             /** Mother Status */
             mother_status?: ("alive" | "deceased" | "unknown") | null;
             /** Nationality */
