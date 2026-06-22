@@ -31,6 +31,10 @@ const DOC_TYPES: DocumentType[] = [
   "medical_report",
   "photo_id",
   "family_record",
+  "custody_declaration",
+  "inheritance_decree",
+  "dwelling_photo",
+  "displacement_proof",
   "other",
 ];
 

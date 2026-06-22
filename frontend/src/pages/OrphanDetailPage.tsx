@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
-import { DocumentUploadCard } from "@/components/DocumentUploadCard";
 import { Lightbox } from "@/components/Lightbox";
 import {
   ACADEMIC_LEVELS,
@@ -14,7 +13,7 @@ import {
   MOTHER_STATUSES,
   PRIORITY_LEVELS,
 } from "@/components/NewOrphanForm";
-import { OrphanPhotoUpload } from "@/components/OrphanPhotoUpload";
+import { OrphanDocumentChecklist } from "@/components/OrphanDocumentChecklist";
 import { useRole } from "@/hooks/useRole";
 import { listOrphanages } from "@/lib/orphanages";
 import {
@@ -380,7 +379,9 @@ export function OrphanDetailPage() {
 
         {/* Side column */}
         <div className="ps-stack">
-          <OrphanPhotoUpload orphanId={id} />
+          {/* Guided uploader: personal photo + the country-driven document
+              slots (required/optional badges resolved from orphan.nationality). */}
+          <OrphanDocumentChecklist orphanId={id} nationality={orphan.nationality} />
 
           {isPartnerApprover && pendingPhotos.length > 0 && (
             <section className="ps-info-block">
@@ -434,8 +435,6 @@ export function OrphanDetailPage() {
               </div>
             </section>
           )}
-
-          <DocumentUploadCard target={{ kind: "orphan", orphanId: id }} />
         </div>
       </div>
 

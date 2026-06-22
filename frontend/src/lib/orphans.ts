@@ -50,6 +50,10 @@ export interface Orphan {
   academic_level?: string | null;
   mother_name?: string | null;
   lives_with?: string | null;
+  /** ISO alpha-2 country code (the orphan's nationality). Mirrors
+   * OrphanRead.nationality; drives the country document requirements on the
+   * detail page. */
+  nationality?: string | null;
   school_name?: string | null;
   quran_juz_memorized?: number | null;
   quran_note?: string | null;
