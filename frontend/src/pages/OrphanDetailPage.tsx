@@ -7,6 +7,7 @@ import { Link, useParams } from "react-router-dom";
 import { DocumentUploadCard } from "@/components/DocumentUploadCard";
 import { Lightbox } from "@/components/Lightbox";
 import {
+  ACADEMIC_LEVELS,
   EDUCATION_STAGES,
   HEALTH_COVERAGES,
   HEALTH_STATUSES,
@@ -23,6 +24,7 @@ import {
   rejectOrphan,
   releaseOrphan,
   updateOrphan,
+  type AcademicLevel,
   type EducationStage,
   type HealthCoverage,
   type HealthStatus,
@@ -540,7 +542,7 @@ function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
   const stage = diffStr(o.education_stage, d.education_stage);
   if (stage !== undefined) payload.education_stage = stage as EducationStage | null;
   const academic = diffStr(o.academic_level, d.academic_level);
-  if (academic !== undefined) payload.academic_level = academic;
+  if (academic !== undefined) payload.academic_level = academic as AcademicLevel | null;
   const school = diffStr(o.school_name, d.school_name);
   if (school !== undefined) payload.school_name = school;
   const quranNote = diffStr(o.quran_note, d.quran_note);
@@ -682,7 +684,11 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
               : notSet}
           </ProfileRow>
           <ProfileRow label={t("orphans.profile.academicLevel")}>
-            {text(orphan.academic_level)}
+            {orphan.academic_level
+              ? t(`orphans.profile.academicLevelOptions.${orphan.academic_level}`, {
+                  defaultValue: orphan.academic_level,
+                })
+              : notSet}
           </ProfileRow>
           <ProfileRow label={t("orphans.profile.schoolName")}>
             {text(orphan.school_name)}
@@ -783,13 +789,20 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
               </select>
             </ProfileEditField>
             <ProfileEditField label={t("orphans.profile.academicLevel")}>
-              <input
+              <select
                 className="input"
                 value={draft.academic_level}
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, academic_level: e.target.value }))
                 }
-              />
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {ACADEMIC_LEVELS.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.academicLevelOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
             </ProfileEditField>
             <ProfileEditField label={t("orphans.profile.schoolName")}>
               <input

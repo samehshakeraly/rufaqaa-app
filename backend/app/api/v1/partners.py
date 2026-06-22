@@ -55,6 +55,10 @@ async def list_partners(
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
     include_inactive: bool = False,
+    # Optional ISO alpha-2 country filter — the orphan-intake form passes the
+    # selected nationality so the partner picker only lists جهات in that
+    # country. Normalised to upper-case to match how country_code is stored.
+    country_code: str | None = None,
 ) -> Page[PartnerRead]:
     # Explicit org scoping, never RLS — the app's superuser connection
     # bypasses RLS, so without this filter partners leak across orgs.
@@ -70,6 +74,9 @@ async def list_partners(
             stmt = stmt.where(PartnerOrganization.id == user.partner_organization_id)
     if not include_inactive:
         stmt = stmt.where(PartnerOrganization.status == "active")
+    # Country filter applied before the count so pagination + total match.
+    if country_code:
+        stmt = stmt.where(PartnerOrganization.country_code == country_code.strip().upper())
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
         await db.scalars(

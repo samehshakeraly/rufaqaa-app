@@ -1,16 +1,17 @@
 import { api } from "./api";
 
 // Enum unions — mirror schema.gen.ts exactly. Shared across the create,
-// read, and update shapes.
+// read, and update shapes. `education_stage` / `academic_level` are coded on
+// the create/update/filter shapes; the read `Orphan` keeps them as plain
+// strings (mirrors OrphanRead) so legacy values still surface.
 export type EducationStage =
-  | "not_enrolled"
+  | "pre_kindergarten"
   | "kindergarten"
   | "primary"
   | "preparatory"
-  | "secondary"
-  | "university"
-  | "vocational"
-  | "graduated";
+  | "secondary";
+export type AcademicLevel = "weak" | "good" | "excellent";
+export type LivesWith = "mother" | "relative" | "orphanage" | "other";
 export type HealthStatus = "good" | "chronic_condition" | "disability" | "under_treatment";
 export type HealthCoverage = "none" | "government" | "private" | "charity";
 export type MotherStatus = "alive" | "deceased" | "unknown";
@@ -42,9 +43,13 @@ export interface Orphan {
   /** Current dar (orphanage) the child resides in; null = family home. */
   orphanage_id: string | null;
   created_at: string;
-  // Extended profile fields (read). Mirror schema.gen.ts OrphanRead.
-  education_stage?: EducationStage | null;
+  // Extended profile fields (read). Mirror schema.gen.ts OrphanRead —
+  // education_stage / academic_level are permissive strings here so a legacy
+  // row carrying a now-removed value still reads.
+  education_stage?: string | null;
   academic_level?: string | null;
+  mother_name?: string | null;
+  lives_with?: string | null;
   school_name?: string | null;
   quran_juz_memorized?: number | null;
   quran_note?: string | null;
@@ -94,18 +99,13 @@ export interface OrphanCreateInput {
    * Persisted as-is server-side; the shape varies by country. Sent on both
    * the staff and guardian paths. */
   country_specific?: Record<string, unknown>;
+  /** Optional richer-intake fields (migration 0021). */
+  mother_name?: string;
+  lives_with?: LivesWith;
   // Extended profile fields (all optional). Mirror schema.gen.ts
   // OrphanCreate / GuardianOrphanCreate.
-  education_stage?:
-    | "not_enrolled"
-    | "kindergarten"
-    | "primary"
-    | "preparatory"
-    | "secondary"
-    | "university"
-    | "vocational"
-    | "graduated";
-  academic_level?: string;
+  education_stage?: EducationStage;
+  academic_level?: AcademicLevel;
   school_name?: string;
   quran_juz_memorized?: number;
   quran_note?: string;
@@ -195,7 +195,7 @@ export interface OrphanUpdateInput {
   orphanage_id?: string | null;
   // Extended profile fields.
   education_stage?: EducationStage | null;
-  academic_level?: string | null;
+  academic_level?: AcademicLevel | null;
   school_name?: string | null;
   quran_juz_memorized?: number | null;
   quran_note?: string | null;

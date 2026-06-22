@@ -1991,7 +1991,10 @@ components:
       properties:
         academic_level:
           anyOf:
-          - maxLength: 50
+          - enum:
+            - weak
+            - good
+            - excellent
             type: string
           - type: 'null'
           title: Academic Level
@@ -2021,14 +2024,11 @@ components:
         education_stage:
           anyOf:
           - enum:
-            - not_enrolled
+            - pre_kindergarten
             - kindergarten
             - primary
             - preparatory
             - secondary
-            - university
-            - vocational
-            - graduated
             type: string
           - type: 'null'
           title: Education Stage
@@ -3304,7 +3304,10 @@ components:
       properties:
         academic_level:
           anyOf:
-          - maxLength: 50
+          - enum:
+            - weak
+            - good
+            - excellent
             type: string
           - type: 'null'
           title: Academic Level
@@ -3334,14 +3337,11 @@ components:
         education_stage:
           anyOf:
           - enum:
-            - not_enrolled
+            - pre_kindergarten
             - kindergarten
             - primary
             - preparatory
             - secondary
-            - university
-            - vocational
-            - graduated
             type: string
           - type: 'null'
           title: Education Stage
@@ -3721,15 +3721,7 @@ components:
           type: string
         education_stage:
           anyOf:
-          - enum:
-            - not_enrolled
-            - kindergarten
-            - primary
-            - preparatory
-            - secondary
-            - university
-            - vocational
-            - graduated
+          - maxLength: 30
             type: string
           - type: 'null'
           title: Education Stage
@@ -3959,7 +3951,10 @@ components:
       properties:
         academic_level:
           anyOf:
-          - maxLength: 50
+          - enum:
+            - weak
+            - good
+            - excellent
             type: string
           - type: 'null'
           title: Academic Level
@@ -3987,14 +3982,11 @@ components:
         education_stage:
           anyOf:
           - enum:
-            - not_enrolled
+            - pre_kindergarten
             - kindergarten
             - primary
             - preparatory
             - secondary
-            - university
-            - vocational
-            - graduated
             type: string
           - type: 'null'
           title: Education Stage
@@ -10231,14 +10223,11 @@ paths:
         schema:
           anyOf:
           - enum:
-            - not_enrolled
+            - pre_kindergarten
             - kindergarten
             - primary
             - preparatory
             - secondary
-            - university
-            - vocational
-            - graduated
             type: string
           - type: 'null'
           title: Education Stage
@@ -10837,6 +10826,14 @@ paths:
           default: false
           title: Include Inactive
           type: boolean
+      - in: query
+        name: country_code
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
       responses:
         '200':
           content:

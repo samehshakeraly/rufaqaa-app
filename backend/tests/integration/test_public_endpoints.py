@@ -115,7 +115,7 @@ async def test_public_orphan_detail_exposes_donor_safe_profile(
             "tags": ["football", "drawing"],
             # Sensitive — must stay internal
             "school_name": "Secret School",
-            "academic_level": "Grade 9",
+            "academic_level": "excellent",
             "health_status": "good",
             "health_coverage": "government",
             "chronic_conditions": "none",

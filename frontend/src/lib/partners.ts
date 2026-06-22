@@ -20,9 +20,18 @@ export interface PartnerCreateInput {
   contact_person?: string;
 }
 
-export async function listPartners(includeInactive = false): Promise<Page<Partner>> {
+export async function listPartners(
+  includeInactive = false,
+  countryCode?: string,
+): Promise<Page<Partner>> {
   const { data } = await api.get<Page<Partner>>("/partners", {
-    params: { limit: 100, include_inactive: includeInactive },
+    params: {
+      limit: 100,
+      include_inactive: includeInactive,
+      // Only sent when set — the orphan-intake form passes the selected
+      // nationality so the picker lists جهات in that country only.
+      ...(countryCode ? { country_code: countryCode } : {}),
+    },
   });
   return data;
 }

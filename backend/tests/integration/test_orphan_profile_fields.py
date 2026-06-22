@@ -42,7 +42,7 @@ async def test_profile_fields_round_trip_on_create(
             "partner_organization_id": partner_id,
             "father_name": f"أب-{suffix}",
             "education_stage": "primary",
-            "academic_level": "Grade 4",
+            "academic_level": "good",
             "school_name": "Al-Noor School",
             "quran_juz_memorized": 5,
             "quran_note": "Memorising Surah Al-Baqarah",
@@ -59,7 +59,7 @@ async def test_profile_fields_round_trip_on_create(
     body = r.json()
 
     assert body["education_stage"] == "primary"
-    assert body["academic_level"] == "Grade 4"
+    assert body["academic_level"] == "good"
     assert body["school_name"] == "Al-Noor School"
     assert body["quran_juz_memorized"] == 5
     assert body["quran_note"] == "Memorising Surah Al-Baqarah"
@@ -123,3 +123,57 @@ async def test_tags_default_empty_and_is_hafiz_when_full_quran(
     )
     assert r2.status_code == 201, r2.text
     assert r2.json()["is_hafiz"] is True
+
+
+async def _create_orphan(
+    api: AsyncClient, auth_headers: dict[str, str], partner_id: str, **extra: object
+) -> int:
+    """POST a minimal-but-unique orphan with ``extra`` merged in; return the
+    HTTP status (so callers can assert 201 accepted / 422 rejected)."""
+    suffix = uuid.uuid4().hex[:6]
+    r = await api.post(
+        "/api/v1/orphans",
+        json={
+            "first_name": f"قيم-{suffix}",
+            "family_name": "مدى",
+            "date_of_birth": "2015-02-02",
+            "gender": "M",
+            "partner_organization_id": partner_id,
+            "father_name": f"أب-{suffix}",
+            **extra,
+        },
+        headers=auth_headers,
+    )
+    return r.status_code
+
+
+async def test_education_stage_coded_set_enforced_on_create(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """education_stage accepts exactly the five coded values; anything else
+    (including the now-removed 'university'/'not_enrolled') is a 422."""
+    partner_id = await _seed_partner_id()
+    for value in ("pre_kindergarten", "kindergarten", "primary", "preparatory", "secondary"):
+        assert await _create_orphan(api, auth_headers, partner_id, education_stage=value) == 201, (
+            value
+        )
+    for value in ("not_enrolled", "university", "vocational", "graduated", "phd", ""):
+        assert await _create_orphan(api, auth_headers, partner_id, education_stage=value) == 422, (
+            value
+        )
+
+
+async def test_academic_level_coded_set_enforced_on_create(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """academic_level is now a coded weak/good/excellent band; the old free
+    text (e.g. 'Grade 4') is rejected with a 422."""
+    partner_id = await _seed_partner_id()
+    for value in ("weak", "good", "excellent"):
+        assert await _create_orphan(api, auth_headers, partner_id, academic_level=value) == 201, (
+            value
+        )
+    for value in ("Grade 4", "average", "GOOD", ""):
+        assert await _create_orphan(api, auth_headers, partner_id, academic_level=value) == 422, (
+            value
+        )

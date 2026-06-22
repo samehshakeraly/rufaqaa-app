@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { NewOrphanForm } from "@/components/NewOrphanForm";
 import { listOrphanages } from "@/lib/orphanages";
-import { listPartners } from "@/lib/partners";
 import { toast } from "@/store/toasts";
 
 import "./RegisterOrphanPage.css";
@@ -36,10 +35,8 @@ export function RegisterOrphanPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const partnersQuery = useQuery({
-    queryKey: ["partners"],
-    queryFn: () => listPartners(),
-  });
+  // The partner picker is country-filtered, so NewOrphanForm fetches its own
+  // partner list (keyed on the selected nationality) — we don't pass one here.
 
   // Org dars for the staff create picker — NewOrphanForm renders the orphanage
   // select only when this prop is passed (guardians never get it).
@@ -71,7 +68,6 @@ export function RegisterOrphanPage() {
       <div className="ps-reg-panel">
         <NewOrphanForm
           audience="staff"
-          partners={partnersQuery.data?.items ?? []}
           orphanages={orphanagesQuery.data?.items ?? []}
           onCreated={(created) => {
             toast.success(t("common.save"));

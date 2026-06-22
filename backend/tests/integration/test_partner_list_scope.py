@@ -35,7 +35,7 @@ async def _seed_org_id() -> UUID:
         return admin.organization_id
 
 
-async def _make_partner_org(org_id: UUID) -> str:
+async def _make_partner_org(org_id: UUID, country_code: str = "KW") -> str:
     """Create a جهة (partner org) in ``org_id`` and return its id."""
     suffix = uuid.uuid4().hex[:6]
     async with make_session() as db:
@@ -43,7 +43,7 @@ async def _make_partner_org(org_id: UUID) -> str:
             organization_id=org_id,
             code=f"PLS-{suffix}",
             name_ar=f"جهة-{suffix}",
-            country_code="KW",
+            country_code=country_code,
             status="active",
         )
         db.add(partner)
@@ -183,6 +183,34 @@ async def test_finance_sees_full_in_org_list(api: AsyncClient) -> None:
     finance = await _login_as(api, org_id, "finance")
     ids, _ = await _list_ids(api, finance)
     assert {jiha_a, jiha_b} <= ids
+
+
+async def test_country_code_filter_returns_only_that_country(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """The optional country_code filter narrows the list to جهات in that
+    country — still org-scoped — and normalises case to match storage."""
+    org_id = await _seed_org_id()
+    jiha_eg = await _make_partner_org(org_id, country_code="EG")
+    jiha_ps = await _make_partner_org(org_id, country_code="PS")
+
+    async def _filtered_ids(country: str) -> set[str]:
+        r = await api.get(
+            f"/api/v1/partners?limit=100&country_code={country}", headers=auth_headers
+        )
+        assert r.status_code == 200, r.text
+        return {p["id"] for p in r.json()["items"]}
+
+    eg_ids = await _filtered_ids("EG")
+    assert jiha_eg in eg_ids
+    assert jiha_ps not in eg_ids
+    # Every returned جهة really is EG (no other country leaks in).
+    r = await api.get("/api/v1/partners?limit=100&country_code=EG", headers=auth_headers)
+    assert all(p["country_code"] == "EG" for p in r.json()["items"]), r.text
+
+    # Lower-case input is normalised to the stored upper-case code.
+    assert jiha_ps in await _filtered_ids("ps")
+    assert jiha_eg not in await _filtered_ids("ps")
 
 
 async def test_consumer_role_is_forbidden(api: AsyncClient) -> None:

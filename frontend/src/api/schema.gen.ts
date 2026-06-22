@@ -3896,7 +3896,7 @@ export interface components {
          */
         GuardianOrphanCreate: {
             /** Academic Level */
-            academic_level?: string | null;
+            academic_level?: ("weak" | "good" | "excellent") | null;
             /** Aspiration */
             aspiration?: string | null;
             /** Challenges */
@@ -3913,7 +3913,7 @@ export interface components {
              */
             date_of_birth: string;
             /** Education Stage */
-            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+            education_stage?: ("pre_kindergarten" | "kindergarten" | "primary" | "preparatory" | "secondary") | null;
             /** Family Name */
             family_name: string;
             /** Father Death Date */
@@ -4633,7 +4633,7 @@ export interface components {
         /** OrphanCreate */
         OrphanCreate: {
             /** Academic Level */
-            academic_level?: string | null;
+            academic_level?: ("weak" | "good" | "excellent") | null;
             /** Aspiration */
             aspiration?: string | null;
             /** Challenges */
@@ -4650,7 +4650,7 @@ export interface components {
              */
             date_of_birth: string;
             /** Education Stage */
-            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+            education_stage?: ("pre_kindergarten" | "kindergarten" | "primary" | "preparatory" | "secondary") | null;
             /** Family Id */
             family_id?: string | null;
             /** Family Name */
@@ -4845,7 +4845,7 @@ export interface components {
              */
             date_of_birth: string;
             /** Education Stage */
-            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+            education_stage?: string | null;
             /** Family Id */
             family_id: string | null;
             /** Family Name */
@@ -4955,7 +4955,7 @@ export interface components {
          */
         OrphanUpdate: {
             /** Academic Level */
-            academic_level?: string | null;
+            academic_level?: ("weak" | "good" | "excellent") | null;
             /** Aspiration */
             aspiration?: string | null;
             /** Challenges */
@@ -4965,7 +4965,7 @@ export interface components {
             /** Date Of Birth */
             date_of_birth?: string | null;
             /** Education Stage */
-            education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+            education_stage?: ("pre_kindergarten" | "kindergarten" | "primary" | "preparatory" | "secondary") | null;
             /** Family Name */
             family_name?: string | null;
             /** Father Death Date */
@@ -9398,7 +9398,7 @@ export interface operations {
                 case_status?: string | null;
                 channel_id?: string | null;
                 assignment_status?: "active" | "expired" | "all";
-                education_stage?: ("not_enrolled" | "kindergarten" | "primary" | "preparatory" | "secondary" | "university" | "vocational" | "graduated") | null;
+                education_stage?: ("pre_kindergarten" | "kindergarten" | "primary" | "preparatory" | "secondary") | null;
                 health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
                 is_hafiz?: boolean | null;
                 min_juz?: number | null;
@@ -9834,6 +9834,7 @@ export interface operations {
                 limit?: number;
                 offset?: number;
                 include_inactive?: boolean;
+                country_code?: string | null;
             };
             header?: never;
             path?: never;
