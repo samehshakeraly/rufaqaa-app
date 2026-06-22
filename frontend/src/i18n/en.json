@@ -2513,6 +2513,20 @@
       "verified": "Verified",
       "rejected": "Rejected"
     },
+    "checklist": {
+      "title": "Documents checklist",
+      "subtitle": "Upload the personal photo above and the documents below. Required items are set by the orphan's country.",
+      "required": "Required",
+      "optional": "Optional",
+      "dropHint": "Drag a file here, or click to upload",
+      "acceptHint": "PDF or image, up to 10 MB",
+      "replace": "Replace",
+      "delete": "Delete",
+      "deleted": "Document deleted.",
+      "otherTitle": "Other document",
+      "allTitle": "All uploaded documents",
+      "invalidType": "Unsupported file type. Use a PDF or an image."
+    },
     "types": {
       "birth_certificate": "Birth certificate",
       "death_certificate": "Death certificate",

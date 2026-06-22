@@ -3,6 +3,10 @@ import type { components } from "@/api/schema.gen";
 import { api } from "./api";
 import type { Page } from "./orphans";
 
+// Mirrors the backend document_type enum (schema.gen.ts). The four trailing
+// codes (custody_declaration … displacement_proof) were added server-side for
+// the country-driven intake checklist; keep this union in lock-step so callers
+// can attach them with a checked document_type.
 export type DocumentType =
   | "birth_certificate"
   | "death_certificate"
@@ -13,7 +17,11 @@ export type DocumentType =
   | "medical_report"
   | "photo_id"
   | "family_record"
-  | "other";
+  | "other"
+  | "custody_declaration"
+  | "inheritance_decree"
+  | "dwelling_photo"
+  | "displacement_proof";
 
 export type VerificationStatus = "pending" | "verified" | "rejected";
 
