@@ -120,6 +120,12 @@ backend-demo-seed: ## 🎭 بيانات تجريبية (6 أيتام، 5 متب�
 backend-staging-seed: ## 🌐 بيانات تجريبية مصغّرة لنشر العرض (staging) — منظمتان
 	@cd backend && python -m app.scripts.staging_seed
 
+backend-seed-demo: ## 🎬 بيانات عرض شاملة محليًا (مؤسسة النجاة: 50 يتيمًا + كامل تجربة المتبرع)
+	@cd backend && python -m scripts.seed_demo
+
+backend-seed-demo-purge: ## 🧹 حذف بيانات العرض الشاملة فقط (مؤسسة النجاة)
+	@cd backend && python -m scripts.seed_demo --purge
+
 worker-dev: ## ⚙️  تشغيل Celery worker للتطوير
 	@cd backend && celery -A app.workers.celery_app worker --loglevel=info
 
