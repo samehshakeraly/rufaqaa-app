@@ -1706,6 +1706,16 @@ components:
             type: string
           - type: 'null'
           title: Income Currency
+        latitude:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Latitude
+        longitude:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Longitude
         monthly_income:
           anyOf:
           - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
@@ -3509,17 +3519,21 @@ components:
 
         Every field is optional and whitespace-trimmed (model config). When at least
 
-        one is non-empty AND the create payload pins no ``family_id``, the staff
+        one address field is non-empty — OR a GPS ``latitude``/``longitude`` pair is
 
-        create service materialises a :class:`~app.models.family.Family` from this
+        supplied — AND the create payload pins no ``family_id``, the staff create
 
-        address in the same transaction and links the orphan to it (see
+        service materialises a :class:`~app.models.family.Family` from this block in
 
-        ``services.orphans.create_orphan_record``). An all-empty address creates no
+        the same transaction and links the orphan to it (see
 
-        family; a supplied ``family_id`` makes this block a no-op. These columns
+        ``services.orphans.create_orphan_record``). An all-empty block creates no
 
-        already exist on ``families`` (migration 0021) — no new migration.'
+        family; a supplied ``family_id`` makes this block a no-op. The address
+
+        columns already exist on ``families`` (migration 0021) and the GPS pair lands
+
+        in the existing ``families.coordinates`` POINT — no new migration.'
       properties:
         city:
           anyOf:
@@ -3545,6 +3559,20 @@ components:
             type: string
           - type: 'null'
           title: House Number
+        latitude:
+          anyOf:
+          - maximum: 90.0
+            minimum: -90.0
+            type: number
+          - type: 'null'
+          title: Latitude
+        longitude:
+          anyOf:
+          - maximum: 180.0
+            minimum: -180.0
+            type: number
+          - type: 'null'
+          title: Longitude
         street:
           anyOf:
           - maxLength: 255

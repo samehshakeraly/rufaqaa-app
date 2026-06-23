@@ -1,9 +1,16 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Literal
+from typing import Any, Literal, Self
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 Gender = Literal["M", "F"]
 CaseStatus = Literal[
@@ -154,12 +161,14 @@ class OrphanHomeAddress(BaseModel):
     path when the child lives with family (``lives_with`` ∈ {mother, relative}).
 
     Every field is optional and whitespace-trimmed (model config). When at least
-    one is non-empty AND the create payload pins no ``family_id``, the staff
-    create service materialises a :class:`~app.models.family.Family` from this
-    address in the same transaction and links the orphan to it (see
-    ``services.orphans.create_orphan_record``). An all-empty address creates no
-    family; a supplied ``family_id`` makes this block a no-op. These columns
-    already exist on ``families`` (migration 0021) — no new migration.
+    one address field is non-empty — OR a GPS ``latitude``/``longitude`` pair is
+    supplied — AND the create payload pins no ``family_id``, the staff create
+    service materialises a :class:`~app.models.family.Family` from this block in
+    the same transaction and links the orphan to it (see
+    ``services.orphans.create_orphan_record``). An all-empty block creates no
+    family; a supplied ``family_id`` makes this block a no-op. The address
+    columns already exist on ``families`` (migration 0021) and the GPS pair lands
+    in the existing ``families.coordinates`` POINT — no new migration.
     """
 
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -171,11 +180,29 @@ class OrphanHomeAddress(BaseModel):
     house_number: str | None = Field(default=None, max_length=20)
     floor: str | None = Field(default=None, max_length=20)
 
+    # Optional GPS capture (PR E) — persisted into the family's EXISTING
+    # ``families.coordinates`` POINT (PostGIS write in the service), not a new
+    # column. Both-or-neither: a lone latitude or longitude is rejected (422), so
+    # a half-filled pair can never reach the DB. Ranges match valid WGS84 bounds.
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+
+    @model_validator(mode="after")
+    def _coordinates_both_or_neither(self) -> Self:
+        """Reject exactly one of latitude/longitude — a point needs both axes.
+        ``0.0`` is a real coordinate (equator / prime meridian), so the check is
+        on ``is None``, never truthiness."""
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("latitude and longitude must be provided together")
+        return self
+
     def has_content(self) -> bool:
-        """True when at least one field carries a non-empty (post-trim) value."""
+        """True when at least one address field carries a non-empty (post-trim)
+        value, or a full GPS pair is present — so a GPS-only block (no address)
+        still triggers family creation. ``0.0`` counts (``is not None``)."""
         return any(
             (self.city, self.village, self.district, self.street, self.house_number, self.floor)
-        )
+        ) or (self.latitude is not None and self.longitude is not None)
 
 
 class OrphanCreate(OrphanCreateFields):

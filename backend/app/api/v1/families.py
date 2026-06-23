@@ -1,8 +1,10 @@
+from collections.abc import Sequence
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
 from app.core.authz import STAFF_ROLES, require_roles
@@ -23,6 +25,51 @@ from app.utils.codes import generate_code
 router = APIRouter()
 
 
+async def _family_coordinates(
+    db: AsyncSession, family_ids: Sequence[UUID]
+) -> dict[str, tuple[float | None, float | None]]:
+    """Read each family's GPS as ``(latitude, longitude)`` from the
+    ``families.coordinates`` POINT (PR E).
+
+    The column is intentionally unmapped on the Family model, so we project it
+    with a raw statement: ``ST_Y``/``ST_X`` over ``coordinates::geometry`` (the
+    native POINT casts to a PostGIS geometry for the accessors). Only those two
+    scalars are selected — the raw geometry is NEVER exposed. A NULL point yields
+    ``(None, None)``. Keyed by ``str(id)`` so callers can look rows up by the
+    family's stringified id. Empty input short-circuits with no query.
+    """
+    if not family_ids:
+        return {}
+    result = await db.execute(
+        text(
+            "SELECT id::text AS id, "
+            "ST_Y(coordinates::geometry) AS latitude, "
+            "ST_X(coordinates::geometry) AS longitude "
+            "FROM families WHERE id::text = ANY(:ids)"
+        ),
+        {"ids": [str(fid) for fid in family_ids]},
+    )
+    return {
+        row.id: (
+            float(row.latitude) if row.latitude is not None else None,
+            float(row.longitude) if row.longitude is not None else None,
+        )
+        for row in result
+    }
+
+
+def _read_family(
+    family: Family, coords: dict[str, tuple[float | None, float | None]]
+) -> FamilyRead:
+    """Project a Family to ``FamilyRead``, attaching its GPS lat/lng from
+    ``coords`` (absent / NULL point → null). Mirrors ``_serialize_guardian``'s
+    fill-after-validate shape — latitude/longitude are not ORM attributes, so
+    ``model_validate`` leaves them at their ``None`` default and we set them."""
+    read = FamilyRead.model_validate(family)
+    read.latitude, read.longitude = coords.get(str(family.id), (None, None))
+    return read
+
+
 @router.get("", response_model=Page[FamilyRead])
 async def list_families(
     db: DbSession,
@@ -37,8 +84,10 @@ async def list_families(
     rows = (
         await db.scalars(stmt.order_by(Family.created_at.desc()).limit(limit).offset(offset))
     ).all()
+    # One batched PostGIS lookup for the whole page's GPS, then attach per row.
+    coords = await _family_coordinates(db, [r.id for r in rows])
     return Page(
-        items=[FamilyRead.model_validate(r) for r in rows],
+        items=[_read_family(r, coords) for r in rows],
         total=total,
         limit=limit,
         offset=offset,
@@ -87,7 +136,9 @@ async def create_family(
     )
     await db.commit()
     await db.refresh(family)
-    return FamilyRead.model_validate(family)
+    # A freshly created family carries no coordinates (this endpoint never sets
+    # them — only the orphan-create GPS path does), so lat/lng read as null.
+    return _read_family(family, {})
 
 
 @router.get("/{family_id}", response_model=FamilyRead)
@@ -106,7 +157,8 @@ async def get_family(
     )
     if family is None:
         raise NotFound("Family")
-    return FamilyRead.model_validate(family)
+    coords = await _family_coordinates(db, [family.id])
+    return _read_family(family, coords)
 
 
 # ─── Guardians live under /families because each guardian belongs to a

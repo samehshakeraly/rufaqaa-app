@@ -34,7 +34,7 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -288,6 +288,28 @@ async def create_orphan_record(
         db.add(family)
         await db.flush()
         family_id = family.id
+        # GPS capture (PR E): persist the lat/lng into the family's EXISTING
+        # ``families.coordinates`` POINT — no new column, no GeoAlchemy2. The
+        # column is intentionally unmapped on the Family model, so we write it
+        # with a raw PostGIS statement in this SAME transaction (it unwinds with
+        # the family + orphan on any rollback below). ``ST_SetSRID(ST_MakePoint(
+        # lng, lat), 4326)`` builds the WGS84 point; ``::point`` casts it to the
+        # native column type (the SRID is dropped on the cast — a native POINT
+        # carries none — but the lng/lat survive exactly). Both axes are present
+        # here: the schema rejects a half pair (422) before we get this far.
+        if home_address.latitude is not None and home_address.longitude is not None:
+            await db.execute(
+                text(
+                    "UPDATE families "
+                    "SET coordinates = ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::point "
+                    "WHERE id = :id"
+                ),
+                {
+                    "lng": home_address.longitude,
+                    "lat": home_address.latitude,
+                    "id": str(family.id),
+                },
+            )
 
     orphan = Orphan(
         organization_id=user.organization_id,
