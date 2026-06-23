@@ -15,7 +15,13 @@ import {
   type NationalIdRequirements,
 } from "@/lib/countries";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { createOrphan, type OrphanCreateInput } from "@/lib/orphans";
+import { OrphanDuplicateNameDialog } from "@/components/OrphanDuplicateNameDialog";
+import {
+  createOrphan,
+  findOrphanNameMatches,
+  type OrphanCreateInput,
+  type OrphanNameMatch,
+} from "@/lib/orphans";
 import { listPartners } from "@/lib/partners";
 
 // Matches partner-issued orphan codes like ORF-12345 / ORP-ABCDE. The backend
@@ -300,6 +306,12 @@ export function NewOrphanForm({
   const [serverError, setServerError] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const [duplicateCode, setDuplicateCode] = useState<string | null>(null);
+  // Soft duplicate-name advisory (STAFF path, national_id-less creates only).
+  // When the pre-submit lookup finds same-name orphans we stash the built
+  // payload and the matches here and surface a NON-BLOCKING dialog instead of
+  // creating; "Proceed anyway" then fires the stashed payload. See `submit`.
+  const [pendingPayload, setPendingPayload] = useState<OrphanCreateInput | null>(null);
+  const [nameMatches, setNameMatches] = useState<OrphanNameMatch[]>([]);
 
   // Partner-scoped staff (partner_manager / partner_staff) only ever register
   // orphans under their own جهة, so the picker is pointless for them — it is
@@ -473,6 +485,9 @@ export function NewOrphanForm({
   const mutation = useMutation({
     mutationFn: (v: OrphanCreateInput) => create(v),
     onSuccess: async (created) => {
+      // Close the advisory dialog (if the create came via "Proceed anyway").
+      setPendingPayload(null);
+      setNameMatches([]);
       reset();
       // reset() falls back to defaultValues, which can't know the جهة —
       // re-pin it so a follow-up create still submits the locked partner.
@@ -485,6 +500,10 @@ export function NewOrphanForm({
       await onCreated(created);
     },
     onError: (err) => {
+      // Dismiss the advisory dialog so any error (incl. the composite-key 409
+      // backstop) surfaces on the form exactly as it does on a direct submit.
+      setPendingPayload(null);
+      setNameMatches([]);
       if (err instanceof AxiosError) {
         const status = err.response?.status;
         const detail = err.response?.data?.detail;
@@ -502,10 +521,7 @@ export function NewOrphanForm({
     },
   });
 
-  function submit(v: FormValues) {
-    setServerError(null);
-    setDuplicateError(null);
-    setDuplicateCode(null);
+  function buildPayload(v: FormValues): OrphanCreateInput {
     // country_specific — collect ONLY the fields the selected country's flags
     // turn on (and only when populated). Gating on the live flags here is the
     // last line of defence: even if a hidden field kept a stale value, it can
@@ -580,13 +596,63 @@ export function NewOrphanForm({
         : {}),
       ...(isStaff && v.challenges ? { challenges: v.challenges } : {}),
     };
+    return payload;
+  }
+
+  async function submit(v: FormValues) {
+    setServerError(null);
+    setDuplicateError(null);
+    setDuplicateCode(null);
+    const payload = buildPayload(v);
+    // Soft duplicate-name advisory — STAFF path only, and only when NO
+    // national_id was entered (a national_id is hard-deduped by its own blind
+    // index, so the advisory adds nothing there). Ask the server whether a
+    // non-deleted orphan with this first + family name already exists; if so,
+    // surface the NON-BLOCKING dialog instead of creating right away. The check
+    // is best-effort: any lookup failure falls through to the normal create, and
+    // the server's hard composite-key 409 still backstops a true duplicate.
+    if (isStaff && !payload.national_id) {
+      try {
+        const matches = await findOrphanNameMatches(payload.first_name, payload.family_name);
+        if (matches.length > 0) {
+          setPendingPayload(payload);
+          setNameMatches(matches);
+          return; // hold for the user's decision in the dialog
+        }
+      } catch {
+        // Advisory only — never block a registration on the lookup failing.
+      }
+    }
     mutation.mutate(payload);
+  }
+
+  // "Proceed anyway" — run the normal create with the stashed payload. The
+  // dialog stays up (showing a busy state) until the mutation settles, then its
+  // onSuccess/onError clears it; a backstop 409 surfaces on the form as usual.
+  function proceedWithPending() {
+    if (pendingPayload) mutation.mutate(pendingPayload);
+  }
+
+  // "Cancel / review" — drop the advisory and return to the form untouched.
+  function cancelPending() {
+    setPendingPayload(null);
+    setNameMatches([]);
   }
 
   const duplicateLink = duplicateCode ? duplicateHref(duplicateCode) : null;
 
   return (
     <form onSubmit={handleSubmit(submit)} className="card space-y-4">
+      {/* NON-BLOCKING soft duplicate-name advisory (fixed overlay; its buttons
+          are type="button" so they never submit the form behind it). */}
+      {pendingPayload && (
+        <OrphanDuplicateNameDialog
+          matches={nameMatches}
+          onProceed={proceedWithPending}
+          onCancel={cancelPending}
+          isProceeding={mutation.isPending}
+        />
+      )}
       {duplicateError && (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-warning-50 px-3 py-2 text-sm text-warning-700">
           <span>{duplicateError}</span>
@@ -995,8 +1061,12 @@ export function NewOrphanForm({
       <div className="flex gap-2">
         {/* No جهة on a partner-scoped account → the create can only fail;
             block submit rather than surfacing an unfixable validation error. */}
-        <button type="submit" className="btn-primary" disabled={isSubmitting || partnerMissing}>
-          {isSubmitting ? t("common.saving") : t("common.save")}
+        <button
+          type="submit"
+          className="btn-primary"
+          disabled={isSubmitting || mutation.isPending || partnerMissing}
+        >
+          {isSubmitting || mutation.isPending ? t("common.saving") : t("common.save")}
         </button>
         {onCancel && (
           <button

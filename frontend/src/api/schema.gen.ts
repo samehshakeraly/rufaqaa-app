@@ -1663,6 +1663,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/name-matches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Name Matches
+         * @description Advisory soft-duplicate lookup behind the staff registration form.
+         *
+         *     Returns the non-deleted orphans in the caller's organization whose
+         *     ``first_name`` + ``family_name`` match (case-insensitive). The form calls
+         *     this BEFORE submitting an orphan that carries no ``national_id``: when it
+         *     returns any rows, the form warns that a child with this name already exists
+         *     and lets the user confirm it is not a duplicate before proceeding. It is
+         *     purely advisory and read-only — it never blocks a create, and the hard
+         *     guards (the name/DOB/father composite index and the national_id blind index)
+         *     still return 409 on the create itself.
+         *
+         *     Gated to the orphan-creator roles (same as ``POST /orphans``) and org-scoped,
+         *     mirroring the duplicate pre-check in
+         *     :func:`~app.services.orphans._find_duplicate`. Registered before the
+         *     ``/{orphan_id}`` route so ``name-matches`` is never parsed as an id. Only the
+         *     non-sensitive identity fields are returned — never ``national_id``.
+         */
+        get: operations["list_orphan_name_matches_api_v1_orphans_name_matches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}": {
         parameters: {
             query?: never;
@@ -4813,6 +4848,36 @@ export interface components {
             message_type: string;
             /** Moderation Status */
             moderation_status: string;
+        };
+        /**
+         * OrphanNameMatch
+         * @description One soft-duplicate hit for the advisory name-matches lookup
+         *     (``GET /orphans/name-matches``).
+         *
+         *     The staff create form calls that endpoint before registering an orphan that
+         *     carries no ``national_id`` and, if it returns any rows, warns that a child
+         *     with this name already exists so the user can confirm it is not a duplicate.
+         *     This shape carries ONLY the non-sensitive identity fields needed to eyeball
+         *     that — the ``code`` (so the existing record can be opened), the name parts
+         *     and the date of birth. It deliberately NEVER exposes ``national_id`` (or its
+         *     blind index): the advisory is name-only, and the id stays write-only as
+         *     everywhere else. ``father_name`` is nullable to match legacy rows (the model
+         *     column allows NULL even though the create schema requires it).
+         */
+        OrphanNameMatch: {
+            /** Code */
+            code: string;
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Family Name */
+            family_name: string;
+            /** Father Name */
+            father_name: string | null;
+            /** First Name */
+            first_name: string;
         };
         /** OrphanPhoto */
         OrphanPhoto: {
@@ -9516,6 +9581,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_orphan_name_matches_api_v1_orphans_name_matches_get: {
+        parameters: {
+            query: {
+                first_name: string;
+                family_name: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanNameMatch"][];
                 };
             };
             /** @description Validation Error */

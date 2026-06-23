@@ -229,6 +229,30 @@ class OrphanUpdate(BaseModel):
     orphanage_id: UUID | None = None
 
 
+class OrphanNameMatch(BaseModel):
+    """One soft-duplicate hit for the advisory name-matches lookup
+    (``GET /orphans/name-matches``).
+
+    The staff create form calls that endpoint before registering an orphan that
+    carries no ``national_id`` and, if it returns any rows, warns that a child
+    with this name already exists so the user can confirm it is not a duplicate.
+    This shape carries ONLY the non-sensitive identity fields needed to eyeball
+    that — the ``code`` (so the existing record can be opened), the name parts
+    and the date of birth. It deliberately NEVER exposes ``national_id`` (or its
+    blind index): the advisory is name-only, and the id stays write-only as
+    everywhere else. ``father_name`` is nullable to match legacy rows (the model
+    column allows NULL even though the create schema requires it).
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    code: str
+    first_name: str
+    father_name: str | None
+    family_name: str
+    date_of_birth: date
+
+
 class OrphanRead(OrphanBase):
     model_config = ConfigDict(from_attributes=True)
 

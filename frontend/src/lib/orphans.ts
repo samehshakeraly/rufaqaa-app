@@ -189,6 +189,32 @@ export async function createOrphan(payload: OrphanCreateInput): Promise<Orphan> 
   return data;
 }
 
+/** One soft duplicate-name match from {@link findOrphanNameMatches}. Carries
+ * only the non-sensitive identity fields the advisory dialog shows — never a
+ * national_id. Mirrors schema.gen.ts OrphanNameMatch. */
+export interface OrphanNameMatch {
+  code: string;
+  first_name: string;
+  father_name: string | null;
+  family_name: string;
+  date_of_birth: string;
+}
+
+/** Advisory soft duplicate-name lookup (staff create form only). Returns the
+ * non-deleted orphans in the caller's org whose first + family name match
+ * (case-insensitive). The form calls this BEFORE submitting an orphan that has
+ * no national_id, and warns when it returns ≥1 match. Purely advisory — the
+ * server's hard 409 guards still apply on the create itself. */
+export async function findOrphanNameMatches(
+  firstName: string,
+  familyName: string,
+): Promise<OrphanNameMatch[]> {
+  const { data } = await api.get<OrphanNameMatch[]>("/orphans/name-matches", {
+    params: { first_name: firstName, family_name: familyName },
+  });
+  return data;
+}
+
 export async function getOrphan(id: string): Promise<Orphan> {
   const { data } = await api.get<Orphan>(`/orphans/${id}`);
   return data;

@@ -32,6 +32,7 @@ from app.schemas.orphan import (
     EducationStage,
     HealthStatus,
     OrphanCreate,
+    OrphanNameMatch,
     OrphanRead,
     OrphanSort,
     OrphanUpdate,
@@ -43,6 +44,7 @@ from app.services.orphans import (
     _assert_orphanage_in_org,
     _assert_orphanage_in_partner_org,
     create_orphan_record,
+    find_name_matches,
     recompute_profile_completion,
     stamp_available_since,
 )
@@ -287,6 +289,34 @@ async def create_orphan(
         orphanage_id=payload.orphanage_id,
     )
     return OrphanRead.model_validate(orphan)
+
+
+@router.get("/name-matches", response_model=list[OrphanNameMatch])
+async def list_orphan_name_matches(
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*ORPHAN_CREATOR_ROLES))],
+    first_name: Annotated[str, Query(min_length=1, max_length=100)],
+    family_name: Annotated[str, Query(min_length=1, max_length=100)],
+) -> list[OrphanNameMatch]:
+    """Advisory soft-duplicate lookup behind the staff registration form.
+
+    Returns the non-deleted orphans in the caller's organization whose
+    ``first_name`` + ``family_name`` match (case-insensitive). The form calls
+    this BEFORE submitting an orphan that carries no ``national_id``: when it
+    returns any rows, the form warns that a child with this name already exists
+    and lets the user confirm it is not a duplicate before proceeding. It is
+    purely advisory and read-only — it never blocks a create, and the hard
+    guards (the name/DOB/father composite index and the national_id blind index)
+    still return 409 on the create itself.
+
+    Gated to the orphan-creator roles (same as ``POST /orphans``) and org-scoped,
+    mirroring the duplicate pre-check in
+    :func:`~app.services.orphans._find_duplicate`. Registered before the
+    ``/{orphan_id}`` route so ``name-matches`` is never parsed as an id. Only the
+    non-sensitive identity fields are returned — never ``national_id``.
+    """
+    matches = await find_name_matches(db, user.organization_id, first_name, family_name)
+    return [OrphanNameMatch.model_validate(m) for m in matches]
 
 
 _CSV_COLUMNS = (
