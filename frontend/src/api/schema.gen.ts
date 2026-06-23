@@ -3784,6 +3784,10 @@ export interface components {
             id: string;
             /** Income Currency */
             income_currency?: string | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
             /** Monthly Income */
             monthly_income?: string | null;
             /** Notes */
@@ -4752,12 +4756,14 @@ export interface components {
          *     path when the child lives with family (``lives_with`` ∈ {mother, relative}).
          *
          *     Every field is optional and whitespace-trimmed (model config). When at least
-         *     one is non-empty AND the create payload pins no ``family_id``, the staff
-         *     create service materialises a :class:`~app.models.family.Family` from this
-         *     address in the same transaction and links the orphan to it (see
-         *     ``services.orphans.create_orphan_record``). An all-empty address creates no
-         *     family; a supplied ``family_id`` makes this block a no-op. These columns
-         *     already exist on ``families`` (migration 0021) — no new migration.
+         *     one address field is non-empty — OR a GPS ``latitude``/``longitude`` pair is
+         *     supplied — AND the create payload pins no ``family_id``, the staff create
+         *     service materialises a :class:`~app.models.family.Family` from this block in
+         *     the same transaction and links the orphan to it (see
+         *     ``services.orphans.create_orphan_record``). An all-empty block creates no
+         *     family; a supplied ``family_id`` makes this block a no-op. The address
+         *     columns already exist on ``families`` (migration 0021) and the GPS pair lands
+         *     in the existing ``families.coordinates`` POINT — no new migration.
          */
         OrphanHomeAddress: {
             /** City */
@@ -4768,6 +4774,10 @@ export interface components {
             floor?: string | null;
             /** House Number */
             house_number?: string | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
             /** Street */
             street?: string | null;
             /** Village */

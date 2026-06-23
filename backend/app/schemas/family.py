@@ -55,6 +55,12 @@ class FamilyRead(FamilyBase):
     partner_organization_id: UUID | None
     created_at: datetime
     updated_at: datetime
+    # GPS (PR E) — derived on read from the family's ``coordinates`` POINT via
+    # ``ST_Y``/``ST_X`` (see api.v1.families); the raw geometry is NEVER exposed.
+    # NULL coordinates → null lat/lng. Not ORM attributes, so they default to
+    # None on ``model_validate`` and the read endpoints fill them in.
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class GuardianBase(BaseModel):

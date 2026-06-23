@@ -107,9 +107,10 @@ export interface OrphanCreateInput {
   mother_name?: string;
   lives_with?: LivesWith;
   /** Optional family-residence address — STAFF path only. When it carries ≥1
-   * non-empty field and no family_id is set, the API materialises a Family from
-   * it (in the orphan's transaction) and links the orphan. Mirrors
-   * schema.gen.ts OrphanHomeAddress. */
+   * non-empty field (or a GPS latitude/longitude pair) and no family_id is set,
+   * the API materialises a Family from it (in the orphan's transaction) and
+   * links the orphan. The GPS pair lands in the family's existing PostGIS
+   * coordinates point. Mirrors schema.gen.ts OrphanHomeAddress. */
   home_address?: {
     city?: string;
     village?: string;
@@ -117,6 +118,9 @@ export interface OrphanCreateInput {
     street?: string;
     house_number?: string;
     floor?: string;
+    /** WGS84 coordinates — both-or-neither (the API rejects a lone axis). */
+    latitude?: number;
+    longitude?: number;
   };
   // Extended profile fields (all optional). Mirror schema.gen.ts
   // OrphanCreate / GuardianOrphanCreate.

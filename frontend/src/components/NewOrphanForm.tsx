@@ -98,6 +98,17 @@ function toLatinDigits(value: string): string {
 // time (truthiness gate), so we never send "" to the API.
 const optionalText = z.string().trim().optional();
 
+// Coerce a numeric form input to `number | undefined` for an optional field:
+// empty / null / unparseable → undefined (treated as "not provided"); otherwise
+// the parsed number. Used by the GPS latitude/longitude inputs so a blank or
+// half-typed value never trips the range/number checks — only a real number is
+// validated, and 0 (a valid coordinate) survives.
+function coerceOptionalNumber(value: unknown): number | undefined {
+  if (value === "" || value === undefined || value === null) return undefined;
+  const n = Number(value);
+  return Number.isNaN(n) ? undefined : n;
+}
+
 // father_name is REQUIRED (domain rule: an orphan is defined by their father).
 // partner_organization_id is only collected on the staff path; the guardian
 // portal derives it server-side, so it is dropped from validation there.
@@ -248,6 +259,41 @@ function makeSchema(
         floor: optionalText,
       })
       .optional(),
+    // GPS (family-residence coordinates) — STAFF path only, shown when the
+    // selected country's requirements set requires_gps (independent of
+    // lives_with). Numeric & optional; empty / unparseable normalises to
+    // undefined so a blank field never blocks submit. WGS84 ranges here; the
+    // both-or-neither rule is the object-level refine below. Submitted INSIDE the
+    // home_address payload so the family-create flow persists them.
+    latitude: z.preprocess(
+      coerceOptionalNumber,
+      z
+        .number()
+        .min(-90, { message: t("orphans.gps.errors.latRange") })
+        .max(90, { message: t("orphans.gps.errors.latRange") })
+        .optional(),
+    ),
+    longitude: z.preprocess(
+      coerceOptionalNumber,
+      z
+        .number()
+        .min(-180, { message: t("orphans.gps.errors.lngRange") })
+        .max(180, { message: t("orphans.gps.errors.lngRange") })
+        .optional(),
+    ),
+  }).superRefine((val, ctx) => {
+    // Both-or-neither: a lone latitude or longitude can't form a point. Flag the
+    // empty axis so the message lands next to the field the user still needs to
+    // fill (mirrors the server's 422, which is the real authority).
+    const hasLat = val.latitude !== undefined;
+    const hasLng = val.longitude !== undefined;
+    if (hasLat !== hasLng) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [hasLat ? "longitude" : "latitude"],
+        message: t("orphans.gps.errors.bothOrNeither"),
+      });
+    }
   });
 }
 
@@ -430,6 +476,13 @@ export function NewOrphanForm({
       resetField("water_source");
       resetField("malnutrition_status");
       resetField("child_labor");
+      // GPS too: clear any captured coordinates (and their error) so a value
+      // entered for a previous country can't linger or slip into a later submit.
+      // The visibility gate hides the section when the new country has no
+      // requires_gps; this guarantees the values are gone as well as hidden.
+      resetField("latitude");
+      resetField("longitude");
+      setGeoError(null);
     }
     prevCountry.current = countryCode;
   }, [countryCode, resetField]);
@@ -440,6 +493,12 @@ export function NewOrphanForm({
   const livesWith = watch("lives_with");
   const showHomeAddress =
     showPartnerSelect && FAMILY_RESIDENCE_LIVES_WITH.has(livesWith ?? "");
+
+  // GPS capture — STAFF path only, gated on the country's requires_gps flag and
+  // INDEPENDENT of lives_with (a child in an orphanage may still need the family
+  // home pinned). Feeds the SAME home_address payload as the address above, so
+  // the family-create flow persists the pair into the family's coordinates.
+  const showGps = showPartnerSelect && countryFlags.requires_gps;
 
   // When lives_with leaves {mother, relative}, hide AND clear the home-address
   // fields (react-hook-form keeps unmounted values by default) so a residence
@@ -461,6 +520,35 @@ export function NewOrphanForm({
   // Guardians get a lighter form: the three sensitive fields below are hidden
   // and never registered, so they can't be submitted.
   const isStaff = audience === "staff";
+
+  // GPS "use my location" UI state. The fields themselves live in react-hook-
+  // form; these only drive the button's busy/error feedback.
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+
+  // Fill latitude/longitude from the browser geolocation API. Failures (denied,
+  // unsupported, timeout) surface a non-blocking message — the user can always
+  // type the coordinates by hand, and the values are validated like any field.
+  function requestLocation() {
+    setGeoError(null);
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGeoError(t("orphans.gps.errors.unavailable"));
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setValue("latitude", pos.coords.latitude, { shouldValidate: true });
+        setValue("longitude", pos.coords.longitude, { shouldValidate: true });
+        setLocating(false);
+      },
+      () => {
+        setGeoError(t("orphans.gps.errors.unavailable"));
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }
 
   // Tags are a string[] edited as chips — managed outside react-hook-form.
   const [tags, setTags] = useState<string[]>([]);
@@ -496,6 +584,7 @@ export function NewOrphanForm({
       }
       setTags([]);
       setTagInput("");
+      setGeoError(null); // clear any stale "use my location" error
       setCountryCode(""); // drop the resolved requirements so the next case starts clean
       await onCreated(created);
     },
@@ -548,6 +637,14 @@ export function NewOrphanForm({
       if (ha.street) homeAddress.street = ha.street;
       if (ha.house_number) homeAddress.house_number = ha.house_number;
       if (ha.floor) homeAddress.floor = ha.floor;
+    }
+    // GPS — sent only when the section is live (staff + requires_gps) AND both
+    // axes are present (both-or-neither is enforced in the schema). Rides inside
+    // home_address so the family-create flow persists them; a GPS-only submit
+    // (no address fields) still materialises the family server-side.
+    if (showGps && v.latitude !== undefined && v.longitude !== undefined) {
+      homeAddress.latitude = v.latitude;
+      homeAddress.longitude = v.longitude;
     }
     const payload: OrphanCreateInput = {
       first_name: v.first_name,
@@ -860,9 +957,49 @@ export function NewOrphanForm({
         </Section>
       )}
 
+      {/* ── GPS (family-residence coordinates) ─────────────── */}
+      {/* STAFF path only, shown when the selected country requires GPS — and
+          INDEPENDENT of lives_with. The pair rides inside the home_address
+          payload and lands in the family's existing PostGIS coordinates point. */}
+      {showGps && (
+        <Section title={t("orphans.gps.section")}>
+          <Field label={t("orphans.gps.latitude")} error={errors.latitude?.message}>
+            <input
+              type="number"
+              step="any"
+              inputMode="decimal"
+              className="input"
+              {...register("latitude")}
+            />
+          </Field>
+          <Field label={t("orphans.gps.longitude")} error={errors.longitude?.message}>
+            <input
+              type="number"
+              step="any"
+              inputMode="decimal"
+              className="input"
+              {...register("longitude")}
+            />
+          </Field>
+          <div className="sm:col-span-2">
+            <button
+              type="button"
+              className="rounded-lg border border-sky px-3 py-2 text-sm text-gray-700 hover:bg-tranquil disabled:opacity-60"
+              onClick={requestLocation}
+              disabled={locating}
+            >
+              {locating ? t("orphans.gps.locating") : t("orphans.gps.useMyLocation")}
+            </button>
+            {geoError && <p className="mt-1 text-xs text-warning-700">{geoError}</p>}
+            <p className="mt-1 text-xs text-gray-500">{t("orphans.gps.hint")}</p>
+          </div>
+        </Section>
+      )}
+
       {/* ── Country-specific (conflict / WASH) ─────────────── */}
-      {/* Rendered only for flags THIS form can persist. requires_gps and
-          show_housing are family-level (separate flow) and out of scope here. */}
+      {/* Rendered only for flags THIS form can persist. requires_gps is handled
+          by the GPS section above; show_housing stays a family-level (separate
+          flow) concern, out of scope here. */}
       {(countryFlags.show_conflict_fields || countryFlags.show_wash_fields) && (
         <Section title={t("orphans.countrySpecific.section")}>
           {countryFlags.show_conflict_fields && (
