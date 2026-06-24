@@ -23,11 +23,21 @@ export type OrphanageProfile = components["schemas"]["OrphanageRead"];
  * No financial figures, no donor or partner identity. */
 export type OrphanageResident = components["schemas"]["OrphanageOrphanRead"];
 
-/** A monthly report for one of the dar's residents (full ReportRead). */
+/** A report for one of the dar's residents (meta-only ReportRead). */
 export type OrphanageReport = components["schemas"]["ReportRead"];
 
-/** Body for POST /orphanage/me/reports. */
+/** Body for POST /orphanage/me/reports. The structured shape the manager
+ * authoring form sends: report meta, the five canonical typed sections
+ * (each optional), a per-section donor-visibility map, a note to the
+ * sponsor (`donor_message`), and milestone flagging. */
 export type OrphanageReportInput = components["schemas"]["OrphanageReportCreate"];
+
+/** Canonical typed report sections, re-exported for the authoring form. */
+export type EducationProgress = components["schemas"]["EducationProgress"];
+export type QuranProgress = components["schemas"]["QuranProgress"];
+export type ActivitiesSection = components["schemas"]["ActivitiesSection"];
+export type HealthStatus = components["schemas"]["HealthStatus"];
+export type PsychologicalStatus = components["schemas"]["PsychologicalStatus"];
 
 export type ReportStatus = OrphanageReport["status"];
 export type ReportType = OrphanageReport["report_type"];
@@ -58,10 +68,13 @@ export async function listOrphanageReports(
   return data;
 }
 
-/** POST /orphanage/me/reports — creates a report that lands directly in
- * `pending_partner_approval`, so it surfaces in the staff review queue and the
- * manager sees the pending→approved/rejected status back on the orphan page.
- * The backend 403s if the orphan isn't a resident of the manager's dar. */
+/** POST /orphanage/me/reports — submit a structured report. It lands directly
+ * in `pending_partner_approval`, so it surfaces in the staff review queue and
+ * the manager sees the pending→approved/rejected status back on the orphan
+ * page. Sections left empty are sent as `null`; `section_visibility` carries
+ * only the sections the manager chose to hide (`false`) — everything else is
+ * shown to the sponsor by default. The backend 403s if the orphan isn't a
+ * resident of the manager's dar. */
 export async function createOrphanageReport(
   body: OrphanageReportInput,
 ): Promise<OrphanageReport> {

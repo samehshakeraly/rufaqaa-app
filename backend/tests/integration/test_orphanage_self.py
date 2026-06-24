@@ -13,6 +13,7 @@ from httpx import AsyncClient
 from sqlalchemy import text
 
 from app.core.database import make_session
+from app.models.report import OrphanReport
 
 # ── Helpers ────────────────────────────────────────────────────────────
 
@@ -293,6 +294,123 @@ async def test_manager_submits_report_for_resident(
     r = await api.get(f"/api/v1/orphanage/me/reports?orphan_id={resident}", headers=headers)
     assert r.status_code == 200
     assert any(item["id"] == created["id"] for item in r.json())
+
+
+async def test_manager_submits_rich_report_persists_all_fields(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A structured submission — typed sections, per-section visibility (one
+    section hidden), a note to the sponsor, and a milestone flag — must land on
+    the orphan_reports row exactly as sent (the ReportRead response is meta-only,
+    so we read the row back to assert the JSONB + scalar columns)."""
+    dar_id, headers = await _create_manager_and_orphanage(api, auth_headers)
+    resident = await _make_resident_orphan(api, auth_headers, dar_id)
+
+    body: dict[str, object] = {
+        "orphan_id": resident,
+        "report_type": "quarterly",
+        "period_start": "2026-04-01",
+        "period_end": "2026-06-30",
+        "summary": "ربع هادئ ومثمر",
+        "educational_progress": {
+            "stage": "الصف الرابع",
+            "school_name": "مدرسة النور",
+            "overall_rating": "very_good",
+            "attendance_percent": 95,
+            "subjects": [
+                {"name": "الرياضيات", "grade": "A"},
+                {"name": "العربية"},
+            ],
+            "note": "تحسّن ملحوظ",
+        },
+        "quran_progress": {
+            "juz_memorized": 5,
+            "current_juz": 6,
+            "evaluation": "good",
+            "recent": "سورة الكهف",
+            "note": "مواظب",
+        },
+        "activities": {
+            "items": [{"title": "كرة القدم", "note": "كل سبت"}],
+            "note": "نشيط اجتماعياً",
+        },
+        "health_status": {"general": "good", "note": "لا شكاوى"},
+        "psychological_status": {"mood": "good", "social": "improving", "note": "أكثر انفتاحاً"},
+        "donor_message": "ابنكم بخير ويشكر دعمكم",
+        "is_milestone": True,
+        "milestone_label": "أتمّ الجزء الخامس",
+        # Only the hidden section is sent; the rest stay visible by default.
+        "section_visibility": {"health": False},
+    }
+    r = await api.post("/api/v1/orphanage/me/reports", json=body, headers=headers)
+    assert r.status_code == 201, r.text
+    created = r.json()
+    assert created["status"] == "pending_partner_approval"
+    assert created["submitted_at"] is not None
+    assert created["report_type"] == "quarterly"
+
+    # Read the row straight back via the ORM (JSONB columns deserialise to dicts).
+    async with make_session() as db:
+        report = await db.get(OrphanReport, uuid.UUID(created["id"]))
+        assert report is not None
+
+        assert report.educational_progress is not None
+        assert report.educational_progress["overall_rating"] == "very_good"
+        assert report.educational_progress["attendance_percent"] == 95
+        # The grade-less subject round-trips with grade=None (model_dump keeps it).
+        assert report.educational_progress["subjects"] == [
+            {"name": "الرياضيات", "grade": "A"},
+            {"name": "العربية", "grade": None},
+        ]
+
+        assert report.quran_progress is not None
+        assert report.quran_progress["juz_memorized"] == 5
+        assert report.quran_progress["current_juz"] == 6
+        assert report.quran_progress["evaluation"] == "good"
+
+        assert report.activities is not None
+        assert report.activities["items"] == [{"title": "كرة القدم", "note": "كل سبت"}]
+
+        assert report.health_status is not None
+        assert report.health_status["general"] == "good"
+
+        assert report.psychological_status is not None
+        assert report.psychological_status["mood"] == "good"
+        assert report.psychological_status["social"] == "improving"
+
+        assert report.donor_message == "ابنكم بخير ويشكر دعمكم"
+        assert report.is_milestone is True
+        assert report.milestone_label == "أتمّ الجزء الخامس"
+        # Hidden-only map persists verbatim ("visible unless explicitly false").
+        assert report.section_visibility == {"health": False}
+
+
+async def test_manager_report_defaults_visibility_to_empty_map(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """When the manager sends no section_visibility, the column defaults to an
+    empty map ⇒ every section is visible (the product default)."""
+    dar_id, headers = await _create_manager_and_orphanage(api, auth_headers)
+    resident = await _make_resident_orphan(api, auth_headers, dar_id)
+
+    r = await api.post(
+        "/api/v1/orphanage/me/reports",
+        json={
+            "orphan_id": resident,
+            "report_type": "monthly",
+            "period_start": "2026-05-01",
+            "period_end": "2026-05-31",
+            "summary": "بلا أقسام",
+        },
+        headers=headers,
+    )
+    assert r.status_code == 201, r.text
+    async with make_session() as db:
+        report = await db.get(OrphanReport, uuid.UUID(r.json()["id"]))
+        assert report is not None
+        assert report.section_visibility == {}
+        assert report.is_milestone is False
+        assert report.educational_progress is None
 
 
 async def test_manager_submit_report_rejects_bad_period(

@@ -4581,35 +4581,49 @@ components:
       title: OrphanageRead
       type: object
     OrphanageReportCreate:
-      description: 'Body for a manager-submitted monthly report.
+      description: 'Body for a manager-submitted report.
 
 
-        Identical to `GuardianReportCreate`: lands directly in
+        Lands directly in ``pending_partner_approval`` (the manager''s act of
 
-        ``pending_partner_approval`` (the manager''s act of sending IS the
+        sending IS the submission) and surfaces in the existing staff review
 
-        submission) and surfaces in the existing staff review queue. Text-only
+        queue. The five sections reuse the canonical typed models from
 
-        for this cut; photo/voice attachments are deferred.'
+        ``app.schemas.report`` (validated at the boundary, persisted as plain
+
+        JSONB) and carry the same donor-facing extras a supervisor controls:
+
+        a per-section visibility map, a note to the sponsor, and milestone
+
+        flagging. Photo/voice attachments are still deferred.'
       properties:
         activities:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/ActivitiesSection'
           - type: 'null'
-          title: Activities
+        donor_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Message
         educational_progress:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/EducationProgress'
           - type: 'null'
-          title: Educational Progress
         health_status:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/HealthStatus'
           - type: 'null'
-          title: Health Status
+        is_milestone:
+          default: false
+          title: Is Milestone
+          type: boolean
+        milestone_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Label
         orphan_id:
           format: uuid
           title: Orphan Id
@@ -4624,16 +4638,12 @@ components:
           type: string
         psychological_status:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/PsychologicalStatus'
           - type: 'null'
-          title: Psychological Status
         quran_progress:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/QuranProgress'
           - type: 'null'
-          title: Quran Progress
         report_type:
           default: monthly
           enum:
@@ -4644,6 +4654,13 @@ components:
           - incident
           title: Report Type
           type: string
+        section_visibility:
+          anyOf:
+          - additionalProperties:
+              type: boolean
+            type: object
+          - type: 'null'
+          title: Section Visibility
         summary:
           anyOf:
           - type: string
