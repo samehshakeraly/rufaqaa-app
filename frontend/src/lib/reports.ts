@@ -1,5 +1,14 @@
+import type { components } from "@/api/schema.gen";
+
 import { api } from "./api";
 import type { Page } from "./orphans";
+
+/** DONOR-SAFE projection of a published report. Generated from the
+ * backend OpenAPI schema — carries only the sections a supervisor chose
+ * to show (hidden ones arrive as `null`), plus the donor-facing
+ * `summary`, `donor_message`, milestone flags, and provenance dates.
+ * Reuse this directly; never redefine the section shapes. */
+export type ReportDonorRead = components["schemas"]["ReportDonorRead"];
 
 export type ReportStatus =
   | "draft"
@@ -51,8 +60,10 @@ export async function listReports(params?: {
 export async function listMyReports(params?: {
   limit?: number;
   offset?: number;
-}): Promise<Page<Report>> {
-  const { data } = await api.get<Page<Report>>("/me/reports", { params });
+}): Promise<Page<ReportDonorRead>> {
+  const { data } = await api.get<Page<ReportDonorRead>>("/me/reports", {
+    params,
+  });
   return data;
 }
 
