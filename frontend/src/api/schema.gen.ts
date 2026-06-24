@@ -1527,10 +1527,11 @@ export interface paths {
         put?: never;
         /**
          * Create My Resident Report
-         * @description Manager submits a monthly report for one of their resident orphans.
+         * @description Manager submits a structured report for one of their resident orphans.
          *
-         *     Identical in shape to `POST /guardian/me/reports`: the report is created
-         *     **directly in ``pending_partner_approval``** with
+         *     Richer than `POST /guardian/me/reports` (full typed sections + donor
+         *     visibility + sponsor note + milestone), but it follows the same workflow:
+         *     the report is created **directly in ``pending_partner_approval``** with
          *     ``submitted_by``/``submitted_at`` set, so it appears at once in the staff
          *     ``PartnerReportsReview`` queue and rides the existing approve/reject
          *     workflow — no fork. A non-resident orphan → 403; a caller who manages no
@@ -5259,26 +5260,29 @@ export interface components {
         };
         /**
          * OrphanageReportCreate
-         * @description Body for a manager-submitted monthly report.
+         * @description Body for a manager-submitted report.
          *
-         *     Identical to `GuardianReportCreate`: lands directly in
-         *     ``pending_partner_approval`` (the manager's act of sending IS the
-         *     submission) and surfaces in the existing staff review queue. Text-only
-         *     for this cut; photo/voice attachments are deferred.
+         *     Lands directly in ``pending_partner_approval`` (the manager's act of
+         *     sending IS the submission) and surfaces in the existing staff review
+         *     queue. The five sections reuse the canonical typed models from
+         *     ``app.schemas.report`` (validated at the boundary, persisted as plain
+         *     JSONB) and carry the same donor-facing extras a supervisor controls:
+         *     a per-section visibility map, a note to the sponsor, and milestone
+         *     flagging. Photo/voice attachments are still deferred.
          */
         OrphanageReportCreate: {
-            /** Activities */
-            activities?: {
-                [key: string]: unknown;
-            } | null;
-            /** Educational Progress */
-            educational_progress?: {
-                [key: string]: unknown;
-            } | null;
-            /** Health Status */
-            health_status?: {
-                [key: string]: unknown;
-            } | null;
+            activities?: components["schemas"]["ActivitiesSection"] | null;
+            /** Donor Message */
+            donor_message?: string | null;
+            educational_progress?: components["schemas"]["EducationProgress"] | null;
+            health_status?: components["schemas"]["HealthStatus"] | null;
+            /**
+             * Is Milestone
+             * @default false
+             */
+            is_milestone: boolean;
+            /** Milestone Label */
+            milestone_label?: string | null;
             /**
              * Orphan Id
              * Format: uuid
@@ -5294,20 +5298,18 @@ export interface components {
              * Format: date
              */
             period_start: string;
-            /** Psychological Status */
-            psychological_status?: {
-                [key: string]: unknown;
-            } | null;
-            /** Quran Progress */
-            quran_progress?: {
-                [key: string]: unknown;
-            } | null;
+            psychological_status?: components["schemas"]["PsychologicalStatus"] | null;
+            quran_progress?: components["schemas"]["QuranProgress"] | null;
             /**
              * Report Type
              * @default monthly
              * @enum {string}
              */
             report_type: "monthly" | "quarterly" | "annual" | "special" | "incident";
+            /** Section Visibility */
+            section_visibility?: {
+                [key: string]: boolean;
+            } | null;
             /** Summary */
             summary?: string | null;
         };

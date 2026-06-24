@@ -29,7 +29,7 @@ than 404, so we signal "you can't touch this" loudly.
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -44,7 +44,15 @@ from app.models.orphanage import Orphanage
 from app.models.report import OrphanReport
 from app.models.user import User
 from app.schemas.orphanage import OrphanageRead
-from app.schemas.report import ReportRead, ReportType
+from app.schemas.report import (
+    ActivitiesSection,
+    EducationProgress,
+    HealthStatus,
+    PsychologicalStatus,
+    QuranProgress,
+    ReportRead,
+    ReportType,
+)
 
 router = APIRouter()
 
@@ -71,12 +79,15 @@ class OrphanageOrphanRead(BaseModel):
 
 
 class OrphanageReportCreate(BaseModel):
-    """Body for a manager-submitted monthly report.
+    """Body for a manager-submitted report.
 
-    Identical to `GuardianReportCreate`: lands directly in
-    ``pending_partner_approval`` (the manager's act of sending IS the
-    submission) and surfaces in the existing staff review queue. Text-only
-    for this cut; photo/voice attachments are deferred.
+    Lands directly in ``pending_partner_approval`` (the manager's act of
+    sending IS the submission) and surfaces in the existing staff review
+    queue. The five sections reuse the canonical typed models from
+    ``app.schemas.report`` (validated at the boundary, persisted as plain
+    JSONB) and carry the same donor-facing extras a supervisor controls:
+    a per-section visibility map, a note to the sponsor, and milestone
+    flagging. Photo/voice attachments are still deferred.
     """
 
     orphan_id: UUID
@@ -84,11 +95,15 @@ class OrphanageReportCreate(BaseModel):
     period_start: date
     period_end: date
     summary: str | None = None
-    educational_progress: dict[str, Any] | None = None
-    quran_progress: dict[str, Any] | None = None
-    activities: dict[str, Any] | None = None
-    health_status: dict[str, Any] | None = None
-    psychological_status: dict[str, Any] | None = None
+    educational_progress: EducationProgress | None = None
+    quran_progress: QuranProgress | None = None
+    activities: ActivitiesSection | None = None
+    health_status: HealthStatus | None = None
+    psychological_status: PsychologicalStatus | None = None
+    donor_message: str | None = None
+    is_milestone: bool = False
+    milestone_label: str | None = None
+    section_visibility: dict[str, bool] | None = None
 
 
 # ── Helpers ────────────────────────────────────────────────────────────
@@ -223,10 +238,11 @@ async def create_my_resident_report(
     db: DbSession,
     user: CurrentUser,
 ) -> ReportRead:
-    """Manager submits a monthly report for one of their resident orphans.
+    """Manager submits a structured report for one of their resident orphans.
 
-    Identical in shape to `POST /guardian/me/reports`: the report is created
-    **directly in ``pending_partner_approval``** with
+    Richer than `POST /guardian/me/reports` (full typed sections + donor
+    visibility + sponsor note + milestone), but it follows the same workflow:
+    the report is created **directly in ``pending_partner_approval``** with
     ``submitted_by``/``submitted_at`` set, so it appears at once in the staff
     ``PartnerReportsReview`` queue and rides the existing approve/reject
     workflow — no fork. A non-resident orphan → 403; a caller who manages no
@@ -240,6 +256,10 @@ async def create_my_resident_report(
         )
     orphan = await _resident_or_error(db, orphanage, payload.orphan_id)
 
+    # Sections are typed at the boundary but persisted as plain JSONB — dump
+    # each provided section to a JSON-native dict (None stays None), exactly
+    # as the staff `reports.create_report` does.
+    dumped = payload.model_dump(mode="json")
     report = OrphanReport(
         organization_id=user.organization_id,
         orphan_id=orphan.id,
@@ -247,11 +267,18 @@ async def create_my_resident_report(
         period_start=payload.period_start,
         period_end=payload.period_end,
         summary=payload.summary,
-        educational_progress=payload.educational_progress,
-        quran_progress=payload.quran_progress,
-        activities=payload.activities,
-        health_status=payload.health_status,
-        psychological_status=payload.psychological_status,
+        educational_progress=dumped["educational_progress"],
+        quran_progress=dumped["quran_progress"],
+        activities=dumped["activities"],
+        health_status=dumped["health_status"],
+        psychological_status=dumped["psychological_status"],
+        donor_message=payload.donor_message,
+        is_milestone=payload.is_milestone,
+        milestone_label=payload.milestone_label,
+        # Default to "all sections visible" when the manager sends nothing.
+        section_visibility=(
+            payload.section_visibility if payload.section_visibility is not None else {}
+        ),
         status="pending_partner_approval",
         submitted_by=user.id,
         submitted_at=datetime.now(UTC),
