@@ -1061,7 +1061,8 @@ export interface paths {
         /**
          * My Reports
          * @description Reports for every orphan this donor sponsors — only the ones that
-         *     have actually been published to donors.
+         *     have actually been published to donors. Each report is projected through
+         *     its ``section_visibility`` so hidden sections never reach the donor.
          */
         get: operations["my_reports_api_v1_me_reports_get"];
         put?: never;
@@ -2957,6 +2958,20 @@ export interface components {
             /** Token */
             token: string;
         };
+        /** ActivitiesSection */
+        ActivitiesSection: {
+            /** Items */
+            items?: components["schemas"]["ActivityItem"][] | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** ActivityItem */
+        ActivityItem: {
+            /** Note */
+            note?: string | null;
+            /** Title */
+            title: string;
+        };
         /**
          * AdminInitiateOnBehalf
          * @description The admin sits with a present-but-digitally-unable donor, picks
@@ -3700,6 +3715,21 @@ export interface components {
             /** Whatsapp */
             whatsapp?: string | null;
         };
+        /** EducationProgress */
+        EducationProgress: {
+            /** Attendance Percent */
+            attendance_percent?: number | null;
+            /** Note */
+            note?: string | null;
+            /** Overall Rating */
+            overall_rating?: ("excellent" | "very_good" | "good" | "fair" | "needs_support") | null;
+            /** School Name */
+            school_name?: string | null;
+            /** Stage */
+            stage?: string | null;
+            /** Subjects */
+            subjects?: components["schemas"]["SubjectGrade"][] | null;
+        };
         /** EmailVerifyRequest */
         EmailVerifyRequest: {
             /** Token */
@@ -4207,6 +4237,13 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HealthStatus */
+        HealthStatus: {
+            /** General */
+            general?: ("good" | "stable" | "monitored" | "needs_attention") | null;
+            /** Note */
+            note?: string | null;
         };
         /** InboundWebhookLogRead */
         InboundWebhookLogRead: {
@@ -5451,10 +5488,21 @@ export interface components {
             /** Total */
             total: number;
         };
-        /** Page[ReportRead] */
-        Page_ReportRead_: {
+        /** Page[ReportDetailRead] */
+        Page_ReportDetailRead_: {
             /** Items */
-            items: components["schemas"]["ReportRead"][];
+            items: components["schemas"]["ReportDetailRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[ReportDonorRead] */
+        Page_ReportDonorRead_: {
+            /** Items */
+            items: components["schemas"]["ReportDonorRead"][];
             /** Limit */
             limit: number;
             /** Offset */
@@ -6078,6 +6126,15 @@ export interface components {
             /** Months */
             months: components["schemas"]["PlatformMonthlyPoint"][];
         };
+        /** PsychologicalStatus */
+        PsychologicalStatus: {
+            /** Mood */
+            mood?: ("good" | "okay" | "needs_attention") | null;
+            /** Note */
+            note?: string | null;
+            /** Social */
+            social?: ("excellent" | "good" | "improving" | "needs_support") | null;
+        };
         /**
          * PublicOrphanCard
          * @description Curated public projection of an orphan. Every field here was
@@ -6169,6 +6226,19 @@ export interface components {
             /** Orphans Sponsored */
             orphans_sponsored: number;
         };
+        /** QuranProgress */
+        QuranProgress: {
+            /** Current Juz */
+            current_juz?: number | null;
+            /** Evaluation */
+            evaluation?: ("mastered" | "very_good" | "good" | "needs_review") | null;
+            /** Juz Memorized */
+            juz_memorized?: number | null;
+            /** Note */
+            note?: string | null;
+            /** Recent */
+            recent?: string | null;
+        };
         /** RefreshRequest */
         RefreshRequest: {
             /** Refresh Token */
@@ -6176,18 +6246,18 @@ export interface components {
         };
         /** ReportCreate */
         ReportCreate: {
-            /** Activities */
-            activities?: {
-                [key: string]: unknown;
-            } | null;
-            /** Educational Progress */
-            educational_progress?: {
-                [key: string]: unknown;
-            } | null;
-            /** Health Status */
-            health_status?: {
-                [key: string]: unknown;
-            } | null;
+            activities?: components["schemas"]["ActivitiesSection"] | null;
+            /** Donor Message */
+            donor_message?: string | null;
+            educational_progress?: components["schemas"]["EducationProgress"] | null;
+            health_status?: components["schemas"]["HealthStatus"] | null;
+            /**
+             * Is Milestone
+             * @default false
+             */
+            is_milestone: boolean;
+            /** Milestone Label */
+            milestone_label?: string | null;
             /**
              * Orphan Id
              * Format: uuid
@@ -6203,23 +6273,187 @@ export interface components {
              * Format: date
              */
             period_start: string;
-            /** Psychological Status */
-            psychological_status?: {
-                [key: string]: unknown;
-            } | null;
-            /** Quran Progress */
-            quran_progress?: {
-                [key: string]: unknown;
-            } | null;
+            psychological_status?: components["schemas"]["PsychologicalStatus"] | null;
+            quran_progress?: components["schemas"]["QuranProgress"] | null;
             /**
              * Report Type
              * @enum {string}
              */
             report_type: "monthly" | "quarterly" | "annual" | "special" | "incident";
+            /** Section Visibility */
+            section_visibility?: {
+                [key: string]: boolean;
+            } | null;
             /** Summary */
             summary?: string | null;
         };
-        /** ReportRead */
+        /**
+         * ReportDetailRead
+         * @description Full INTERNAL / staff view — every :class:`ReportRead` field plus the
+         *     typed section content, the section-visibility map, and the donor-facing
+         *     extras. NEVER returned to donors (see :class:`ReportDonorRead`).
+         */
+        ReportDetailRead: {
+            activities: components["schemas"]["ActivitiesSection"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Documents Count */
+            documents_count: number;
+            /** Donor Message */
+            donor_message: string | null;
+            educational_progress: components["schemas"]["EducationProgress"] | null;
+            health_status: components["schemas"]["HealthStatus"] | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Milestone */
+            is_milestone: boolean;
+            /** Milestone Label */
+            milestone_label: string | null;
+            /** Org Approved At */
+            org_approved_at: string | null;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /** Partner Approved At */
+            partner_approved_at: string | null;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /** Photos Count */
+            photos_count: number;
+            psychological_status: components["schemas"]["PsychologicalStatus"] | null;
+            /** Published At */
+            published_at: string | null;
+            quran_progress: components["schemas"]["QuranProgress"] | null;
+            /** Rejection Reason */
+            rejection_reason: string | null;
+            /**
+             * Report Type
+             * @enum {string}
+             */
+            report_type: "monthly" | "quarterly" | "annual" | "special" | "incident";
+            /** Section Visibility */
+            section_visibility: {
+                [key: string]: boolean;
+            };
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "pending_partner_approval" | "partner_approved" | "pending_org_approval" | "org_approved" | "published_to_donor" | "rejected";
+            /** Submitted At */
+            submitted_at: string | null;
+            /** Summary */
+            summary: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Videos Count */
+            videos_count: number;
+        };
+        /**
+         * ReportDonorRead
+         * @description DONOR-SAFE projection. Carries only the sections a supervisor chose to
+         *     show (hidden ones arrive as ``null``) and NEVER exposes
+         *     ``section_visibility``. Built via :func:`app.api.v1.donor_portal` rather
+         *     than straight from the ORM row so the visibility filter is always applied.
+         */
+        ReportDonorRead: {
+            activities?: components["schemas"]["ActivitiesSection"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Documents Count */
+            documents_count: number;
+            /** Donor Message */
+            donor_message: string | null;
+            educational_progress?: components["schemas"]["EducationProgress"] | null;
+            health_status?: components["schemas"]["HealthStatus"] | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Milestone */
+            is_milestone: boolean;
+            /** Milestone Label */
+            milestone_label: string | null;
+            /** Org Approved At */
+            org_approved_at: string | null;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /** Partner Approved At */
+            partner_approved_at: string | null;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /** Photos Count */
+            photos_count: number;
+            psychological_status?: components["schemas"]["PsychologicalStatus"] | null;
+            /** Published At */
+            published_at: string | null;
+            quran_progress?: components["schemas"]["QuranProgress"] | null;
+            /**
+             * Report Type
+             * @enum {string}
+             */
+            report_type: "monthly" | "quarterly" | "annual" | "special" | "incident";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "pending_partner_approval" | "partner_approved" | "pending_org_approval" | "org_approved" | "published_to_donor" | "rejected";
+            /** Submitted At */
+            submitted_at: string | null;
+            /** Summary */
+            summary: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Videos Count */
+            videos_count: number;
+        };
+        /**
+         * ReportRead
+         * @description Lightweight meta-only view (no section content). Still used by the
+         *     guardian / orphanage self-portals and the report workflow transitions.
+         */
         ReportRead: {
             /**
              * Created At
@@ -6296,25 +6530,23 @@ export interface components {
          *     report is still in `draft` (the workflow refuses edits after submit).
          */
         ReportUpdate: {
-            /** Activities */
-            activities?: {
-                [key: string]: unknown;
-            } | null;
-            /** Educational Progress */
-            educational_progress?: {
-                [key: string]: unknown;
-            } | null;
-            /** Health Status */
-            health_status?: {
-                [key: string]: unknown;
-            } | null;
-            /** Psychological Status */
-            psychological_status?: {
-                [key: string]: unknown;
-            } | null;
-            /** Quran Progress */
-            quran_progress?: {
-                [key: string]: unknown;
+            activities?: components["schemas"]["ActivitiesSection"] | null;
+            /** Donor Message */
+            donor_message?: string | null;
+            educational_progress?: components["schemas"]["EducationProgress"] | null;
+            health_status?: components["schemas"]["HealthStatus"] | null;
+            /**
+             * Is Milestone
+             * @default false
+             */
+            is_milestone: boolean;
+            /** Milestone Label */
+            milestone_label?: string | null;
+            psychological_status?: components["schemas"]["PsychologicalStatus"] | null;
+            quran_progress?: components["schemas"]["QuranProgress"] | null;
+            /** Section Visibility */
+            section_visibility?: {
+                [key: string]: boolean;
             } | null;
             /** Summary */
             summary?: string | null;
@@ -6479,6 +6711,13 @@ export interface components {
             count: number;
             /** Status */
             status: string;
+        };
+        /** SubjectGrade */
+        SubjectGrade: {
+            /** Grade */
+            grade?: string | null;
+            /** Name */
+            name: string;
         };
         /** SuspendRequest */
         SuspendRequest: {
@@ -8625,7 +8864,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Page_ReportRead_"];
+                    "application/json": components["schemas"]["Page_ReportDonorRead_"];
                 };
             };
             /** @description Validation Error */
@@ -10791,7 +11030,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Page_ReportRead_"];
+                    "application/json": components["schemas"]["Page_ReportDetailRead_"];
                 };
             };
             /** @description Validation Error */
@@ -10855,7 +11094,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ReportRead"];
+                    "application/json": components["schemas"]["ReportDetailRead"];
                 };
             };
             /** @description Validation Error */

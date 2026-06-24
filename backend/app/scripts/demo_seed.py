@@ -858,19 +858,56 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                 if status == "published_to_donor" and submitted_at is not None:
                     partner_approved_at = submitted_at + timedelta(days=2)
                     published_at = submitted_at + timedelta(days=4)
+                # Donor-facing extras only matter once the report is published.
+                # All sections stay visible by default (section_visibility={}).
+                published = status == "published_to_donor"
                 rep = OrphanReport(
                     organization_id=org_id,
                     orphan_id=orphan.id,
                     report_type="monthly",
                     period_start=p_start,
                     period_end=p_end,
-                    educational_progress={"grade": "ممتاز", "attendance": "95%"},
-                    quran_progress={"memorized_juz": 2 + r},
-                    health_status={"general": "جيدة"},
+                    educational_progress={
+                        "stage": "ابتدائي",
+                        "school_name": "مدرسة الحي",
+                        "overall_rating": "excellent",
+                        "attendance_percent": 95,
+                        "subjects": [
+                            {"name": "اللغة العربية", "grade": "ممتاز"},
+                            {"name": "الرياضيات", "grade": "جيد جدًا"},
+                        ],
+                        "note": "تحسّن ملحوظ في القراءة هذا الشهر.",
+                    },
+                    quran_progress={
+                        "juz_memorized": 2 + r,
+                        "current_juz": 3 + r,
+                        "evaluation": "very_good",
+                        "recent": "سورة يس",
+                        "note": "يواظب على حلقة التحفيظ مرتين أسبوعيًا.",
+                    },
+                    activities={
+                        "items": [{"title": "نشاط رياضي", "note": None}],
+                        "note": "مشاركة جيدة",
+                    },
+                    health_status={"general": "good", "note": "الحالة الصحية مستقرة."},
+                    psychological_status={
+                        "mood": "good",
+                        "social": "good",
+                        "note": "اندماج جيد مع الأقران.",
+                    },
                     summary=(
                         f"تقرير شهري عن {orphan.first_name}: تحسّن ملحوظ في "
                         "الدراسة والحالة الصحية مستقرة، والحمد لله."
                     ),
+                    section_visibility={},
+                    donor_message=(
+                        f"نشكر لكم كفالتكم الكريمة لـ {orphan.first_name}؛ يتقدّم "
+                        "بثباتٍ ويذكركم بدعائه. جزاكم الله خيرًا."
+                    )
+                    if published
+                    else None,
+                    is_milestone=published and r == 1,
+                    milestone_label="أتمّ حفظ جزء جديد" if (published and r == 1) else None,
                     photos_count=rng.randint(1, 4),
                     documents_count=rng.randint(0, 2),
                     status=status,

@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import Date, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, Date, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -33,6 +33,16 @@ class OrphanReport(Base):
     health_status: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     psychological_status: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     summary: Mapped[str | None] = mapped_column(Text)
+
+    # Per-section donor visibility. A section is shown to donors UNLESS its key
+    # ("education"/"quran"/"activities"/"health"/"psychological") is explicitly
+    # False; an empty map ⇒ everything visible (the product default).
+    section_visibility: Mapped[dict[str, bool]] = mapped_column(JSONB, nullable=False, default=dict)
+    # Warm note from the supervisor to the sponsor, surfaced in the donor view.
+    donor_message: Mapped[str | None] = mapped_column(Text)
+    # Highlight flag + localized label for milestone reports (e.g. finished a juz).
+    is_milestone: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    milestone_label: Mapped[str | None] = mapped_column(Text)
 
     photos_count: Mapped[int] = mapped_column(Integer, default=0)
     videos_count: Mapped[int] = mapped_column(Integer, default=0)
