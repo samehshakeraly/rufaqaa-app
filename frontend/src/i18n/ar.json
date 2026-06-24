@@ -938,11 +938,16 @@
     "orphans": {
       "title": "أيتامي",
       "subtitle": "الأطفال الذين تكفلهم حالياً.",
-      "empty": "لم تبدأ كفالة بعد. تصفّح الأيتام المتاحين",
+      "empty": "لم تكفل طفلًا بعد — ابدأ رعاية يتيم اليوم.",
       "browse": "تصفّح الأيتام المتاحين",
       "viewDetail": "عرض التفاصيل",
       "monthlyAmount": "شهرياً",
-      "totalPaid": "إجمالي المدفوع"
+      "totalPaid": "إجمالي المدفوع",
+      "since": "ترعى {{name}} منذ {{duration}}",
+      "contribution": "ساهمتَ بـ {{amount}} {{currency}} من أجل {{name}}",
+      "monthlyDetail": "{{amount}} {{currency}} شهريًا",
+      "nextPayment": "دفعتك القادمة: {{date}}",
+      "overdueReminder": "حان موعد تجديد كفالتك لتستمرّ رعاية {{name}}."
     },
     "orphanDetail": {
       "back": "العودة إلى أيتامي",
