@@ -1527,10 +1527,11 @@ export interface paths {
         put?: never;
         /**
          * Create My Resident Report
-         * @description Manager submits a monthly report for one of their resident orphans.
+         * @description Manager submits a structured report for one of their resident orphans.
          *
-         *     Identical in shape to `POST /guardian/me/reports`: the report is created
-         *     **directly in ``pending_partner_approval``** with
+         *     Richer than `POST /guardian/me/reports` (full typed sections + donor
+         *     visibility + sponsor note + milestone), but it follows the same workflow:
+         *     the report is created **directly in ``pending_partner_approval``** with
          *     ``submitted_by``/``submitted_at`` set, so it appears at once in the staff
          *     ``PartnerReportsReview`` queue and rides the existing approve/reject
          *     workflow — no fork. A non-resident orphan → 403; a caller who manages no
