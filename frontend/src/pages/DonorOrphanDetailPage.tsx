@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
+import { formatDate, formatDuration, humanDuration } from "@/lib/format";
 import type { PublicOrphanDetail } from "@/lib/public";
 import { getPublicOrphan } from "@/lib/public";
 import type { ReportDonorRead } from "@/lib/reports";
@@ -859,47 +860,4 @@ function CheckIcon() {
       <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
-}
-
-function formatDate(value: string, lang: string): string {
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleDateString(lang, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-interface Duration {
-  years: number;
-  months: number;
-}
-
-/** Whole years + remaining months between `start` and now. Returns null
- * for an unparseable or future date. */
-function humanDuration(start: string): Duration | null {
-  const from = new Date(start);
-  if (Number.isNaN(from.getTime())) return null;
-  const now = new Date();
-  let months =
-    (now.getFullYear() - from.getFullYear()) * 12 +
-    (now.getMonth() - from.getMonth());
-  if (now.getDate() < from.getDate()) months -= 1;
-  if (months < 0) return null;
-  return { years: Math.floor(months / 12), months: months % 12 };
-}
-
-function formatDuration(
-  d: Duration,
-  t: (key: string, opts?: Record<string, unknown>) => string,
-): string {
-  if (d.years > 0 && d.months > 0)
-    return t("donorTimeline.durationYearsMonths", {
-      years: d.years,
-      months: d.months,
-    });
-  if (d.years > 0) return t("donorTimeline.durationYears", { years: d.years });
-  if (d.months > 0) return t("donorTimeline.durationMonths", { months: d.months });
-  return t("donorTimeline.durationNew");
 }

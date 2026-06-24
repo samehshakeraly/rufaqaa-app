@@ -938,11 +938,16 @@
     "orphans": {
       "title": "My orphans",
       "subtitle": "The children you currently sponsor.",
-      "empty": "You haven't started a sponsorship yet. Browse available orphans",
+      "empty": "You haven't sponsored a child yet — start caring for an orphan today.",
       "browse": "Browse available orphans",
       "viewDetail": "View details",
       "monthlyAmount": "Monthly",
-      "totalPaid": "Total paid"
+      "totalPaid": "Total paid",
+      "since": "You've been caring for {{name}} for {{duration}}",
+      "contribution": "You've given {{amount}} {{currency}} for {{name}}",
+      "monthlyDetail": "{{amount}} {{currency}} monthly",
+      "nextPayment": "Your next payment: {{date}}",
+      "overdueReminder": "It's time to renew your sponsorship so {{name}}'s care continues."
     },
     "orphanDetail": {
       "back": "Back to my orphans",
