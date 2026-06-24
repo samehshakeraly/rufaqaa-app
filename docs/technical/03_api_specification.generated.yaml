@@ -15,6 +15,36 @@ components:
       - password
       title: AcceptInvite
       type: object
+    ActivitiesSection:
+      properties:
+        items:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ActivityItem'
+            type: array
+          - type: 'null'
+          title: Items
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      title: ActivitiesSection
+      type: object
+    ActivityItem:
+      properties:
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      title: ActivityItem
+      type: object
     AdminInitiateOnBehalf:
       description: 'The admin sits with a present-but-digitally-unable donor, picks
 
@@ -1484,6 +1514,50 @@ components:
           title: Whatsapp
       title: DonorUpdate
       type: object
+    EducationProgress:
+      properties:
+        attendance_percent:
+          anyOf:
+          - maximum: 100.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Attendance Percent
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        overall_rating:
+          anyOf:
+          - enum:
+            - excellent
+            - very_good
+            - good
+            - fair
+            - needs_support
+            type: string
+          - type: 'null'
+          title: Overall Rating
+        school_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: School Name
+        stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stage
+        subjects:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SubjectGrade'
+            type: array
+          - type: 'null'
+          title: Subjects
+      title: EducationProgress
+      type: object
     EmailVerifyRequest:
       properties:
         token:
@@ -2496,6 +2570,25 @@ components:
           title: Detail
           type: array
       title: HTTPValidationError
+      type: object
+    HealthStatus:
+      properties:
+        general:
+          anyOf:
+          - enum:
+            - good
+            - stable
+            - monitored
+            - needs_attention
+            type: string
+          - type: 'null'
+          title: General
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      title: HealthStatus
       type: object
     InboundWebhookLogRead:
       properties:
@@ -4952,11 +5045,11 @@ components:
       - offset
       title: Page[PaymentRead]
       type: object
-    Page_ReportRead_:
+    Page_ReportDetailRead_:
       properties:
         items:
           items:
-            $ref: '#/components/schemas/ReportRead'
+            $ref: '#/components/schemas/ReportDetailRead'
           title: Items
           type: array
         limit:
@@ -4973,7 +5066,30 @@ components:
       - total
       - limit
       - offset
-      title: Page[ReportRead]
+      title: Page[ReportDetailRead]
+      type: object
+    Page_ReportDonorRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/ReportDonorRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[ReportDonorRead]
       type: object
     Page_SponsorshipRead_:
       properties:
@@ -6119,6 +6235,34 @@ components:
       - months
       title: PlatformTimeseries
       type: object
+    PsychologicalStatus:
+      properties:
+        mood:
+          anyOf:
+          - enum:
+            - good
+            - okay
+            - needs_attention
+            type: string
+          - type: 'null'
+          title: Mood
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        social:
+          anyOf:
+          - enum:
+            - excellent
+            - good
+            - improving
+            - needs_support
+            type: string
+          - type: 'null'
+          title: Social
+      title: PsychologicalStatus
+      type: object
     PublicOrphanCard:
       description: 'Curated public projection of an orphan. Every field here was
 
@@ -6291,6 +6435,44 @@ components:
       - countries_served
       title: PublicStats
       type: object
+    QuranProgress:
+      properties:
+        current_juz:
+          anyOf:
+          - maximum: 30.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Current Juz
+        evaluation:
+          anyOf:
+          - enum:
+            - mastered
+            - very_good
+            - good
+            - needs_review
+            type: string
+          - type: 'null'
+          title: Evaluation
+        juz_memorized:
+          anyOf:
+          - maximum: 30.0
+            minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Juz Memorized
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        recent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recent
+      title: QuranProgress
+      type: object
     RefreshRequest:
       properties:
         refresh_token:
@@ -6304,22 +6486,30 @@ components:
       properties:
         activities:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/ActivitiesSection'
           - type: 'null'
-          title: Activities
+        donor_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Message
         educational_progress:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/EducationProgress'
           - type: 'null'
-          title: Educational Progress
         health_status:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/HealthStatus'
           - type: 'null'
-          title: Health Status
+        is_milestone:
+          default: false
+          title: Is Milestone
+          type: boolean
+        milestone_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Label
         orphan_id:
           format: uuid
           title: Orphan Id
@@ -6334,16 +6524,12 @@ components:
           type: string
         psychological_status:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/PsychologicalStatus'
           - type: 'null'
-          title: Psychological Status
         quran_progress:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/QuranProgress'
           - type: 'null'
-          title: Quran Progress
         report_type:
           enum:
           - monthly
@@ -6353,6 +6539,13 @@ components:
           - incident
           title: Report Type
           type: string
+        section_visibility:
+          anyOf:
+          - additionalProperties:
+              type: boolean
+            type: object
+          - type: 'null'
+          title: Section Visibility
         summary:
           anyOf:
           - type: string
@@ -6365,7 +6558,322 @@ components:
       - period_end
       title: ReportCreate
       type: object
+    ReportDetailRead:
+      description: 'Full INTERNAL / staff view — every :class:`ReportRead` field plus the
+
+        typed section content, the section-visibility map, and the donor-facing
+
+        extras. NEVER returned to donors (see :class:`ReportDonorRead`).'
+      properties:
+        activities:
+          anyOf:
+          - $ref: '#/components/schemas/ActivitiesSection'
+          - type: 'null'
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        documents_count:
+          title: Documents Count
+          type: integer
+        donor_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Message
+        educational_progress:
+          anyOf:
+          - $ref: '#/components/schemas/EducationProgress'
+          - type: 'null'
+        health_status:
+          anyOf:
+          - $ref: '#/components/schemas/HealthStatus'
+          - type: 'null'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_milestone:
+          title: Is Milestone
+          type: boolean
+        milestone_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Label
+        org_approved_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Org Approved At
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        partner_approved_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Partner Approved At
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+        photos_count:
+          title: Photos Count
+          type: integer
+        psychological_status:
+          anyOf:
+          - $ref: '#/components/schemas/PsychologicalStatus'
+          - type: 'null'
+        published_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Published At
+        quran_progress:
+          anyOf:
+          - $ref: '#/components/schemas/QuranProgress'
+          - type: 'null'
+        rejection_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rejection Reason
+        report_type:
+          enum:
+          - monthly
+          - quarterly
+          - annual
+          - special
+          - incident
+          title: Report Type
+          type: string
+        section_visibility:
+          additionalProperties:
+            type: boolean
+          title: Section Visibility
+          type: object
+        status:
+          enum:
+          - draft
+          - pending_partner_approval
+          - partner_approved
+          - pending_org_approval
+          - org_approved
+          - published_to_donor
+          - rejected
+          title: Status
+          type: string
+        submitted_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Submitted At
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        videos_count:
+          title: Videos Count
+          type: integer
+      required:
+      - id
+      - organization_id
+      - orphan_id
+      - report_type
+      - period_start
+      - period_end
+      - summary
+      - status
+      - submitted_at
+      - partner_approved_at
+      - org_approved_at
+      - published_at
+      - rejection_reason
+      - photos_count
+      - videos_count
+      - documents_count
+      - created_at
+      - updated_at
+      - educational_progress
+      - quran_progress
+      - activities
+      - health_status
+      - psychological_status
+      - section_visibility
+      - donor_message
+      - is_milestone
+      - milestone_label
+      title: ReportDetailRead
+      type: object
+    ReportDonorRead:
+      description: 'DONOR-SAFE projection. Carries only the sections a supervisor chose to
+
+        show (hidden ones arrive as ``null``) and NEVER exposes
+
+        ``section_visibility``. Built via :func:`app.api.v1.donor_portal` rather
+
+        than straight from the ORM row so the visibility filter is always applied.'
+      properties:
+        activities:
+          anyOf:
+          - $ref: '#/components/schemas/ActivitiesSection'
+          - type: 'null'
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        documents_count:
+          title: Documents Count
+          type: integer
+        donor_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Message
+        educational_progress:
+          anyOf:
+          - $ref: '#/components/schemas/EducationProgress'
+          - type: 'null'
+        health_status:
+          anyOf:
+          - $ref: '#/components/schemas/HealthStatus'
+          - type: 'null'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_milestone:
+          title: Is Milestone
+          type: boolean
+        milestone_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Label
+        org_approved_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Org Approved At
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        partner_approved_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Partner Approved At
+        period_end:
+          format: date
+          title: Period End
+          type: string
+        period_start:
+          format: date
+          title: Period Start
+          type: string
+        photos_count:
+          title: Photos Count
+          type: integer
+        psychological_status:
+          anyOf:
+          - $ref: '#/components/schemas/PsychologicalStatus'
+          - type: 'null'
+        published_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Published At
+        quran_progress:
+          anyOf:
+          - $ref: '#/components/schemas/QuranProgress'
+          - type: 'null'
+        report_type:
+          enum:
+          - monthly
+          - quarterly
+          - annual
+          - special
+          - incident
+          title: Report Type
+          type: string
+        status:
+          enum:
+          - draft
+          - pending_partner_approval
+          - partner_approved
+          - pending_org_approval
+          - org_approved
+          - published_to_donor
+          - rejected
+          title: Status
+          type: string
+        submitted_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Submitted At
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        videos_count:
+          title: Videos Count
+          type: integer
+      required:
+      - id
+      - orphan_id
+      - report_type
+      - period_start
+      - period_end
+      - summary
+      - donor_message
+      - is_milestone
+      - milestone_label
+      - status
+      - submitted_at
+      - partner_approved_at
+      - org_approved_at
+      - published_at
+      - photos_count
+      - videos_count
+      - documents_count
+      - created_at
+      - updated_at
+      title: ReportDonorRead
+      type: object
     ReportRead:
+      description: 'Lightweight meta-only view (no section content). Still used by the
+
+        guardian / orphanage self-portals and the report workflow transitions.'
       properties:
         created_at:
           format: date-time
@@ -6496,34 +7004,45 @@ components:
       properties:
         activities:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/ActivitiesSection'
           - type: 'null'
-          title: Activities
+        donor_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Donor Message
         educational_progress:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/EducationProgress'
           - type: 'null'
-          title: Educational Progress
         health_status:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/HealthStatus'
           - type: 'null'
-          title: Health Status
+        is_milestone:
+          default: false
+          title: Is Milestone
+          type: boolean
+        milestone_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Milestone Label
         psychological_status:
           anyOf:
-          - additionalProperties: true
-            type: object
+          - $ref: '#/components/schemas/PsychologicalStatus'
           - type: 'null'
-          title: Psychological Status
         quran_progress:
           anyOf:
-          - additionalProperties: true
+          - $ref: '#/components/schemas/QuranProgress'
+          - type: 'null'
+        section_visibility:
+          anyOf:
+          - additionalProperties:
+              type: boolean
             type: object
           - type: 'null'
-          title: Quran Progress
+          title: Section Visibility
         summary:
           anyOf:
           - type: string
@@ -6832,6 +7351,20 @@ components:
       - status
       - count
       title: StatusSlice
+      type: object
+    SubjectGrade:
+      properties:
+        grade:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Grade
+        name:
+          title: Name
+          type: string
+      required:
+      - name
+      title: SubjectGrade
       type: object
     SuspendRequest:
       properties:
@@ -9184,7 +9717,9 @@ paths:
     get:
       description: 'Reports for every orphan this donor sponsors — only the ones that
 
-        have actually been published to donors.'
+        have actually been published to donors. Each report is projected through
+
+        its ``section_visibility`` so hidden sections never reach the donor.'
       operationId: my_reports_api_v1_me_reports_get
       parameters:
       - in: query
@@ -9218,7 +9753,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Page_ReportRead_'
+                $ref: '#/components/schemas/Page_ReportDonorRead_'
           description: Successful Response
         '422':
           content:
@@ -12120,7 +12655,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Page_ReportRead_'
+                $ref: '#/components/schemas/Page_ReportDetailRead_'
           description: Successful Response
         '422':
           content:
@@ -12175,7 +12710,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReportRead'
+                $ref: '#/components/schemas/ReportDetailRead'
           description: Successful Response
         '422':
           content:

@@ -451,43 +451,80 @@ async def _upload_shared_assets() -> DemoAssets:
     )
 
 
-# ── Report content (rich Arabic JSONB) ────────────────────────────────────────
+# ── Report content (canonical typed JSONB) ─────────────────────────────────────
+# Enum/scale values are stored as fixed English codes (the UI localizes them);
+# free-text fields stay Arabic. Keys match the canonical section models in
+# ``app.schemas.report`` exactly — no ad-hoc / Arabic keys.
+
+# overall_rating code → Arabic label, reused in the free-text summary line.
+_RATING_AR = {
+    "excellent": "ممتاز",
+    "very_good": "جيد جدًا",
+    "good": "جيد",
+    "fair": "مقبول",
+}
+
+# Warm supervisor notes to the sponsor (``{name}`` ← orphan's first name).
+DONOR_MESSAGES = [
+    "نشكر لكم كفالتكم الكريمة؛ {name} يتقدّم بثبات ويذكركم بدعائه في كل صلاة.",
+    "بفضل دعمكم أصبح {name} أكثر ثقةً وتفوّقًا في دراسته. جزاكم الله خيرًا.",
+    "سعدنا هذا الشهر بتقدّم {name} الملحوظ، ونرجو أن تَسُرّكم هذه الأخبار الطيبة.",
+    "{name} بخيرٍ والحمد لله، ويبعث إليكم تحياته وامتنانه على وقوفكم بجانبه.",
+]
+
+# Arabic milestone labels for the subset of reports flagged as milestones.
+MILESTONE_LABELS = [
+    "أتمّ حفظ جزء جديد",
+    "الأول على صفّه هذا الفصل",
+    "حصل على شهادة تفوّق دراسي",
+    "أنهى المرحلة الابتدائية بتميّز",
+]
+
+
 def _report_content(orphan: Orphan, period_label: str, rng: random.Random) -> dict[str, Any]:
     juz = orphan.quran_juz_memorized or 0
-    grade = rng.choice(["ممتاز", "جيد جدًا", "جيد", "مقبول"])
+    rating = rng.choice(["excellent", "very_good", "good", "fair"])
+    grade_ar = _RATING_AR[rating]
     return {
         "educational_progress": {
-            "المرحلة": orphan.education_stage or "ابتدائي",
-            "المدرسة": orphan.school_name or "مدرسة الحي",
-            "المعدل": grade,
-            "نسبة_الحضور": f"{rng.randint(85, 100)}%",
-            "ملاحظات": "أحرز تقدمًا ملحوظًا في القراءة والرياضيات هذا الفصل.",
+            "stage": orphan.education_stage or "ابتدائي",
+            "school_name": orphan.school_name or "مدرسة الحي",
+            "overall_rating": rating,
+            "attendance_percent": rng.randint(85, 100),
+            "subjects": [
+                {"name": name, "grade": rng.choice(["ممتاز", "جيد جدًا", "جيد"])}
+                for name in ("القرآن الكريم", "اللغة العربية", "الرياضيات")
+            ],
+            "note": "أحرز تقدمًا ملحوظًا في القراءة والرياضيات هذا الفصل.",
         },
         "quran_progress": {
-            "الأجزاء_المحفوظة": juz,
-            "الجزء_الحالي": min(30, juz + 1),
-            "التقييم": rng.choice(["متقن", "جيد جدًا", "بحاجة لمراجعة"]),
-            "ملاحظات": "يواظب على حلقة التحفيظ مرتين أسبوعيًا.",
+            "juz_memorized": juz,
+            "current_juz": min(30, juz + 1),
+            "evaluation": rng.choice(["mastered", "very_good", "good", "needs_review"]),
+            "recent": rng.choice(["سورة يس", "سورة الملك", "سورة الكهف", "جزء عمّ"]),
+            "note": "يواظب على حلقة التحفيظ مرتين أسبوعيًا.",
         },
         "activities": {
-            "أنشطة": rng.sample(
-                ["كرة القدم", "الرسم", "الكشافة", "مسابقة علمية", "رحلة ترفيهية"], k=2
-            ),
-            "المشاركة": rng.choice(["فعّالة", "جيدة", "متوسطة"]),
+            "items": [
+                {"title": title, "note": None}
+                for title in rng.sample(
+                    ["كرة القدم", "الرسم", "الكشافة", "مسابقة علمية", "رحلة ترفيهية"], k=2
+                )
+            ],
+            "note": rng.choice(["مشاركة فعّالة", "مشاركة جيدة", "مشاركة متوسطة"]),
         },
         "health_status": {
-            "الحالة_العامة": rng.choice(["جيدة", "مستقرة", "تحت المتابعة"]),
-            "آخر_فحص": period_label,
-            "ملاحظات": "لا توجد مشكلات صحية طارئة، وتم صرف المكمّلات الموسمية.",
+            "general": rng.choice(["good", "stable", "monitored"]),
+            "note": "لا توجد مشكلات صحية طارئة، وتم صرف المكمّلات الموسمية.",
         },
         "psychological_status": {
-            "الحالة": rng.choice(["مستقرة", "إيجابية", "تحتاج دعمًا"]),
-            "التفاعل_الاجتماعي": rng.choice(["جيد", "ممتاز", "متحسّن"]),
-            "ملاحظات": "اندماج جيد مع الأقران ضمن الأنشطة الجماعية.",
+            "mood": rng.choice(["good", "okay", "needs_attention"]),
+            "social": rng.choice(["excellent", "good", "improving", "needs_support"]),
+            "note": "اندماج جيد مع الأقران ضمن الأنشطة الجماعية.",
         },
         "summary": (
             f"تقرير {period_label} عن {orphan.first_name}: الحمد لله، الحالة العامة "
-            f"مستقرة وأداؤه الدراسي {grade}، ويواصل حفظ القرآن الكريم "
+            f"مستقرة وأداؤه الدراسي {grade_ar}، ويواصل حفظ القرآن الكريم "
             f"(بلغ {juz} جزءًا). نشكر الكفيل الكريم على دعمه المتواصل."
         ),
     }
@@ -1118,6 +1155,23 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 submitted_at = now  # drafts are not really "submitted"
 
             n_media = rng.randint(1, 3) if status_value == "published_to_donor" else 0
+
+            # Donor-facing extras (only meaningful once a report is published).
+            # All sections visible by default; the supervisor would hide per
+            # report from the UI (PR 2B/2C) — seed data leaves them all on.
+            is_published = status_value == "published_to_donor"
+            donor_message: str | None = None
+            is_milestone = False
+            milestone_label: str | None = None
+            if is_published:
+                # A warm note to the sponsor on most (≈⅔) published reports.
+                if r % 3 != 0:
+                    donor_message = rng.choice(DONOR_MESSAGES).format(name=orphan.first_name)
+                # A smaller subset celebrate a concrete milestone.
+                if r % 4 == 1:
+                    is_milestone = True
+                    milestone_label = rng.choice(MILESTONE_LABELS)
+
             report = OrphanReport(
                 organization_id=org_id,
                 orphan_id=orphan.id,
@@ -1130,6 +1184,10 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 health_status=content["health_status"],
                 psychological_status=content["psychological_status"],
                 summary=content["summary"],
+                section_visibility={},
+                donor_message=donor_message,
+                is_milestone=is_milestone,
+                milestone_label=milestone_label,
                 photos_count=n_media,
                 status=status_value,
                 submitted_by=admin_id if status_value != "draft" else None,

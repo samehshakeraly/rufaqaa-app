@@ -31,7 +31,13 @@ from app.models.orphan import Orphan
 from app.models.report import OrphanReport
 from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.report import ReportCreate, ReportRead, ReportTransition, ReportUpdate
+from app.schemas.report import (
+    ReportCreate,
+    ReportDetailRead,
+    ReportRead,
+    ReportTransition,
+    ReportUpdate,
+)
 
 router = APIRouter()
 
@@ -55,7 +61,7 @@ def _now() -> datetime:
     return datetime.now(UTC)
 
 
-@router.get("", response_model=Page[ReportRead])
+@router.get("", response_model=Page[ReportDetailRead])
 async def list_reports(
     db: DbSession,
     user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
@@ -63,7 +69,7 @@ async def list_reports(
     offset: Annotated[int, Query(ge=0)] = 0,
     orphan_id: UUID | None = None,
     status_filter: Annotated[str | None, Query(alias="status")] = None,
-) -> Page[ReportRead]:
+) -> Page[ReportDetailRead]:
     # Explicit org scope on the base statement — the app's superuser DB
     # connection bypasses RLS, so without this filter reports leak across orgs.
     stmt = select(OrphanReport).where(OrphanReport.organization_id == user.organization_id)
@@ -78,7 +84,7 @@ async def list_reports(
         )
     ).all()
     return Page(
-        items=[ReportRead.model_validate(r) for r in rows],
+        items=[ReportDetailRead.model_validate(r) for r in rows],
         total=total,
         limit=limit,
         offset=offset,
@@ -112,6 +118,9 @@ async def create_report(
                 detail="Cannot create a report for an orphan outside your family",
             )
 
+    # Sections are typed at the boundary but persisted as plain JSONB — dump
+    # each provided section to a JSON-native dict (None stays None).
+    dumped = payload.model_dump(mode="json")
     report = OrphanReport(
         organization_id=user.organization_id,
         orphan_id=payload.orphan_id,
@@ -119,11 +128,18 @@ async def create_report(
         period_start=payload.period_start,
         period_end=payload.period_end,
         summary=payload.summary,
-        educational_progress=payload.educational_progress,
-        quran_progress=payload.quran_progress,
-        activities=payload.activities,
-        health_status=payload.health_status,
-        psychological_status=payload.psychological_status,
+        educational_progress=dumped["educational_progress"],
+        quran_progress=dumped["quran_progress"],
+        activities=dumped["activities"],
+        health_status=dumped["health_status"],
+        psychological_status=dumped["psychological_status"],
+        donor_message=payload.donor_message,
+        is_milestone=payload.is_milestone,
+        milestone_label=payload.milestone_label,
+        # Default to "all sections visible" when the supervisor sends nothing.
+        section_visibility=(
+            payload.section_visibility if payload.section_visibility is not None else {}
+        ),
         status="draft",
         submitted_by=user.id,
     )
@@ -133,15 +149,15 @@ async def create_report(
     return ReportRead.model_validate(report)
 
 
-@router.get("/{report_id}", response_model=ReportRead)
+@router.get("/{report_id}", response_model=ReportDetailRead)
 async def get_report(
     report_id: UUID,
     db: DbSession,
     user: CurrentUser,
-) -> ReportRead:
+) -> ReportDetailRead:
     report = await _load_or_404(db, report_id, user)
     await _check_report_access(report, user, db)
-    return ReportRead.model_validate(report)
+    return ReportDetailRead.model_validate(report)
 
 
 @router.patch("/{report_id}", response_model=ReportRead)

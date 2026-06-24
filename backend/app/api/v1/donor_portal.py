@@ -8,10 +8,11 @@ can preview a donor's view.
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,10 +22,73 @@ from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
-from app.schemas.report import ReportRead
+from app.schemas.report import (
+    ActivitiesSection,
+    EducationProgress,
+    HealthStatus,
+    PsychologicalStatus,
+    QuranProgress,
+    ReportDonorRead,
+)
 from app.schemas.sponsorship import SponsorshipRead
 
 router = APIRouter()
+
+
+def _visible_section[SectionT: BaseModel](
+    raw: dict[str, Any] | None,
+    key: str,
+    visibility: dict[str, bool],
+    model: type[SectionT],
+) -> SectionT | None:
+    """Parse a stored JSONB section into its typed model, but only when the
+    supervisor left it visible. A section is shown UNLESS its key is explicitly
+    ``False`` in ``section_visibility`` — so an empty map ⇒ everything visible.
+    Hidden (or absent) sections collapse to ``None``.
+    """
+    if raw is None or visibility.get(key) is False:
+        return None
+    return model.model_validate(raw)
+
+
+def _donor_report_view(report: OrphanReport) -> ReportDonorRead:
+    """Project one report row into the donor-safe schema, dropping every section
+    the supervisor hid. ``section_visibility`` is consumed here and never leaves
+    the server.
+    """
+    vis = report.section_visibility or {}
+    return ReportDonorRead.model_validate(
+        {
+            "id": report.id,
+            "orphan_id": report.orphan_id,
+            "report_type": report.report_type,
+            "period_start": report.period_start,
+            "period_end": report.period_end,
+            "summary": report.summary,
+            "donor_message": report.donor_message,
+            "is_milestone": report.is_milestone,
+            "milestone_label": report.milestone_label,
+            "status": report.status,
+            "submitted_at": report.submitted_at,
+            "partner_approved_at": report.partner_approved_at,
+            "org_approved_at": report.org_approved_at,
+            "published_at": report.published_at,
+            "photos_count": report.photos_count,
+            "videos_count": report.videos_count,
+            "documents_count": report.documents_count,
+            "created_at": report.created_at,
+            "updated_at": report.updated_at,
+            "educational_progress": _visible_section(
+                report.educational_progress, "education", vis, EducationProgress
+            ),
+            "quran_progress": _visible_section(report.quran_progress, "quran", vis, QuranProgress),
+            "activities": _visible_section(report.activities, "activities", vis, ActivitiesSection),
+            "health_status": _visible_section(report.health_status, "health", vis, HealthStatus),
+            "psychological_status": _visible_section(
+                report.psychological_status, "psychological", vis, PsychologicalStatus
+            ),
+        }
+    )
 
 
 async def _resolve_donor_id(db: AsyncSession, current_user: User, requested: UUID | None) -> UUID:
@@ -79,16 +143,17 @@ async def my_sponsorships(
     )
 
 
-@router.get("/reports", response_model=Page[ReportRead])
+@router.get("/reports", response_model=Page[ReportDonorRead])
 async def my_reports(
     db: DbSession,
     user: CurrentUser,
     donor_id: Annotated[UUID | None, Query()] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
-) -> Page[ReportRead]:
+) -> Page[ReportDonorRead]:
     """Reports for every orphan this donor sponsors — only the ones that
-    have actually been published to donors."""
+    have actually been published to donors. Each report is projected through
+    its ``section_visibility`` so hidden sections never reach the donor."""
     did = await _resolve_donor_id(db, user, donor_id)
     sub = select(Sponsorship.orphan_id).where(Sponsorship.donor_id == did)
     stmt = select(OrphanReport).where(
@@ -102,7 +167,7 @@ async def my_reports(
         )
     ).all()
     return Page(
-        items=[ReportRead.model_validate(r) for r in rows],
+        items=[_donor_report_view(r) for r in rows],
         total=total,
         limit=limit,
         offset=offset,
