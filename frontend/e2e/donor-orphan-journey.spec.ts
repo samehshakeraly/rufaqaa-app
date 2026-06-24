@@ -139,8 +139,11 @@ test("donor opens a sponsored orphan and sees the story header + a timeline upda
   // --- Open the sponsored orphan's journey page. --------------------
   await page.goto(`/donor/orphans/${ORPHAN_ID}`);
 
-  // Story header carries the child's name.
-  await expect(page.getByRole("heading", { name: "آدم" })).toBeVisible();
+  // Story header carries the child's name. Match exactly so the journey
+  // strip's "<name>'s journey" heading doesn't also resolve here.
+  await expect(
+    page.getByRole("heading", { name: "آدم", exact: true }),
+  ).toBeVisible();
 
   // At least one timeline update is shown: the supervisor's summary and
   // the milestone label both render.
