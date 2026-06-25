@@ -105,6 +105,24 @@ def _to_card(orphan: Orphan, partner_name: str | None) -> PublicOrphanCard:
     )
 
 
+def to_public_detail(orphan: Orphan, partner_name: str | None) -> PublicOrphanDetail:
+    """Project an orphan row into the canonical donor-safe detail shape.
+
+    Single source of truth for the safe profile slice: the public detail
+    endpoint and the donor-scoped sponsorship-profile endpoint both build
+    their response through here, so the exposed field set can only ever be
+    ``PublicOrphanDetail`` — never broadened by accident on one surface."""
+    card = _to_card(orphan, partner_name)
+    return PublicOrphanDetail(
+        **card.model_dump(),
+        short_description=None,  # placeholder until partners author this
+        aspiration=orphan.aspiration,
+        education_stage=orphan.education_stage,
+        quran_juz_memorized=orphan.quran_juz_memorized,
+        tags=orphan.tags,
+    )
+
+
 @router.get("/orphans", response_model=PublicPage)
 async def public_list_orphans(
     db: DbSession,
@@ -172,15 +190,7 @@ async def public_orphan_detail(code: str, db: DbSession) -> PublicOrphanDetail:
     if row is None:
         raise NotFound("Orphan")
     orphan, partner_name = row
-    card = _to_card(orphan, partner_name)
-    return PublicOrphanDetail(
-        **card.model_dump(),
-        short_description=None,  # placeholder until partners author this
-        aspiration=orphan.aspiration,
-        education_stage=orphan.education_stage,
-        quran_juz_memorized=orphan.quran_juz_memorized,
-        tags=orphan.tags,
-    )
+    return to_public_detail(orphan, partner_name)
 
 
 @router.get("/stats", response_model=PublicStats)

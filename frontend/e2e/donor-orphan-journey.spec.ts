@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
  * Happy path for the donor "child journey" detail page (D-07).
  *
  * The page is frontend-only: it consumes the already donor-scoped
- * /me/sponsorships, /me/reports, and /public/orphans/:code endpoints.
+ * /me/sponsorships, /me/reports, and /me/sponsorships/:id/profile endpoints.
  * Seeding a real published report would require the full author →
  * partner → org → publish chain, so this spec instead signs up a real
  * donor (for a valid auth token) and stubs the three data endpoints at
@@ -96,7 +96,7 @@ test("donor opens a sponsored orphan and sees the story header + a timeline upda
     });
   });
 
-  await context.route(`**/api/v1/public/orphans/${ORPHAN_CODE}`, async (route) => {
+  await context.route(`**/api/v1/me/sponsorships/${ORPHAN_ID}/profile`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",

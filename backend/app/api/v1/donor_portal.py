@@ -17,7 +17,11 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.v1.public import PublicOrphanDetail, to_public_detail
+from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.orphan import Orphan
+from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
 from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
@@ -143,6 +147,47 @@ async def my_sponsorships(
         limit=limit,
         offset=offset,
     )
+
+
+@router.get("/sponsorships/{orphan_id}/profile", response_model=PublicOrphanDetail)
+async def my_sponsored_orphan_profile(
+    db: DbSession,
+    user: CurrentUser,
+    orphan_id: UUID,
+    donor_id: Annotated[UUID | None, Query()] = None,
+) -> PublicOrphanDetail:
+    """The donor-safe humanizing profile of a child this donor sponsors.
+
+    Unlike the public browse endpoint, scoping here is by an actual
+    Sponsorship row (this donor → this orphan), NOT by ``case_status`` —
+    so a sponsored child (case_status='sponsored', no longer browseable)
+    still resolves. A child the donor does not sponsor 404s exactly like
+    an unknown id, so existence never leaks.
+
+    The exposed field set is exactly ``PublicOrphanDetail`` — the canonical
+    donor-safe contract defined in app.api.v1.public — reused verbatim via
+    ``to_public_detail``; nothing beyond it is serialised.
+    """
+    did = await _resolve_donor_id(db, user, donor_id)
+    row = (
+        await db.execute(
+            select(Orphan, PartnerOrganization.name_ar)
+            .join(Sponsorship, Sponsorship.orphan_id == Orphan.id)
+            .outerjoin(
+                PartnerOrganization,
+                PartnerOrganization.id == Orphan.partner_organization_id,
+            )
+            .where(
+                Orphan.id == orphan_id,
+                Orphan.deleted_at.is_(None),
+                Sponsorship.donor_id == did,
+            )
+        )
+    ).first()
+    if row is None:
+        raise NotFound("Orphan")
+    orphan, partner_name = row
+    return to_public_detail(orphan, partner_name)
 
 
 @router.get("/reports", response_model=Page[ReportDonorRead])

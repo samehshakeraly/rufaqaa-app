@@ -7,7 +7,7 @@ import { formatDate, formatDuration, humanDuration } from "@/lib/format";
 import type { PaymentDonorRead } from "@/lib/payments";
 import { listMyPayments } from "@/lib/payments";
 import type { PublicOrphanDetail } from "@/lib/public";
-import { getPublicOrphan } from "@/lib/public";
+import { getSponsoredOrphanProfile } from "@/lib/public";
 import type { ReportDonorRead } from "@/lib/reports";
 import { listMyReports } from "@/lib/reports";
 import type { Sponsorship } from "@/lib/sponsorships";
@@ -48,12 +48,14 @@ export function DonorOrphanDetailPage() {
 
   const sponsorship = sponsorshipsQ.data?.items.find((s) => s.orphan_id === id);
 
-  // Secondary, best-effort fetch for richer basic info. Sponsored
-  // orphans may not be publicly browseable, so failures are ignored.
+  // Secondary, best-effort fetch for richer basic info. Scoped by the
+  // donor's own sponsorship (keyed by orphan id), so it resolves even
+  // for a sponsored child that is no longer publicly browseable. If it
+  // fails, the timeline / cards still render and the name falls back.
   const orphanInfoQ = useQuery({
-    queryKey: ["public", "orphan", sponsorship?.orphan_code],
-    queryFn: () => getPublicOrphan(sponsorship!.orphan_code!),
-    enabled: !!sponsorship?.orphan_code,
+    queryKey: ["donor", "me", "orphanProfile", id],
+    queryFn: () => getSponsoredOrphanProfile(id!),
+    enabled: !!id,
     retry: false,
   });
 

@@ -10144,6 +10144,63 @@ paths:
       summary: My Sponsorships
       tags:
       - donor-portal
+  /api/v1/me/sponsorships/{orphan_id}/profile:
+    get:
+      description: 'The donor-safe humanizing profile of a child this donor sponsors.
+
+
+        Unlike the public browse endpoint, scoping here is by an actual
+
+        Sponsorship row (this donor → this orphan), NOT by ``case_status`` —
+
+        so a sponsored child (case_status=''sponsored'', no longer browseable)
+
+        still resolves. A child the donor does not sponsor 404s exactly like
+
+        an unknown id, so existence never leaks.
+
+
+        The exposed field set is exactly ``PublicOrphanDetail`` — the canonical
+
+        donor-safe contract defined in app.api.v1.public — reused verbatim via
+
+        ``to_public_detail``; nothing beyond it is serialised.'
+      operationId: my_sponsored_orphan_profile_api_v1_me_sponsorships__orphan_id__profile_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      - in: query
+        name: donor_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Donor Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicOrphanDetail'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: My Sponsored Orphan Profile
+      tags:
+      - donor-portal
   /api/v1/media:
     get:
       description: 'Moderation queue: media in the caller''s organization filtered by

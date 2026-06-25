@@ -12,15 +12,15 @@ import { DonorOrphanDetailPage } from "@/pages/DonorOrphanDetailPage";
 // renders in isolation from a fixed ReportDonorRead list.
 vi.mock("@/lib/sponsorships", () => ({ listMySponsorships: vi.fn() }));
 vi.mock("@/lib/reports", () => ({ listMyReports: vi.fn() }));
-vi.mock("@/lib/public", () => ({ getPublicOrphan: vi.fn() }));
+vi.mock("@/lib/public", () => ({ getSponsoredOrphanProfile: vi.fn() }));
 
-import { getPublicOrphan } from "@/lib/public";
+import { getSponsoredOrphanProfile } from "@/lib/public";
 import { listMyReports } from "@/lib/reports";
 import { listMySponsorships } from "@/lib/sponsorships";
 
 const sponsorshipsMock = vi.mocked(listMySponsorships);
 const reportsMock = vi.mocked(listMyReports);
-const orphanMock = vi.mocked(getPublicOrphan);
+const orphanMock = vi.mocked(getSponsoredOrphanProfile);
 
 const ORPHAN_ID = "11111111-1111-1111-1111-111111111111";
 
