@@ -1051,6 +1051,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Payments
+         * @description Every payment the calling donor made — optionally narrowed to one
+         *     sponsored child. Hard-scoped to the donor's own payments.
+         */
+        get: operations["my_payments_api_v1_me_payments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/reports": {
         parameters: {
             query?: never;
@@ -5479,6 +5500,17 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** Page[PaymentDonorRead] */
+        Page_PaymentDonorRead_: {
+            /** Items */
+            items: components["schemas"]["PaymentDonorRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
         /** Page[PaymentRead] */
         Page_PaymentRead_: {
             /** Items */
@@ -5653,6 +5685,48 @@ export interface components {
             payment_method: "credit_card" | "debit_card" | "bank_transfer" | "knet" | "paypal" | "cash" | "cheque" | "standing_order" | "mobile_payment" | "other";
             /** Sponsorship Id */
             sponsorship_id?: string | null;
+        };
+        /**
+         * PaymentDonorRead
+         * @description DONOR-SAFE projection of a payment. Carries only the fields a sponsor
+         *     needs to see their own money trail. Fields that could leak internal ops,
+         *     gateway details, or other donors' data are deliberately excluded.
+         */
+        PaymentDonorRead: {
+            /** Amount */
+            amount: string;
+            /** Amount In Default Currency */
+            amount_in_default_currency: string | null;
+            /** Code */
+            code: string;
+            /** Completed At */
+            completed_at: string | null;
+            /** Currency */
+            currency: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Initiated At
+             * Format: date-time
+             */
+            initiated_at: string;
+            /** Orphan Id */
+            orphan_id: string | null;
+            /** Payment Method */
+            payment_method: string;
+            /** Receipt Issued At */
+            receipt_issued_at: string | null;
+            /** Receipt Number */
+            receipt_number: string | null;
+            /** Receipt Url */
+            receipt_url: string | null;
+            /** Sponsorship Id */
+            sponsorship_id: string | null;
+            /** Status */
+            status: string;
         };
         /**
          * PaymentInitiate
@@ -8834,6 +8908,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChannelProgress"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_payments_api_v1_me_payments_get: {
+        parameters: {
+            query?: {
+                orphan_id?: string | null;
+                donor_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_PaymentDonorRead_"];
                 };
             };
             /** @description Validation Error */

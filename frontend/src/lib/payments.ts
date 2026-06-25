@@ -1,5 +1,11 @@
+import type { components } from "@/api/schema.gen";
+
 import { api } from "./api";
 import type { Page } from "./orphans";
+
+/** DONOR-SAFE projection of a payment. Generated from the backend OpenAPI
+ * schema — carries only the fields a sponsor can see. */
+export type PaymentDonorRead = components["schemas"]["PaymentDonorRead"];
 
 export type PaymentMethod =
   | "credit_card"
@@ -182,6 +188,20 @@ export async function refundPayment(
   const { data } = await api.post<Payment>(`/payments/${paymentId}/refund`, {
     amount,
     reason,
+  });
+  return data;
+}
+
+/** Donor self-service: every payment the calling donor made, optionally
+ * narrowed to one sponsored child. The backend scopes all results to the
+ * calling donor — no cross-donor leakage is possible. */
+export async function listMyPayments(params?: {
+  orphanId?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<Page<PaymentDonorRead>> {
+  const { data } = await api.get<Page<PaymentDonorRead>>("/me/payments", {
+    params: { orphan_id: params?.orphanId, limit: params?.limit, offset: params?.offset },
   });
   return data;
 }

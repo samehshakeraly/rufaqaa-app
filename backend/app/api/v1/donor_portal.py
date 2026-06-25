@@ -18,10 +18,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.donor import Donor
+from app.models.payment import Payment
 from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
+from app.schemas.payment import PaymentDonorRead
 from app.schemas.report import (
     ActivitiesSection,
     EducationProgress,
@@ -168,6 +170,39 @@ async def my_reports(
     ).all()
     return Page(
         items=[_donor_report_view(r) for r in rows],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+def _donor_payment_view(p: Payment) -> PaymentDonorRead:
+    # from_attributes reads only the declared donor-safe fields; nothing else leaves the server
+    return PaymentDonorRead.model_validate(p)
+
+
+@router.get("/payments", response_model=Page[PaymentDonorRead])
+async def my_payments(
+    db: DbSession,
+    user: CurrentUser,
+    orphan_id: Annotated[UUID | None, Query()] = None,
+    donor_id: Annotated[UUID | None, Query()] = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> Page[PaymentDonorRead]:
+    """Every payment the calling donor made — optionally narrowed to one
+    sponsored child. Hard-scoped to the donor's own payments."""
+    did = await _resolve_donor_id(db, user, donor_id)
+    stmt = select(Payment).where(Payment.donor_id == did)
+    if orphan_id is not None:
+        # defense in depth: only orphans this donor actually sponsors
+        sponsored = select(Sponsorship.orphan_id).where(Sponsorship.donor_id == did)
+        stmt = stmt.where(Payment.orphan_id == orphan_id, Payment.orphan_id.in_(sponsored))
+    total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    order = func.coalesce(Payment.completed_at, Payment.failed_at, Payment.initiated_at).desc()
+    rows = (await db.scalars(stmt.order_by(order).limit(limit).offset(offset))).all()
+    return Page(
+        items=[_donor_payment_view(r) for r in rows],
         total=total,
         limit=limit,
         offset=offset,

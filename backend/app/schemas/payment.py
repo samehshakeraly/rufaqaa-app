@@ -118,6 +118,29 @@ class PaymentRefund(BaseModel):
     reason: str = Field(min_length=1, max_length=500)
 
 
+class PaymentDonorRead(BaseModel):
+    """DONOR-SAFE projection of a payment. Carries only the fields a sponsor
+    needs to see their own money trail. Fields that could leak internal ops,
+    gateway details, or other donors' data are deliberately excluded."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    code: str
+    amount: Decimal
+    currency: str
+    amount_in_default_currency: Decimal | None
+    payment_method: str
+    status: str
+    initiated_at: datetime
+    completed_at: datetime | None
+    receipt_number: str | None
+    receipt_issued_at: datetime | None
+    receipt_url: str | None
+    sponsorship_id: UUID | None
+    orphan_id: UUID | None
+
+
 class PaymentReceipt(BaseModel):
     """Self-contained snapshot of a payment for printing. Bundles the
     donor + orphan + organization fields the receipt page needs so the

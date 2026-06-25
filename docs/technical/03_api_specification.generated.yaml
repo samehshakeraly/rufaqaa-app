@@ -5039,6 +5039,29 @@ components:
       - offset
       title: Page[PartnerRead]
       type: object
+    Page_PaymentDonorRead_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PaymentDonorRead'
+          title: Items
+          type: array
+        limit:
+          title: Limit
+          type: integer
+        offset:
+          title: Offset
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - limit
+      - offset
+      title: Page[PaymentDonorRead]
+      type: object
     Page_PaymentRead_:
       properties:
         items:
@@ -5405,6 +5428,94 @@ components:
       - currency
       - payment_method
       title: PaymentCreate
+      type: object
+    PaymentDonorRead:
+      description: 'DONOR-SAFE projection of a payment. Carries only the fields a sponsor
+
+        needs to see their own money trail. Fields that could leak internal ops,
+
+        gateway details, or other donors'' data are deliberately excluded.'
+      properties:
+        amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Amount
+          type: string
+        amount_in_default_currency:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Amount In Default Currency
+        code:
+          title: Code
+          type: string
+        completed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Completed At
+        currency:
+          title: Currency
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        initiated_at:
+          format: date-time
+          title: Initiated At
+          type: string
+        orphan_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+        payment_method:
+          title: Payment Method
+          type: string
+        receipt_issued_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Receipt Issued At
+        receipt_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Receipt Number
+        receipt_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Receipt Url
+        sponsorship_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Sponsorship Id
+        status:
+          title: Status
+          type: string
+      required:
+      - id
+      - code
+      - amount
+      - currency
+      - amount_in_default_currency
+      - payment_method
+      - status
+      - initiated_at
+      - completed_at
+      - receipt_number
+      - receipt_issued_at
+      - receipt_url
+      - sponsorship_id
+      - orphan_id
+      title: PaymentDonorRead
       type: object
     PaymentInitiate:
       description: 'Start a hosted-checkout flow with MyFatoorah for either a
@@ -9730,6 +9841,66 @@ paths:
       summary: Channel Progress
       tags:
       - marketing-channels
+  /api/v1/me/payments:
+    get:
+      description: 'Every payment the calling donor made — optionally narrowed to one
+
+        sponsored child. Hard-scoped to the donor''s own payments.'
+      operationId: my_payments_api_v1_me_payments_get
+      parameters:
+      - in: query
+        name: orphan_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Orphan Id
+      - in: query
+        name: donor_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Donor Id
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_PaymentDonorRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: My Payments
+      tags:
+      - donor-portal
   /api/v1/me/reports:
     get:
       description: 'Reports for every orphan this donor sponsors — only the ones that

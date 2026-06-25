@@ -4,6 +4,8 @@ import { Link, useParams } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
 import { formatDate, formatDuration, humanDuration } from "@/lib/format";
+import type { PaymentDonorRead } from "@/lib/payments";
+import { listMyPayments } from "@/lib/payments";
 import type { PublicOrphanDetail } from "@/lib/public";
 import { getPublicOrphan } from "@/lib/public";
 import type { ReportDonorRead } from "@/lib/reports";
@@ -23,8 +25,8 @@ const JUZ_TOTAL = 30;
  * already-scoped, donor-safe `ReportDonorRead` projection (/me/reports)
  * and renders it as a warm, human story rather than raw data.
  *
- * Out of scope here: child photos (placeholder avatar only), donor↔staff
- * messaging, and the full payment-history money-trail view. */
+ * Out of scope here: child photos (placeholder avatar only) and donor↔staff
+ * messaging. */
 export function DonorOrphanDetailPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
@@ -37,6 +39,11 @@ export function DonorOrphanDetailPage() {
   const reportsQ = useQuery({
     queryKey: ["donor", "me", "reports"],
     queryFn: () => listMyReports({ limit: 100 }),
+  });
+  const paymentsQ = useQuery({
+    queryKey: ["donor", "me", "payments", id],
+    queryFn: () => listMyPayments({ orphanId: id, limit: 100 }),
+    enabled: !!id,
   });
 
   const sponsorship = sponsorshipsQ.data?.items.find((s) => s.orphan_id === id);
@@ -111,6 +118,13 @@ export function DonorOrphanDetailPage() {
       <ProgressTrends reports={reports} lang={lang} />
 
       <SponsorshipCard sponsorship={sponsorship} lang={lang} />
+
+      <MoneyTrail
+        sponsorship={sponsorship}
+        payments={paymentsQ.data?.items ?? []}
+        loading={paymentsQ.isLoading}
+        lang={lang}
+      />
     </div>
   );
 }
@@ -800,6 +814,102 @@ function SponsorshipCard({
         </Stat>
       </dl>
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* F) Money trail (financial transparency)                             */
+/* ------------------------------------------------------------------ */
+
+function MoneyTrail({
+  sponsorship,
+  payments,
+  loading,
+  lang,
+}: {
+  sponsorship: Sponsorship;
+  payments: PaymentDonorRead[];
+  loading: boolean;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <section className="card space-y-4" aria-label={t("donor.orphanDetail.paymentsTitle")}>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {t("donor.orphanDetail.paymentsTitle")}
+      </h2>
+
+      <div className="panel">
+        <dt className="text-xs text-gray-500">
+          {t("donor.orphanDetail.totalContributed")}
+        </dt>
+        <dd className="mt-1 font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+          {sponsorship.total_paid} {sponsorship.currency}
+        </dd>
+      </div>
+
+      {loading && <Skeleton className="h-32 w-full" />}
+
+      {!loading && payments.length === 0 && (
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+          {t("donor.orphanDetail.paymentsEmpty")}
+        </p>
+      )}
+
+      {!loading && payments.length > 0 && (
+        <ol className="space-y-3">
+          {payments.map((p) => (
+            <PaymentRow key={p.id} payment={p} lang={lang} />
+          ))}
+        </ol>
+      )}
+    </section>
+  );
+}
+
+function PaymentRow({ payment, lang }: { payment: PaymentDonorRead; lang: string }) {
+  const { t } = useTranslation();
+  const displayDate = payment.completed_at ?? payment.initiated_at;
+  const statusKey =
+    payment.status === "completed"
+      ? "donor.orphanDetail.paymentCompleted"
+      : payment.status === "failed"
+        ? "donor.orphanDetail.paymentFailed"
+        : "donor.orphanDetail.paymentPending";
+  const statusClass =
+    payment.status === "completed"
+      ? "bg-success-100 text-success-700 dark:bg-success-500/15 dark:text-success-100"
+      : payment.status === "failed"
+        ? "bg-danger-100 text-danger-700 dark:bg-danger-500/15 dark:text-danger-100"
+        : "bg-tranquil-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
+
+  return (
+    <li className="panel flex flex-wrap items-center justify-between gap-2">
+      <div className="flex items-center gap-3">
+        <span className="tabular-nums font-semibold text-gray-900 dark:text-gray-100">
+          {payment.amount} {payment.currency}
+        </span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {formatDate(displayDate, lang)}
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusClass}`}>
+          {t(statusKey)}
+        </span>
+        {payment.receipt_url && (
+          <a
+            href={payment.receipt_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-trust-600 underline hover:text-trust-700 dark:text-tranquil-300 dark:hover:text-tranquil-100"
+          >
+            {t("donor.orphanDetail.receiptLink")}
+          </a>
+        )}
+      </div>
+    </li>
   );
 }
 

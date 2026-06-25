@@ -968,7 +968,14 @@
       "notScheduled": "Not scheduled",
       "reports": "Published reports",
       "noReports": "No published reports yet.",
-      "notFound": "We couldn't find a sponsorship for this child among yours."
+      "notFound": "We couldn't find a sponsorship for this child among yours.",
+      "paymentsTitle": "Financial transparency trail",
+      "totalContributed": "Total contributed to this child",
+      "paymentsEmpty": "No payments recorded for this child yet.",
+      "receiptLink": "Receipt",
+      "paymentCompleted": "Completed",
+      "paymentPending": "Pending",
+      "paymentFailed": "Failed"
     },
     "messages": {
       "title": "Messages",

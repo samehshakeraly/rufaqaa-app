@@ -820,9 +820,10 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                     pay_status = "pending"
                 else:
                     pay_status = "failed"
+                pay_code = _code("PAY")
                 pay = Payment(
                     organization_id=org_id,
-                    code=_code("PAY"),
+                    code=pay_code,
                     donor_id=sp.donor_id,
                     sponsorship_id=sp.id,
                     orphan_id=sp.orphan_id,
@@ -834,6 +835,8 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                     completed_at=completed_at if pay_status == "completed" else None,
                     failed_at=completed_at if pay_status == "failed" else None,
                     failure_reason="بطاقة مرفوضة" if pay_status == "failed" else None,
+                    receipt_number=("RCP-" + pay_code.split("-", 1)[1]) if pay_status == "completed" else None,
+                    receipt_issued_at=completed_at if pay_status == "completed" else None,
                 )
                 db.add(pay)
                 counts["payments"] += 1
