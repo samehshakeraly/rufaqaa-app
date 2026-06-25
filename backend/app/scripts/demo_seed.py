@@ -835,7 +835,9 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                     completed_at=completed_at if pay_status == "completed" else None,
                     failed_at=completed_at if pay_status == "failed" else None,
                     failure_reason="بطاقة مرفوضة" if pay_status == "failed" else None,
-                    receipt_number=("RCP-" + pay_code.split("-", 1)[1]) if pay_status == "completed" else None,
+                    receipt_number=("RCP-" + pay_code.split("-", 1)[1])
+                    if pay_status == "completed"
+                    else None,
                     receipt_issued_at=completed_at if pay_status == "completed" else None,
                 )
                 db.add(pay)

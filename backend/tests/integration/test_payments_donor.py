@@ -151,9 +151,7 @@ async def _insert_payment(
 # ── Scoping tests ─────────────────────────────────────────────────────────────
 
 
-async def test_donor_sees_only_own_payments(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_donor_sees_only_own_payments(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """A's payments never appear in B's list."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
     donor_a_id, headers_a = await _signup_donor(api)
@@ -195,9 +193,7 @@ async def test_orphan_id_filter_restricts_to_that_child(
     pay_1 = await _insert_payment(org_id, donor_id, sp_1, orphan_1)
     pay_2 = await _insert_payment(org_id, donor_id, sp_2, orphan_2)
 
-    page = (
-        await api.get(f"/api/v1/me/payments?orphan_id={orphan_1}", headers=headers)
-    ).json()
+    page = (await api.get(f"/api/v1/me/payments?orphan_id={orphan_1}", headers=headers)).json()
     ids = {it["id"] for it in page["items"]}
     assert pay_1 in ids
     assert pay_2 not in ids
@@ -219,9 +215,7 @@ async def test_unsponsored_orphan_id_returns_empty(
     await _insert_payment(org_id, donor_id, sp_mine, orphan_mine)
     await _insert_payment(org_id, other_donor_id, sp_other, orphan_other)
 
-    page = (
-        await api.get(f"/api/v1/me/payments?orphan_id={orphan_other}", headers=headers)
-    ).json()
+    page = (await api.get(f"/api/v1/me/payments?orphan_id={orphan_other}", headers=headers)).json()
     assert page["total"] == 0
     assert page["items"] == []
 
@@ -260,9 +254,20 @@ async def test_safe_fields_present_in_payload(
     item = next(it for it in page["items"] if it.get("orphan_id") == orphan)
 
     expected_fields = {
-        "id", "code", "amount", "currency", "payment_method", "status",
-        "initiated_at", "completed_at", "receipt_number", "receipt_issued_at",
-        "receipt_url", "sponsorship_id", "orphan_id", "amount_in_default_currency",
+        "id",
+        "code",
+        "amount",
+        "currency",
+        "payment_method",
+        "status",
+        "initiated_at",
+        "completed_at",
+        "receipt_number",
+        "receipt_issued_at",
+        "receipt_url",
+        "sponsorship_id",
+        "orphan_id",
+        "amount_in_default_currency",
     }
     for field in expected_fields:
         assert field in item, f"Expected field '{field}' missing from donor payload"
@@ -303,9 +308,7 @@ async def test_admin_with_valid_donor_id_gets_200(
 # ── Pagination ────────────────────────────────────────────────────────────────
 
 
-async def test_pagination_limit_offset(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_pagination_limit_offset(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """total / limit / offset are reported correctly."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
     donor_id, headers = await _signup_donor(api)
@@ -319,12 +322,8 @@ async def test_pagination_limit_offset(
     total = full["total"]
     assert total >= 3
 
-    page1 = (
-        await api.get("/api/v1/me/payments?limit=2&offset=0", headers=headers)
-    ).json()
-    page2 = (
-        await api.get("/api/v1/me/payments?limit=2&offset=2", headers=headers)
-    ).json()
+    page1 = (await api.get("/api/v1/me/payments?limit=2&offset=0", headers=headers)).json()
+    page2 = (await api.get("/api/v1/me/payments?limit=2&offset=2", headers=headers)).json()
 
     assert page1["limit"] == 2
     assert page1["offset"] == 0
