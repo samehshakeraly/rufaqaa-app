@@ -61,6 +61,17 @@ mypy app                # فحص الأنواع
 
 من الجذر: `make backend-test` · `make backend-lint` · `make backend-format`.
 
+### Running integration tests locally
+
+The integration suite needs a separate, schema-migrated Postgres database. With the
+docker-compose stack running, use the helper script (it creates/migrates `rufaqaa_test`,
+then runs pytest with `RUFAQAA_TEST_DATABASE_URL` set):
+
+```bash
+./scripts/test-integration.sh
+./scripts/test-integration.sh tests/integration/test_payments_donor.py tests/integration/test_donor_messages.py
+```
+
 ---
 
 ## 🗃️ الهجرات (Migrations)
