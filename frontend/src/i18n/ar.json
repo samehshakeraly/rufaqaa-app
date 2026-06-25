@@ -968,7 +968,14 @@
       "notScheduled": "غير محدد",
       "reports": "التقارير المنشورة",
       "noReports": "لا توجد تقارير منشورة بعد.",
-      "notFound": "لم نعثر على كفالة لهذا الطفل ضمن كفالاتك."
+      "notFound": "لم نعثر على كفالة لهذا الطفل ضمن كفالاتك.",
+      "paymentsTitle": "مسار الشفافية المالية",
+      "totalContributed": "إجمالي ما أسهمتَ به لهذا الطفل",
+      "paymentsEmpty": "لا توجد مدفوعات مسجّلة لهذا الطفل بعد.",
+      "receiptLink": "الإيصال",
+      "paymentCompleted": "مكتمل",
+      "paymentPending": "قيد المعالجة",
+      "paymentFailed": "فشل"
     },
     "messages": {
       "title": "الرسائل",
