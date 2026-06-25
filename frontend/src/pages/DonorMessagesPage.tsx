@@ -1,21 +1,33 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
+import { listMyDonorSponsorships } from "@/lib/donorAuth";
 import type { MessageRead } from "@/lib/messages";
-import { listMessages, markMessageRead } from "@/lib/messages";
+import {
+  listDonorMessages,
+  markDonorMessageRead,
+  sendDonorMessage,
+} from "@/lib/messages";
 import { toast } from "@/store/toasts";
 
 const MESSAGES_KEY = ["donor", "me", "messages"];
+const SPONSORSHIPS_KEY = ["donor", "me", "sponsorships"];
 
-/** D-09 — donor's message list.
+/** D-09 — donor's message list + composer.
  *
- * Read-only this phase (mirrors the guardian portal): the donor sees
- * every message they sent (any moderation status, so they know what's
- * "under review" or "rejected") plus every approved message addressed
- * to them. Composing a new message is deferred until the backend can
- * auto-resolve a recipient from related_orphan_id — see PR description.
+ * The donor sees every message they sent (any moderation status, so they
+ * know what's "under review" or "rejected") plus every approved message
+ * addressed to them. They can compose a new message about a child they
+ * sponsor; the backend resolves the staff recipient and the message lands
+ * "under review" until a moderator approves it.
+ *
+ * Cross-org by design: the donor lives in the platform org while the
+ * orphan + staff live in the partner org, so this uses the donor-scoped
+ * /donor/me/messages endpoints (not the generic /messages router).
  *
  * The projection never carries email/phone/last-name; the counter-party
  * is identified only by role + first name. */
@@ -25,11 +37,11 @@ export function DonorMessagesPage() {
 
   const q = useQuery({
     queryKey: MESSAGES_KEY,
-    queryFn: () => listMessages({ limit: 50 }),
+    queryFn: () => listDonorMessages({ limit: 50 }),
   });
 
   const markRead = useMutation({
-    mutationFn: (id: string) => markMessageRead(id),
+    mutationFn: (id: string) => markDonorMessageRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MESSAGES_KEY });
     },
@@ -50,6 +62,8 @@ export function DonorMessagesPage() {
           {t("donor.messages.subtitle")}
         </p>
       </header>
+
+      <Composer />
 
       {q.isLoading && <Skeleton className="h-40 w-full" />}
 
@@ -84,10 +98,108 @@ export function DonorMessagesPage() {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
 
-      <p className="text-center text-xs text-gray-400">
-        {t("donor.messages.composeNote")}
-      </p>
+/** Compose a new message about a sponsored child. The orphan select is
+ * populated from the donor's sponsorships; on a 404/409 from the API we
+ * surface a friendly, specific message. No <form> — onClick only (project
+ * convention). */
+function Composer() {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [orphanCode, setOrphanCode] = useState("");
+  const [content, setContent] = useState("");
+
+  const sponsorshipsQuery = useQuery({
+    queryKey: SPONSORSHIPS_KEY,
+    queryFn: listMyDonorSponsorships,
+  });
+
+  // De-duplicate the orphan list — a donor may have several sponsorships
+  // for the same child, but the composer targets one child at a time.
+  const children = (() => {
+    const seen = new Set<string>();
+    const out: { code: string; name: string }[] = [];
+    for (const s of sponsorshipsQuery.data ?? []) {
+      if (!s.orphan_code || seen.has(s.orphan_code)) continue;
+      seen.add(s.orphan_code);
+      out.push({ code: s.orphan_code, name: s.orphan_first_name ?? s.orphan_code });
+    }
+    return out;
+  })();
+
+  const send = useMutation({
+    mutationFn: () => sendDonorMessage({ orphan_code: orphanCode, content }),
+    onSuccess: () => {
+      setContent("");
+      queryClient.invalidateQueries({ queryKey: MESSAGES_KEY });
+      toast.success(t("donor.messages.sendSuccess"));
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError && err.response?.status === 404) {
+        toast.error(t("donor.messages.sendErrorNotSponsored"));
+      } else if (err instanceof AxiosError && err.response?.status === 409) {
+        toast.error(t("donor.messages.sendErrorNoRecipient"));
+      } else {
+        toast.error(t("donor.messages.sendErrorGeneric"));
+      }
+    },
+  });
+
+  const canSend =
+    orphanCode.length > 0 && content.trim().length > 0 && !send.isPending;
+
+  return (
+    <div className="card space-y-3">
+      {children.length === 0 ? (
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {t("donor.messages.noSponsoredChildren")}
+        </p>
+      ) : (
+        <>
+          <label className="block space-y-1">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              {t("donor.messages.selectChild")}
+            </span>
+            <select
+              value={orphanCode}
+              onChange={(e) => setOrphanCode(e.target.value)}
+              className="input w-full"
+            >
+              <option value="">{t("donor.messages.selectChild")}</option>
+              {children.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            maxLength={4000}
+            rows={3}
+            placeholder={t("donor.messages.composePlaceholder")}
+            className="input w-full"
+          />
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => send.mutate()}
+              disabled={!canSend}
+              className="btn-primary disabled:opacity-50"
+            >
+              {send.isPending
+                ? t("donor.messages.sending")
+                : t("donor.messages.send")}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -589,6 +589,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/donor/me/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List My Messages
+         * @description List the donor's messages across orgs (no organization_id filter).
+         *
+         *     The donor sees every message they sent (any moderation status, so they
+         *     know what's pending/rejected) plus every approved message addressed to
+         *     them. ``orphan_code`` narrows to one conversation.
+         */
+        get: operations["list_my_messages_api_v1_donor_me_messages_get"];
+        put?: never;
+        /**
+         * Send My Message
+         * @description Donor composes a message about a child they sponsor.
+         *
+         *     Cross-org by design: the orphan is resolved globally (not in the
+         *     donor's org). The donor may only message about a child they actually
+         *     sponsor — a non-sponsored orphan 404s without revealing whether it
+         *     exists. The message lands as ``pending`` so the recipient can't see
+         *     it until a moderator approves.
+         */
+        post: operations["send_my_message_api_v1_donor_me_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/donor/me/messages/{message_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark My Message Read
+         * @description Mark an incoming approved message read. Only the recipient may mark;
+         *     a message addressed to anyone else 404s. Idempotent.
+         */
+        post: operations["mark_my_message_read_api_v1_donor_me_messages__message_id__read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/donor/me/payments": {
         parameters: {
             query?: never;
@@ -3541,6 +3596,13 @@ export interface components {
             phone?: string | null;
             /** Preferred Currency */
             preferred_currency?: string | null;
+        };
+        /** DonorMessageCreate */
+        DonorMessageCreate: {
+            /** Content */
+            content: string;
+            /** Orphan Code */
+            orphan_code: string;
         };
         /** DonorPaymentMini */
         DonorPaymentMini: {
@@ -7879,6 +7941,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DataExportRequest"];
+                };
+            };
+        };
+    };
+    list_my_messages_api_v1_donor_me_messages_get: {
+        parameters: {
+            query?: {
+                orphan_code?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_MessageRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_my_message_api_v1_donor_me_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DonorMessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_my_message_read_api_v1_donor_me_messages__message_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -1135,6 +1135,23 @@ components:
           title: Preferred Currency
       title: DonorMeUpdate
       type: object
+    DonorMessageCreate:
+      properties:
+        content:
+          maxLength: 4000
+          minLength: 1
+          title: Content
+          type: string
+        orphan_code:
+          maxLength: 20
+          minLength: 1
+          title: Orphan Code
+          type: string
+      required:
+      - orphan_code
+      - content
+      title: DonorMessageCreate
+      type: object
     DonorPaymentMini:
       properties:
         amount:
@@ -8687,6 +8704,131 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Request Account Deletion
+      tags:
+      - donor-self
+  /api/v1/donor/me/messages:
+    get:
+      description: 'List the donor''s messages across orgs (no organization_id filter).
+
+
+        The donor sees every message they sent (any moderation status, so they
+
+        know what''s pending/rejected) plus every approved message addressed to
+
+        them. ``orphan_code`` narrows to one conversation.'
+      operationId: list_my_messages_api_v1_donor_me_messages_get
+      parameters:
+      - in: query
+        name: orphan_code
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page_MessageRead_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List My Messages
+      tags:
+      - donor-self
+    post:
+      description: 'Donor composes a message about a child they sponsor.
+
+
+        Cross-org by design: the orphan is resolved globally (not in the
+
+        donor''s org). The donor may only message about a child they actually
+
+        sponsor — a non-sponsored orphan 404s without revealing whether it
+
+        exists. The message lands as ``pending`` so the recipient can''t see
+
+        it until a moderator approves.'
+      operationId: send_my_message_api_v1_donor_me_messages_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorMessageCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Send My Message
+      tags:
+      - donor-self
+  /api/v1/donor/me/messages/{message_id}/read:
+    post:
+      description: 'Mark an incoming approved message read. Only the recipient may mark;
+
+        a message addressed to anyone else 404s. Idempotent.'
+      operationId: mark_my_message_read_api_v1_donor_me_messages__message_id__read_post
+      parameters:
+      - in: path
+        name: message_id
+        required: true
+        schema:
+          format: uuid
+          title: Message Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Mark My Message Read
       tags:
       - donor-self
   /api/v1/donor/me/payments:
