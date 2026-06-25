@@ -48,21 +48,63 @@ async def _seed_org_and_partner(api: AsyncClient, headers: dict[str, str]) -> tu
     return org_id, partner_id
 
 
-async def _signup_donor(api: AsyncClient) -> tuple[str, dict[str, str]]:
-    """Sign up + verify a new donor. Returns (donor_id, auth_headers)."""
-    email = f"d-{uuid.uuid4().hex[:8]}@example.com"
+async def _signup_donor(
+    api: AsyncClient,
+    admin_headers: dict[str, str],
+) -> tuple[str, dict[str, str]]:
+    """Create an org-scoped donor via admin API, invite + accept a linked user.
+
+    Returns (donor_id, auth_headers).
+
+    Self-service signup puts donors in the platform org, which is different
+    from the admin's org. Using the admin create endpoint ensures the donor
+    is org-scoped so POST /api/v1/sponsorships can find it.
+    """
+    suffix = uuid.uuid4().hex[:8]
+    email = f"d-{suffix}@example.com"
     password = "longenoughpw1"
+
+    # Create org-scoped donor record via admin API.
     r = await api.post(
-        "/api/v1/auth/signup",
-        json={"email": email, "password": password, "full_name": "Test Donor"},
+        "/api/v1/donors",
+        json={"full_name": f"Test Donor {suffix}", "email": email},
+        headers=admin_headers,
     )
-    token = r.json()["debug_verify_token"]
-    await api.post("/api/v1/auth/verify-email", json={"token": token})
+    assert r.status_code == 201, r.text
+    donor_id = str(r.json()["id"])
+
+    # Invite a user with donor role so they can authenticate.
+    r = await api.post(
+        "/api/v1/users/invite",
+        json={"email": email, "first_name": "Test", "last_name": "Donor", "role": "donor"},
+        headers=admin_headers,
+    )
+    assert r.status_code == 201, r.text
+    invite_token = r.json()["invite_token"]
+    user_id = str(r.json()["user"]["id"])
+
+    # Accept invite.
+    r = await api.post(
+        "/api/v1/users/accept-invite",
+        json={"token": invite_token, "password": password},
+    )
+    assert r.status_code == 200, r.text
+
+    # Login to get access token.
     r = await api.post("/api/v1/auth/login", json={"email": email, "password": password})
+    assert r.status_code == 200, r.text
     access = r.json()["access_token"]
     headers = {"Authorization": f"Bearer {access}"}
-    me = (await api.get("/api/v1/donor/me", headers=headers)).json()
-    return me["id"], headers
+
+    # Link the user to the donor record so _resolve_donor_id can locate it.
+    async with make_session() as db:
+        await db.execute(
+            text("UPDATE donors SET user_id = :uid WHERE id = :did"),
+            {"uid": user_id, "did": donor_id},
+        )
+        await db.commit()
+
+    return donor_id, headers
 
 
 async def _make_orphan(api: AsyncClient, admin_headers: dict[str, str], partner_id: str) -> str:
@@ -154,8 +196,8 @@ async def _insert_payment(
 async def test_donor_sees_only_own_payments(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """A's payments never appear in B's list."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
-    donor_a_id, headers_a = await _signup_donor(api)
-    donor_b_id, headers_b = await _signup_donor(api)
+    donor_a_id, headers_a = await _signup_donor(api, auth_headers)
+    donor_b_id, headers_b = await _signup_donor(api, auth_headers)
 
     orphan_a = await _make_orphan(api, auth_headers, partner_id)
     orphan_b = await _make_orphan(api, auth_headers, partner_id)
@@ -183,7 +225,7 @@ async def test_orphan_id_filter_restricts_to_that_child(
 ) -> None:
     """With orphan_id= set, only payments for that child appear."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
-    donor_id, headers = await _signup_donor(api)
+    donor_id, headers = await _signup_donor(api, auth_headers)
 
     orphan_1 = await _make_orphan(api, auth_headers, partner_id)
     orphan_2 = await _make_orphan(api, auth_headers, partner_id)
@@ -204,8 +246,8 @@ async def test_unsponsored_orphan_id_returns_empty(
 ) -> None:
     """An orphan_id the donor does NOT sponsor yields an empty page — no leak."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
-    donor_id, headers = await _signup_donor(api)
-    other_donor_id, _ = await _signup_donor(api)
+    donor_id, headers = await _signup_donor(api, auth_headers)
+    other_donor_id, _ = await _signup_donor(api, auth_headers)
 
     orphan_mine = await _make_orphan(api, auth_headers, partner_id)
     orphan_other = await _make_orphan(api, auth_headers, partner_id)
@@ -228,7 +270,7 @@ async def test_forbidden_fields_never_in_payload(
 ) -> None:
     """None of the internal/sensitive fields reach the donor."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
-    donor_id, headers = await _signup_donor(api)
+    donor_id, headers = await _signup_donor(api, auth_headers)
     orphan = await _make_orphan(api, auth_headers, partner_id)
     sp = await _activate_sponsorship(api, auth_headers, donor_id, orphan)
     await _insert_payment(org_id, donor_id, sp, orphan, status="completed")
@@ -245,7 +287,7 @@ async def test_safe_fields_present_in_payload(
 ) -> None:
     """Expected donor-safe fields are all present."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
-    donor_id, headers = await _signup_donor(api)
+    donor_id, headers = await _signup_donor(api, auth_headers)
     orphan = await _make_orphan(api, auth_headers, partner_id)
     sp = await _activate_sponsorship(api, auth_headers, donor_id, orphan)
     await _insert_payment(org_id, donor_id, sp, orphan, status="completed")
@@ -288,8 +330,8 @@ async def test_donor_passing_other_donor_id_gets_403(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """A donor may not pass a different donor_id to peek at another donor."""
-    _, headers_a = await _signup_donor(api)
-    donor_b_id, _ = await _signup_donor(api)
+    _, headers_a = await _signup_donor(api, auth_headers)
+    donor_b_id, _ = await _signup_donor(api, auth_headers)
 
     r = await api.get(f"/api/v1/me/payments?donor_id={donor_b_id}", headers=headers_a)
     assert r.status_code == 403
@@ -299,7 +341,7 @@ async def test_admin_with_valid_donor_id_gets_200(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """Staff/admin passing a valid donor_id preview correctly."""
-    donor_id, _ = await _signup_donor(api)
+    donor_id, _ = await _signup_donor(api, auth_headers)
     r = await api.get(f"/api/v1/me/payments?donor_id={donor_id}", headers=auth_headers)
     assert r.status_code == 200
     assert r.json()["total"] >= 0
@@ -311,7 +353,7 @@ async def test_admin_with_valid_donor_id_gets_200(
 async def test_pagination_limit_offset(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """total / limit / offset are reported correctly."""
     org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
-    donor_id, headers = await _signup_donor(api)
+    donor_id, headers = await _signup_donor(api, auth_headers)
     orphan = await _make_orphan(api, auth_headers, partner_id)
     sp = await _activate_sponsorship(api, auth_headers, donor_id, orphan)
 
