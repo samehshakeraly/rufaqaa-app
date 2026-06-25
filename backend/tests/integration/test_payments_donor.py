@@ -17,6 +17,7 @@ Two things are exercised:
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime
 
 from httpx import AsyncClient
 from sqlalchemy import text
@@ -159,6 +160,10 @@ async def _insert_payment(
     """Insert a payment row directly via SQL and return its id."""
     pay_id = str(uuid.uuid4())
     code = f"PAY-TEST-{uuid.uuid4().hex[:6].upper()}"
+    now = datetime.now(UTC)
+    completed_at = now if status == "completed" else None
+    failed_at = now if status == "failed" else None
+    failure_reason = "card declined" if status == "failed" else None
     async with make_session() as db:
         await db.execute(
             text(
@@ -169,10 +174,8 @@ async def _insert_payment(
                 " gateway_transaction_id, bank_reference, payment_gateway, "
                 " notes, created_by) "
                 "VALUES (:id, :org, :code, :donor, :sp, :orphan, "
-                " 10.00, 'KWD', 'knet', :status, now(), "
-                " CASE WHEN :status='completed' THEN now() ELSE NULL END, "
-                " CASE WHEN :status='failed' THEN now() ELSE NULL END, "
-                " CASE WHEN :status='failed' THEN 'card declined' ELSE NULL END, "
+                " 10.00, 'KWD', 'knet', :status, :initiated_at, "
+                " :completed_at, :failed_at, :failure_reason, "
                 " 'gw-txn-SECRET', 'bank-ref-SECRET', 'myfatoorah', "
                 " 'internal note SECRET', NULL)"
             ),
@@ -184,6 +187,10 @@ async def _insert_payment(
                 "sp": sponsorship_id,
                 "orphan": orphan_id,
                 "status": status,
+                "initiated_at": now,
+                "completed_at": completed_at,
+                "failed_at": failed_at,
+                "failure_reason": failure_reason,
             },
         )
         await db.commit()
