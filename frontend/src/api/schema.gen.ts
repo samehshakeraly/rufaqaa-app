@@ -1166,6 +1166,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/sponsorships/{orphan_id}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Sponsored Orphan Profile
+         * @description The donor-safe humanizing profile of a child this donor sponsors.
+         *
+         *     Unlike the public browse endpoint, scoping here is by an actual
+         *     Sponsorship row (this donor → this orphan), NOT by ``case_status`` —
+         *     so a sponsored child (case_status='sponsored', no longer browseable)
+         *     still resolves. A child the donor does not sponsor 404s exactly like
+         *     an unknown id, so existence never leaks.
+         *
+         *     The exposed field set is exactly ``PublicOrphanDetail`` — the canonical
+         *     donor-safe contract defined in app.api.v1.public — reused verbatim via
+         *     ``to_public_detail``; nothing beyond it is serialised.
+         */
+        get: operations["my_sponsored_orphan_profile_api_v1_me_sponsorships__orphan_id__profile_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/media": {
         parameters: {
             query?: never;
@@ -9167,6 +9197,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_SponsorshipRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_sponsored_orphan_profile_api_v1_me_sponsorships__orphan_id__profile_get: {
+        parameters: {
+            query?: {
+                donor_id?: string | null;
+            };
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicOrphanDetail"];
                 };
             };
             /** @description Validation Error */

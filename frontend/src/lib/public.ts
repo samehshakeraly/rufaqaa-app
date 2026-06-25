@@ -54,6 +54,21 @@ export async function getPublicOrphan(code: string): Promise<PublicOrphanDetail>
   return data;
 }
 
+/**
+ * Donor-scoped twin of {@link getPublicOrphan}: returns the SAME donor-safe
+ * profile shape, but for a child the caller actually sponsors — keyed by
+ * orphan id and scoped by sponsorship, so a sponsored child (no longer
+ * publicly browseable) still resolves.
+ */
+export async function getSponsoredOrphanProfile(
+  orphanId: string,
+): Promise<PublicOrphanDetail> {
+  const { data } = await api.get<PublicOrphanDetail>(
+    `/me/sponsorships/${orphanId}/profile`,
+  );
+  return data;
+}
+
 export async function getPublicStats(): Promise<PublicStats> {
   const { data } = await api.get<PublicStats>("/public/stats");
   return data;
