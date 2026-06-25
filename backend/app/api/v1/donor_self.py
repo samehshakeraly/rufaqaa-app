@@ -12,24 +12,28 @@ the RLS layer.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-from sqlalchemy import desc, func, select
+from sqlalchemy import and_, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
+from app.api.v1.messages import MessageRead, _project
 from app.core.authz import require_verified_donor
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.message import Message
 from app.models.orphan import Orphan
+from app.models.orphanage import Orphanage
 from app.models.payment import Payment
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
+from app.schemas.common import Page
 
 router = APIRouter()
 
@@ -90,6 +94,11 @@ class DonorSponsorshipCreate(BaseModel):
     monthly_amount: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
     currency: str = Field(min_length=3, max_length=3)
     frequency: Literal["monthly", "quarterly", "semi_annual", "annual", "one_time"] = "monthly"
+
+
+class DonorMessageCreate(BaseModel):
+    orphan_code: str = Field(min_length=1, max_length=20)
+    content: str = Field(min_length=1, max_length=4000)
 
 
 async def _load_donor_for_user(db: AsyncSession, user: User) -> Donor:
@@ -238,6 +247,190 @@ async def create_my_sponsorship(
         orphan_code=orphan.code,
         orphan_first_name=orphan.first_name,
     )
+
+
+# ── Donor messaging ──────────────────────────────────────────────────────
+#
+# A self-signup donor lives in the PLATFORM org, while the orphan + the
+# handling staff live in the partner org. The generic org-scoped
+# POST/GET /messages router therefore can't serve donors: these routes are
+# DONOR-SCOPED and cross-org by design. The privacy projection (`_project`)
+# and the wire schema (`MessageRead`) are reused from the generic router so
+# the donor never sees user ids / emails / last names.
+
+
+async def _resolve_message_recipient(db: AsyncSession, orphan: Orphan) -> UUID | None:
+    """Resolve which staff user should receive a donor message about ``orphan``.
+
+    Tiers, first match wins:
+      (a) the manager of the orphan's dar (orphanage), if any;
+      (b) an active partner_manager/partner_staff of the orphan's partner org
+          (manager preferred — ``order by role`` puts it first);
+      (c) an active org_admin of the orphan's org.
+    Returns ``None`` when no recipient can be found.
+    """
+    if orphan.orphanage_id is not None:
+        manager_id = await db.scalar(
+            select(Orphanage.manager_user_id).where(Orphanage.id == orphan.orphanage_id)
+        )
+        if manager_id is not None:
+            return manager_id
+
+    staff_id = await db.scalar(
+        select(User.id)
+        .where(
+            User.partner_organization_id == orphan.partner_organization_id,
+            User.status == "active",
+            User.role.in_(("partner_manager", "partner_staff")),
+        )
+        .order_by(User.role, User.created_at)
+    )
+    if staff_id is not None:
+        return staff_id
+
+    admin_id: UUID | None = await db.scalar(
+        select(User.id)
+        .where(
+            User.organization_id == orphan.organization_id,
+            User.role == "org_admin",
+            User.status == "active",
+        )
+        .order_by(User.created_at)
+    )
+    return admin_id
+
+
+@router.post(
+    "/me/messages",
+    response_model=MessageRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def send_my_message(
+    payload: DonorMessageCreate,
+    db: DbSession,
+    user: Annotated[User, Depends(require_verified_donor())],
+) -> MessageRead:
+    """Donor composes a message about a child they sponsor.
+
+    Cross-org by design: the orphan is resolved globally (not in the
+    donor's org). The donor may only message about a child they actually
+    sponsor — a non-sponsored orphan 404s without revealing whether it
+    exists. The message lands as ``pending`` so the recipient can't see
+    it until a moderator approves.
+    """
+    donor = await _load_donor_for_user(db, user)
+
+    orphan = await db.scalar(
+        select(Orphan).where(
+            Orphan.code == payload.orphan_code,
+            Orphan.deleted_at.is_(None),
+        )
+    )
+    if orphan is None:
+        raise NotFound("Orphan")
+
+    # AUTHZ: only a child the donor sponsors. Don't reveal existence otherwise.
+    sponsorship = await db.scalar(
+        select(Sponsorship).where(
+            Sponsorship.donor_id == donor.id,
+            Sponsorship.orphan_id == orphan.id,
+        )
+    )
+    if sponsorship is None:
+        raise NotFound("Orphan")
+
+    recipient_id = await _resolve_message_recipient(db, orphan)
+    if recipient_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No staff recipient available for this child",
+        )
+
+    msg = Message(
+        organization_id=orphan.organization_id,  # the ORPHAN's org, not the donor's
+        from_user_id=user.id,
+        to_user_id=recipient_id,
+        related_orphan_id=orphan.id,
+        related_sponsorship_id=sponsorship.id,
+        content=payload.content,
+        message_type="text",
+        moderation_status="pending",
+    )
+    db.add(msg)
+    await db.flush()
+    await db.commit()
+    await db.refresh(msg)
+    return await _project(msg, user, db)
+
+
+@router.get("/me/messages", response_model=Page[MessageRead])
+async def list_my_messages(
+    db: DbSession,
+    user: Annotated[User, Depends(require_verified_donor())],
+    orphan_code: str | None = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> Page[MessageRead]:
+    """List the donor's messages across orgs (no organization_id filter).
+
+    The donor sees every message they sent (any moderation status, so they
+    know what's pending/rejected) plus every approved message addressed to
+    them. ``orphan_code`` narrows to one conversation.
+    """
+    # Validates the donor profile exists; ownership is enforced via the
+    # from/to user-id predicates below (a donor has exactly one user).
+    await _load_donor_for_user(db, user)
+
+    base = select(Message).where(
+        or_(
+            Message.from_user_id == user.id,
+            and_(
+                Message.to_user_id == user.id,
+                Message.moderation_status == "approved",
+            ),
+        )
+    )
+
+    if orphan_code is not None:
+        orphan_id = await db.scalar(
+            select(Orphan.id).where(
+                Orphan.code == orphan_code,
+                Orphan.deleted_at.is_(None),
+            )
+        )
+        if orphan_id is None:
+            return Page(items=[], total=0, limit=limit, offset=offset)
+        base = base.where(Message.related_orphan_id == orphan_id)
+
+    total = await db.scalar(select(func.count()).select_from(base.subquery())) or 0
+    rows = (
+        await db.scalars(base.order_by(Message.created_at.desc()).limit(limit).offset(offset))
+    ).all()
+    return Page(
+        items=[await _project(m, user, db) for m in rows],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@router.post("/me/messages/{message_id}/read", response_model=MessageRead)
+async def mark_my_message_read(
+    message_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_verified_donor())],
+) -> MessageRead:
+    """Mark an incoming approved message read. Only the recipient may mark;
+    a message addressed to anyone else 404s. Idempotent."""
+    msg = await db.get(Message, message_id)
+    if msg is None or msg.to_user_id != user.id:
+        raise NotFound("Message")
+    if not msg.is_read:
+        msg.is_read = True
+        msg.read_at = datetime.now(UTC)
+        await db.commit()
+        await db.refresh(msg)
+    return await _project(msg, user, db)
 
 
 # Lightweight GDPR stubs — see docs/architecture/authorization.md for the
