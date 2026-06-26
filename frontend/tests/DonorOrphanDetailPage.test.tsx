@@ -187,10 +187,27 @@ describe("DonorOrphanDetailPage — child journey", () => {
     expect(screen.getByText("حفظ 12 جزءًا")).toBeInTheDocument(); // juz_memorized
     expect(screen.getByText("متقن")).toBeInTheDocument(); // mastered
 
+    // Hero facts render as a human country name + the aspiration pull-quote.
+    expect(screen.getByText("اليمن")).toBeInTheDocument();
+    expect(screen.getByText("يحلم بأن…")).toBeInTheDocument();
+    expect(screen.getByText("أن يصبح طبيباً")).toBeInTheDocument();
+
     // No raw schema keys leak into the DOM.
     expect(screen.queryByText(/overall_rating/)).not.toBeInTheDocument();
     expect(screen.queryByText(/juz_memorized/)).not.toBeInTheDocument();
     expect(screen.queryByText(/attendance_percent/)).not.toBeInTheDocument();
+  });
+
+  it("localizes a stored alpha-2 country code to a human name", async () => {
+    orphanMock.mockResolvedValue(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { ...ORPHAN_INFO, country: "EG" } as any,
+    );
+    renderPage();
+
+    // The donor sees "مصر", never the raw "EG" code.
+    expect(await screen.findByText("مصر")).toBeInTheDocument();
+    expect(screen.queryByText("EG")).not.toBeInTheDocument();
   });
 
   it("omits a hidden (null) section from its card", async () => {

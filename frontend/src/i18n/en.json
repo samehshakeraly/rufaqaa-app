@@ -4295,6 +4295,8 @@
     "durationMonths": "{{months}} mo",
     "durationNew": "a few days",
     "quranProgressLabel": "Qur'an memorization",
+    "aspirationLead": "Dreams of…",
+    "durationTileLabel": "Sponsorship duration",
     "juzOfTotal": "{{n}} of 30 juz'",
     "juzGained": "+{{n}} juz' since you began sponsoring",
     "updatesReceived": "Updates received",

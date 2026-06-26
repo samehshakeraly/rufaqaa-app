@@ -4295,6 +4295,8 @@
     "durationMonths": "{{months}} شهر",
     "durationNew": "أيّام قليلة",
     "quranProgressLabel": "حفظ القرآن",
+    "aspirationLead": "يحلم بأن…",
+    "durationTileLabel": "مدّة الكفالة",
     "juzOfTotal": "{{n}} من 30 جزءًا",
     "juzGained": "+{{n}} جزءًا منذ بدأت كفالتك",
     "updatesReceived": "تحديثات وصلتك",
