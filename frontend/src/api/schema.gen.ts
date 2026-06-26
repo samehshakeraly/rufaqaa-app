@@ -1183,9 +1183,12 @@ export interface paths {
          *     still resolves. A child the donor does not sponsor 404s exactly like
          *     an unknown id, so existence never leaks.
          *
-         *     The exposed field set is exactly ``PublicOrphanDetail`` — the canonical
-         *     donor-safe contract defined in app.api.v1.public — reused verbatim via
-         *     ``to_public_detail``; nothing beyond it is serialised.
+         *     The response is COMPOSED from already-donor-safe parts: the identity slice
+         *     reuses ``to_public_detail`` (the canonical ``PublicOrphanDetail`` contract),
+         *     and each element block is assembled from the same donor-projected reports
+         *     that back ``/me/reports``. An element the supervisor hid via
+         *     ``orphan.profile_visibility`` is OMITTED here — a hidden element never leaves
+         *     the server — and the visibility map itself is never serialised.
          */
         get: operations["my_sponsored_orphan_profile_api_v1_me_sponsorships__orphan_id__profile_get"];
         put?: never;
@@ -1893,6 +1896,36 @@ export interface paths {
         put?: never;
         /** Attach Document To Orphan */
         post: operations["attach_document_to_orphan_api_v1_orphans__orphan_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphans/{orphan_id}/profile-visibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orphan Profile Visibility
+         * @description The donor-profile visibility registry for one child: every
+         *     :class:`ProfileElement` with its current effective state, plus the raw
+         *     stored map. Org-scoped (explicit, never RLS) with the same جهة fence as
+         *     :func:`get_orphan` — an out-of-org/جهة id 404s.
+         */
+        get: operations["get_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_get"];
+        /**
+         * Set Orphan Profile Visibility
+         * @description Replace a child's donor-profile visibility map. The body's keys are
+         *     validated against :class:`ProfileElement` and values against ``bool`` at the
+         *     Pydantic boundary (unknown key / non-bool ⇒ 422). Same org + جهة scoping as
+         *     the GET twin.
+         */
+        put: operations["set_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_put"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3829,6 +3862,14 @@ export interface components {
             /** Whatsapp */
             whatsapp?: string | null;
         };
+        /**
+         * DreamBlock
+         * @description ``dream`` — the child's aspiration, in their own words.
+         */
+        DreamBlock: {
+            /** Aspiration */
+            aspiration: string;
+        };
         /** EducationProgress */
         EducationProgress: {
             /** Attendance Percent */
@@ -4359,6 +4400,20 @@ export interface components {
             /** Note */
             note?: string | null;
         };
+        /**
+         * HerWorldBlock
+         * @description ``her_world`` — a snapshot of where the child is right now.
+         */
+        HerWorldBlock: {
+            /** Education Stage */
+            education_stage?: string | null;
+            /** Is Hafiz */
+            is_hafiz: boolean;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
+            /** Tags */
+            tags: string[];
+        };
         /** InboundWebhookLogRead */
         InboundWebhookLogRead: {
             /** Error */
@@ -4625,6 +4680,24 @@ export interface components {
             /** To Role */
             to_role: string;
         };
+        /** MilestoneItem */
+        MilestoneItem: {
+            /** Label */
+            label: string;
+            /**
+             * Period
+             * Format: date
+             */
+            period: string;
+        };
+        /**
+         * MilestonesBlock
+         * @description ``milestones`` — the celebrated moments along the way.
+         */
+        MilestonesBlock: {
+            /** Items */
+            items: components["schemas"]["MilestoneItem"][];
+        };
         /** MonthlyPoint */
         MonthlyPoint: {
             /**
@@ -4636,6 +4709,15 @@ export interface components {
             payments_count: number;
             /** Payments Total */
             payments_total: string;
+        };
+        /**
+         * MultidimGrowthBlock
+         * @description ``multidim_growth`` — first-vs-latest deltas across a few dimensions.
+         */
+        MultidimGrowthBlock: {
+            attendance_percent?: components["schemas"]["NumberDelta"] | null;
+            education_stage?: components["schemas"]["TextDelta"] | null;
+            social?: components["schemas"]["TextDelta"] | null;
         };
         /** NationalIdRequirements */
         NationalIdRequirements: {
@@ -4692,6 +4774,13 @@ export interface components {
             weekly_digest?: boolean | null;
             /** Whatsapp */
             whatsapp?: boolean | null;
+        };
+        /** NumberDelta */
+        NumberDelta: {
+            /** First */
+            first: number;
+            /** Latest */
+            latest: number;
         };
         /** OrgRanking */
         OrgRanking: {
@@ -6294,6 +6383,48 @@ export interface components {
             /** Months */
             months: components["schemas"]["PlatformMonthlyPoint"][];
         };
+        /**
+         * ProfileElement
+         * @description Every toggleable element of the donor child profile, keyed exactly to the
+         *     data that exists today. Extend by adding one member (and its block on
+         *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
+         * @enum {string}
+         */
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began";
+        /**
+         * ProfileElementState
+         * @description One row of the staff registry: an element + its current effective state.
+         */
+        ProfileElementState: {
+            key: components["schemas"]["ProfileElement"];
+            /** Visible */
+            visible: boolean;
+        };
+        /**
+         * ProfileVisibilityRegistry
+         * @description Staff GET response: the full registry (every :class:`ProfileElement` with
+         *     its current effective state) plus the raw stored map for transparency.
+         */
+        ProfileVisibilityRegistry: {
+            /** Elements */
+            elements: components["schemas"]["ProfileElementState"][];
+            /** Stored */
+            stored: {
+                [key: string]: boolean;
+            };
+        };
+        /**
+         * ProfileVisibilityUpdate
+         * @description Staff PUT body. Typing the map as ``dict[ProfileElement, bool]`` makes
+         *     Pydantic reject (422) any unknown key or non-bool value at the boundary —
+         *     no hand-rolled validation needed.
+         */
+        ProfileVisibilityUpdate: {
+            /** Visibility */
+            visibility: {
+                [key: string]: boolean;
+            };
+        };
         /** PsychologicalStatus */
         PsychologicalStatus: {
             /** Mood */
@@ -6394,6 +6525,24 @@ export interface components {
             /** Orphans Sponsored */
             orphans_sponsored: number;
         };
+        /**
+         * QuranGrowthBlock
+         * @description ``quran_growth`` — juz' memorised over time, oldest→newest.
+         */
+        QuranGrowthBlock: {
+            /** Series */
+            series: components["schemas"]["QuranGrowthPoint"][];
+        };
+        /** QuranGrowthPoint */
+        QuranGrowthPoint: {
+            /** Juz Memorized */
+            juz_memorized: number;
+            /**
+             * Period
+             * Format: date
+             */
+            period: string;
+        };
         /** QuranProgress */
         QuranProgress: {
             /** Current Juz */
@@ -6406,6 +6555,24 @@ export interface components {
             note?: string | null;
             /** Recent */
             recent?: string | null;
+        };
+        /** RecentUpdateItem */
+        RecentUpdateItem: {
+            /** Headline */
+            headline: string;
+            /**
+             * Period
+             * Format: date
+             */
+            period: string;
+        };
+        /**
+         * RecentUpdatesBlock
+         * @description ``recent_updates`` — the latest few report headlines, newest first.
+         */
+        RecentUpdatesBlock: {
+            /** Items */
+            items: components["schemas"]["RecentUpdateItem"][];
         };
         /** RefreshRequest */
         RefreshRequest: {
@@ -6734,6 +6901,65 @@ export interface components {
             /** Token */
             token: string;
         };
+        /**
+         * SinceYouBeganBlock
+         * @description ``since_you_began`` — what changed since this donor's sponsorship began.
+         */
+        SinceYouBeganBlock: {
+            /** Juz Gained */
+            juz_gained: number;
+            /** Milestones Count */
+            milestones_count: number;
+            /** Reports Count */
+            reports_count: number;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+        };
+        /**
+         * SponsoredOrphanProfile
+         * @description The donor-safe profile of a sponsored child. Identity fields are always
+         *     present; each element block is non-null only when visible AND backed by data.
+         *
+         *     The identity slice is the EXACT donor-safe set already vetted on
+         *     ``PublicOrphanDetail`` — never broadened here. ``profile_visibility`` is
+         *     never serialised.
+         */
+        SponsoredOrphanProfile: {
+            /** Age Years */
+            age_years: number;
+            /** Aspiration */
+            aspiration?: string | null;
+            /** Country */
+            country?: string | null;
+            dream?: components["schemas"]["DreamBlock"] | null;
+            /** Education Stage */
+            education_stage?: string | null;
+            /** First Name */
+            first_name: string;
+            /**
+             * Gender
+             * @enum {string}
+             */
+            gender: "M" | "F";
+            her_world?: components["schemas"]["HerWorldBlock"] | null;
+            /** Is Hafiz */
+            is_hafiz: boolean;
+            milestones?: components["schemas"]["MilestonesBlock"] | null;
+            multidim_growth?: components["schemas"]["MultidimGrowthBlock"] | null;
+            /** Partner Organization Name */
+            partner_organization_name?: string | null;
+            quran_growth?: components["schemas"]["QuranGrowthBlock"] | null;
+            /** Quran Juz Memorized */
+            quran_juz_memorized?: number | null;
+            recent_updates?: components["schemas"]["RecentUpdatesBlock"] | null;
+            since_you_began?: components["schemas"]["SinceYouBeganBlock"] | null;
+            supervisor_word?: components["schemas"]["SupervisorWordBlock"] | null;
+            /** Tags */
+            tags: string[];
+        };
         /** SponsorshipCancel */
         SponsorshipCancel: {
             /** Reason */
@@ -6887,10 +7113,32 @@ export interface components {
             /** Name */
             name: string;
         };
+        /**
+         * SupervisorWordBlock
+         * @description ``supervisor_word`` — the latest warm note from the supervisor.
+         */
+        SupervisorWordBlock: {
+            /** Author Label */
+            author_label?: string | null;
+            /**
+             * Period
+             * Format: date
+             */
+            period: string;
+            /** Text */
+            text: string;
+        };
         /** SuspendRequest */
         SuspendRequest: {
             /** Reason */
             reason: string;
+        };
+        /** TextDelta */
+        TextDelta: {
+            /** First */
+            first: string;
+            /** Latest */
+            latest: string;
         };
         /** Timeline */
         Timeline: {
@@ -9229,7 +9477,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PublicOrphanDetail"];
+                    "application/json": components["schemas"]["SponsoredOrphanProfile"];
                 };
             };
             /** @description Validation Error */
@@ -10424,6 +10672,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileVisibilityRegistry"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileVisibilityUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileVisibilityRegistry"];
                 };
             };
             /** @description Validation Error */

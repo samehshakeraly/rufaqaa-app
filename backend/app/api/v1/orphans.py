@@ -38,6 +38,13 @@ from app.schemas.orphan import (
     OrphanUpdate,
     PriorityLevel,
 )
+from app.schemas.profile_visibility import (
+    ProfileElement,
+    ProfileElementState,
+    ProfileVisibilityRegistry,
+    ProfileVisibilityUpdate,
+    is_visible,
+)
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
 from app.services.orphans import (
@@ -707,6 +714,79 @@ async def release_orphan(
     await db.commit()
     await db.refresh(orphan)
     return OrphanRead.model_validate(orphan)
+
+
+# ── Donor-profile element visibility (staff/manager control) ───────────────
+#
+# A supervisor/manager shows or hides ANY element of the donor-facing child
+# profile; the hidden element is enforced in the BACKEND (the donor composition
+# omits it server-side). Restricted to the partner-scoped submitters/managers
+# plus org admins — pure consumers (donor) and the marketing/finance roles are
+# 403'd. Org scope is ALWAYS explicit (a superuser connection bypasses RLS),
+# with the same جهة fence the other orphan detail endpoints use.
+PROFILE_VISIBILITY_ROLES: tuple[str, ...] = ("partner_staff", "partner_manager", *ADMIN_ROLES)
+
+
+def _visibility_registry(orphan: Orphan) -> ProfileVisibilityRegistry:
+    """Full registry: every element with its current effective state (visible
+    unless explicitly false) plus the raw stored map."""
+    stored = orphan.profile_visibility or {}
+    return ProfileVisibilityRegistry(
+        elements=[
+            ProfileElementState(key=element, visible=is_visible(stored, element))
+            for element in ProfileElement
+        ],
+        stored=stored,
+    )
+
+
+@router.get("/{orphan_id}/profile-visibility", response_model=ProfileVisibilityRegistry)
+async def get_orphan_profile_visibility(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*PROFILE_VISIBILITY_ROLES))],
+) -> ProfileVisibilityRegistry:
+    """The donor-profile visibility registry for one child: every
+    :class:`ProfileElement` with its current effective state, plus the raw
+    stored map. Org-scoped (explicit, never RLS) with the same جهة fence as
+    :func:`get_orphan` — an out-of-org/جهة id 404s."""
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
+    return _visibility_registry(orphan)
+
+
+@router.put("/{orphan_id}/profile-visibility", response_model=ProfileVisibilityRegistry)
+async def set_orphan_profile_visibility(
+    orphan_id: UUID,
+    payload: ProfileVisibilityUpdate,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*PROFILE_VISIBILITY_ROLES))],
+) -> ProfileVisibilityRegistry:
+    """Replace a child's donor-profile visibility map. The body's keys are
+    validated against :class:`ProfileElement` and values against ``bool`` at the
+    Pydantic boundary (unknown key / non-bool ⇒ 422). Same org + جهة scoping as
+    the GET twin."""
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
+
+    old = orphan.profile_visibility or {}
+    stored = {element.value: value for element, value in payload.visibility.items()}
+    orphan.profile_visibility = stored
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.profile_visibility_updated",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"profile_visibility": old},
+        new_values={"profile_visibility": stored},
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return _visibility_registry(orphan)
 
 
 @router.get("/{orphan_id}/timeline", response_model=Timeline)

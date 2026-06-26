@@ -82,6 +82,18 @@ class Orphan(Base):
 
     case_status: Mapped[str] = mapped_column(String(30), default="pending_review")
 
+    # Per-element donor-profile visibility (see migration 0023). A JSONB map
+    # keyed by ProfileElement (see app.schemas.profile_visibility); an element is
+    # shown to donors UNLESS its key is explicitly ``False``, so an empty map ⇒
+    # everything visible (the product default — mirrors the report
+    # ``section_visibility`` pattern). The identity/header block is implicit and
+    # always shown; it is never a key here. WRITE path: staff
+    # GET/PUT /orphans/{id}/profile-visibility. READ path: the donor profile
+    # composition consumes it server-side — it NEVER leaves the server.
+    profile_visibility: Mapped[dict[str, bool]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb"), default=dict
+    )
+
     # Orphan browsing foundation (see migration 0009). ``available_since`` is
     # stamped the first time a child enters the available pool and is never
     # overwritten (see app.services.orphans.stamp_available_since). The two
