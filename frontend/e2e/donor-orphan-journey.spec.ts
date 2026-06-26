@@ -151,6 +151,18 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
     });
   });
 
+  // Pin the app to Arabic (its primary locale) before any script runs, so
+  // the detector doesn't fall back to the runner's English `navigator.language`
+  // — otherwise translated UI like the section headings would render in English
+  // while only stubbed data stays Arabic.
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem("rufaqaa.lang", "ar");
+    } catch {
+      /* storage may be unavailable on the very first about:blank */
+    }
+  });
+
   // --- Sign up a real donor so the page mounts with a valid token. ---
   const email = `journey-${Date.now()}@example.com`;
   await page.goto("/signup");
@@ -178,8 +190,9 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
   // Her dream — the emotional anchor.
   await expect(page.getByText("أن تصبح معلمة").first()).toBeVisible();
 
-  // The Qur'an growth section renders: its heading + the inline area chart
-  // (the polyline is unique to this multi-point growth visual).
+  // The Qur'an growth section renders: its Arabic heading + the inline area
+  // chart (the polyline is unique to this multi-point growth visual, and is
+  // language-independent).
   await expect(page.getByText("رحلة الحفظ")).toBeVisible();
   await expect(page.locator("section svg polyline").first()).toBeVisible();
 
