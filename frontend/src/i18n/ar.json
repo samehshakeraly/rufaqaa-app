@@ -4324,5 +4324,29 @@
     "emptyBody": "سيظهر هنا أوّل تحديث عن {{name}}.",
     "sponsorshipTitle": "كفالتك",
     "startDateLabel": "تاريخ البدء"
+  },
+  "donorProfile": {
+    "sinceTitle": "منذ أن بدأت",
+    "sinceJuzGained": "+{{n}} جزءًا",
+    "sinceMilestones": "{{n}} محطّة بارزة",
+    "sinceReports": "{{n}} تحديثًا",
+    "dreamTitle": "حلم {{name}}",
+    "dreamLead": "يحلم بأن…",
+    "quranGrowthTitle": "رحلة الحفظ",
+    "quranGrowthCaption": "من {{first}} إلى {{latest}} جزءًا — ما شاء الله.",
+    "quranGrowthSingle": "{{n}} جزءًا حتى الآن.",
+    "quranGrowthAria": "تطوّر حفظ القرآن عبر الوقت — {{latest}} من {{total}} جزءًا",
+    "multidimTitle": "لمحة عن التقدّم",
+    "multidimEducationStage": "المرحلة الدراسية",
+    "multidimAttendance": "نسبة الحضور",
+    "multidimSocial": "التفاعل الاجتماعي",
+    "percentValue": "{{n}}٪",
+    "beforeLabel": "قبل",
+    "nowLabel": "الآن",
+    "milestonesTitle": "محطّات بارزة في الطريق",
+    "recentUpdatesTitle": "أحدث التحديثات",
+    "recentUpdatesLink": "اطّلع على كل التحديثات",
+    "supervisorWordTitle": "كلمة من المشرف",
+    "herWorldTitle": "عالم {{name}} اليوم"
   }
 }
