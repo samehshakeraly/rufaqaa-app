@@ -835,6 +835,9 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 mother_status=MOTHER_STATUSES[i % len(MOTHER_STATUSES)],
                 priority_level=PRIORITY_LEVELS[i % len(PRIORITY_LEVELS)],
                 case_status="pending_review",
+                # Donor-profile elements all visible by default (supervisors
+                # hide per element via the staff API).
+                profile_visibility={},
                 balance_currency="KWD",
                 created_by=admin_id,
             )

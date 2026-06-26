@@ -60,20 +60,34 @@ _FORBIDDEN_FIELDS = {
     "partner_organization_id",
 }
 
-_EXPECTED_FIELDS = {
-    "code",
+# Identity/header block — always present, the EXACT donor-safe slice the
+# composition reuses from PublicOrphanDetail (NOT the full public contract:
+# code / case_status / short_description are intentionally not part of the
+# donor profile composition).
+_IDENTITY_FIELDS = {
     "first_name",
     "age_years",
     "gender",
     "country",
-    "case_status",
     "partner_organization_name",
-    "short_description",
     "aspiration",
     "education_stage",
     "quran_juz_memorized",
     "tags",
     "is_hafiz",
+}
+
+# One optional block per ProfileElement — always a top-level key (null when the
+# element is hidden or has no backing data).
+_BLOCK_FIELDS = {
+    "dream",
+    "her_world",
+    "quran_growth",
+    "multidim_growth",
+    "milestones",
+    "recent_updates",
+    "supervisor_word",
+    "since_you_began",
 }
 
 
@@ -210,8 +224,10 @@ async def test_donor_gets_profile_for_sponsored_child(
     assert body["education_stage"] == "primary"
     assert body["quran_juz_memorized"] == 5
     assert body["is_hafiz"] is False
-    for field in _EXPECTED_FIELDS:
+    for field in _IDENTITY_FIELDS:
         assert field in body, f"Expected field '{field}' missing from profile payload"
+    # The dream block surfaces the aspiration once composed.
+    assert body["dream"] == {"aspiration": "doctor"}
 
 
 # ── Scoping (no existence leak) ───────────────────────────────────────────────
@@ -252,8 +268,11 @@ async def test_forbidden_fields_never_in_payload(
     body = (await api.get(f"/api/v1/me/sponsorships/{orphan}/profile", headers=headers)).json()
     for field in _FORBIDDEN_FIELDS:
         assert field not in body, f"Forbidden field '{field}' leaked into donor profile"
-    # The exposed key set must be EXACTLY the donor-safe contract — nothing extra.
-    assert set(body.keys()) == _EXPECTED_FIELDS
+    # profile_visibility is consumed server-side and must NEVER reach the donor.
+    assert "profile_visibility" not in body
+    # The exposed key set must be EXACTLY identity + one block per element —
+    # nothing extra.
+    assert set(body.keys()) == _IDENTITY_FIELDS | _BLOCK_FIELDS
 
 
 # ── Access control ────────────────────────────────────────────────────────────
@@ -323,4 +342,5 @@ async def test_sponsored_case_status_still_returns_200(
 
     r = await api.get(f"/api/v1/me/sponsorships/{orphan}/profile", headers=headers)
     assert r.status_code == 200, r.text
-    assert r.json()["case_status"] == "sponsored"
+    # Scoping is by sponsorship, not browse status, so the profile still composes.
+    assert r.json()["first_name"]

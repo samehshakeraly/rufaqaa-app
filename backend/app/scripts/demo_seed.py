@@ -676,6 +676,9 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                 assigned_to_channel_id=channels[i % len(channels)].id if i % 2 == 0 else None,
                 assigned_at=now if i % 2 == 0 else None,
                 case_status="pending_review",  # adjusted below once sponsored
+                # Donor-profile elements all visible by default (the product
+                # default — supervisors hide per element via the staff API).
+                profile_visibility={},
                 is_sponsored=False,
                 current_balance=Decimal("0"),
                 balance_currency="KWD",

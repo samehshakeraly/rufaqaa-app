@@ -8,6 +8,8 @@ can preview a donor's view.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from datetime import date
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -17,7 +19,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
-from app.api.v1.public import PublicOrphanDetail, to_public_detail
+from app.api.v1.public import to_public_detail
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.orphan import Orphan
@@ -28,6 +30,7 @@ from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.payment import PaymentDonorRead
+from app.schemas.profile_visibility import ProfileElement, is_visible
 from app.schemas.report import (
     ActivitiesSection,
     EducationProgress,
@@ -35,6 +38,22 @@ from app.schemas.report import (
     PsychologicalStatus,
     QuranProgress,
     ReportDonorRead,
+)
+from app.schemas.sponsored_profile import (
+    DreamBlock,
+    HerWorldBlock,
+    MilestoneItem,
+    MilestonesBlock,
+    MultidimGrowthBlock,
+    NumberDelta,
+    QuranGrowthBlock,
+    QuranGrowthPoint,
+    RecentUpdateItem,
+    RecentUpdatesBlock,
+    SinceYouBeganBlock,
+    SponsoredOrphanProfile,
+    SupervisorWordBlock,
+    TextDelta,
 )
 from app.schemas.sponsorship import SponsorshipRead
 
@@ -149,13 +168,178 @@ async def my_sponsorships(
     )
 
 
-@router.get("/sponsorships/{orphan_id}/profile", response_model=PublicOrphanDetail)
+def _text_delta(values: Sequence[str]) -> TextDelta | None:
+    """First-vs-latest delta over an ordered (oldest→newest) list of text values.
+    ``None`` when no report carried the value (so the block field is omitted)."""
+    if not values:
+        return None
+    return TextDelta(first=values[0], latest=values[-1])
+
+
+def _number_delta(values: Sequence[int]) -> NumberDelta | None:
+    if not values:
+        return None
+    return NumberDelta(first=values[0], latest=values[-1])
+
+
+def _compose_sponsored_profile(
+    orphan: Orphan,
+    partner_name: str | None,
+    reports: list[ReportDonorRead],
+    sponsorship_start: date,
+) -> SponsoredOrphanProfile:
+    """Assemble the donor-safe profile from already-safe parts.
+
+    ``reports`` are the donor-projected (``ReportDonorRead``) reports for this
+    child, oldest→newest — each already stripped of the sections its supervisor
+    hid, so deriving blocks from them can never leak a hidden section. Every
+    element block is emitted ONLY when the element is visible per
+    ``orphan.profile_visibility`` AND its underlying data exists; otherwise it
+    stays ``None`` (omitted). ``profile_visibility`` never reaches the response.
+    """
+    vis = orphan.profile_visibility or {}
+    # Identity/header: reuse the EXACT donor-safe slice — never re-derived here.
+    detail = to_public_detail(orphan, partner_name)
+
+    newest_first = list(reversed(reports))
+
+    # dream ── the child's aspiration.
+    dream = None
+    if is_visible(vis, ProfileElement.dream) and orphan.aspiration:
+        dream = DreamBlock(aspiration=orphan.aspiration)
+
+    # her_world ── where the child is right now.
+    her_world = None
+    if is_visible(vis, ProfileElement.her_world) and (
+        orphan.education_stage or orphan.tags or orphan.quran_juz_memorized is not None
+    ):
+        her_world = HerWorldBlock(
+            education_stage=orphan.education_stage,
+            tags=list(orphan.tags),
+            quran_juz_memorized=orphan.quran_juz_memorized,
+            is_hafiz=detail.is_hafiz,
+        )
+
+    # quran_growth ── juz' memorised over time (only reports whose quran section
+    # is visible carry quran_progress, so hidden ones drop out naturally).
+    quran_growth = None
+    if is_visible(vis, ProfileElement.quran_growth):
+        points = [
+            QuranGrowthPoint(period=r.period_end, juz_memorized=r.quran_progress.juz_memorized)
+            for r in reports
+            if r.quran_progress is not None and r.quran_progress.juz_memorized is not None
+        ]
+        if points:
+            quran_growth = QuranGrowthBlock(series=points)
+
+    # multidim_growth ── first-vs-latest deltas across a few dimensions.
+    multidim_growth = None
+    if is_visible(vis, ProfileElement.multidim_growth):
+        stages = [
+            r.educational_progress.stage
+            for r in reports
+            if r.educational_progress is not None and r.educational_progress.stage is not None
+        ]
+        attendance = [
+            r.educational_progress.attendance_percent
+            for r in reports
+            if r.educational_progress is not None
+            and r.educational_progress.attendance_percent is not None
+        ]
+        social = [
+            r.psychological_status.social
+            for r in reports
+            if r.psychological_status is not None and r.psychological_status.social is not None
+        ]
+        stage_delta = _text_delta(stages)
+        attendance_delta = _number_delta(attendance)
+        social_delta = _text_delta(social)
+        if stage_delta or attendance_delta or social_delta:
+            multidim_growth = MultidimGrowthBlock(
+                education_stage=stage_delta,
+                attendance_percent=attendance_delta,
+                social=social_delta,
+            )
+
+    # milestones ── celebrated moments (newest first).
+    milestones = None
+    if is_visible(vis, ProfileElement.milestones):
+        items = [
+            MilestoneItem(label=r.milestone_label, period=r.period_end)
+            for r in newest_first
+            if r.is_milestone and r.milestone_label
+        ]
+        if items:
+            milestones = MilestonesBlock(items=items)
+
+    # recent_updates ── the latest few report headlines (newest first).
+    recent_updates = None
+    if is_visible(vis, ProfileElement.recent_updates):
+        updates = [
+            RecentUpdateItem(period=r.period_end, headline=r.summary)
+            for r in newest_first
+            if r.summary
+        ][:3]
+        if updates:
+            recent_updates = RecentUpdatesBlock(items=updates)
+
+    # supervisor_word ── the latest warm note from the supervisor.
+    supervisor_word = None
+    if is_visible(vis, ProfileElement.supervisor_word):
+        latest = next((r for r in newest_first if r.donor_message), None)
+        if latest is not None and latest.donor_message:
+            supervisor_word = SupervisorWordBlock(
+                text=latest.donor_message,
+                period=latest.period_end,
+                author_label=partner_name,
+            )
+
+    # since_you_began ── what changed since this donor's sponsorship began. The
+    # sponsorship is guaranteed to exist (this endpoint is sponsorship-scoped).
+    since_you_began = None
+    if is_visible(vis, ProfileElement.since_you_began):
+        juz_series = [
+            r.quran_progress.juz_memorized
+            for r in reports
+            if r.quran_progress is not None and r.quran_progress.juz_memorized is not None
+        ]
+        juz_gained = max(juz_series[-1] - juz_series[0], 0) if juz_series else 0
+        since_you_began = SinceYouBeganBlock(
+            start_date=sponsorship_start,
+            juz_gained=juz_gained,
+            milestones_count=sum(1 for r in reports if r.is_milestone),
+            reports_count=len(reports),
+        )
+
+    return SponsoredOrphanProfile(
+        first_name=detail.first_name,
+        age_years=detail.age_years,
+        gender=detail.gender,
+        country=detail.country,
+        partner_organization_name=detail.partner_organization_name,
+        aspiration=detail.aspiration,
+        education_stage=detail.education_stage,
+        quran_juz_memorized=detail.quran_juz_memorized,
+        tags=detail.tags,
+        is_hafiz=detail.is_hafiz,
+        dream=dream,
+        her_world=her_world,
+        quran_growth=quran_growth,
+        multidim_growth=multidim_growth,
+        milestones=milestones,
+        recent_updates=recent_updates,
+        supervisor_word=supervisor_word,
+        since_you_began=since_you_began,
+    )
+
+
+@router.get("/sponsorships/{orphan_id}/profile", response_model=SponsoredOrphanProfile)
 async def my_sponsored_orphan_profile(
     db: DbSession,
     user: CurrentUser,
     orphan_id: UUID,
     donor_id: Annotated[UUID | None, Query()] = None,
-) -> PublicOrphanDetail:
+) -> SponsoredOrphanProfile:
     """The donor-safe humanizing profile of a child this donor sponsors.
 
     Unlike the public browse endpoint, scoping here is by an actual
@@ -164,14 +348,17 @@ async def my_sponsored_orphan_profile(
     still resolves. A child the donor does not sponsor 404s exactly like
     an unknown id, so existence never leaks.
 
-    The exposed field set is exactly ``PublicOrphanDetail`` — the canonical
-    donor-safe contract defined in app.api.v1.public — reused verbatim via
-    ``to_public_detail``; nothing beyond it is serialised.
+    The response is COMPOSED from already-donor-safe parts: the identity slice
+    reuses ``to_public_detail`` (the canonical ``PublicOrphanDetail`` contract),
+    and each element block is assembled from the same donor-projected reports
+    that back ``/me/reports``. An element the supervisor hid via
+    ``orphan.profile_visibility`` is OMITTED here — a hidden element never leaves
+    the server — and the visibility map itself is never serialised.
     """
     did = await _resolve_donor_id(db, user, donor_id)
     row = (
         await db.execute(
-            select(Orphan, PartnerOrganization.name_ar)
+            select(Orphan, PartnerOrganization.name_ar, func.min(Sponsorship.start_date))
             .join(Sponsorship, Sponsorship.orphan_id == Orphan.id)
             .outerjoin(
                 PartnerOrganization,
@@ -182,12 +369,28 @@ async def my_sponsored_orphan_profile(
                 Orphan.deleted_at.is_(None),
                 Sponsorship.donor_id == did,
             )
+            .group_by(Orphan.id, PartnerOrganization.name_ar)
         )
     ).first()
     if row is None:
         raise NotFound("Orphan")
-    orphan, partner_name = row
-    return to_public_detail(orphan, partner_name)
+    orphan, partner_name, sponsorship_start = row
+
+    # Same donor-scoped, donor-safe reports that back /me/reports — projected
+    # through each report's own section_visibility, oldest→newest for the series.
+    report_rows = (
+        await db.scalars(
+            select(OrphanReport)
+            .where(
+                OrphanReport.orphan_id == orphan_id,
+                OrphanReport.status == "published_to_donor",
+            )
+            .order_by(OrphanReport.period_end.asc(), OrphanReport.published_at.asc())
+        )
+    ).all()
+    reports = [_donor_report_view(r) for r in report_rows]
+
+    return _compose_sponsored_profile(orphan, partner_name, reports, sponsorship_start)
 
 
 @router.get("/reports", response_model=Page[ReportDonorRead])

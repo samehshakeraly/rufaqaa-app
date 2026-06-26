@@ -1531,6 +1531,16 @@ components:
           title: Whatsapp
       title: DonorUpdate
       type: object
+    DreamBlock:
+      description: '``dream`` — the child''s aspiration, in their own words.'
+      properties:
+        aspiration:
+          title: Aspiration
+          type: string
+      required:
+      - aspiration
+      title: DreamBlock
+      type: object
     EducationProgress:
       properties:
         attendance_percent:
@@ -2607,6 +2617,32 @@ components:
           title: Note
       title: HealthStatus
       type: object
+    HerWorldBlock:
+      description: '``her_world`` — a snapshot of where the child is right now.'
+      properties:
+        education_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Education Stage
+        is_hafiz:
+          title: Is Hafiz
+          type: boolean
+        quran_juz_memorized:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
+      required:
+      - tags
+      - is_hafiz
+      title: HerWorldBlock
+      type: object
     InboundWebhookLogRead:
       properties:
         error:
@@ -3095,6 +3131,32 @@ components:
       - read_at
       title: MessageRead
       type: object
+    MilestoneItem:
+      properties:
+        label:
+          title: Label
+          type: string
+        period:
+          format: date
+          title: Period
+          type: string
+      required:
+      - label
+      - period
+      title: MilestoneItem
+      type: object
+    MilestonesBlock:
+      description: '``milestones`` — the celebrated moments along the way.'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/MilestoneItem'
+          title: Items
+          type: array
+      required:
+      - items
+      title: MilestonesBlock
+      type: object
     MonthlyPoint:
       properties:
         month:
@@ -3113,6 +3175,23 @@ components:
       - payments_total
       - payments_count
       title: MonthlyPoint
+      type: object
+    MultidimGrowthBlock:
+      description: '``multidim_growth`` — first-vs-latest deltas across a few dimensions.'
+      properties:
+        attendance_percent:
+          anyOf:
+          - $ref: '#/components/schemas/NumberDelta'
+          - type: 'null'
+        education_stage:
+          anyOf:
+          - $ref: '#/components/schemas/TextDelta'
+          - type: 'null'
+        social:
+          anyOf:
+          - $ref: '#/components/schemas/TextDelta'
+          - type: 'null'
+      title: MultidimGrowthBlock
       type: object
     NationalIdRequirements:
       properties:
@@ -3193,6 +3272,19 @@ components:
           - type: 'null'
           title: Whatsapp
       title: NotificationPreferencesUpdate
+      type: object
+    NumberDelta:
+      properties:
+        first:
+          title: First
+          type: integer
+        latest:
+          title: Latest
+          type: integer
+      required:
+      - first
+      - latest
+      title: NumberDelta
       type: object
     OrgRanking:
       properties:
@@ -6380,6 +6472,74 @@ components:
       - months
       title: PlatformTimeseries
       type: object
+    ProfileElement:
+      description: 'Every toggleable element of the donor child profile, keyed exactly to the
+
+        data that exists today. Extend by adding one member (and its block on
+
+        :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).'
+      enum:
+      - dream
+      - her_world
+      - quran_growth
+      - multidim_growth
+      - milestones
+      - recent_updates
+      - supervisor_word
+      - since_you_began
+      title: ProfileElement
+      type: string
+    ProfileElementState:
+      description: 'One row of the staff registry: an element + its current effective state.'
+      properties:
+        key:
+          $ref: '#/components/schemas/ProfileElement'
+        visible:
+          title: Visible
+          type: boolean
+      required:
+      - key
+      - visible
+      title: ProfileElementState
+      type: object
+    ProfileVisibilityRegistry:
+      description: 'Staff GET response: the full registry (every :class:`ProfileElement` with
+
+        its current effective state) plus the raw stored map for transparency.'
+      properties:
+        elements:
+          items:
+            $ref: '#/components/schemas/ProfileElementState'
+          title: Elements
+          type: array
+        stored:
+          additionalProperties:
+            type: boolean
+          title: Stored
+          type: object
+      required:
+      - elements
+      - stored
+      title: ProfileVisibilityRegistry
+      type: object
+    ProfileVisibilityUpdate:
+      description: 'Staff PUT body. Typing the map as ``dict[ProfileElement, bool]`` makes
+
+        Pydantic reject (422) any unknown key or non-bool value at the boundary —
+
+        no hand-rolled validation needed.'
+      properties:
+        visibility:
+          additionalProperties:
+            type: boolean
+          propertyNames:
+            $ref: '#/components/schemas/ProfileElement'
+          title: Visibility
+          type: object
+      required:
+      - visibility
+      title: ProfileVisibilityUpdate
+      type: object
     PsychologicalStatus:
       properties:
         mood:
@@ -6580,6 +6740,32 @@ components:
       - countries_served
       title: PublicStats
       type: object
+    QuranGrowthBlock:
+      description: '``quran_growth`` — juz'' memorised over time, oldest→newest.'
+      properties:
+        series:
+          items:
+            $ref: '#/components/schemas/QuranGrowthPoint'
+          title: Series
+          type: array
+      required:
+      - series
+      title: QuranGrowthBlock
+      type: object
+    QuranGrowthPoint:
+      properties:
+        juz_memorized:
+          title: Juz Memorized
+          type: integer
+        period:
+          format: date
+          title: Period
+          type: string
+      required:
+      - period
+      - juz_memorized
+      title: QuranGrowthPoint
+      type: object
     QuranProgress:
       properties:
         current_juz:
@@ -6617,6 +6803,32 @@ components:
           - type: 'null'
           title: Recent
       title: QuranProgress
+      type: object
+    RecentUpdateItem:
+      properties:
+        headline:
+          title: Headline
+          type: string
+        period:
+          format: date
+          title: Period
+          type: string
+      required:
+      - period
+      - headline
+      title: RecentUpdateItem
+      type: object
+    RecentUpdatesBlock:
+      description: '``recent_updates`` — the latest few report headlines, newest first.'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/RecentUpdateItem'
+          title: Items
+          type: array
+      required:
+      - items
+      title: RecentUpdatesBlock
       type: object
     RefreshRequest:
       properties:
@@ -7220,6 +7432,126 @@ components:
       - new_password
       title: ResetPasswordRequest
       type: object
+    SinceYouBeganBlock:
+      description: '``since_you_began`` — what changed since this donor''s sponsorship began.'
+      properties:
+        juz_gained:
+          title: Juz Gained
+          type: integer
+        milestones_count:
+          title: Milestones Count
+          type: integer
+        reports_count:
+          title: Reports Count
+          type: integer
+        start_date:
+          format: date
+          title: Start Date
+          type: string
+      required:
+      - start_date
+      - juz_gained
+      - milestones_count
+      - reports_count
+      title: SinceYouBeganBlock
+      type: object
+    SponsoredOrphanProfile:
+      description: 'The donor-safe profile of a sponsored child. Identity fields are always
+
+        present; each element block is non-null only when visible AND backed by data.
+
+
+        The identity slice is the EXACT donor-safe set already vetted on
+
+        ``PublicOrphanDetail`` — never broadened here. ``profile_visibility`` is
+
+        never serialised.'
+      properties:
+        age_years:
+          title: Age Years
+          type: integer
+        aspiration:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aspiration
+        country:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+        dream:
+          anyOf:
+          - $ref: '#/components/schemas/DreamBlock'
+          - type: 'null'
+        education_stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Education Stage
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        her_world:
+          anyOf:
+          - $ref: '#/components/schemas/HerWorldBlock'
+          - type: 'null'
+        is_hafiz:
+          title: Is Hafiz
+          type: boolean
+        milestones:
+          anyOf:
+          - $ref: '#/components/schemas/MilestonesBlock'
+          - type: 'null'
+        multidim_growth:
+          anyOf:
+          - $ref: '#/components/schemas/MultidimGrowthBlock'
+          - type: 'null'
+        partner_organization_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Partner Organization Name
+        quran_growth:
+          anyOf:
+          - $ref: '#/components/schemas/QuranGrowthBlock'
+          - type: 'null'
+        quran_juz_memorized:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Quran Juz Memorized
+        recent_updates:
+          anyOf:
+          - $ref: '#/components/schemas/RecentUpdatesBlock'
+          - type: 'null'
+        since_you_began:
+          anyOf:
+          - $ref: '#/components/schemas/SinceYouBeganBlock'
+          - type: 'null'
+        supervisor_word:
+          anyOf:
+          - $ref: '#/components/schemas/SupervisorWordBlock'
+          - type: 'null'
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
+      required:
+      - first_name
+      - age_years
+      - gender
+      - tags
+      - is_hafiz
+      title: SponsoredOrphanProfile
+      type: object
     SponsorshipCancel:
       properties:
         reason:
@@ -7511,6 +7843,26 @@ components:
       - name
       title: SubjectGrade
       type: object
+    SupervisorWordBlock:
+      description: '``supervisor_word`` — the latest warm note from the supervisor.'
+      properties:
+        author_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author Label
+        period:
+          format: date
+          title: Period
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+      - text
+      - period
+      title: SupervisorWordBlock
+      type: object
     SuspendRequest:
       properties:
         reason:
@@ -7521,6 +7873,19 @@ components:
       required:
       - reason
       title: SuspendRequest
+      type: object
+    TextDelta:
+      properties:
+        first:
+          title: First
+          type: string
+        latest:
+          title: Latest
+          type: string
+      required:
+      - first
+      - latest
+      title: TextDelta
       type: object
     Timeline:
       properties:
@@ -10160,11 +10525,17 @@ paths:
         an unknown id, so existence never leaks.
 
 
-        The exposed field set is exactly ``PublicOrphanDetail`` — the canonical
+        The response is COMPOSED from already-donor-safe parts: the identity slice
 
-        donor-safe contract defined in app.api.v1.public — reused verbatim via
+        reuses ``to_public_detail`` (the canonical ``PublicOrphanDetail`` contract),
 
-        ``to_public_detail``; nothing beyond it is serialised.'
+        and each element block is assembled from the same donor-projected reports
+
+        that back ``/me/reports``. An element the supervisor hid via
+
+        ``orphan.profile_visibility`` is OMITTED here — a hidden element never leaves
+
+        the server — and the visibility map itself is never serialised.'
       operationId: my_sponsored_orphan_profile_api_v1_me_sponsorships__orphan_id__profile_get
       parameters:
       - in: path
@@ -10188,7 +10559,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PublicOrphanDetail'
+                $ref: '#/components/schemas/SponsoredOrphanProfile'
           description: Successful Response
         '422':
           content:
@@ -11826,6 +12197,83 @@ paths:
       summary: Attach Document To Orphan
       tags:
       - documents
+  /api/v1/orphans/{orphan_id}/profile-visibility:
+    get:
+      description: 'The donor-profile visibility registry for one child: every
+
+        :class:`ProfileElement` with its current effective state, plus the raw
+
+        stored map. Org-scoped (explicit, never RLS) with the same جهة fence as
+
+        :func:`get_orphan` — an out-of-org/جهة id 404s.'
+      operationId: get_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileVisibilityRegistry'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphan Profile Visibility
+      tags:
+      - orphans
+    put:
+      description: 'Replace a child''s donor-profile visibility map. The body''s keys are
+
+        validated against :class:`ProfileElement` and values against ``bool`` at the
+
+        Pydantic boundary (unknown key / non-bool ⇒ 422). Same org + جهة scoping as
+
+        the GET twin.'
+      operationId: set_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_put
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileVisibilityUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileVisibilityRegistry'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Set Orphan Profile Visibility
+      tags:
+      - orphans
   /api/v1/orphans/{orphan_id}/reject:
     post:
       description: 'Reject a pending_review orphan. Reason is required and stored on
