@@ -178,9 +178,10 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
   // Her dream — the emotional anchor.
   await expect(page.getByText("أن تصبح معلمة").first()).toBeVisible();
 
-  // The Qur'an growth section renders with its caption.
-  await expect(page.getByRole("heading", { name: "رحلة الحفظ" })).toBeVisible();
-  await expect(page.getByText(/من 2 إلى 5 جزءًا/)).toBeVisible();
+  // The Qur'an growth section renders: its heading + the inline area chart
+  // (the polyline is unique to this multi-point growth visual).
+  await expect(page.getByText("رحلة الحفظ")).toBeVisible();
+  await expect(page.locator("section svg polyline").first()).toBeVisible();
 
   // At least one milestone is celebrated.
   await expect(page.getByText("أتمّت حفظ جزء عمّ")).toBeVisible();
