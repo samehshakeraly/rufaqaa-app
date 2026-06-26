@@ -56,6 +56,25 @@ export function flagEmoji(code: string): string {
   );
 }
 
+/**
+ * Human, localized country name from a stored value. When `value` is an ISO
+ * 3166-1 alpha-2 code (e.g. "EG"), resolve it to a localized name via
+ * Intl.DisplayNames for `locale` ("مصر" / "Egypt"). When it's already a name
+ * (anything that isn't a bare two-letter code) or DisplayNames is missing, the
+ * value is returned unchanged. Never throws.
+ */
+export function countryName(value: string, locale: string): string {
+  if (!value) return value;
+  const code = value.trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code)) return value;
+  try {
+    const display = new Intl.DisplayNames([locale], { type: "region" });
+    return display.of(code) || value;
+  } catch {
+    return value;
+  }
+}
+
 export interface CountryOption {
   code: string;
   label: string;
