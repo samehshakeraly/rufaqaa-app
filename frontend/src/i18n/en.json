@@ -3471,6 +3471,8 @@
       "tabsLabel": "Orphan information",
       "tabOverview": "Overview",
       "tabReports": "Reports",
+      "tabVisibility": "Profile visibility",
+      "visibilityTitle": "What the sponsor sees in the profile",
       "basicInfo": "Basic information",
       "age": "Age",
       "dob": "Date of birth",
@@ -3590,6 +3592,63 @@
       "sentError": "Couldn't send the report. Please try again.",
       "privacyNote": "Your report reaches your organisation first for review, then the sponsor. It stays private to this circle."
     }
+  },
+  "profileVisibility": {
+    "loadError": "Couldn't load visibility settings. Please try again later.",
+    "bannerTitle": "Hiding is real and enforced on the server",
+    "bannerBody": "Hidden elements never reach the sponsor — the server doesn't send them. Every element is visible by default, and you control what is shown.",
+    "counter": "{{visible}} visible · {{hidden}} hidden",
+    "alwaysShown": "Always shown",
+    "identity": {
+      "label": "Identity & basic details",
+      "help": "Name, photo and identifying details — always shown and cannot be hidden.",
+      "locked": "Locked — always shown"
+    },
+    "elements": {
+      "dream": {
+        "label": "Dream",
+        "help": "The child's aspirations and hopes for the future."
+      },
+      "her_world": {
+        "label": "Their world",
+        "help": "Hobbies, interests and what they enjoy day to day."
+      },
+      "quran_growth": {
+        "label": "Qur'an journey",
+        "help": "Memorisation, recitation and progress."
+      },
+      "multidim_growth": {
+        "label": "Well-rounded growth",
+        "help": "Educational, health and social progress."
+      },
+      "milestones": {
+        "label": "Milestones",
+        "help": "Standout moments and achievements along the way."
+      },
+      "recent_updates": {
+        "label": "Recent updates",
+        "help": "The latest news and updates about them."
+      },
+      "supervisor_word": {
+        "label": "Supervisor's word",
+        "help": "A message from the child's supervisor."
+      },
+      "since_you_began": {
+        "label": "Since you began",
+        "help": "The impact of your sponsorship since you joined."
+      }
+    },
+    "showAction": "Show {{name}} to the sponsor",
+    "hideAction": "Hide {{name}} from the sponsor",
+    "previewTitle": "Preview as the sponsor sees it",
+    "previewVisible": "Sponsor will see ({{n}})",
+    "previewHidden": "Hidden from sponsor ({{n}})",
+    "previewNoneVisible": "No elements are visible.",
+    "previewNoneHidden": "No elements are hidden.",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "saveError": "Couldn't save. Please try again."
   },
   "platform": {
     "modeBadge": "Platform Administration",
