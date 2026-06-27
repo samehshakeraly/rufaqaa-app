@@ -554,9 +554,7 @@ async def _media_manage_read(m: Media) -> MediaManageRead:
         visibility=m.visibility or "private",
         has_guardian_consent=bool(m.has_guardian_consent),
         url=await presigned_get_url_for(m.file_url),
-        thumbnail_url=(
-            await presigned_get_url_for(m.thumbnail_url) if m.thumbnail_url else None
-        ),
+        thumbnail_url=(await presigned_get_url_for(m.thumbnail_url) if m.thumbnail_url else None),
         created_at=m.created_at,
     )
 
@@ -724,9 +722,7 @@ async def update_media(
         entity_type="media",
         entity_id=media.id,
         old_values={k: old[k] for k in fields if k in old},
-        new_values={
-            k: (v.isoformat() if isinstance(v, date) else v) for k, v in fields.items()
-        },
+        new_values={k: (v.isoformat() if isinstance(v, date) else v) for k, v in fields.items()},
     )
     await db.commit()
     await db.refresh(media)

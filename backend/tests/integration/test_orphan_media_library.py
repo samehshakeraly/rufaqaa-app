@@ -467,9 +467,7 @@ async def test_list_media_org_scoped_and_filtered(
     assert drawing_rows[0]["category"] == "drawing"
 
 
-async def test_different_org_staff_rejected(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_different_org_staff_rejected(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     partner_id = await _partner_id(api, auth_headers)
     org_id = await _my_org_id(api, auth_headers)
     orphan_id = await _make_orphan(api, auth_headers, partner_id)
@@ -481,15 +479,11 @@ async def test_different_org_staff_rejected(
     # list / patch on this org's orphan + media all 404 from another org.
     r = await api.get(f"/api/v1/media/orphans/{orphan_id}/media", headers=other)
     assert r.status_code == 404
-    r = await api.patch(
-        f"/api/v1/media/{media_id}", json={"title": "x"}, headers=other
-    )
+    r = await api.patch(f"/api/v1/media/{media_id}", json={"title": "x"}, headers=other)
     assert r.status_code == 404
 
 
-async def test_upload_rejects_bad_mime_415(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_upload_rejects_bad_mime_415(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     partner_id = await _partner_id(api, auth_headers)
     orphan_id = await _make_orphan(api, auth_headers, partner_id)
     r = await api.post(
@@ -501,9 +495,7 @@ async def test_upload_rejects_bad_mime_415(
     assert r.status_code == 415, r.text
 
 
-async def test_upload_rejects_oversize_413(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_upload_rejects_oversize_413(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     partner_id = await _partner_id(api, auth_headers)
     orphan_id = await _make_orphan(api, auth_headers, partner_id)
     too_big = b"\0" * (10 * 1024 * 1024 + 1)
@@ -516,9 +508,7 @@ async def test_upload_rejects_oversize_413(
     assert r.status_code == 413, r.text
 
 
-async def test_patch_invalid_visibility_422(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_patch_invalid_visibility_422(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     partner_id = await _partner_id(api, auth_headers)
     org_id = await _my_org_id(api, auth_headers)
     orphan_id = await _make_orphan(api, auth_headers, partner_id)
