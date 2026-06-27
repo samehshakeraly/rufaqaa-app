@@ -4324,5 +4324,29 @@
     "emptyBody": "The first update about {{name}} will appear here.",
     "sponsorshipTitle": "Your sponsorship",
     "startDateLabel": "Start date"
+  },
+  "donorProfile": {
+    "sinceTitle": "Since you began",
+    "sinceJuzGained": "+{{n}} juz'",
+    "sinceMilestones": "{{n}} milestones",
+    "sinceReports": "{{n}} updates",
+    "dreamTitle": "{{name}}'s dream",
+    "dreamLead": "Dreams of…",
+    "quranGrowthTitle": "The memorization journey",
+    "quranGrowthCaption": "From {{first}} to {{latest}} juz' — mashaAllah.",
+    "quranGrowthSingle": "{{n}} juz' memorized so far.",
+    "quranGrowthAria": "Qur'an memorization over time — {{latest}} of {{total}} juz'",
+    "multidimTitle": "Progress at a glance",
+    "multidimEducationStage": "Education stage",
+    "multidimAttendance": "Attendance",
+    "multidimSocial": "Social interaction",
+    "percentValue": "{{n}}%",
+    "beforeLabel": "Before",
+    "nowLabel": "Now",
+    "milestonesTitle": "Milestones along the way",
+    "recentUpdatesTitle": "Latest updates",
+    "recentUpdatesLink": "See all updates",
+    "supervisorWordTitle": "A word from the supervisor",
+    "herWorldTitle": "{{name}}'s world today"
   }
 }

@@ -7,7 +7,7 @@ import { countryName } from "@/lib/countries";
 import { formatDate, formatDuration, humanDuration } from "@/lib/format";
 import type { PaymentDonorRead } from "@/lib/payments";
 import { listMyPayments } from "@/lib/payments";
-import type { PublicOrphanDetail } from "@/lib/public";
+import type { SponsoredOrphanProfile } from "@/lib/public";
 import { getSponsoredOrphanProfile } from "@/lib/public";
 import type { ReportDonorRead } from "@/lib/reports";
 import { listMyReports } from "@/lib/reports";
@@ -15,6 +15,8 @@ import type { Sponsorship } from "@/lib/sponsorships";
 import { listMySponsorships } from "@/lib/sponsorships";
 
 const JUZ_TOTAL = 30;
+
+const TIMELINE_ANCHOR = "reports-timeline";
 
 /* ------------------------------------------------------------------ */
 /* Meaning-driven color system                                         */
@@ -31,34 +33,20 @@ type Tone = "success" | "trust" | "sky" | "warning" | "gray";
 
 /** Pill / chip surface for each tone (light + dark), accessible contrast. */
 const TONE_CHIP: Record<Tone, string> = {
-  success:
-    "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-100",
+  success: "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-100",
   trust: "bg-trust-100 text-trust-700 dark:bg-trust-500/20 dark:text-tranquil-100",
   sky: "bg-sky-100 text-trust-700 dark:bg-sky-400/20 dark:text-tranquil-100",
-  warning:
-    "bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-100",
+  warning: "bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-100",
   gray: "bg-tranquil-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200",
 };
 
 /** Larger tinted stat-tile surface (border + background) for each tone. */
 const TONE_TILE: Record<Tone, string> = {
-  success:
-    "border-success-100 bg-success-50 dark:border-success-500/30 dark:bg-success-500/10",
-  trust:
-    "border-trust-200 bg-tranquil-100 dark:border-trust-500/30 dark:bg-trust-500/10",
+  success: "border-success-100 bg-success-50 dark:border-success-500/30 dark:bg-success-500/10",
+  trust: "border-trust-200 bg-tranquil-100 dark:border-trust-500/30 dark:bg-trust-500/10",
   sky: "border-sky-200 bg-sky-100 dark:border-sky-400/30 dark:bg-sky-400/10",
-  warning:
-    "border-warning-100 bg-warning-50 dark:border-warning-500/30 dark:bg-warning-500/10",
+  warning: "border-warning-100 bg-warning-50 dark:border-warning-500/30 dark:bg-warning-500/10",
   gray: "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/60",
-};
-
-/** Solid SVG stroke per tone (for inline progress visuals). */
-const TONE_STROKE: Record<Tone, string> = {
-  success: "stroke-success-500",
-  trust: "stroke-trust-500",
-  sky: "stroke-sky-400",
-  warning: "stroke-warning-500",
-  gray: "stroke-gray-400",
 };
 
 const EDU_RATING_TONE: Record<string, Tone> = {
@@ -96,15 +84,38 @@ const SOCIAL_TONE: Record<string, Tone> = {
   needs_support: "warning",
 };
 
+/** Localize an education-stage enum code through the shared map, falling
+ * back to the raw code so an unknown value never renders blank. */
+function eduStageLabel(
+  code: string | null | undefined,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string | null {
+  if (!code) return null;
+  return t(`orphans.profile.educationStageOptions.${code}`, {
+    defaultValue: code,
+  });
+}
+
+/** Localize a social-interaction enum code; falls back to the raw code. */
+function socialLabel(
+  code: string,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string {
+  return t(`orphanageManager.report.socialOptions.${code}`, {
+    defaultValue: code,
+  });
+}
+
 /** D-07 — the donor's "child journey" detail page.
  *
  * Route: /donor/orphans/:id  (:id is the orphan_id).
  *
  * The sponsorship is located inside the donor's own /me/sponsorships
  * list, so a donor can only ever reach a child they actually sponsor —
- * never another donor's orphan. The page is read-only: it consumes the
- * already-scoped, donor-safe `ReportDonorRead` projection (/me/reports)
- * and renders it as a warm, human story rather than raw data.
+ * never another donor's orphan. The page is read-only: it renders the
+ * composed, donor-safe `SponsoredOrphanProfile` (every element block is
+ * optional — shown only when the backend includes it) as a warm, human
+ * story, alongside the donor's own payments and the reports timeline.
  *
  * Out of scope here: child photos (privacy — a monogram avatar stands in)
  * and donor↔staff messaging. */
@@ -129,25 +140,21 @@ export function DonorOrphanDetailPage() {
 
   const sponsorship = sponsorshipsQ.data?.items.find((s) => s.orphan_id === id);
 
-  // Secondary, best-effort fetch for richer basic info. Scoped by the
-  // donor's own sponsorship (keyed by orphan id), so it resolves even
-  // for a sponsored child that is no longer publicly browseable. If it
-  // fails, the timeline / cards still render and the name falls back.
-  const orphanInfoQ = useQuery({
+  // Composed donor-safe profile, scoped by the donor's own sponsorship
+  // (keyed by orphan id), so it resolves even for a sponsored child that
+  // is no longer publicly browseable. If it fails, the timeline / payments
+  // still render and the name falls back to the sponsorship record.
+  const profileQ = useQuery({
     queryKey: ["donor", "me", "orphanProfile", id],
     queryFn: () => getSponsoredOrphanProfile(id!),
     enabled: !!id,
     retry: false,
   });
 
-  // Newest-first for the timeline; the journey strip / trends derive their
-  // own chronological views from this list as needed.
+  // Newest-first for the timeline.
   const reports = (reportsQ.data?.items ?? [])
     .filter((r) => r.orphan_id === id)
-    .sort(
-      (a, b) =>
-        new Date(b.period_start).getTime() - new Date(a.period_start).getTime(),
-    );
+    .sort((a, b) => new Date(b.period_start).getTime() - new Date(a.period_start).getTime());
 
   if (sponsorshipsQ.isLoading) {
     return (
@@ -183,8 +190,9 @@ export function DonorOrphanDetailPage() {
     );
   }
 
-  const info = orphanInfoQ.data;
-  const name = sponsorship.orphan_name ?? info?.first_name ?? "—";
+  const profile = profileQ.data;
+  const name = sponsorship.orphan_name ?? profile?.first_name ?? "—";
+  const isRtl = lang === "ar";
 
   return (
     <div className="space-y-6">
@@ -192,13 +200,34 @@ export function DonorOrphanDetailPage() {
         ← {t("donor.orphanDetail.back")}
       </Link>
 
-      <StoryHeader name={name} sponsorship={sponsorship} info={info} lang={lang} />
+      <IdentityHeader name={name} sponsorship={sponsorship} profile={profile} lang={lang} />
 
-      <JourneyStrip name={name} sponsorship={sponsorship} reports={reports} />
+      {/* Composed profile blocks — each rendered ONLY when present, ordered
+          for emotional impact (dream first, her world last). */}
+      {profile?.dream && <DreamSection name={name} dream={profile.dream} />}
 
+      {profile?.quran_growth && <QuranGrowthSection growth={profile.quran_growth} lang={lang} />}
+
+      {profile?.multidim_growth && (
+        <MultidimGrowthSection growth={profile.multidim_growth} isRtl={isRtl} />
+      )}
+
+      {profile?.milestones && profile.milestones.items.length > 0 && (
+        <MilestonesSection milestones={profile.milestones} lang={lang} />
+      )}
+
+      {profile?.recent_updates && profile.recent_updates.items.length > 0 && (
+        <RecentUpdatesSection updates={profile.recent_updates} lang={lang} />
+      )}
+
+      {profile?.supervisor_word && (
+        <SupervisorWordSection word={profile.supervisor_word} lang={lang} />
+      )}
+
+      {profile?.her_world && <HerWorldSection name={name} world={profile.her_world} />}
+
+      {/* Existing, profile-independent sections. */}
       <Timeline name={name} reports={reports} loading={reportsQ.isLoading} lang={lang} />
-
-      <ProgressTrends reports={reports} lang={lang} />
 
       <SponsorshipCard sponsorship={sponsorship} lang={lang} />
 
@@ -213,25 +242,27 @@ export function DonorOrphanDetailPage() {
 }
 
 /* ------------------------------------------------------------------ */
-/* A) Story header — gradient cover + monogram + pull-quote            */
+/* A) Identity header — cover + monogram + facts + "since you began"   */
 /* ------------------------------------------------------------------ */
 
-function StoryHeader({
+function IdentityHeader({
   name,
   sponsorship,
-  info,
+  profile,
   lang,
 }: {
   name: string;
   sponsorship: Sponsorship;
-  info: PublicOrphanDetail | undefined;
+  profile: SponsoredOrphanProfile | undefined;
   lang: string;
 }) {
   const { t } = useTranslation();
 
   const since = humanDuration(sponsorship.start_date);
   const sinceText = since ? formatDuration(since, t) : null;
-  const country = info?.country ? countryName(info.country, lang) : null;
+  const country = profile?.country ? countryName(profile.country, lang) : null;
+  const stage = eduStageLabel(profile?.education_stage, t);
+  const isHafiz = !!profile?.is_hafiz;
 
   return (
     <section
@@ -247,18 +278,16 @@ function StoryHeader({
 
       <div className="px-6 pb-6">
         <div className="-mt-12 flex flex-col items-center gap-3 sm:-mt-14 sm:flex-row sm:items-end sm:gap-5">
-          <MonogramAvatar name={name} />
+          <MonogramAvatar name={name} isHafiz={isHafiz} />
           <div className="min-w-0 flex-1 text-center sm:pb-1 sm:text-start">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-3xl">
               {name}
             </h1>
             {sponsorship.orphan_code && (
-              <p className="font-mono text-xs text-gray-500">
-                {sponsorship.orphan_code}
-              </p>
+              <p className="font-mono text-xs text-gray-500">{sponsorship.orphan_code}</p>
             )}
           </div>
-          {info?.is_hafiz && (
+          {isHafiz && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-success-50 px-3 py-1 text-sm font-semibold text-success-700 dark:bg-success-500/15 dark:text-success-100">
               <StarIcon />
               {t("donor.orphanDetail.hafiz")}
@@ -267,21 +296,20 @@ function StoryHeader({
         </div>
 
         {/* Key facts as inline icon chips — not a flat gray table. */}
-        {info && (
+        {profile && (
           <ul className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
             <FactChip icon={<CakeIcon />}>
-              {t("donor.orphanDetail.ageValue", { age: info.age_years })}
+              {t("donor.orphanDetail.ageValue", { age: profile.age_years })}
             </FactChip>
             <FactChip icon={<PersonIcon />}>
-              {info.gender === "M"
+              {profile.gender === "M"
                 ? t("donor.orphanDetail.male")
                 : t("donor.orphanDetail.female")}
             </FactChip>
             {country && <FactChip icon={<GlobeIcon />}>{country}</FactChip>}
-            {info.education_stage && (
-              <FactChip icon={<BookIcon />}>
-                {t(`orphans.profile.educationStageOptions.${info.education_stage}`)}
-              </FactChip>
+            {stage && <FactChip icon={<BookIcon />}>{stage}</FactChip>}
+            {profile.partner_organization_name && (
+              <FactChip icon={<HomeIcon />}>{profile.partner_organization_name}</FactChip>
             )}
           </ul>
         )}
@@ -294,36 +322,9 @@ function StoryHeader({
           </p>
         )}
 
-        {/* Aspiration — the emotional anchor, given real presence. */}
-        {info?.aspiration && (
-          <figure className="mt-4 rounded-xl border-s-4 border-trust-300 bg-tranquil-100 px-4 py-3 dark:border-trust-500/40 dark:bg-trust-500/10">
-            <figcaption className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-trust-500">
-              <QuoteIcon />
-              {t("donorTimeline.aspirationLead")}
-            </figcaption>
-            <blockquote className="mt-1 text-lg font-semibold leading-snug text-trust-800 dark:text-tranquil-100">
-              {info.aspiration}
-            </blockquote>
-          </figure>
-        )}
-
-        {info?.short_description && (
-          <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">
-            {info.short_description}
-          </p>
-        )}
-
-        {info && info.tags.length > 0 && (
-          <ul className="mt-3 flex flex-wrap gap-1.5">
-            {info.tags.map((tag) => (
-              <li
-                key={tag}
-                className="rounded-full bg-tranquil-200 px-2 py-0.5 text-xs font-medium text-trust-700 dark:bg-gray-700 dark:text-tranquil-200"
-              >
-                {tag}
-              </li>
-            ))}
-          </ul>
+        {/* "Since you began" — the donor's own delta strip. */}
+        {profile?.since_you_began && (
+          <SinceYouBeganStrip block={profile.since_you_began} lang={lang} />
         )}
       </div>
     </section>
@@ -331,26 +332,37 @@ function StoryHeader({
 }
 
 /** Faceless avatar: the child's monogram inside a soft brand gradient
- * circle that overlaps the cover band. Works for Arabic and Latin names. */
-function MonogramAvatar({ name }: { name: string }) {
+ * circle that overlaps the cover band. Works for Arabic and Latin names.
+ * A hafiz earns a success-tinted honor ring + star badge. */
+function MonogramAvatar({ name, isHafiz }: { name: string; isHafiz: boolean }) {
+  const { t } = useTranslation();
   const letter = name.trim().charAt(0) || "•";
   return (
-    <span
-      aria-hidden="true"
-      className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-trust-300 to-trust-600 text-4xl font-bold text-white shadow-md dark:border-gray-800"
-    >
-      {letter}
+    <span className="relative shrink-0">
+      <span
+        aria-hidden="true"
+        className={`flex h-24 w-24 items-center justify-center rounded-full border-4 bg-gradient-to-br from-trust-300 to-trust-600 text-4xl font-bold text-white shadow-md dark:border-gray-800 ${
+          isHafiz
+            ? "border-success-300 ring-4 ring-success-200 dark:ring-success-500/30"
+            : "border-white"
+        }`}
+      >
+        {letter}
+      </span>
+      {isHafiz && (
+        <span
+          className="absolute -bottom-1 -end-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-success-500 text-white shadow dark:border-gray-800"
+          title={t("donor.orphanDetail.hafiz")}
+          aria-label={t("donor.orphanDetail.hafiz")}
+        >
+          <StarIcon />
+        </span>
+      )}
     </span>
   );
 }
 
-function FactChip({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function FactChip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <li className="inline-flex items-center gap-1.5 rounded-full bg-tranquil-100 px-3 py-1 text-sm font-medium text-gray-700 dark:bg-gray-700/60 dark:text-gray-200">
       <span className="text-trust-500 dark:text-tranquil-300">{icon}</span>
@@ -359,135 +371,316 @@ function FactChip({
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* B) Journey strip — meaningful, colored stat tiles                   */
-/* ------------------------------------------------------------------ */
-
-function JourneyStrip({
-  name,
-  sponsorship,
-  reports,
+/** "منذ أن بدأت" — what changed since this donor's sponsorship began. A
+ * compact strip of deltas: juz gained, milestones, reports, bond duration. */
+function SinceYouBeganStrip({
+  block,
+  lang,
 }: {
-  name: string;
-  sponsorship: Sponsorship;
-  reports: ReportDonorRead[];
+  block: NonNullable<SponsoredOrphanProfile["since_you_began"]>;
+  lang: string;
 }) {
   const { t } = useTranslation();
+  const dur = humanDuration(block.start_date);
+  const durText = dur ? formatDuration(dur, t) : null;
 
-  const since = humanDuration(sponsorship.start_date);
-  const sinceText = since ? formatDuration(since, t) : null;
+  const items: { key: string; value: string }[] = [];
+  if (block.juz_gained > 0) {
+    items.push({
+      key: "juz",
+      value: t("donorProfile.sinceJuzGained", { n: block.juz_gained }),
+    });
+  }
+  if (block.milestones_count > 0) {
+    items.push({
+      key: "milestones",
+      value: t("donorProfile.sinceMilestones", { n: block.milestones_count }),
+    });
+  }
+  if (block.reports_count > 0) {
+    items.push({
+      key: "reports",
+      value: t("donorProfile.sinceReports", { n: block.reports_count }),
+    });
+  }
+  if (durText) {
+    items.push({ key: "bond", value: durText });
+  }
 
-  // Qur'an progress: chronological reports that carry juz_memorized.
-  const juzSeries = [...reports]
-    .reverse()
-    .map((r) => r.quran_progress?.juz_memorized)
-    .filter((n): n is number => typeof n === "number");
-  const latestJuz = juzSeries.length
-    ? (juzSeries[juzSeries.length - 1] as number)
-    : null;
-  const juzGained =
-    juzSeries.length >= 2
-      ? (juzSeries[juzSeries.length - 1] as number) - (juzSeries[0] as number)
-      : null;
-
-  const latestRatingCode = reports
-    .map((r) => r.educational_progress?.overall_rating)
-    .find((v): v is NonNullable<typeof v> => !!v);
-
-  const hasAny =
-    sinceText !== null ||
-    latestJuz !== null ||
-    reports.length > 0 ||
-    !!latestRatingCode;
-  if (!hasAny) return null;
-
-  const ratingTone =
-    (latestRatingCode && EDU_RATING_TONE[latestRatingCode]) || "trust";
+  if (items.length === 0) return null;
 
   return (
-    <section className="card" aria-label={t("donorTimeline.journeyTitle", { name })}>
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-        {t("donorTimeline.journeyTitle", { name })}
-      </h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {latestJuz !== null && (
-          <StatTile
-            tone="success"
-            icon={<QuranIcon />}
-            label={t("donorTimeline.quranProgressLabel")}
-          >
-            <div className="flex items-center gap-3">
-              <ProgressRing
-                value={latestJuz}
-                max={JUZ_TOTAL}
-                tone="success"
-                ariaLabel={t("donorTimeline.juzOfTotal", { n: latestJuz })}
-              />
-              <div className="min-w-0">
-                <p className="font-bold text-gray-900 dark:text-gray-100">
-                  {t("donorTimeline.juzOfTotal", { n: latestJuz })}
-                </p>
-                {juzGained !== null && juzGained > 0 && (
-                  <p className="mt-0.5 text-xs font-medium text-success-700 dark:text-success-300">
-                    {t("donorTimeline.juzGained", { n: juzGained })}
-                  </p>
-                )}
-              </div>
-            </div>
-          </StatTile>
-        )}
+    <div className="mt-4 rounded-xl border border-trust-200 bg-tranquil-100 px-4 py-3 dark:border-trust-500/30 dark:bg-trust-500/10">
+      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-trust-500">
+        <HeartIcon />
+        {t("donorProfile.sinceTitle")}
+        <span className="font-normal normal-case text-trust-400">
+          · {formatDate(block.start_date, lang)}
+        </span>
+      </p>
+      <ul className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        {items.map((it, i) => (
+          <li key={it.key} className="flex items-center gap-2">
+            {i > 0 && (
+              <span aria-hidden="true" className="text-trust-300">
+                ·
+              </span>
+            )}
+            <span className="text-sm font-semibold text-trust-800 dark:text-tranquil-100">
+              {it.value}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-        {latestRatingCode && (
-          <StatTile
-            tone={ratingTone}
-            icon={<StarIcon />}
-            label={t("donorTimeline.latestRating")}
-          >
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              {t(`orphanageManager.report.eduRatingOptions.${latestRatingCode}`)}
-            </p>
-          </StatTile>
-        )}
+/* ------------------------------------------------------------------ */
+/* B) Dream — the emotional anchor                                     */
+/* ------------------------------------------------------------------ */
 
-        {reports.length > 0 && (
-          <StatTile
-            tone="trust"
-            icon={<InboxIcon />}
-            label={t("donorTimeline.updatesReceived")}
-          >
-            <p className="text-3xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
-              {reports.length}
-            </p>
-          </StatTile>
-        )}
-
-        {sinceText && (
-          <StatTile
-            tone="sky"
-            icon={<HeartIcon />}
-            label={t("donorTimeline.durationTileLabel")}
-          >
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              {sinceText}
-            </p>
-          </StatTile>
-        )}
-      </div>
+function DreamSection({
+  name,
+  dream,
+}: {
+  name: string;
+  dream: NonNullable<SponsoredOrphanProfile["dream"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section
+      className="overflow-hidden rounded-2xl border-s-4 border-trust-400 bg-gradient-to-l from-tranquil-100 to-white p-6 shadow-sm dark:border-trust-500/50 dark:from-trust-500/10 dark:to-gray-800"
+      aria-label={t("donorProfile.dreamTitle", { name })}
+    >
+      <figure>
+        <figcaption className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-trust-500">
+          <QuoteIcon />
+          {t("donorProfile.dreamLead")}
+        </figcaption>
+        <blockquote className="mt-2 text-2xl font-bold leading-snug text-trust-800 dark:text-tranquil-100 sm:text-3xl">
+          {dream.aspiration}
+        </blockquote>
+      </figure>
     </section>
   );
 }
 
-function StatTile({
+/* ------------------------------------------------------------------ */
+/* C) Qur'an growth — juz' over time (inline area chart)               */
+/* ------------------------------------------------------------------ */
+
+function QuranGrowthSection({
+  growth,
+  lang,
+}: {
+  growth: NonNullable<SponsoredOrphanProfile["quran_growth"]>;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  const series = growth.series;
+  const first = series[0];
+  const latest = series[series.length - 1];
+  if (!first || !latest) return null;
+  const single = series.length === 1;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.quranGrowthTitle")}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.success}`}
+        >
+          <QuranIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.quranGrowthTitle")}
+        </h2>
+      </div>
+
+      <QuranGrowthChart series={series} lang={lang} />
+
+      <p className="text-sm text-gray-600 dark:text-gray-300">
+        {single
+          ? t("donorProfile.quranGrowthSingle", { n: latest.juz_memorized })
+          : t("donorProfile.quranGrowthCaption", {
+              first: first.juz_memorized,
+              latest: latest.juz_memorized,
+            })}
+      </p>
+    </section>
+  );
+}
+
+/** Inline-SVG area chart of juz' memorized over time, scaled to the full
+ * 30 juz' so progress reads against the whole Qur'an. A single point draws
+ * one dignified dot — never a fabricated slope. Value is also voiced via
+ * aria-label and stated in the caption, so color is never the only signal. */
+function QuranGrowthChart({
+  series,
+  lang,
+}: {
+  series: NonNullable<SponsoredOrphanProfile["quran_growth"]>["series"];
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  const W = 320;
+  const H = 96;
+  const PAD = 8;
+  const n = series.length;
+  const span = JUZ_TOTAL;
+
+  const first = series[0];
+  const latest = series[series.length - 1];
+  if (!first || !latest) return null;
+
+  const points = series.map((p, i) => {
+    const x = n === 1 ? W / 2 : PAD + (i * (W - 2 * PAD)) / (n - 1);
+    const v = Math.max(0, Math.min(span, p.juz_memorized));
+    const y = H - PAD - (v / span) * (H - 2 * PAD);
+    return [x, y] as const;
+  });
+
+  const ariaLabel = t("donorProfile.quranGrowthAria", {
+    latest: latest.juz_memorized,
+    total: JUZ_TOTAL,
+  });
+
+  return (
+    <figure className="rounded-xl border border-success-100 bg-success-50/50 p-3 dark:border-success-500/30 dark:bg-success-500/10">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="h-24 w-full"
+        role="img"
+        aria-label={ariaLabel}
+        preserveAspectRatio="none"
+      >
+        {n >= 2 && (
+          <>
+            <polygon
+              points={`${PAD},${H - PAD} ${points
+                .map(([x, y]) => `${x},${y}`)
+                .join(" ")} ${W - PAD},${H - PAD}`}
+              className="fill-success-400/20 dark:fill-success-400/15"
+            />
+            <polyline
+              points={points.map(([x, y]) => `${x},${y}`).join(" ")}
+              fill="none"
+              className="stroke-success-500"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </>
+        )}
+        {points.map(([x, y], i) => (
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r={i === points.length - 1 ? 4 : 2.5}
+            className="fill-success-600"
+          />
+        ))}
+      </svg>
+      <figcaption className="mt-1 flex items-center justify-between gap-2 text-[11px] text-gray-500 dark:text-gray-400">
+        <span>{formatDate(first.period, lang)}</span>
+        <span className="font-semibold tabular-nums text-success-700 dark:text-success-300">
+          {t("donorTimeline.juzOfTotal", { n: latest.juz_memorized })}
+        </span>
+        {n >= 2 && <span>{formatDate(latest.period, lang)}</span>}
+      </figcaption>
+    </figure>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* D) Multidimensional growth — "before → now" mini-cards              */
+/* ------------------------------------------------------------------ */
+
+function MultidimGrowthSection({
+  growth,
+  isRtl,
+}: {
+  growth: NonNullable<SponsoredOrphanProfile["multidim_growth"]>;
+  isRtl: boolean;
+}) {
+  const { t } = useTranslation();
+
+  const cards: React.ReactNode[] = [];
+
+  if (growth.education_stage) {
+    cards.push(
+      <BeforeNowCard
+        key="stage"
+        tone="trust"
+        icon={<BookIcon />}
+        label={t("donorProfile.multidimEducationStage")}
+        first={eduStageLabel(growth.education_stage.first, t) ?? "—"}
+        latest={eduStageLabel(growth.education_stage.latest, t) ?? "—"}
+        isRtl={isRtl}
+      />,
+    );
+  }
+  if (growth.attendance_percent) {
+    cards.push(
+      <BeforeNowCard
+        key="attendance"
+        tone="sky"
+        icon={<CalendarIcon />}
+        label={t("donorProfile.multidimAttendance")}
+        first={t("donorProfile.percentValue", {
+          n: Math.round(growth.attendance_percent.first),
+        })}
+        latest={t("donorProfile.percentValue", {
+          n: Math.round(growth.attendance_percent.latest),
+        })}
+        isRtl={isRtl}
+      />,
+    );
+  }
+  if (growth.social) {
+    cards.push(
+      <BeforeNowCard
+        key="social"
+        tone="success"
+        icon={<HeartIcon />}
+        label={t("donorProfile.multidimSocial")}
+        first={socialLabel(growth.social.first, t)}
+        latest={socialLabel(growth.social.latest, t)}
+        isRtl={isRtl}
+      />,
+    );
+  }
+
+  if (cards.length === 0) return null;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.multidimTitle")}>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {t("donorProfile.multidimTitle")}
+      </h2>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{cards}</div>
+    </section>
+  );
+}
+
+function BeforeNowCard({
   tone,
   icon,
   label,
-  children,
+  first,
+  latest,
+  isRtl,
 }: {
   tone: Tone;
   icon: React.ReactNode;
   label: string;
-  children: React.ReactNode;
+  first: string;
+  latest: string;
+  isRtl: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={`rounded-xl border p-4 ${TONE_TILE[tone]}`}>
       <div className="flex items-center gap-2">
@@ -497,65 +690,210 @@ function StatTile({
         >
           {icon}
         </span>
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-          {label}
+        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">{label}</span>
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <span className="text-sm text-gray-500 line-through decoration-1 dark:text-gray-400">
+          <span className="sr-only">{t("donorProfile.beforeLabel")}: </span>
+          {first}
+        </span>
+        <ArrowIcon flip={isRtl} />
+        <span className="text-base font-bold text-gray-900 dark:text-gray-100">
+          <span className="sr-only">{t("donorProfile.nowLabel")}: </span>
+          {latest}
         </span>
       </div>
-      <div className="mt-2">{children}</div>
     </div>
   );
 }
 
-/** Inline-SVG progress ring (no charting lib). Decorative — the value is
- * always also shown as text alongside, so color/arc is never the only
- * signal; `ariaLabel` voices it for screen readers. */
-function ProgressRing({
-  value,
-  max,
-  tone,
-  ariaLabel,
+/* ------------------------------------------------------------------ */
+/* E) Milestones — the celebrated moments                              */
+/* ------------------------------------------------------------------ */
+
+function MilestonesSection({
+  milestones,
+  lang,
 }: {
-  value: number;
-  max: number;
-  tone: Tone;
-  ariaLabel: string;
+  milestones: NonNullable<SponsoredOrphanProfile["milestones"]>;
+  lang: string;
 }) {
-  const R = 18;
-  const C = 2 * Math.PI * R;
-  const pct = Math.max(0, Math.min(1, max > 0 ? value / max : 0));
-  const dash = C * pct;
+  const { t } = useTranslation();
   return (
-    <svg
-      viewBox="0 0 48 48"
-      className="h-12 w-12 shrink-0"
-      role="img"
-      aria-label={ariaLabel}
-    >
-      <circle
-        cx="24"
-        cy="24"
-        r={R}
-        fill="none"
-        strokeWidth="5"
-        className="stroke-gray-200 dark:stroke-gray-700"
-      />
-      <circle
-        cx="24"
-        cy="24"
-        r={R}
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeDasharray={`${dash} ${C}`}
-        transform="rotate(-90 24 24)"
-        className={TONE_STROKE[tone]}
-      />
-    </svg>
+    <section className="card space-y-4" aria-label={t("donorProfile.milestonesTitle")}>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {t("donorProfile.milestonesTitle")}
+      </h2>
+      <ul className="space-y-3">
+        {milestones.items.map((m, i) => (
+          <li
+            key={`${m.label}-${i}`}
+            className="flex items-start gap-3 rounded-xl border border-success-100 bg-success-50/60 p-3 dark:border-success-500/30 dark:bg-success-500/10"
+          >
+            <span
+              aria-hidden="true"
+              className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success-500 text-white"
+            >
+              <StarIcon />
+            </span>
+            <div className="min-w-0">
+              <p className="font-semibold text-gray-900 dark:text-gray-100">{m.label}</p>
+              <p className="mt-0.5 text-xs text-success-700 dark:text-success-300">
+                {formatDate(m.period, lang)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* C) Timeline                                                         */
+/* F) Recent updates — newest-first headlines, link to full timeline   */
+/* ------------------------------------------------------------------ */
+
+function RecentUpdatesSection({
+  updates,
+  lang,
+}: {
+  updates: NonNullable<SponsoredOrphanProfile["recent_updates"]>;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.recentUpdatesTitle")}>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.recentUpdatesTitle")}
+        </h2>
+        <a
+          href={`#${TIMELINE_ANCHOR}`}
+          className="shrink-0 text-sm text-trust-600 underline hover:text-trust-700 dark:text-tranquil-300 dark:hover:text-tranquil-100"
+        >
+          {t("donorProfile.recentUpdatesLink")}
+        </a>
+      </div>
+      <ol className="space-y-3">
+        {updates.items.map((u, i) => (
+          <li key={`${u.period}-${i}`} className="flex items-start gap-3">
+            <span
+              aria-hidden="true"
+              className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-trust-400"
+            />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{u.headline}</p>
+              <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                {formatDate(u.period, lang)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* G) Supervisor's word — a warm human quote                           */
+/* ------------------------------------------------------------------ */
+
+function SupervisorWordSection({
+  word,
+  lang,
+}: {
+  word: NonNullable<SponsoredOrphanProfile["supervisor_word"]>;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section aria-label={t("donorProfile.supervisorWordTitle")}>
+      <figure className="rounded-2xl border-s-4 border-trust-300 bg-tranquil-100 p-6 dark:border-trust-500/40 dark:bg-trust-500/10">
+        <figcaption className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-trust-500">
+          <QuoteIcon />
+          {t("donorProfile.supervisorWordTitle")}
+        </figcaption>
+        <blockquote className="mt-2 whitespace-pre-line text-lg italic leading-relaxed text-trust-800 dark:text-tranquil-100">
+          “{word.text}”
+        </blockquote>
+        <p className="mt-3 text-sm text-trust-600 dark:text-tranquil-200">
+          {word.author_label
+            ? `— ${word.author_label} · ${formatDate(word.period, lang)}`
+            : formatDate(word.period, lang)}
+        </p>
+      </figure>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H) Her world — a warm, non-clinical snapshot of right now           */
+/* ------------------------------------------------------------------ */
+
+function HerWorldSection({
+  name,
+  world,
+}: {
+  name: string;
+  world: NonNullable<SponsoredOrphanProfile["her_world"]>;
+}) {
+  const { t } = useTranslation();
+  const stage = eduStageLabel(world.education_stage, t);
+
+  const chips: React.ReactNode[] = [];
+  if (stage) {
+    chips.push(
+      <WorldChip key="stage" tone="trust">
+        {stage}
+      </WorldChip>,
+    );
+  }
+  if (world.is_hafiz) {
+    chips.push(
+      <WorldChip key="hafiz" tone="success">
+        <StarIcon />
+        {t("donor.orphanDetail.hafiz")}
+      </WorldChip>,
+    );
+  } else if (world.quran_juz_memorized != null) {
+    chips.push(
+      <WorldChip key="juz" tone="success">
+        {t("donor.orphanDetail.quranMemorized", { n: world.quran_juz_memorized })}
+      </WorldChip>,
+    );
+  }
+  for (const tag of world.tags) {
+    chips.push(
+      <WorldChip key={`tag-${tag}`} tone="sky">
+        {tag}
+      </WorldChip>,
+    );
+  }
+
+  if (chips.length === 0) return null;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.herWorldTitle", { name })}>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {t("donorProfile.herWorldTitle", { name })}
+      </h2>
+      <ul className="flex flex-wrap gap-2">{chips}</ul>
+    </section>
+  );
+}
+
+function WorldChip({ children, tone }: { children: React.ReactNode; tone: Tone }) {
+  return (
+    <li
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${TONE_CHIP[tone]}`}
+    >
+      {children}
+    </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* I) Timeline (existing reports)                                      */
 /* ------------------------------------------------------------------ */
 
 function Timeline({
@@ -572,7 +910,11 @@ function Timeline({
   const { t } = useTranslation();
 
   return (
-    <section className="space-y-4" aria-label={t("donorTimeline.timelineTitle")}>
+    <section
+      id={TIMELINE_ANCHOR}
+      className="scroll-mt-6 space-y-4"
+      aria-label={t("donorTimeline.timelineTitle")}
+    >
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
         {t("donorTimeline.timelineTitle")}
       </h2>
@@ -637,8 +979,7 @@ function TimelineCard({ report, lang }: { report: ReportDonorRead; lang: string 
       >
         <header className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            {formatDate(report.period_start, lang)} –{" "}
-            {formatDate(report.period_end, lang)}
+            {formatDate(report.period_start, lang)} – {formatDate(report.period_end, lang)}
           </span>
           <span className="rounded-full bg-tranquil-200 px-2 py-0.5 text-xs font-medium text-trust-700 dark:bg-gray-700 dark:text-tranquil-200">
             {t(`orphanageManager.report.reportTypeOptions.${report.report_type}`, {
@@ -712,9 +1053,7 @@ function SectionHighlights({ report }: { report: ReportDonorRead }) {
               {t(`orphanageManager.report.eduRatingOptions.${edu.overall_rating}`)}
             </Chip>
           )}
-          {edu.attendance_percent != null && (
-            <AttendanceMeter percent={edu.attendance_percent} />
-          )}
+          {edu.attendance_percent != null && <AttendanceMeter percent={edu.attendance_percent} />}
           {edu.stage && (
             <Chip tone="gray">
               {t("donorTimeline.stageLabel")}: {edu.stage}
@@ -748,20 +1087,14 @@ function SectionHighlights({ report }: { report: ReportDonorRead }) {
     blocks.push(
       <SectionBlock key="quran" title={t("reports.sections.quran_progress")}>
         <div className="flex flex-wrap items-center gap-1.5">
-          {quran.juz_memorized != null && (
-            <JuzChip value={quran.juz_memorized} />
-          )}
+          {quran.juz_memorized != null && <JuzChip value={quran.juz_memorized} />}
           {quran.evaluation && (
             <Chip tone={QURAN_EVAL_TONE[quran.evaluation] ?? "trust"}>
-              {t(
-                `orphanageManager.report.quranEvaluationOptions.${quran.evaluation}`,
-              )}
+              {t(`orphanageManager.report.quranEvaluationOptions.${quran.evaluation}`)}
             </Chip>
           )}
           {quran.current_juz != null && (
-            <Chip tone="gray">
-              {t("donorTimeline.currentJuz", { n: quran.current_juz })}
-            </Chip>
+            <Chip tone="gray">{t("donorTimeline.currentJuz", { n: quran.current_juz })}</Chip>
           )}
         </div>
         {quran.recent && (
@@ -835,13 +1168,7 @@ function SectionHighlights({ report }: { report: ReportDonorRead }) {
   return <div className="mt-4 space-y-3">{blocks}</div>;
 }
 
-function SectionBlock({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function SectionBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
       <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
@@ -852,13 +1179,7 @@ function SectionBlock({
   );
 }
 
-function Chip({
-  children,
-  tone = "trust",
-}: {
-  children: React.ReactNode;
-  tone?: Tone;
-}) {
+function Chip({ children, tone = "trust" }: { children: React.ReactNode; tone?: Tone }) {
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONE_CHIP[tone]}`}
@@ -885,11 +1206,7 @@ function AttendanceMeter({ percent }: { percent: number }) {
       >
         <span
           className={`block h-full rounded-full ${
-            tone === "success"
-              ? "bg-success-500"
-              : tone === "sky"
-                ? "bg-sky-400"
-                : "bg-warning-500"
+            tone === "success" ? "bg-success-500" : tone === "sky" ? "bg-sky-400" : "bg-warning-500"
           }`}
           style={{ width: `${pct}%` }}
         />
@@ -910,10 +1227,7 @@ function JuzChip({ value }: { value: number }) {
         aria-hidden="true"
         className="h-1.5 w-10 overflow-hidden rounded-full bg-white/60 dark:bg-black/20"
       >
-        <span
-          className="block h-full rounded-full bg-success-500"
-          style={{ width: `${pct}%` }}
-        />
+        <span className="block h-full rounded-full bg-success-500" style={{ width: `${pct}%` }} />
       </span>
     </span>
   );
@@ -931,117 +1245,10 @@ function Note({ text }: { text: string | null | undefined }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* D) Progress trends (inline SVG sparklines)                          */
+/* J) Sponsorship card                                                 */
 /* ------------------------------------------------------------------ */
 
-function ProgressTrends({
-  reports,
-  lang,
-}: {
-  reports: ReportDonorRead[];
-  lang: string;
-}) {
-  const { t } = useTranslation();
-
-  // Chronological (oldest → newest) so the line reads left-to-right in time.
-  const chrono = [...reports].reverse();
-  const juz = chrono
-    .map((r) => r.quran_progress?.juz_memorized)
-    .filter((n): n is number => typeof n === "number");
-  const attendance = chrono
-    .map((r) => r.educational_progress?.attendance_percent)
-    .filter((n): n is number => typeof n === "number");
-
-  const showJuz = juz.length >= 2;
-  const showAttendance = attendance.length >= 2;
-  if (!showJuz && !showAttendance) return null;
-
-  return (
-    <section className="card space-y-4" aria-label={t("donorTimeline.trendsTitle")}>
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-        {t("donorTimeline.trendsTitle")}
-      </h2>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {showJuz && (
-          <figure>
-            <figcaption className="mb-1 text-sm text-gray-600 dark:text-gray-300">
-              {t("donorTimeline.trendJuz")}
-            </figcaption>
-            <Sparkline values={juz} max={JUZ_TOTAL} lang={lang} />
-          </figure>
-        )}
-        {showAttendance && (
-          <figure>
-            <figcaption className="mb-1 text-sm text-gray-600 dark:text-gray-300">
-              {t("donorTimeline.trendAttendance")}
-            </figcaption>
-            <Sparkline values={attendance} max={100} lang={lang} />
-          </figure>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function Sparkline({
-  values,
-  max,
-  lang,
-}: {
-  values: number[];
-  max: number;
-  lang: string;
-}) {
-  const W = 160;
-  const H = 40;
-  const PAD = 4;
-  const n = values.length;
-  const span = Math.max(1, max);
-  const points = values.map((v, i) => {
-    const x = PAD + (i * (W - 2 * PAD)) / Math.max(1, n - 1);
-    const y = H - PAD - (Math.max(0, Math.min(span, v)) / span) * (H - 2 * PAD);
-    return [x, y] as const;
-  });
-  const path = points.map(([x, y]) => `${x},${y}`).join(" ");
-  const last = points[points.length - 1] ?? ([PAD, H - PAD] as const);
-  const latest = values[values.length - 1] ?? 0;
-
-  return (
-    <div className="flex items-center gap-3">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className="h-10 w-40"
-        role="img"
-        preserveAspectRatio="none"
-      >
-        <polyline
-          points={path}
-          fill="none"
-          className="stroke-trust-500"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx={last[0]} cy={last[1]} r="2.5" className="fill-trust-600" />
-      </svg>
-      <span className="text-sm font-semibold tabular-nums text-gray-700 dark:text-gray-200">
-        {latest.toLocaleString(lang)}
-      </span>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* E) Sponsorship card                                                 */
-/* ------------------------------------------------------------------ */
-
-function SponsorshipCard({
-  sponsorship,
-  lang,
-}: {
-  sponsorship: Sponsorship;
-  lang: string;
-}) {
+function SponsorshipCard({ sponsorship, lang }: { sponsorship: Sponsorship; lang: string }) {
   const { t } = useTranslation();
   return (
     <section className="card space-y-4">
@@ -1076,7 +1283,7 @@ function SponsorshipCard({
 }
 
 /* ------------------------------------------------------------------ */
-/* F) Money trail (financial transparency)                             */
+/* K) Money trail (financial transparency)                             */
 /* ------------------------------------------------------------------ */
 
 function MoneyTrail({
@@ -1099,9 +1306,7 @@ function MoneyTrail({
       </h2>
 
       <div className="panel">
-        <dt className="text-xs text-gray-500">
-          {t("donor.orphanDetail.totalContributed")}
-        </dt>
+        <dt className="text-xs text-gray-500">{t("donor.orphanDetail.totalContributed")}</dt>
         <dd className="mt-1 font-semibold tabular-nums text-gray-900 dark:text-gray-100">
           {sponsorship.total_paid} {sponsorship.currency}
         </dd>
@@ -1175,19 +1380,11 @@ function PaymentRow({ payment, lang }: { payment: PaymentDonorRead; lang: string
 /* Small shared pieces + icons                                         */
 /* ------------------------------------------------------------------ */
 
-function Stat({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function Stat({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="panel">
       <dt className="text-xs text-gray-500">{label}</dt>
-      <dd className="mt-1 font-semibold text-gray-900 dark:text-gray-100">
-        {children}
-      </dd>
+      <dd className="mt-1 font-semibold text-gray-900 dark:text-gray-100">{children}</dd>
     </div>
   );
 }
@@ -1281,6 +1478,41 @@ function BookIcon() {
   );
 }
 
+function HomeIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 11l8-6 8 6M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <rect x="3.5" y="5" width="17" height="16" rx="2" />
+      <path d="M3.5 9h17M8 3v4m8-4v4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function HeartIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
@@ -1316,21 +1548,19 @@ function QuranIcon() {
   );
 }
 
-function InboxIcon() {
+/** Direction-aware arrow for "before → now". Flipped horizontally in RTL
+ * so it always points from the earlier value toward the latest. */
+function ArrowIcon({ flip }: { flip: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-4 w-4"
+      className={`h-4 w-4 shrink-0 text-gray-400 ${flip ? "-scale-x-100" : ""}`}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="2"
       aria-hidden="true"
     >
-      <path
-        d="M4 13l2-7h12l2 7M4 13v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5M4 13h5l1 2h4l1-2h5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

@@ -1,4 +1,14 @@
+import type { components } from "@/api/schema.gen";
+
 import { api } from "./api";
+
+/**
+ * Composed, donor-safe profile of a sponsored child. Identity fields are
+ * always present; each element block (dream, quran_growth, milestones, …) is
+ * non-null only when the backend deems it visible AND backed by data, so the
+ * UI must treat every block as optional. Tracks schema.gen.ts.
+ */
+export type SponsoredOrphanProfile = components["schemas"]["SponsoredOrphanProfile"];
 
 export interface PublicOrphan {
   code: string;
@@ -60,12 +70,8 @@ export async function getPublicOrphan(code: string): Promise<PublicOrphanDetail>
  * orphan id and scoped by sponsorship, so a sponsored child (no longer
  * publicly browseable) still resolves.
  */
-export async function getSponsoredOrphanProfile(
-  orphanId: string,
-): Promise<PublicOrphanDetail> {
-  const { data } = await api.get<PublicOrphanDetail>(
-    `/me/sponsorships/${orphanId}/profile`,
-  );
+export async function getSponsoredOrphanProfile(orphanId: string): Promise<SponsoredOrphanProfile> {
+  const { data } = await api.get<SponsoredOrphanProfile>(`/me/sponsorships/${orphanId}/profile`);
   return data;
 }
 
