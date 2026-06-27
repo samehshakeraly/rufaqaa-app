@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
@@ -225,6 +227,11 @@ export function DonorOrphanDetailPage() {
       )}
 
       {profile?.her_world && <HerWorldSection name={name} world={profile.her_world} />}
+
+      {/* The "memory box" — donor-cleared artefacts, placed right before the
+          factual timeline/payments so warmth precedes paperwork. Renders
+          NOTHING when media is null or every group is empty. */}
+      {profile?.media && <MemoryBoxSection name={name} media={profile.media} lang={lang} />}
 
       {/* Existing, profile-independent sections. */}
       <Timeline name={name} reports={reports} loading={reportsQ.isLoading} lang={lang} />
@@ -893,6 +900,440 @@ function WorldChip({ children, tone }: { children: React.ReactNode; tone: Tone }
 }
 
 /* ------------------------------------------------------------------ */
+/* H2) Memory box — donor-cleared drawings / certificates / album /    */
+/*     recitations. Each group is its own sub-section, shown only when  */
+/*     non-empty; the whole zone disappears when nothing qualifies.     */
+/* ------------------------------------------------------------------ */
+
+type MediaBlock = NonNullable<SponsoredOrphanProfile["media"]>;
+type MediaItem = MediaBlock["drawings"][number];
+
+/** Format a duration in whole/partial seconds as m:ss. Returns null for a
+ * missing or nonsensical value so the caller can omit it entirely. */
+function clock(seconds: number | null | undefined): string | null {
+  if (seconds == null || !Number.isFinite(seconds) || seconds < 0) return null;
+  const total = Math.round(seconds);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/** Best available accessible label for a piece of media. */
+function mediaAlt(item: MediaItem, fallback: string): string {
+  return item.title?.trim() || item.caption?.trim() || fallback;
+}
+
+function MemoryBoxSection({
+  name,
+  media,
+  lang,
+}: {
+  name: string;
+  media: MediaBlock;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  const [active, setActive] = useState<MediaItem | null>(null);
+
+  const hasAny =
+    media.drawings.length > 0 ||
+    media.certificates.length > 0 ||
+    media.album.length > 0 ||
+    media.recitations.length > 0;
+
+  // Defensive: the parent already guards `profile.media`, but a present
+  // block with four empty groups must still render nothing (no layout shift).
+  if (!hasAny) return null;
+
+  return (
+    <section
+      className="space-y-5 rounded-2xl border border-trust-200 bg-gradient-to-b from-tranquil-100 to-white p-6 shadow-sm dark:border-trust-500/30 dark:from-trust-500/10 dark:to-gray-800"
+      aria-label={t("donorProfile.memoryTitle", { name })}
+    >
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="flex h-7 w-7 items-center justify-center rounded-lg bg-trust-100 text-trust-600 dark:bg-trust-500/20 dark:text-tranquil-200"
+        >
+          <BoxIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.memoryTitle", { name })}
+        </h2>
+      </div>
+
+      {media.drawings.length > 0 && (
+        <DrawingsGroup name={name} items={media.drawings} lang={lang} onOpen={setActive} />
+      )}
+      {media.certificates.length > 0 && (
+        <CertificatesGroup name={name} items={media.certificates} lang={lang} onOpen={setActive} />
+      )}
+      {media.album.length > 0 && (
+        <AlbumGroup name={name} items={media.album} lang={lang} onOpen={setActive} />
+      )}
+      {media.recitations.length > 0 && (
+        <RecitationsGroup name={name} items={media.recitations} lang={lang} />
+      )}
+
+      {active && <MemoryLightbox item={active} lang={lang} onClose={() => setActive(null)} />}
+    </section>
+  );
+}
+
+/** Shared sub-section heading for a memory-box group. */
+function MemoryGroup({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-3">
+      <h3 className="flex items-center gap-1.5 text-sm font-semibold text-trust-700 dark:text-tranquil-200">
+        <span aria-hidden="true" className="text-trust-500 dark:text-tranquil-300">
+          {icon}
+        </span>
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+}
+
+/** Aspect-ratio hint from width/height so tiles don't jump as images load. */
+function aspectStyle(item: MediaItem): React.CSSProperties | undefined {
+  if (item.width && item.height && item.width > 0 && item.height > 0) {
+    return { aspectRatio: `${item.width} / ${item.height}` };
+  }
+  return undefined;
+}
+
+function DrawingsGroup({
+  name,
+  items,
+  lang,
+  onOpen,
+}: {
+  name: string;
+  items: MediaItem[];
+  lang: string;
+  onOpen: (item: MediaItem) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <MemoryGroup title={t("donorProfile.memoryDrawings", { name })} icon={<PaletteIcon />}>
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {items.map((item) => {
+          const alt = mediaAlt(item, t("donorProfile.memoryDrawingFallback"));
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => onOpen(item)}
+                aria-label={t("donorProfile.memoryOpenLabel", { title: alt })}
+                className="group block w-full overflow-hidden rounded-xl border border-trust-100 bg-white text-start shadow-sm transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 dark:border-gray-700 dark:bg-gray-800"
+              >
+                <img
+                  src={item.thumbnail_url ?? item.url}
+                  alt={alt}
+                  loading="lazy"
+                  style={aspectStyle(item)}
+                  className="w-full bg-tranquil-100 object-cover transition group-hover:scale-[1.02] dark:bg-gray-700"
+                />
+                {(item.caption || item.display_date) && (
+                  <span className="block px-2.5 py-2">
+                    {item.caption && (
+                      <span className="line-clamp-2 text-xs font-medium text-gray-700 dark:text-gray-200">
+                        {item.caption}
+                      </span>
+                    )}
+                    <span className="mt-0.5 block text-[11px] text-gray-400 dark:text-gray-500">
+                      {formatDate(item.display_date, lang)}
+                    </span>
+                  </span>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </MemoryGroup>
+  );
+}
+
+function CertificatesGroup({
+  name,
+  items,
+  lang,
+  onOpen,
+}: {
+  name: string;
+  items: MediaItem[];
+  lang: string;
+  onOpen: (item: MediaItem) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <MemoryGroup title={t("donorProfile.memoryCertificates", { name })} icon={<SealIcon />}>
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => {
+          const alt = mediaAlt(item, t("donorProfile.memoryCertificateFallback"));
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => onOpen(item)}
+                aria-label={t("donorProfile.memoryOpenLabel", { title: alt })}
+                className="group flex w-full flex-col overflow-hidden rounded-xl border border-success-200 bg-success-50/60 text-start shadow-sm transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-success-400 dark:border-success-500/30 dark:bg-success-500/10"
+              >
+                <span className="relative block">
+                  <img
+                    src={item.thumbnail_url ?? item.url}
+                    alt={alt}
+                    loading="lazy"
+                    style={aspectStyle(item)}
+                    className="w-full bg-white object-contain dark:bg-gray-800"
+                  />
+                  {/* Seal/ribbon motif — a small honor mark over the corner. */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute -bottom-2 -end-2 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-success-500 text-white shadow dark:border-gray-800"
+                  >
+                    <SealIcon />
+                  </span>
+                </span>
+                <span className="flex items-center justify-between gap-2 px-3 py-2.5">
+                  <span className="line-clamp-2 text-sm font-semibold text-success-800 dark:text-success-100">
+                    {item.title?.trim() || t("donorProfile.memoryCertificateFallback")}
+                  </span>
+                  <span className="shrink-0 text-[11px] text-success-700/80 dark:text-success-300/80">
+                    {formatDate(item.display_date, lang)}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </MemoryGroup>
+  );
+}
+
+function AlbumGroup({
+  name,
+  items,
+  lang,
+  onOpen,
+}: {
+  name: string;
+  items: MediaItem[];
+  lang: string;
+  onOpen: (item: MediaItem) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <MemoryGroup title={t("donorProfile.memoryAlbum", { name })} icon={<AlbumIcon />}>
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => {
+          const alt = mediaAlt(item, t("donorProfile.memoryAlbumFallback"));
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => onOpen(item)}
+                aria-label={t("donorProfile.memoryOpenLabel", { title: alt })}
+                className="group block w-full overflow-hidden rounded-xl border border-sky-200 bg-white text-start shadow-sm transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:border-gray-700 dark:bg-gray-800"
+              >
+                <img
+                  src={item.thumbnail_url ?? item.url}
+                  alt={alt}
+                  loading="lazy"
+                  style={aspectStyle(item)}
+                  className="w-full bg-tranquil-100 object-cover transition group-hover:scale-[1.02] dark:bg-gray-700"
+                />
+                <span className="block px-3 py-2.5">
+                  <span className="line-clamp-2 text-sm text-gray-700 dark:text-gray-200">
+                    {item.caption?.trim() || alt}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-gray-400 dark:text-gray-500">
+                    {formatDate(item.display_date, lang)}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </MemoryGroup>
+  );
+}
+
+function RecitationsGroup({
+  name,
+  items,
+  lang,
+}: {
+  name: string;
+  items: MediaItem[];
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  return (
+    <MemoryGroup title={t("donorProfile.memoryRecitations", { name })} icon={<AudioIcon />}>
+      <ul className="space-y-3">
+        {items.map((item) => {
+          const title = item.title?.trim() || t("donorProfile.memoryRecitationFallback");
+          const dur = clock(item.duration_seconds);
+          return (
+            <li
+              key={item.id}
+              className="rounded-xl border border-trust-100 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="flex items-center gap-1.5 text-sm font-semibold text-trust-800 dark:text-tranquil-100">
+                  <span aria-hidden="true" className="text-trust-500 dark:text-tranquil-300">
+                    <AudioIcon />
+                  </span>
+                  {title}
+                </p>
+                {dur && (
+                  <span className="shrink-0 tabular-nums text-xs text-gray-400 dark:text-gray-500">
+                    {dur}
+                  </span>
+                )}
+              </div>
+              {item.caption && (
+                <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">{item.caption}</p>
+              )}
+              <audio
+                controls
+                preload="none"
+                src={item.url}
+                aria-label={t("donorProfile.memoryAudioName", { title })}
+                className="mt-2 w-full"
+              />
+              <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
+                {formatDate(item.display_date, lang)}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </MemoryGroup>
+  );
+}
+
+/** Accessible full-size viewer for a memory-box image. Adds focus trap and
+ * focus-return on top of the basic Esc/backdrop dismissal, and shows the
+ * title / caption / date alongside the full-resolution image. */
+function MemoryLightbox({
+  item,
+  lang,
+  onClose,
+}: {
+  item: MediaItem;
+  lang: string;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const alt = mediaAlt(item, t("donorProfile.memoryImageFallback"));
+
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      if (e.key === "Tab") {
+        const node = dialogRef.current;
+        if (!node) return;
+        const focusables = node.querySelectorAll<HTMLElement>(
+          'button, [href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusables.length === 0) {
+          e.preventDefault();
+          return;
+        }
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (!first || !last) return;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      // Return focus to whatever opened the dialog.
+      opener?.focus?.();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        ref={dialogRef}
+        className="relative flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-gray-800"
+      >
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          aria-label={t("common.close")}
+          className="absolute end-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-xl leading-none text-white transition hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          ×
+        </button>
+        <img
+          src={item.url}
+          alt={alt}
+          className="max-h-[70vh] w-full bg-tranquil-100 object-contain dark:bg-gray-900"
+        />
+        {(item.title || item.caption || item.display_date) && (
+          <div className="space-y-1 px-5 py-4">
+            {item.title && (
+              <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {item.title}
+              </p>
+            )}
+            {item.caption && (
+              <p className="text-sm text-gray-600 dark:text-gray-300">{item.caption}</p>
+            )}
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              {formatDate(item.display_date, lang)}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* I) Timeline (existing reports)                                      */
 /* ------------------------------------------------------------------ */
 
@@ -1544,6 +1985,89 @@ function QuranIcon() {
         strokeLinejoin="round"
       />
       <path d="M12 6v13" />
+    </svg>
+  );
+}
+
+function BoxIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path
+        d="M3.5 7.5 12 4l8.5 3.5M3.5 7.5 12 11l8.5-3.5M3.5 7.5v9L12 20m8.5-12.5v9L12 20m0-9v9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PaletteIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.9 1.8-1.9 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H16a5 5 0 0 0 5-5c0-4-4-7-9-7z"
+        strokeLinejoin="round"
+      />
+      <circle cx="7.5" cy="11" r="1" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="7.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="16.5" cy="11" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function SealIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+      <path d="M12 2a5 5 0 0 1 5 5 5 5 0 0 1-2 4l1.4 6.3-4.4-2.4-4.4 2.4L9 11a5 5 0 0 1-2-4 5 5 0 0 1 5-5zm0 2.2A2.8 2.8 0 1 0 12 9.8 2.8 2.8 0 0 0 12 4.2z" />
+    </svg>
+  );
+}
+
+function AlbumIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <rect x="3.5" y="5" width="17" height="14" rx="2" />
+      <circle cx="9" cy="10" r="1.5" />
+      <path d="m5 17 4.5-4 3 2.5L16 11l3 3.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function AudioIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path d="M12 3v12" strokeLinecap="round" />
+      <path d="M12 6c2-1.5 4-1.5 6-.8" strokeLinecap="round" />
+      <circle cx="9" cy="16" r="3" />
     </svg>
   );
 }
