@@ -27,6 +27,13 @@
       disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-trust-500
       disabled:hover:shadow-sm;
   }
+  .btn-secondary {
+    @apply rounded-xl border border-sky-200 bg-white px-4 py-2 font-medium text-trust-700
+      shadow-sm transition hover:bg-tranquil-100 hover:shadow-md active:bg-tranquil-200
+      disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white
+      disabled:hover:shadow-sm
+      dark:border-gray-700 dark:bg-gray-800 dark:text-trust-100 dark:hover:bg-gray-700;
+  }
   .input {
     @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-gray-900
       placeholder:text-gray-400 transition

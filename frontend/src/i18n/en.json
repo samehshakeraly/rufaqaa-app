@@ -3487,7 +3487,9 @@
       "quickActionsLabel": "Quick actions",
       "actionNewReport": "Upload a new report",
       "actionNewReportSub": "Takes less than a minute",
-      "lastReportTitle": "Last report"
+      "lastReportTitle": "Last report",
+      "tabMedia": "Media",
+      "mediaTitle": "Memory box media"
     },
     "report": {
       "backToOrphan": "{{name}}'s page",
@@ -3649,6 +3651,87 @@
     "saving": "Saving…",
     "saved": "Saved",
     "saveError": "Couldn't save. Please try again."
+  },
+  "orphanMedia": {
+    "loadError": "Couldn't load media. Please try again later.",
+    "empty": "No media yet — upload the first drawing or certificate.",
+    "statusLabel": "Review status",
+    "visibilityLabel": "Visibility level",
+    "category": {
+      "drawing": "Drawing",
+      "certificate": "Certificate",
+      "album": "Album",
+      "recitation": "Recitation",
+      "portrait": "Portrait",
+      "unknown": "Uncategorized"
+    },
+    "upload": {
+      "title": "Upload new media",
+      "category": "Category",
+      "categoryPlaceholder": "Choose a category…",
+      "categoryRequired": "Choose a category first.",
+      "file": "File",
+      "fileHelp": "An image for drawing/certificate/album or an audio file for recitation — max 10MB.",
+      "fileRequired": "Choose a file to upload.",
+      "titleLabel": "Title (optional)",
+      "caption": "Caption (optional)",
+      "displayDate": "Display date (optional)",
+      "submit": "Upload",
+      "submitting": "Uploading…",
+      "success": "Uploaded — awaiting review before the sponsor can see it."
+    },
+    "status": {
+      "pending": "Awaiting review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "flagged": "Flagged"
+    },
+    "visibility": {
+      "private": "Private",
+      "donor_only": "Sponsor only",
+      "public": "Public",
+      "archived": "Archived"
+    },
+    "consent": {
+      "on": "Guardian consent: yes",
+      "off": "Guardian consent: no"
+    },
+    "consentHint": "This item won't reach the sponsor until guardian consent is turned on.",
+    "sponsor": {
+      "visible": "Visible to sponsor",
+      "hidden": "Hidden from sponsor — {{reason}}"
+    },
+    "reason": {
+      "pending": "awaiting approval",
+      "rejected": "was rejected",
+      "archived": "archived",
+      "private": "not published to the sponsor",
+      "consent": "guardian consent is off"
+    },
+    "audioLabel": "Recitation: {{title}}",
+    "actions": {
+      "show": "Show to sponsor",
+      "hide": "Hide",
+      "consentOn": "Turn on guardian consent",
+      "consentOff": "Turn off guardian consent",
+      "edit": "Edit details",
+      "reject": "Reject"
+    },
+    "edit": {
+      "title": "Title",
+      "caption": "Caption",
+      "displayDate": "Display date",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "unsupportedType": "That file type isn't supported for this category.",
+      "tooLarge": "The file exceeds the 10MB limit.",
+      "forbidden": "You don't have permission for this action.",
+      "invalid": "Couldn't save — please check the values entered.",
+      "generic": "Something went wrong. Please try again."
+    }
   },
   "platform": {
     "modeBadge": "Platform Administration",
