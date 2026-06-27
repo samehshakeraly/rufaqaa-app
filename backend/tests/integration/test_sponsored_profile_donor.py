@@ -88,6 +88,7 @@ _BLOCK_FIELDS = {
     "recent_updates",
     "supervisor_word",
     "since_you_began",
+    "media",
 }
 
 

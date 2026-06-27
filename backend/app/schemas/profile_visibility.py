@@ -31,6 +31,7 @@ class ProfileElement(StrEnum):
     recent_updates = "recent_updates"
     supervisor_word = "supervisor_word"
     since_you_began = "since_you_began"
+    media = "media"
 
 
 def is_visible(profile_visibility: dict[str, bool], key: ProfileElement) -> bool:

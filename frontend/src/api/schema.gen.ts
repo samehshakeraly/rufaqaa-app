@@ -1247,6 +1247,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/media/orphans/{orphan_id}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Media
+         * @description Manager view of ALL of an orphan's media — including private/pending —
+         *     newest first, optionally narrowed to one ``category``. Each row carries a
+         *     fresh presigned URL. Explicit org scope (never RLS); a cross-org orphan id
+         *     404s before anything is listed.
+         */
+        get: operations["list_orphan_media_api_v1_media_orphans__orphan_id__media_get"];
+        put?: never;
+        /**
+         * Upload Orphan Media
+         * @description Attach a categorized piece of media to an orphan.
+         *
+         *     Lands private + pending (and, for the consent-gated categories, without
+         *     consent) — it cannot reach a donor until a moderator approves it and the
+         *     visibility/consent are set. The MIME allow-list is category-specific (images
+         *     for drawing/certificate/album/portrait, audio for recitation). Same
+         *     size/empty guards and status codes as ``upload_orphan_photo``.
+         */
+        post: operations["upload_orphan_media_api_v1_media_orphans__orphan_id__media_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/media/orphans/{orphan_id}/photo": {
         parameters: {
             query?: never;
@@ -1284,6 +1317,30 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/media/{media_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Media
+         * @description Update a media item's title/description/display_date/visibility/consent.
+         *
+         *     Moderation (approve/reject) stays on ``POST /media/{id}/moderate``. Explicit
+         *     org scope (never RLS) — a cross-org media id 404s, so no other org's item can
+         *     be read or mutated.
+         */
+        patch: operations["update_media_api_v1_media__media_id__patch"];
         trace?: never;
     };
     "/api/v1/media/{media_id}/moderate": {
@@ -3311,6 +3368,18 @@ export interface components {
             /** File */
             file: string;
         };
+        /** Body_upload_orphan_media_api_v1_media_orphans__orphan_id__media_post */
+        Body_upload_orphan_media_api_v1_media_orphans__orphan_id__media_post: {
+            category: components["schemas"]["MediaCategory"];
+            /** Description */
+            description?: string | null;
+            /** Display Date */
+            display_date?: string | null;
+            /** File */
+            file: string;
+            /** Title */
+            title?: string | null;
+        };
         /** Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post */
         Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post: {
             /** File */
@@ -4505,6 +4574,115 @@ export interface components {
             /** Status */
             status?: ("active" | "suspended" | "archived") | null;
         };
+        /**
+         * MediaBlock
+         * @description ``media`` — donor-cleared artefacts grouped by category. Present only when
+         *     the element is visible AND at least one group has a qualifying item.
+         */
+        MediaBlock: {
+            /** Album */
+            album: components["schemas"]["MediaItem"][];
+            /** Certificates */
+            certificates: components["schemas"]["MediaItem"][];
+            /** Drawings */
+            drawings: components["schemas"]["MediaItem"][];
+            /** Recitations */
+            recitations: components["schemas"]["MediaItem"][];
+        };
+        /**
+         * MediaCategory
+         * @description Every donor-library category a piece of media can carry (migration 0024).
+         *
+         *     ``portrait`` is the identity-photo default that legacy ``media_type='photo'``
+         *     rows are backfilled to; the four donor-surfaced groups are drawing /
+         *     certificate / album / recitation.
+         * @enum {string}
+         */
+        MediaCategory: "drawing" | "certificate" | "album" | "recitation" | "portrait";
+        /**
+         * MediaItem
+         * @description One donor-cleared piece of media. EXPOSES ONLY this safe slice — never the
+         *     storage key, consent document, moderation internals, uploader or org. ``url``
+         *     (and ``thumbnail_url`` when present) are fresh, short-lived presigned GETs.
+         */
+        MediaItem: {
+            /** Caption */
+            caption?: string | null;
+            /**
+             * Display Date
+             * Format: date
+             */
+            display_date: string;
+            /** Duration Seconds */
+            duration_seconds?: number | null;
+            /** Height */
+            height?: number | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Thumbnail Url */
+            thumbnail_url?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Url */
+            url: string;
+            /** Width */
+            width?: number | null;
+        };
+        /**
+         * MediaManageRead
+         * @description Management view of one media row (staff/manager only). Carries a fresh
+         *     presigned ``url`` (+ ``thumbnail_url`` when present) so the PR-5 management UI
+         *     can render it without the bucket being public. The raw ``s3://`` storage key
+         *     is NEVER returned.
+         */
+        MediaManageRead: {
+            /** Category */
+            category: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string | null;
+            /** Display Date */
+            display_date: string | null;
+            /** Duration Seconds */
+            duration_seconds: number | null;
+            /** File Size Bytes */
+            file_size_bytes: number | null;
+            /** Has Guardian Consent */
+            has_guardian_consent: boolean;
+            /** Height */
+            height: number | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Media Type */
+            media_type: string;
+            /** Moderation Status */
+            moderation_status: string;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /** Thumbnail Url */
+            thumbnail_url: string | null;
+            /** Title */
+            title: string | null;
+            /** Url */
+            url: string;
+            /** Visibility */
+            visibility: string;
+            /** Width */
+            width: number | null;
+        };
         /** MediaModeratePayload */
         MediaModeratePayload: {
             /**
@@ -4532,6 +4710,24 @@ export interface components {
             moderation_status: string;
             /** Visibility */
             visibility: string;
+        };
+        /**
+         * MediaPatch
+         * @description PATCH body for one media item. Every field is optional; only the fields
+         *     actually supplied are updated (``exclude_unset``). ``visibility`` is typed as
+         *     a ``Literal`` so an unknown value is rejected with 422 at the boundary.
+         */
+        MediaPatch: {
+            /** Description */
+            description?: string | null;
+            /** Display Date */
+            display_date?: string | null;
+            /** Has Guardian Consent */
+            has_guardian_consent?: boolean | null;
+            /** Title */
+            title?: string | null;
+            /** Visibility */
+            visibility?: ("private" | "donor_only" | "public" | "archived") | null;
         };
         /**
          * MediaQueueItem
@@ -6390,7 +6586,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -6947,6 +7143,7 @@ export interface components {
             her_world?: components["schemas"]["HerWorldBlock"] | null;
             /** Is Hafiz */
             is_hafiz: boolean;
+            media?: components["schemas"]["MediaBlock"] | null;
             milestones?: components["schemas"]["MilestonesBlock"] | null;
             multidim_growth?: components["schemas"]["MultidimGrowthBlock"] | null;
             /** Partner Organization Name */
@@ -9557,6 +9754,74 @@ export interface operations {
             };
         };
     };
+    list_orphan_media_api_v1_media_orphans__orphan_id__media_get: {
+        parameters: {
+            query?: {
+                category?: components["schemas"]["MediaCategory"] | null;
+            };
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaManageRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_orphan_media_api_v1_media_orphans__orphan_id__media_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_orphan_media_api_v1_media_orphans__orphan_id__media_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaManageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post: {
         parameters: {
             query?: never;
@@ -9610,6 +9875,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrphanPhoto"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_media_api_v1_media__media_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaManageRead"];
                 };
             };
             /** @description Validation Error */

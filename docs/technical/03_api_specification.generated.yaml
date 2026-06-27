@@ -423,6 +423,35 @@ components:
       - file
       title: Body_upload_my_orphan_photo_api_v1_guardian_me_orphans__orphan_id__photos_post
       type: object
+    Body_upload_orphan_media_api_v1_media_orphans__orphan_id__media_post:
+      properties:
+        category:
+          $ref: '#/components/schemas/MediaCategory'
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        display_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Display Date
+        file:
+          contentMediaType: application/octet-stream
+          title: File
+          type: string
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+      required:
+      - category
+      - file
+      title: Body_upload_orphan_media_api_v1_media_orphans__orphan_id__media_post
+      type: object
     Body_upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post:
       properties:
         file:
@@ -2850,6 +2879,211 @@ components:
           title: Status
       title: MarketingChannelUpdate
       type: object
+    MediaBlock:
+      description: '``media`` — donor-cleared artefacts grouped by category. Present only when
+
+        the element is visible AND at least one group has a qualifying item.'
+      properties:
+        album:
+          items:
+            $ref: '#/components/schemas/MediaItem'
+          title: Album
+          type: array
+        certificates:
+          items:
+            $ref: '#/components/schemas/MediaItem'
+          title: Certificates
+          type: array
+        drawings:
+          items:
+            $ref: '#/components/schemas/MediaItem'
+          title: Drawings
+          type: array
+        recitations:
+          items:
+            $ref: '#/components/schemas/MediaItem'
+          title: Recitations
+          type: array
+      required:
+      - drawings
+      - certificates
+      - album
+      - recitations
+      title: MediaBlock
+      type: object
+    MediaCategory:
+      description: 'Every donor-library category a piece of media can carry (migration 0024).
+
+
+        ``portrait`` is the identity-photo default that legacy ``media_type=''photo''``
+
+        rows are backfilled to; the four donor-surfaced groups are drawing /
+
+        certificate / album / recitation.'
+      enum:
+      - drawing
+      - certificate
+      - album
+      - recitation
+      - portrait
+      title: MediaCategory
+      type: string
+    MediaItem:
+      description: 'One donor-cleared piece of media. EXPOSES ONLY this safe slice — never the
+
+        storage key, consent document, moderation internals, uploader or org. ``url``
+
+        (and ``thumbnail_url`` when present) are fresh, short-lived presigned GETs.'
+      properties:
+        caption:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Caption
+        display_date:
+          format: date
+          title: Display Date
+          type: string
+        duration_seconds:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Seconds
+        height:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height
+        id:
+          format: uuid
+          title: Id
+          type: string
+        thumbnail_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Thumbnail Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        url:
+          title: Url
+          type: string
+        width:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Width
+      required:
+      - id
+      - display_date
+      - url
+      title: MediaItem
+      type: object
+    MediaManageRead:
+      description: 'Management view of one media row (staff/manager only). Carries a fresh
+
+        presigned ``url`` (+ ``thumbnail_url`` when present) so the PR-5 management UI
+
+        can render it without the bucket being public. The raw ``s3://`` storage key
+
+        is NEVER returned.'
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        display_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Display Date
+        duration_seconds:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Seconds
+        file_size_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: File Size Bytes
+        has_guardian_consent:
+          title: Has Guardian Consent
+          type: boolean
+        height:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height
+        id:
+          format: uuid
+          title: Id
+          type: string
+        media_type:
+          title: Media Type
+          type: string
+        moderation_status:
+          title: Moderation Status
+          type: string
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        thumbnail_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Thumbnail Url
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        url:
+          title: Url
+          type: string
+        visibility:
+          title: Visibility
+          type: string
+        width:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Width
+      required:
+      - id
+      - orphan_id
+      - media_type
+      - category
+      - title
+      - description
+      - display_date
+      - duration_seconds
+      - width
+      - height
+      - file_size_bytes
+      - moderation_status
+      - visibility
+      - has_guardian_consent
+      - url
+      - thumbnail_url
+      - created_at
+      title: MediaManageRead
+      type: object
     MediaModeratePayload:
       properties:
         decision:
@@ -2904,6 +3138,47 @@ components:
       - moderated_at
       - visibility
       title: MediaModerationRead
+      type: object
+    MediaPatch:
+      additionalProperties: false
+      description: 'PATCH body for one media item. Every field is optional; only the fields
+
+        actually supplied are updated (``exclude_unset``). ``visibility`` is typed as
+
+        a ``Literal`` so an unknown value is rejected with 422 at the boundary.'
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        display_date:
+          anyOf:
+          - format: date
+            type: string
+          - type: 'null'
+          title: Display Date
+        has_guardian_consent:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Has Guardian Consent
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        visibility:
+          anyOf:
+          - enum:
+            - private
+            - donor_only
+            - public
+            - archived
+            type: string
+          - type: 'null'
+          title: Visibility
+      title: MediaPatch
       type: object
     MediaQueueItem:
       description: 'One row in the moderation queue. Carries a fresh presigned URL so
@@ -6487,6 +6762,7 @@ components:
       - recent_updates
       - supervisor_word
       - since_you_began
+      - media
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -7505,6 +7781,10 @@ components:
         is_hafiz:
           title: Is Hafiz
           type: boolean
+        media:
+          anyOf:
+          - $ref: '#/components/schemas/MediaBlock'
+          - type: 'null'
         milestones:
           anyOf:
           - $ref: '#/components/schemas/MilestonesBlock'
@@ -10667,6 +10947,99 @@ paths:
       summary: Upload Generic File
       tags:
       - media
+  /api/v1/media/orphans/{orphan_id}/media:
+    get:
+      description: 'Manager view of ALL of an orphan''s media — including private/pending —
+
+        newest first, optionally narrowed to one ``category``. Each row carries a
+
+        fresh presigned URL. Explicit org scope (never RLS); a cross-org orphan id
+
+        404s before anything is listed.'
+      operationId: list_orphan_media_api_v1_media_orphans__orphan_id__media_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      - in: query
+        name: category
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/MediaCategory'
+          - type: 'null'
+          title: Category
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MediaManageRead'
+                title: Response List Orphan Media Api V1 Media Orphans  Orphan Id  Media Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Media
+      tags:
+      - media
+    post:
+      description: 'Attach a categorized piece of media to an orphan.
+
+
+        Lands private + pending (and, for the consent-gated categories, without
+
+        consent) — it cannot reach a donor until a moderator approves it and the
+
+        visibility/consent are set. The MIME allow-list is category-specific (images
+
+        for drawing/certificate/album/portrait, audio for recitation). Same
+
+        size/empty guards and status codes as ``upload_orphan_photo``.'
+      operationId: upload_orphan_media_api_v1_media_orphans__orphan_id__media_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_orphan_media_api_v1_media_orphans__orphan_id__media_post'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaManageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Upload Orphan Media
+      tags:
+      - media
   /api/v1/media/orphans/{orphan_id}/photo:
     post:
       operationId: upload_orphan_photo_api_v1_media_orphans__orphan_id__photo_post
@@ -10737,6 +11110,49 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: List Orphan Photos
+      tags:
+      - media
+  /api/v1/media/{media_id}:
+    patch:
+      description: 'Update a media item''s title/description/display_date/visibility/consent.
+
+
+        Moderation (approve/reject) stays on ``POST /media/{id}/moderate``. Explicit
+
+        org scope (never RLS) — a cross-org media id 404s, so no other org''s item can
+
+        be read or mutated.'
+      operationId: update_media_api_v1_media__media_id__patch
+      parameters:
+      - in: path
+        name: media_id
+        required: true
+        schema:
+          format: uuid
+          title: Media Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaPatch'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaManageRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Media
       tags:
       - media
   /api/v1/media/{media_id}/moderate:

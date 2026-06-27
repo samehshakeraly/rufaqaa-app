@@ -1220,6 +1220,56 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 )
                 summary.media += 1
 
+    # ── PR-4 donor media library: give the primary demo donor's first child a
+    # small, donor-cleared library (2 drawings + 1 certificate) so PR-5 has data
+    # to render. Drawings/certificates are artefacts (no consent gate), but we
+    # flag consent TRUE anyway so the rows are unambiguously donor-safe.
+    if sponsored_orphans:
+        aisha = sponsored_orphans[0]
+        await _insert_media(
+            db,
+            org_id=org_id,
+            orphan_id=aisha.id,
+            report_id=None,
+            media_type="photo",
+            category="drawing",
+            file_url=assets.photo_by_gender[aisha.gender],
+            title=f"رسمة العائلة — {aisha.first_name}",
+            description="رسمة بالألوان المائية رسمتها بنفسها.",
+            display_date=_add_months(today, -2),
+            uploaded_by=admin_id,
+            created_at=now - timedelta(days=60),
+        )
+        await _insert_media(
+            db,
+            org_id=org_id,
+            orphan_id=aisha.id,
+            report_id=None,
+            media_type="photo",
+            category="drawing",
+            file_url=assets.photo_by_gender[aisha.gender],
+            title=f"رسمة المدرسة — {aisha.first_name}",
+            description="رسمة عن أول يوم في المدرسة.",
+            display_date=_add_months(today, -1),
+            uploaded_by=admin_id,
+            created_at=now - timedelta(days=30),
+        )
+        await _insert_media(
+            db,
+            org_id=org_id,
+            orphan_id=aisha.id,
+            report_id=None,
+            media_type="photo",
+            category="certificate",
+            file_url=assets.document_url,
+            title=f"شهادة تفوق — {aisha.first_name}",
+            description="شهادة تقدير عن التفوق الدراسي.",
+            display_date=_add_months(today, -1),
+            uploaded_by=admin_id,
+            created_at=now - timedelta(days=20),
+        )
+        summary.media += 3
+
     await db.commit()
     return summary
 
@@ -1234,24 +1284,31 @@ async def _insert_media(
     title: str,
     uploaded_by: UUID,
     created_at: datetime,
+    media_type: str = "photo",
+    category: str | None = None,
+    description: str | None = None,
+    display_date: date | None = None,
 ) -> None:
     """Insert one approved, donor-visible, consent-flagged media row.
 
-    ``media`` has no ORM model, so — like the app's own upload path — this uses
-    a parameterised INSERT. visibility='donor_only' + moderation_status='approved'
-    is exactly what makes a photo visible to the sponsoring donor.
+    ``media`` has no ORM model in the seed path, so — like the app's own upload
+    route — this uses a parameterised INSERT. visibility='donor_only' +
+    moderation_status='approved' is exactly what makes an item visible to the
+    sponsoring donor; the consent-gated categories also need has_guardian_consent
+    (always TRUE here). ``category``/``display_date`` are the PR-4 columns
+    (migration 0024) that drive the donor-facing media library.
     """
     await db.execute(
         text(
             """
             INSERT INTO media
-                (id, organization_id, orphan_id, report_id, media_type,
-                 title, file_url, file_size_bytes,
+                (id, organization_id, orphan_id, report_id, media_type, category,
+                 title, description, display_date, file_url, file_size_bytes,
                  moderation_status, moderated_by, moderated_at,
                  visibility, has_guardian_consent, uploaded_by, created_at)
             VALUES
-                (:id, :org, :orphan, :report, 'photo',
-                 :title, :url, :size,
+                (:id, :org, :orphan, :report, :mtype, :cat,
+                 :title, :descr, :display_date, :url, :size,
                  'approved', :moderator, :created,
                  'donor_only', TRUE, :uploader, :created)
             """
@@ -1261,7 +1318,11 @@ async def _insert_media(
             "org": str(org_id),
             "orphan": str(orphan_id),
             "report": str(report_id) if report_id else None,
+            "mtype": media_type,
+            "cat": category,
             "title": title,
+            "descr": description,
+            "display_date": display_date,
             "url": file_url,
             "size": 12000,
             "moderator": str(uploaded_by),

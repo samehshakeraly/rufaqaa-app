@@ -993,6 +993,51 @@ async def _seed_demo() -> dict[str, int]:  # noqa: C901 — linear fixture build
                 )
                 counts["media"] += 1
 
+        # ── PR-4 donor media library ─────────────────────────────────────
+        # Give the first sponsored child a small, donor-cleared library (2
+        # drawings + 1 certificate) so the PR-5 donor UI has categorized data.
+        # Drawings/certificates are artefacts (no consent gate); consent is
+        # flagged TRUE anyway so the rows are unambiguously donor-safe.
+        if sponsored_orphans:
+            aisha = sponsored_orphans[0]
+            library = [
+                ("drawing", "رسمة العائلة", "رسمة بالألوان المائية رسمتها بنفسها."),
+                ("drawing", "رسمة المدرسة", "رسمة عن أول يوم في المدرسة."),
+                ("certificate", "شهادة تفوق", "شهادة تقدير عن التفوق الدراسي."),
+            ]
+            for cat, lib_title, lib_descr in library:
+                await db.execute(
+                    text(
+                        """
+                        INSERT INTO media
+                            (id, organization_id, orphan_id, media_type, category,
+                             title, description, display_date, file_url, file_size_bytes,
+                             moderation_status, moderated_by, moderated_at,
+                             visibility, has_guardian_consent, uploaded_by, created_at)
+                        VALUES
+                            (:id, :org, :orphan, 'photo', :cat,
+                             :title, :descr, :display_date, :url, :size,
+                             'approved', :moderator, :created,
+                             'donor_only', TRUE, :uploader, :created)
+                        """
+                    ),
+                    {
+                        "id": str(uuid4()),
+                        "org": str(org_id),
+                        "orphan": str(aisha.id),
+                        "cat": cat,
+                        "title": f"{lib_title} — {aisha.first_name}",
+                        "descr": lib_descr,
+                        "display_date": (now - timedelta(days=30)).date(),
+                        "url": "https://placehold.co/600x800?text=Library",
+                        "size": rng.randint(80_000, 400_000),
+                        "moderator": str(admin_id),
+                        "uploader": str(admin_id),
+                        "created": now - timedelta(days=rng.randint(10, 60)),
+                    },
+                )
+                counts["media"] += 1
+
         # ── Bank transfers (3, one per partner) + items ──────────────────
         bt_statuses = ["completed", "approved", "pending"]
         for i, partner in enumerate(partners):

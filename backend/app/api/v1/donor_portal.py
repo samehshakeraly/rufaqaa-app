@@ -22,6 +22,7 @@ from app.api.deps import CurrentUser, DbSession
 from app.api.v1.public import to_public_detail
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.media import Media
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
@@ -29,6 +30,7 @@ from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
+from app.schemas.media import CONSENT_REQUIRED_CATEGORIES, MediaCategory
 from app.schemas.payment import PaymentDonorRead
 from app.schemas.profile_visibility import ProfileElement, is_visible
 from app.schemas.report import (
@@ -42,6 +44,8 @@ from app.schemas.report import (
 from app.schemas.sponsored_profile import (
     DreamBlock,
     HerWorldBlock,
+    MediaBlock,
+    MediaItem,
     MilestoneItem,
     MilestonesBlock,
     MultidimGrowthBlock,
@@ -56,6 +60,7 @@ from app.schemas.sponsored_profile import (
     TextDelta,
 )
 from app.schemas.sponsorship import SponsorshipRead
+from app.services.storage import presigned_get_url_for
 
 router = APIRouter()
 
@@ -182,11 +187,86 @@ def _number_delta(values: Sequence[int]) -> NumberDelta | None:
     return NumberDelta(first=values[0], latest=values[-1])
 
 
+async def _media_item(m: Media) -> MediaItem:
+    """Project ONE qualifying media row into the donor-safe item. Exposes only
+    the vetted slice — never the storage key, consent document, moderation
+    internals, uploader or org. ``url``/``thumbnail_url`` are fresh presigned
+    GETs; ``display_date`` falls back to the upload date."""
+    return MediaItem(
+        id=m.id,
+        title=m.title,
+        caption=m.description,
+        display_date=m.display_date or m.created_at.date(),
+        url=await presigned_get_url_for(m.file_url),
+        thumbnail_url=(await presigned_get_url_for(m.thumbnail_url) if m.thumbnail_url else None),
+        duration_seconds=m.duration_seconds,
+        width=m.width,
+        height=m.height,
+    )
+
+
+async def _build_media_block(
+    db: AsyncSession, orphan_id: UUID, visibility: dict[str, bool]
+) -> MediaBlock | None:
+    """Assemble the donor-cleared ``media`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``media`` element is
+    hidden OR no item qualifies. An item qualifies ONLY when ALL hold, enforced
+    here server-side so a hidden/un-consented/un-approved row never leaves the
+    server:
+
+    * it belongs to THIS orphan (the caller has already proven sponsorship);
+    * ``moderation_status == 'approved'``;
+    * ``visibility IN ('donor_only','public')``;
+    * its category is not consent-gated, OR guardian consent is on record.
+
+    Only the four donor-facing groups are surfaced (drawings/certificates/album/
+    recitations); ``portrait`` is the identity photo and is never listed here.
+    """
+    if not is_visible(visibility, ProfileElement.media):
+        return None
+
+    rows = (
+        await db.scalars(
+            select(Media)
+            .where(
+                Media.orphan_id == orphan_id,
+                Media.moderation_status == "approved",
+                Media.visibility.in_(("donor_only", "public")),
+            )
+            .order_by(Media.created_at.desc())
+        )
+    ).all()
+
+    groups: dict[str, list[MediaItem]] = {
+        MediaCategory.drawing.value: [],
+        MediaCategory.certificate.value: [],
+        MediaCategory.album.value: [],
+        MediaCategory.recitation.value: [],
+    }
+    for m in rows:
+        if m.category not in groups:
+            continue
+        if m.category in CONSENT_REQUIRED_CATEGORIES and not m.has_guardian_consent:
+            continue
+        groups[m.category].append(await _media_item(m))
+
+    if not any(groups.values()):
+        return None
+    return MediaBlock(
+        drawings=groups[MediaCategory.drawing.value],
+        certificates=groups[MediaCategory.certificate.value],
+        album=groups[MediaCategory.album.value],
+        recitations=groups[MediaCategory.recitation.value],
+    )
+
+
 def _compose_sponsored_profile(
     orphan: Orphan,
     partner_name: str | None,
     reports: list[ReportDonorRead],
     sponsorship_start: date,
+    media: MediaBlock | None = None,
 ) -> SponsoredOrphanProfile:
     """Assemble the donor-safe profile from already-safe parts.
 
@@ -330,6 +410,7 @@ def _compose_sponsored_profile(
         recent_updates=recent_updates,
         supervisor_word=supervisor_word,
         since_you_began=since_you_began,
+        media=media,
     )
 
 
@@ -390,7 +471,8 @@ async def my_sponsored_orphan_profile(
     ).all()
     reports = [_donor_report_view(r) for r in report_rows]
 
-    return _compose_sponsored_profile(orphan, partner_name, reports, sponsorship_start)
+    media = await _build_media_block(db, orphan_id, orphan.profile_visibility or {})
+    return _compose_sponsored_profile(orphan, partner_name, reports, sponsorship_start, media)
 
 
 @router.get("/reports", response_model=Page[ReportDonorRead])
