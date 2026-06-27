@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -105,6 +106,71 @@ const FULL_PROFILE = {
     juz_gained: 3,
     milestones_count: 1,
     reports_count: 4,
+  },
+  media: {
+    drawings: [
+      {
+        id: "d1",
+        title: "بيتنا",
+        caption: "رسمت بيت العائلة",
+        display_date: "2025-05-01",
+        url: "https://cdn.example/d1-full.jpg",
+        thumbnail_url: "https://cdn.example/d1-thumb.jpg",
+        duration_seconds: null,
+        width: 800,
+        height: 600,
+      },
+      {
+        id: "d2",
+        title: null,
+        caption: null,
+        display_date: "2025-05-10",
+        url: "https://cdn.example/d2-full.jpg",
+        thumbnail_url: null,
+        duration_seconds: null,
+        width: null,
+        height: null,
+      },
+    ],
+    certificates: [
+      {
+        id: "c1",
+        title: "شهادة تفوّق",
+        caption: null,
+        display_date: "2025-04-01",
+        url: "https://cdn.example/c1-full.jpg",
+        thumbnail_url: "https://cdn.example/c1-thumb.jpg",
+        duration_seconds: null,
+        width: 1000,
+        height: 700,
+      },
+    ],
+    album: [
+      {
+        id: "a1",
+        title: null,
+        caption: "في الرحلة المدرسية",
+        display_date: "2025-03-15",
+        url: "https://cdn.example/a1-full.jpg",
+        thumbnail_url: "https://cdn.example/a1-thumb.jpg",
+        duration_seconds: null,
+        width: null,
+        height: null,
+      },
+    ],
+    recitations: [
+      {
+        id: "r1",
+        title: "سورة الفاتحة",
+        caption: null,
+        display_date: "2025-02-01",
+        url: "https://cdn.example/r1.mp3",
+        thumbnail_url: null,
+        duration_seconds: 95,
+        width: null,
+        height: null,
+      },
+    ],
   },
 };
 
@@ -241,5 +307,109 @@ describe("DonorOrphanDetailPage — composed donor profile", () => {
     await screen.findByText("عائشة");
     // The multidim arrow is mirrored in RTL so it points first → latest.
     expect(container.querySelector("svg.-scale-x-100")).not.toBeNull();
+  });
+});
+
+describe("DonorOrphanDetailPage — memory box", () => {
+  it("renders each media group with the right counts and an audio player", async () => {
+    const { container } = renderPage();
+
+    // Zone heading.
+    expect(await screen.findByText("صندوق ذكريات عائشة")).toBeInTheDocument();
+
+    // Two drawings: one with a thumbnail, one falling back to the full url.
+    const drawings = container.querySelector('img[src="https://cdn.example/d1-thumb.jpg"]');
+    expect(drawings).not.toBeNull();
+    expect(container.querySelector('img[src="https://cdn.example/d2-full.jpg"]')).not.toBeNull();
+
+    // Certificate + album images present.
+    expect(container.querySelector('img[src="https://cdn.example/c1-thumb.jpg"]')).not.toBeNull();
+    expect(container.querySelector('img[src="https://cdn.example/a1-thumb.jpg"]')).not.toBeNull();
+
+    // Recitation → an <audio> with the presigned src and an accessible name.
+    const audios = container.querySelectorAll("audio");
+    expect(audios).toHaveLength(1);
+    const audio = audios[0]!;
+    expect(audio.getAttribute("src")).toBe("https://cdn.example/r1.mp3");
+    expect(audio.getAttribute("aria-label")).toBe("تلاوة: سورة الفاتحة");
+    // Duration formatted as m:ss.
+    expect(screen.getByText("1:35")).toBeInTheDocument();
+  });
+
+  it("opens the lightbox on a tile click and closes it on Escape", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await screen.findByText("صندوق ذكريات عائشة");
+
+    // Click the first drawing tile (labelled by its title).
+    await user.click(screen.getByRole("button", { name: "عرض: بيتنا" }));
+
+    const dialog = await screen.findByRole("dialog");
+    // Full-resolution url shown inside the dialog.
+    expect(within(dialog).getByRole("img").getAttribute("src")).toBe(
+      "https://cdn.example/d1-full.jpg",
+    );
+    expect(within(dialog).getByText("رسمت بيت العائلة")).toBeInTheDocument();
+
+    // Escape dismisses it.
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("omits an empty group while still rendering the non-empty ones", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      media: {
+        drawings: [
+          {
+            id: "d1",
+            title: "بيتنا",
+            caption: null,
+            display_date: "2025-05-01",
+            url: "https://cdn.example/d1-full.jpg",
+            thumbnail_url: null,
+            duration_seconds: null,
+            width: null,
+            height: null,
+          },
+        ],
+        certificates: [],
+        album: [],
+        recitations: [],
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    // The drawings sub-section renders…
+    expect(await screen.findByText("رسومات عائشة")).toBeInTheDocument();
+    // …while the empty groups are omitted entirely.
+    expect(screen.queryByText("شهادات عائشة")).not.toBeInTheDocument();
+    expect(screen.queryByText("ألبوم لحظات عائشة")).not.toBeInTheDocument();
+    expect(screen.queryByText("تلاوات عائشة")).not.toBeInTheDocument();
+  });
+
+  it("renders nothing for the zone when media is null", async () => {
+    // IDENTITY_ONLY has no `media` key at all.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByText(/صندوق ذكريات/)).not.toBeInTheDocument();
+    expect(document.querySelector("audio")).toBeNull();
+  });
+
+  it("renders nothing when media is present but every group is empty", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      media: { drawings: [], certificates: [], album: [], recitations: [] },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByText(/صندوق ذكريات/)).not.toBeInTheDocument();
   });
 });

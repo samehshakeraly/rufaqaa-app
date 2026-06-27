@@ -4406,6 +4406,18 @@
     "recentUpdatesTitle": "أحدث التحديثات",
     "recentUpdatesLink": "اطّلع على كل التحديثات",
     "supervisorWordTitle": "كلمة من المشرف",
-    "herWorldTitle": "عالم {{name}} اليوم"
+    "herWorldTitle": "عالم {{name}} اليوم",
+    "memoryTitle": "صندوق ذكريات {{name}}",
+    "memoryDrawings": "رسومات {{name}}",
+    "memoryCertificates": "شهادات {{name}}",
+    "memoryAlbum": "ألبوم لحظات {{name}}",
+    "memoryRecitations": "تلاوات {{name}}",
+    "memoryOpenLabel": "عرض: {{title}}",
+    "memoryAudioName": "تلاوة: {{title}}",
+    "memoryDrawingFallback": "رسمة",
+    "memoryCertificateFallback": "شهادة",
+    "memoryAlbumFallback": "لحظة",
+    "memoryRecitationFallback": "تلاوة",
+    "memoryImageFallback": "صورة من الذكريات"
   }
 }

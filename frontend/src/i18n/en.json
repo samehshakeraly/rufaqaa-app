@@ -4406,6 +4406,18 @@
     "recentUpdatesTitle": "Latest updates",
     "recentUpdatesLink": "See all updates",
     "supervisorWordTitle": "A word from the supervisor",
-    "herWorldTitle": "{{name}}'s world today"
+    "herWorldTitle": "{{name}}'s world today",
+    "memoryTitle": "{{name}}'s memory box",
+    "memoryDrawings": "{{name}}'s drawings",
+    "memoryCertificates": "{{name}}'s certificates",
+    "memoryAlbum": "{{name}}'s moments album",
+    "memoryRecitations": "{{name}}'s recitations",
+    "memoryOpenLabel": "View: {{title}}",
+    "memoryAudioName": "Recitation: {{title}}",
+    "memoryDrawingFallback": "A drawing",
+    "memoryCertificateFallback": "A certificate",
+    "memoryAlbumFallback": "A moment",
+    "memoryRecitationFallback": "A recitation",
+    "memoryImageFallback": "A memory image"
   }
 }
