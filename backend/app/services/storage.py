@@ -97,3 +97,18 @@ def _presigned_get_sync(bucket: str, key: str, expires_in: int) -> str:
 
 async def presigned_get_url(bucket: str, key: str, expires_in: int = 3600) -> str:
     return await asyncio.to_thread(_presigned_get_sync, bucket, key, expires_in)
+
+
+async def presigned_get_url_for(file_url: str, expires_in: int = 3600) -> str:
+    """Presign a stored ``s3://bucket/key`` reference into a short-lived GET URL.
+
+    A non-``s3://`` value (e.g. a legacy ``https://`` placeholder) is returned
+    unchanged so callers can treat ``media.file_url`` uniformly. Mirrors the
+    inline ``s3://`` → URL parsing the media endpoints have used since the first
+    upload route landed.
+    """
+    if not file_url.startswith("s3://"):
+        return file_url
+    _, _, rest = file_url.partition("s3://")
+    bucket, _, key = rest.partition("/")
+    return await presigned_get_url(bucket, key, expires_in)

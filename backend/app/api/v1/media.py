@@ -9,28 +9,48 @@ exposing the bucket publicly.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import text
+from sqlalchemy import select, text
 
 from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
 from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
 from app.core.config import settings
 from app.core.exceptions import NotFound
+from app.models.media import Media
 from app.models.orphan import Orphan
 from app.models.user import User
 from app.schemas.common import Page
+from app.schemas.media import MediaCategory
 from app.services.audit import record_audit
-from app.services.storage import ensure_bucket, presigned_get_url, put_object
+from app.services.storage import (
+    ensure_bucket,
+    presigned_get_url,
+    presigned_get_url_for,
+    put_object,
+)
 
 router = APIRouter()
 
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+# Quran-recitation audio. Kept narrow, the same way the image/document
+# allow-lists are, so the bucket can't become an arbitrary-file dump.
+ALLOWED_AUDIO_TYPES = {"audio/mpeg", "audio/mp4", "audio/wav"}
+
+# Which MIME types each donor-library category accepts. Drawings, certificates,
+# album photos and portraits are images; recitations are audio.
+CATEGORY_ALLOWED_TYPES: dict[str, set[str]] = {
+    MediaCategory.drawing.value: ALLOWED_IMAGE_TYPES,
+    MediaCategory.certificate.value: ALLOWED_IMAGE_TYPES,
+    MediaCategory.album.value: ALLOWED_IMAGE_TYPES,
+    MediaCategory.portrait.value: ALLOWED_IMAGE_TYPES,
+    MediaCategory.recitation.value: ALLOWED_AUDIO_TYPES,
+}
 
 # Generic-document allow-list. Stays narrow so the bucket doesn't
 # become an arbitrary-file dumping ground.
@@ -479,3 +499,231 @@ async def moderate_media(
         moderated_at=now,
         visibility=new_visibility,
     )
+
+
+# ── Categorized orphan-media library (PR-4) ────────────────────────────────────
+#
+# Staff/manager attach categorized media (drawing/certificate/album/recitation/
+# portrait) to an orphan, then control each item. Uploads land private+pending,
+# exactly like the photo path; a moderator approves via the existing
+# /media/{id}/moderate route, and PATCH below toggles visibility/consent. The
+# donor only ever sees an item once it is approved + donor-facing (and, for the
+# consent-gated categories, has guardian consent) — enforced server-side in the
+# composed donor profile, never here.
+
+
+class MediaManageRead(BaseModel):
+    """Management view of one media row (staff/manager only). Carries a fresh
+    presigned ``url`` (+ ``thumbnail_url`` when present) so the PR-5 management UI
+    can render it without the bucket being public. The raw ``s3://`` storage key
+    is NEVER returned."""
+
+    id: UUID
+    orphan_id: UUID
+    media_type: str
+    category: str | None
+    title: str | None
+    description: str | None
+    display_date: date | None
+    duration_seconds: int | None
+    width: int | None
+    height: int | None
+    file_size_bytes: int | None
+    moderation_status: str
+    visibility: str
+    has_guardian_consent: bool
+    url: str
+    thumbnail_url: str | None
+    created_at: datetime
+
+
+async def _media_manage_read(m: Media) -> MediaManageRead:
+    return MediaManageRead(
+        id=m.id,
+        orphan_id=m.orphan_id,
+        media_type=m.media_type,
+        category=m.category,
+        title=m.title,
+        description=m.description,
+        display_date=m.display_date,
+        duration_seconds=m.duration_seconds,
+        width=m.width,
+        height=m.height,
+        file_size_bytes=m.file_size_bytes,
+        moderation_status=m.moderation_status or "pending",
+        visibility=m.visibility or "private",
+        has_guardian_consent=bool(m.has_guardian_consent),
+        url=await presigned_get_url_for(m.file_url),
+        thumbnail_url=(await presigned_get_url_for(m.thumbnail_url) if m.thumbnail_url else None),
+        created_at=m.created_at,
+    )
+
+
+@router.post(
+    "/orphans/{orphan_id}/media",
+    response_model=MediaManageRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def upload_orphan_media(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+    category: Annotated[MediaCategory, Form()],
+    file: Annotated[UploadFile, File()],
+    title: Annotated[str | None, Form()] = None,
+    description: Annotated[str | None, Form()] = None,
+    display_date: Annotated[date | None, Form()] = None,
+) -> MediaManageRead:
+    """Attach a categorized piece of media to an orphan.
+
+    Lands private + pending (and, for the consent-gated categories, without
+    consent) — it cannot reach a donor until a moderator approves it and the
+    visibility/consent are set. The MIME allow-list is category-specific (images
+    for drawing/certificate/album/portrait, audio for recitation). Same
+    size/empty guards and status codes as ``upload_orphan_photo``.
+    """
+    # Org-scoped existence guard — a cross-org orphan id 404s (no existence leak),
+    # so media can never be attached to another org's orphan.
+    await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+
+    allowed = CATEGORY_ALLOWED_TYPES[category.value]
+    if file.content_type not in allowed:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Allowed types for {category.value}: {sorted(allowed)}",
+        )
+
+    body = await file.read()
+    if len(body) == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Empty upload")
+    if len(body) > settings.UPLOAD_MAX_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Max upload is {settings.UPLOAD_MAX_BYTES} bytes",
+        )
+
+    media_type = "audio" if category == MediaCategory.recitation else "photo"
+    bucket = settings.S3_BUCKET_PRIVATE
+    await ensure_bucket(bucket)
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower() or "bin"
+    key = f"orphans/{orphan_id}/{category.value}/{uuid.uuid4().hex}.{ext}"
+    await put_object(
+        bucket, key, body, content_type=file.content_type or "application/octet-stream"
+    )
+
+    media = Media(
+        organization_id=user.organization_id,
+        orphan_id=orphan_id,
+        media_type=media_type,
+        category=category.value,
+        title=title,
+        description=description,
+        display_date=display_date,
+        file_url=f"s3://{bucket}/{key}",
+        file_size_bytes=len(body),
+        visibility="private",
+        moderation_status="pending",
+        has_guardian_consent=False,
+        uploaded_by=user.id,
+    )
+    db.add(media)
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="media.uploaded",
+        entity_type="media",
+        entity_id=media.id,
+        new_values={
+            "orphan_id": str(orphan_id),
+            "category": category.value,
+            "size": len(body),
+        },
+    )
+    await db.commit()
+    await db.refresh(media)
+    return await _media_manage_read(media)
+
+
+@router.get("/orphans/{orphan_id}/media", response_model=list[MediaManageRead])
+async def list_orphan_media(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+    category: Annotated[MediaCategory | None, Query()] = None,
+) -> list[MediaManageRead]:
+    """Manager view of ALL of an orphan's media — including private/pending —
+    newest first, optionally narrowed to one ``category``. Each row carries a
+    fresh presigned URL. Explicit org scope (never RLS); a cross-org orphan id
+    404s before anything is listed."""
+    await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    stmt = (
+        select(Media)
+        .where(Media.orphan_id == orphan_id, Media.organization_id == user.organization_id)
+        .order_by(Media.created_at.desc())
+    )
+    if category is not None:
+        stmt = stmt.where(Media.category == category.value)
+    rows = (await db.scalars(stmt)).all()
+    return [await _media_manage_read(m) for m in rows]
+
+
+class MediaPatch(BaseModel):
+    """PATCH body for one media item. Every field is optional; only the fields
+    actually supplied are updated (``exclude_unset``). ``visibility`` is typed as
+    a ``Literal`` so an unknown value is rejected with 422 at the boundary."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    title: str | None = None
+    description: str | None = None
+    display_date: date | None = None
+    visibility: Literal["private", "donor_only", "public", "archived"] | None = None
+    has_guardian_consent: bool | None = None
+
+
+@router.patch("/{media_id}", response_model=MediaManageRead)
+async def update_media(
+    media_id: UUID,
+    payload: MediaPatch,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> MediaManageRead:
+    """Update a media item's title/description/display_date/visibility/consent.
+
+    Moderation (approve/reject) stays on ``POST /media/{id}/moderate``. Explicit
+    org scope (never RLS) — a cross-org media id 404s, so no other org's item can
+    be read or mutated."""
+    media = await db.scalar(
+        select(Media).where(Media.id == media_id, Media.organization_id == user.organization_id)
+    )
+    if media is None:
+        raise NotFound("Media")
+
+    fields = payload.model_dump(exclude_unset=True)
+    if not fields:
+        return await _media_manage_read(media)
+
+    old = {
+        "title": media.title,
+        "description": media.description,
+        "display_date": media.display_date.isoformat() if media.display_date else None,
+        "visibility": media.visibility,
+        "has_guardian_consent": media.has_guardian_consent,
+    }
+    for name, value in fields.items():
+        setattr(media, name, value)
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="media.updated",
+        entity_type="media",
+        entity_id=media.id,
+        old_values={k: old[k] for k in fields if k in old},
+        new_values={k: (v.isoformat() if isinstance(v, date) else v) for k, v in fields.items()},
+    )
+    await db.commit()
+    await db.refresh(media)
+    return await _media_manage_read(media)

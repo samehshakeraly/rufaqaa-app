@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from datetime import date
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -110,6 +111,32 @@ class SinceYouBeganBlock(BaseModel):
     reports_count: int
 
 
+class MediaItem(BaseModel):
+    """One donor-cleared piece of media. EXPOSES ONLY this safe slice — never the
+    storage key, consent document, moderation internals, uploader or org. ``url``
+    (and ``thumbnail_url`` when present) are fresh, short-lived presigned GETs."""
+
+    id: UUID
+    title: str | None = None
+    caption: str | None = None
+    display_date: date
+    url: str
+    thumbnail_url: str | None = None
+    duration_seconds: int | None = None
+    width: int | None = None
+    height: int | None = None
+
+
+class MediaBlock(BaseModel):
+    """``media`` — donor-cleared artefacts grouped by category. Present only when
+    the element is visible AND at least one group has a qualifying item."""
+
+    drawings: list[MediaItem]
+    certificates: list[MediaItem]
+    album: list[MediaItem]
+    recitations: list[MediaItem]
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -142,3 +169,4 @@ class SponsoredOrphanProfile(BaseModel):
     recent_updates: RecentUpdatesBlock | None = None
     supervisor_word: SupervisorWordBlock | None = None
     since_you_began: SinceYouBeganBlock | None = None
+    media: MediaBlock | None = None

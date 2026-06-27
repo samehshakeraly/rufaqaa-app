@@ -1,6 +1,7 @@
 from app.models.audit import AuditLogEntry
 from app.models.donor import Donor
 from app.models.family import Family, Guardian
+from app.models.media import Media
 from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
@@ -18,6 +19,7 @@ __all__ = [
     "Family",
     "Guardian",
     "MarketingChannel",
+    "Media",
     "Organization",
     "Orphan",
     "OrphanReport",
