@@ -3487,7 +3487,9 @@
       "quickActionsLabel": "إجراءات سريعة",
       "actionNewReport": "رفع تقرير جديد",
       "actionNewReportSub": "يستغرق أقلّ من دقيقة",
-      "lastReportTitle": "آخر تقرير"
+      "lastReportTitle": "آخر تقرير",
+      "tabMedia": "الوسائط",
+      "mediaTitle": "وسائط صندوق الذكريات"
     },
     "report": {
       "backToOrphan": "صفحة {{name}}",
@@ -3649,6 +3651,87 @@
     "saving": "جارٍ الحفظ…",
     "saved": "تم الحفظ",
     "saveError": "تعذّر الحفظ. حاول مرة أخرى."
+  },
+  "orphanMedia": {
+    "loadError": "تعذّر تحميل الوسائط. حاول مرة أخرى لاحقاً.",
+    "empty": "لا توجد وسائط بعد — ارفع أول رسمة أو شهادة.",
+    "statusLabel": "حالة المراجعة",
+    "visibilityLabel": "مستوى الظهور",
+    "category": {
+      "drawing": "رسمة",
+      "certificate": "شهادة",
+      "album": "ألبوم",
+      "recitation": "تلاوة",
+      "portrait": "صورة شخصية",
+      "unknown": "غير مصنّف"
+    },
+    "upload": {
+      "title": "رفع وسيط جديد",
+      "category": "التصنيف",
+      "categoryPlaceholder": "اختر التصنيف…",
+      "categoryRequired": "اختر تصنيفاً أولاً.",
+      "file": "الملف",
+      "fileHelp": "صورة للرسمة/الشهادة/الألبوم أو ملف صوتي للتلاوة — بحدّ أقصى ١٠ ميجابايت.",
+      "fileRequired": "اختر ملفاً للرفع.",
+      "titleLabel": "العنوان (اختياري)",
+      "caption": "الوصف (اختياري)",
+      "displayDate": "تاريخ العرض (اختياري)",
+      "submit": "رفع",
+      "submitting": "جارٍ الرفع…",
+      "success": "تم الرفع — بانتظار المراجعة قبل أن يراه الكافل."
+    },
+    "status": {
+      "pending": "بانتظار المراجعة",
+      "approved": "تمت الموافقة",
+      "rejected": "مرفوض",
+      "flagged": "مُعلَّم للمراجعة"
+    },
+    "visibility": {
+      "private": "خاص",
+      "donor_only": "للكافل فقط",
+      "public": "عام",
+      "archived": "مؤرشف"
+    },
+    "consent": {
+      "on": "موافقة الوليّ: نعم",
+      "off": "موافقة الوليّ: لا"
+    },
+    "consentHint": "لن يصل هذا العنصر إلى الكافل حتى تُفعَّل موافقة الوليّ.",
+    "sponsor": {
+      "visible": "ظاهر للكافل",
+      "hidden": "مخفيّ عن الكافل — {{reason}}"
+    },
+    "reason": {
+      "pending": "بانتظار الموافقة",
+      "rejected": "تم رفضه",
+      "archived": "مؤرشف",
+      "private": "غير منشور للكافل",
+      "consent": "موافقة الوليّ غير مفعّلة"
+    },
+    "audioLabel": "تلاوة: {{title}}",
+    "actions": {
+      "show": "إظهار للكافل",
+      "hide": "إخفاء",
+      "consentOn": "تفعيل موافقة الوليّ",
+      "consentOff": "إلغاء موافقة الوليّ",
+      "edit": "تعديل التفاصيل",
+      "reject": "رفض"
+    },
+    "edit": {
+      "title": "العنوان",
+      "caption": "الوصف",
+      "displayDate": "تاريخ العرض",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "cancel": "إلغاء"
+    },
+    "errors": {
+      "unsupportedType": "نوع الملف غير مدعوم لهذا التصنيف.",
+      "tooLarge": "حجم الملف يتجاوز ١٠ ميجابايت.",
+      "forbidden": "ليست لديك صلاحية لهذا الإجراء.",
+      "invalid": "تعذّر حفظ التغييرات — تحقّق من القيم المُدخلة.",
+      "generic": "تعذّر إتمام العملية. حاول مرة أخرى."
+    }
   },
   "platform": {
     "modeBadge": "إدارة المنصّة",
