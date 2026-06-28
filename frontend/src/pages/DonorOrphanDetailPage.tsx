@@ -9,8 +9,8 @@ import { countryName } from "@/lib/countries";
 import { formatDate, formatDuration, humanDuration } from "@/lib/format";
 import type { PaymentDonorRead } from "@/lib/payments";
 import { listMyPayments } from "@/lib/payments";
-import type { SponsoredOrphanProfile } from "@/lib/public";
-import { getSponsoredOrphanProfile } from "@/lib/public";
+import type { PublicOrphan, SponsoredOrphanProfile } from "@/lib/public";
+import { getPublicStats, getSponsoredOrphanProfile, listPublicOrphans } from "@/lib/public";
 import type { ReportDonorRead } from "@/lib/reports";
 import { listMyReports } from "@/lib/reports";
 import type { Sponsorship } from "@/lib/sponsorships";
@@ -214,6 +214,16 @@ export function DonorOrphanDetailPage() {
         <MultidimGrowthSection growth={profile.multidim_growth} isRtl={isRtl} />
       )}
 
+      {/* The dream roadmap sits right after the growth story: the real
+          education stages leading to the child's stated aspiration. */}
+      {profile?.aspiration && (
+        <DreamRoadmapSection
+          name={name}
+          aspiration={profile.aspiration}
+          educationStage={profile.education_stage ?? null}
+        />
+      )}
+
       {profile?.milestones && profile.milestones.items.length > 0 && (
         <MilestonesSection milestones={profile.milestones} lang={lang} />
       )}
@@ -244,6 +254,16 @@ export function DonorOrphanDetailPage() {
         loading={paymentsQ.isLoading}
         lang={lang}
       />
+
+      {/* "Expand your impact" closing zone — tree → collective → waiting.
+          Each section is independently conditional and self-guarding: a
+          missing block or a failed/empty public query renders nothing and
+          never breaks the page. */}
+      {profile?.since_you_began && <ImpactTreeSection block={profile.since_you_began} />}
+
+      <CollectiveStatsSection />
+
+      <ChildrenWaitingSection excludeCode={sponsorship.orphan_code ?? null} lang={lang} />
     </div>
   );
 }
@@ -470,6 +490,156 @@ function DreamSection({
         </blockquote>
       </figure>
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* B2) Dream roadmap — the real stages leading to the aspiration       */
+/* ------------------------------------------------------------------ */
+
+// The actual education stages, in order, that form the path toward the
+// dream. We deliberately use ONLY the real stage codes (never invented
+// ones) so the localized labels reuse the shared education-stage map.
+const ROADMAP_STAGES = ["primary", "preparatory", "secondary"] as const;
+
+type RoadmapState = "done" | "current" | "upcoming" | "dream";
+
+/** A horizontal, stepped path from the child's current education stage to
+ * their stated aspiration. The stage matching `educationStage` is the
+ * "you are here" node; earlier stages read as done, later ones as upcoming,
+ * and the final node is the dream itself. With a null stage we still draw
+ * the full path + dream node, just without a current marker. */
+function DreamRoadmapSection({
+  name,
+  aspiration,
+  educationStage,
+}: {
+  name: string;
+  aspiration: string;
+  educationStage: string | null;
+}) {
+  const { t } = useTranslation();
+  const currentIdx = educationStage
+    ? (ROADMAP_STAGES as readonly string[]).indexOf(educationStage)
+    : -1;
+  const lastIdx = ROADMAP_STAGES.length - 1;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.roadmapAria", { name })}>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {t("donorProfile.roadmapTitle")}
+      </h2>
+      <ol className="flex items-start gap-1 overflow-x-auto pb-1">
+        {ROADMAP_STAGES.map((stage, i) => {
+          const state: RoadmapState =
+            currentIdx >= 0 && i < currentIdx ? "done" : i === currentIdx ? "current" : "upcoming";
+          return (
+            <RoadmapStep
+              key={stage}
+              label={eduStageLabel(stage, t) ?? stage}
+              state={state}
+              first={i === 0}
+              leftFilled={currentIdx >= 0 && i <= currentIdx}
+            />
+          );
+        })}
+        <RoadmapStep
+          label={aspiration}
+          caption={t("donorProfile.roadmapDreamNode")}
+          state="dream"
+          last
+          leftFilled={currentIdx >= 0 && currentIdx >= lastIdx}
+        />
+      </ol>
+    </section>
+  );
+}
+
+function RoadmapStep({
+  label,
+  caption,
+  state,
+  first,
+  last,
+  leftFilled,
+}: {
+  label: string;
+  caption?: string;
+  state: RoadmapState;
+  first?: boolean;
+  last?: boolean;
+  leftFilled: boolean;
+}) {
+  const { t } = useTranslation();
+  const isCurrent = state === "current";
+  const isDream = state === "dream";
+
+  const nodeClass =
+    state === "done"
+      ? "bg-success-500 text-white"
+      : state === "current"
+        ? "bg-trust-500 text-white ring-4 ring-trust-200 dark:ring-trust-500/30"
+        : state === "dream"
+          ? "bg-gradient-to-br from-trust-400 to-trust-600 text-white ring-2 ring-trust-200 dark:ring-trust-500/30"
+          : "border-2 border-gray-300 bg-white text-gray-400 dark:border-gray-600 dark:bg-gray-800";
+
+  const labelClass =
+    state === "done"
+      ? "text-success-700 dark:text-success-300"
+      : state === "current"
+        ? "font-semibold text-trust-700 dark:text-tranquil-200"
+        : state === "dream"
+          ? "font-semibold text-trust-800 dark:text-tranquil-100"
+          : "text-gray-500 dark:text-gray-400";
+
+  const stateLabel =
+    state === "done"
+      ? t("donorProfile.roadmapStepDone")
+      : state === "current"
+        ? t("donorProfile.roadmapStepCurrent")
+        : state === "dream"
+          ? t("donorProfile.roadmapDreamNode")
+          : t("donorProfile.roadmapStepUpcoming");
+
+  const connectorBase = "h-0.5 flex-1 rounded-full";
+  const filledConnector = "bg-success-400 dark:bg-success-500/50";
+  const trackConnector = "bg-gray-200 dark:bg-gray-700";
+
+  return (
+    <li
+      className="relative flex min-w-0 flex-1 flex-col items-center text-center"
+      aria-current={isCurrent ? "step" : undefined}
+    >
+      <div className="flex w-full items-center" aria-hidden="true">
+        <span
+          className={`${connectorBase} ${first ? "opacity-0" : leftFilled ? filledConnector : trackConnector}`}
+        />
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${nodeClass}`}
+        >
+          {state === "done" ? (
+            <CheckIcon />
+          ) : isDream ? (
+            <StarIcon />
+          ) : isCurrent ? (
+            <span className="h-2.5 w-2.5 rounded-full bg-white" />
+          ) : null}
+        </span>
+        <span className={`${connectorBase} ${last ? "opacity-0" : trackConnector}`} />
+      </div>
+      <span className={`mt-2 line-clamp-2 px-1 text-xs ${labelClass}`}>{label}</span>
+      {isCurrent && (
+        <span className="mt-1 inline-flex items-center rounded-full bg-trust-100 px-2 py-0.5 text-[10px] font-semibold text-trust-700 dark:bg-trust-500/20 dark:text-tranquil-200">
+          {t("donorProfile.roadmapYouAreHere")}
+        </span>
+      )}
+      {isDream && caption && (
+        <span className="mt-1 text-[10px] font-medium uppercase tracking-wide text-trust-400">
+          {caption}
+        </span>
+      )}
+      <span className="sr-only">{stateLabel}</span>
+    </li>
   );
 }
 
@@ -1818,6 +1988,279 @@ function PaymentRow({ payment, lang }: { payment: PaymentDonorRead; lang: string
 }
 
 /* ------------------------------------------------------------------ */
+/* L) Impact tree — a gentle growing-tree metaphor                     */
+/* ------------------------------------------------------------------ */
+
+/** A single stylized tree whose caption translates the donor's bond into a
+ * gentle metaphor: leaves ≈ whole months of sponsorship, fruits = celebrated
+ * milestones, all anchored by the bond duration. We never try to draw N
+ * individual leaves — the count lives in the words, not the pixels. */
+function ImpactTreeSection({
+  block,
+}: {
+  block: NonNullable<SponsoredOrphanProfile["since_you_began"]>;
+}) {
+  const { t } = useTranslation();
+  const dur = humanDuration(block.start_date);
+  const durText = dur ? formatDuration(dur, t) : null;
+  const months = dur ? dur.years * 12 + dur.months : 0;
+  const fruits = block.milestones_count;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.treeTitle")}>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {t("donorProfile.treeTitle")}
+      </h2>
+      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
+        <svg
+          viewBox="0 0 120 120"
+          role="img"
+          aria-label={t("donorProfile.treeAria")}
+          className="h-32 w-32 shrink-0"
+        >
+          {/* ground line */}
+          <path
+            d="M22 108 H98"
+            className="stroke-success-300 dark:stroke-success-500/40"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+          {/* trunk */}
+          <rect
+            x="55"
+            y="64"
+            width="10"
+            height="44"
+            rx="4"
+            className="fill-warning-700 dark:fill-warning-600"
+          />
+          {/* foliage — three soft overlapping crowns */}
+          <circle cx="60" cy="46" r="28" className="fill-success-400/90 dark:fill-success-500/40" />
+          <circle cx="40" cy="56" r="19" className="fill-success-500/80 dark:fill-success-500/30" />
+          <circle cx="80" cy="56" r="19" className="fill-success-500/80 dark:fill-success-500/30" />
+          {/* a few fruits — golden, not counted one-per-milestone */}
+          <circle cx="50" cy="48" r="3.5" className="fill-warning-500" />
+          <circle cx="68" cy="40" r="3.5" className="fill-warning-500" />
+          <circle cx="74" cy="56" r="3.5" className="fill-warning-500" />
+          <circle cx="56" cy="62" r="3.5" className="fill-warning-500" />
+        </svg>
+        <div className="space-y-1 text-center sm:text-start">
+          <p className="text-base font-semibold text-trust-800 dark:text-tranquil-100">
+            {durText
+              ? t("donorProfile.treeBond", { duration: durText })
+              : t("donorProfile.treeBondNew")}
+          </p>
+          {(months > 0 || fruits > 0) && (
+            <ul className="space-y-0.5 text-sm text-gray-600 dark:text-gray-300">
+              {months > 0 && (
+                <li className="flex items-center justify-center gap-1.5 sm:justify-start">
+                  <span aria-hidden="true" className="text-success-500">
+                    <LeafIcon />
+                  </span>
+                  {t("donorProfile.treeLeaves", { n: months })}
+                </li>
+              )}
+              {fruits > 0 && (
+                <li className="flex items-center justify-center gap-1.5 sm:justify-start">
+                  <span aria-hidden="true" className="text-warning-500">
+                    <StarIcon />
+                  </span>
+                  {t("donorProfile.treeFruits", { n: fruits })}
+                </li>
+              )}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* M) Part of something bigger — collective public stats              */
+/* ------------------------------------------------------------------ */
+
+/** Three collective figures from the PUBLIC stats endpoint, framing this
+ * donor's sponsorship inside the wider effort. The query is best-effort:
+ * a skeleton covers loading, and a failure omits the whole section so the
+ * page never shows an error here. */
+function CollectiveStatsSection() {
+  const { t } = useTranslation();
+  const statsQ = useQuery({
+    queryKey: ["public", "stats"],
+    queryFn: getPublicStats,
+    retry: false,
+  });
+
+  if (statsQ.isError) return null;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.biggerTitle")}>
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.biggerTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {t("donorProfile.biggerLead")}
+        </p>
+      </div>
+      {statsQ.isLoading || !statsQ.data ? (
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-3">
+          <CollectiveStat
+            tone="success"
+            icon={<HeartIcon />}
+            value={statsQ.data.orphans_sponsored}
+            label={t("donorProfile.statChildrenCared")}
+          />
+          <CollectiveStat
+            tone="trust"
+            icon={<PersonIcon />}
+            value={statsQ.data.donors_total}
+            label={t("donorProfile.statSponsors")}
+          />
+          <CollectiveStat
+            tone="sky"
+            icon={<GlobeIcon />}
+            value={statsQ.data.countries_served}
+            label={t("donorProfile.statCountries")}
+          />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CollectiveStat({
+  tone,
+  icon,
+  value,
+  label,
+}: {
+  tone: Tone;
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+}) {
+  return (
+    <figure className={`rounded-xl border p-4 text-center ${TONE_TILE[tone]}`}>
+      <span
+        aria-hidden="true"
+        className={`mx-auto flex h-9 w-9 items-center justify-center rounded-lg ${TONE_CHIP[tone]}`}
+      >
+        {icon}
+      </span>
+      <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
+        {value.toLocaleString()}
+      </p>
+      <figcaption className="mt-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
+        {label}
+      </figcaption>
+    </figure>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* N) Children waiting — available children + "sponsor another" CTA    */
+/* ------------------------------------------------------------------ */
+
+/** A small, dignified row of available (unsponsored) children, pulled from
+ * the PUBLIC list. Best-effort: a failed/empty query simply omits the
+ * section. The currently-viewed child is filtered out by code so the donor
+ * is never invited to "also" sponsor the child they already support. */
+function ChildrenWaitingSection({
+  excludeCode,
+  lang,
+}: {
+  excludeCode: string | null;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  // Fetch a touch more than we show so excluding the current child still
+  // leaves up to three to surface.
+  const waitingQ = useQuery({
+    queryKey: ["public", "orphans", "waiting"],
+    queryFn: () => listPublicOrphans({ limit: 4 }),
+    retry: false,
+  });
+
+  if (waitingQ.isError || waitingQ.isLoading) return null;
+
+  const items = (waitingQ.data?.items ?? []).filter((o) => o.code !== excludeCode).slice(0, 3);
+
+  if (items.length === 0) return null;
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.waitingTitle")}>
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.waitingTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {t("donorProfile.waitingLead")}
+        </p>
+      </div>
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((o) => (
+          <WaitingChildCard key={o.code} orphan={o} lang={lang} />
+        ))}
+      </ul>
+      <div>
+        <Link
+          to="/orphans"
+          className="inline-flex items-center gap-1.5 rounded-full bg-trust-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-trust-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800"
+        >
+          <HeartIcon />
+          {t("donorProfile.waitingCta")}
+          <ArrowIcon flip={lang === "ar"} />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function WaitingChildCard({ orphan, lang }: { orphan: PublicOrphan; lang: string }) {
+  const { t } = useTranslation();
+  const country = orphan.country ? countryName(orphan.country, lang) : null;
+  const letter = orphan.first_name.trim().charAt(0) || "•";
+  return (
+    <li>
+      <Link
+        to={`/orphans/${orphan.code}`}
+        aria-label={t("donorProfile.waitingCardAria", { name: orphan.first_name })}
+        className="group flex h-full items-center gap-3 rounded-xl border border-sky-200 bg-white p-3 shadow-sm transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 dark:border-gray-700 dark:bg-gray-800"
+      >
+        <span
+          aria-hidden="true"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-trust-300 to-trust-600 text-lg font-bold text-white"
+        >
+          {letter}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate font-semibold text-gray-900 dark:text-gray-100">
+            {orphan.first_name}
+          </span>
+          <span className="block text-xs text-gray-500 dark:text-gray-400">
+            {t("donorProfile.waitingAge", { age: orphan.age_years })}
+            {country ? ` · ${country}` : ""}
+          </span>
+          {orphan.partner_organization_name && (
+            <span className="mt-0.5 block truncate text-xs text-trust-600 dark:text-tranquil-300">
+              {orphan.partner_organization_name}
+            </span>
+          )}
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Small shared pieces + icons                                         */
 /* ------------------------------------------------------------------ */
 
@@ -2068,6 +2511,26 @@ function AudioIcon() {
       <path d="M12 3v12" strokeLinecap="round" />
       <path d="M12 6c2-1.5 4-1.5 6-.8" strokeLinecap="round" />
       <circle cx="9" cy="16" r="3" />
+    </svg>
+  );
+}
+
+function LeafIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 19c0-7 5-13 14-14 0 9-5 14-12 14-1.5 0-2 0-2 0z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9 16c2-3 4-5 7-6" strokeLinecap="round" />
     </svg>
   );
 }
