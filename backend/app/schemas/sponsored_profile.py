@@ -151,6 +151,18 @@ class InHerWordsItem(BaseModel):
     said_on: date | None = None
 
 
+class FatherMemory(BaseModel):
+    """``father_memory`` — a dignified remembrance of the child's deceased father.
+
+    DONOR-FACING slice — exposes ONLY the father's name and the YEAR of death.
+    The death CERTIFICATE and the full death DATE never leave the server, and
+    this block is emitted only when guardian consent is on record AND the
+    supervisor left the element visible (the double gate)."""
+
+    father_name: str
+    death_year: int | None = None
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -185,9 +197,19 @@ class SponsoredOrphanProfile(BaseModel):
     since_you_began: SinceYouBeganBlock | None = None
     media: MediaBlock | None = None
     in_her_words: list[InHerWordsItem] | None = None
+    father_memory: FatherMemory | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────
+
+
+class FatherMemoryConsent(BaseModel):
+    """Staff GET/PATCH contract for the father's-memory guardian consent — the
+    first of the two gates that disclose the father's memory to donors. The
+    visibility gate is the existing ``father_memory`` element on
+    ``profile_visibility``; both must be on for the block to reach the donor."""
+
+    consent: bool
 
 
 class InHerWordsStaffItem(BaseModel):

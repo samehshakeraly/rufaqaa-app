@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { FatherMemoryConsentPanel } from "@/components/FatherMemoryConsentPanel";
 import { OrphanInHerWordsManager } from "@/components/OrphanInHerWordsManager";
 import { OrphanMediaManager } from "@/components/OrphanMediaManager";
 import { ProfileVisibilityPanel } from "@/components/ProfileVisibilityPanel";
@@ -175,8 +176,9 @@ export function OrphanageManagerOrphanDetailPage() {
             )}
 
             {tab === "visibility" && (
-              <div role="tabpanel" className="god-tab-panel">
+              <div role="tabpanel" className="god-tab-panel space-y-6">
                 <h2 className="god-panel-title">{t("orphanageManager.detail.visibilityTitle")}</h2>
+                <FatherMemoryConsentPanel orphanId={orphan.id} />
                 <ProfileVisibilityPanel orphanId={orphan.id} />
               </div>
             )}

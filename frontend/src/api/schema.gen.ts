@@ -1998,6 +1998,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/{orphan_id}/father-memory-consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orphan Father Memory Consent
+         * @description The current guardian-consent state for disclosing the child's father's
+         *     memory. Org-scoped (explicit, never RLS) with the same جهة fence as
+         *     :func:`get_orphan` — an out-of-org/جهة id 404s.
+         */
+        get: operations["get_orphan_father_memory_consent_api_v1_orphans__orphan_id__father_memory_consent_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Set Orphan Father Memory Consent
+         * @description Record (or revoke) the guardian's consent to disclose the child's
+         *     father's memory on the donor profile. This is the FIRST of the two gates;
+         *     the supervisor visibility toggle (PUT /profile-visibility) is the second —
+         *     the block reaches the donor only when both are on. Same org + جهة scoping as
+         *     the GET twin.
+         */
+        patch: operations["set_orphan_father_memory_consent_api_v1_orphans__orphan_id__father_memory_consent_patch"];
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}/in-her-words": {
         parameters: {
             query?: never;
@@ -4132,6 +4162,32 @@ export interface components {
             updated_at: string;
             /** Village */
             village?: string | null;
+        };
+        /**
+         * FatherMemory
+         * @description ``father_memory`` — a dignified remembrance of the child's deceased father.
+         *
+         *     DONOR-FACING slice — exposes ONLY the father's name and the YEAR of death.
+         *     The death CERTIFICATE and the full death DATE never leave the server, and
+         *     this block is emitted only when guardian consent is on record AND the
+         *     supervisor left the element visible (the double gate).
+         */
+        FatherMemory: {
+            /** Death Year */
+            death_year?: number | null;
+            /** Father Name */
+            father_name: string;
+        };
+        /**
+         * FatherMemoryConsent
+         * @description Staff GET/PATCH contract for the father's-memory guardian consent — the
+         *     first of the two gates that disclose the father's memory to donors. The
+         *     visibility gate is the existing ``father_memory`` element on
+         *     ``profile_visibility``; both must be on for the block to reach the donor.
+         */
+        FatherMemoryConsent: {
+            /** Consent */
+            consent: boolean;
         };
         /**
          * FileUploadResponse
@@ -6709,7 +6765,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7256,6 +7312,7 @@ export interface components {
             dream?: components["schemas"]["DreamBlock"] | null;
             /** Education Stage */
             education_stage?: string | null;
+            father_memory?: components["schemas"]["FatherMemory"] | null;
             /** First Name */
             first_name: string;
             /**
@@ -11184,6 +11241,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orphan_father_memory_consent_api_v1_orphans__orphan_id__father_memory_consent_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FatherMemoryConsent"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_orphan_father_memory_consent_api_v1_orphans__orphan_id__father_memory_consent_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FatherMemoryConsent"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FatherMemoryConsent"];
                 };
             };
             /** @description Validation Error */

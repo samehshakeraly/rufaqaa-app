@@ -192,6 +192,7 @@ const FULL_PROFILE = {
       },
     ],
   },
+  father_memory: { father_name: "أحمد", death_year: 2019 },
 };
 
 // Identity only — every element block omitted (backend hid/absent them all).
@@ -459,6 +460,42 @@ describe("DonorOrphanDetailPage — in her words", () => {
 
     await screen.findByText("عائشة");
     expect(screen.queryByText(/بكلمات/)).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — father's memory (ذكرى الأب)", () => {
+  it("renders the dignified remembrance with the name and the YEAR only", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "ذكرى الأب" });
+    expect(within(section).getByText("في ذمّة الله")).toBeInTheDocument();
+    expect(within(section).getByText("أحمد")).toBeInTheDocument();
+    // YEAR only — never a full date.
+    expect(within(section).getByText("توفّي عام 2019")).toBeInTheDocument();
+    expect(within(section).getByText(/نسأل الله أن يتغمّده/)).toBeInTheDocument();
+  });
+
+  it("renders the name but no death line when death_year is null", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      father_memory: { father_name: "محمود", death_year: null },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "ذكرى الأب" });
+    expect(within(section).getByText("محمود")).toBeInTheDocument();
+    expect(within(section).queryByText(/توفّي/)).not.toBeInTheDocument();
+  });
+
+  it("omits the block entirely when father_memory is absent", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByRole("region", { name: "ذكرى الأب" })).not.toBeInTheDocument();
+    expect(screen.queryByText("في ذمّة الله")).not.toBeInTheDocument();
   });
 });
 

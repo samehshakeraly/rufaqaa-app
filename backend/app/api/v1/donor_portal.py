@@ -45,6 +45,7 @@ from app.schemas.report import (
 )
 from app.schemas.sponsored_profile import (
     DreamBlock,
+    FatherMemory,
     HerWorldBlock,
     InHerWordsItem,
     MediaBlock,
@@ -462,6 +463,22 @@ def _compose_sponsored_profile(
             for item in orphan.in_her_words
         ]
 
+    # father_memory ── a dignified remembrance of the deceased father. DOUBLE
+    # GATE: emitted ONLY when guardian consent is on record AND the supervisor
+    # left the element visible AND the father's name exists. Exposes only the
+    # name + the YEAR of death — the certificate and full date never leave the
+    # server. Consent false OR visibility false ⇒ omitted (None).
+    father_memory = None
+    if (
+        orphan.father_memory_consent
+        and is_visible(vis, ProfileElement.father_memory)
+        and orphan.father_name
+    ):
+        father_memory = FatherMemory(
+            father_name=orphan.father_name,
+            death_year=orphan.father_death_date.year if orphan.father_death_date else None,
+        )
+
     return SponsoredOrphanProfile(
         first_name=detail.first_name,
         age_years=detail.age_years,
@@ -483,6 +500,7 @@ def _compose_sponsored_profile(
         since_you_began=since_you_began,
         media=media,
         in_her_words=in_her_words,
+        father_memory=father_memory,
     )
 
 
