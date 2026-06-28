@@ -308,10 +308,13 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
   // --- Message archive: the thread renders each status correctly. ---
   const archive = page.getByRole("region", { name: "أرشيف رسائلك إليها" });
   await expect(archive).toBeVisible();
-  await expect(archive.getByText("قيد المراجعة")).toBeVisible(); // pending
-  await expect(archive.getByText("وصلت")).toBeVisible(); // approved
-  await expect(archive.getByText("قُرئت")).toBeVisible(); // approved + read
-  await expect(archive.getByText("لم تُعتمد")).toBeVisible(); // rejected
+  // Badges use exact matching — Playwright's getByText defaults to substring,
+  // so the seed message bodies (which embed the status words) would otherwise
+  // collide with the badge chips.
+  await expect(archive.getByText("قيد المراجعة", { exact: true })).toBeVisible(); // pending
+  await expect(archive.getByText("وصلت", { exact: true })).toBeVisible(); // approved
+  await expect(archive.getByText("قُرئت", { exact: true })).toBeVisible(); // approved + read
+  await expect(archive.getByText("لم تُعتمد", { exact: true })).toBeVisible(); // rejected
   await expect(archive.getByText(/خارج الموضوع/)).toBeVisible(); // reject note
 
   // --- Compose: posting shows the message immediately as pending. ---

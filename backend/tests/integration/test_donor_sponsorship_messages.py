@@ -240,9 +240,7 @@ async def test_body_cannot_set_routing_fields(
     async with make_session() as db:
         row = (
             await db.execute(
-                text(
-                    "SELECT to_user_id, related_orphan_id FROM messages WHERE id = :i"
-                ),
+                text("SELECT to_user_id, related_orphan_id FROM messages WHERE id = :i"),
                 {"i": r.json()["id"]},
             )
         ).first()
@@ -267,9 +265,7 @@ async def test_send_to_non_sponsored_orphan_404s(
     assert r.status_code == 404, r.text
 
 
-async def test_send_to_unknown_orphan_404s(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_send_to_unknown_orphan_404s(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     _, headers = await _signup_donor(api, auth_headers)
     r = await api.post(
         f"/api/v1/me/sponsorships/{uuid.uuid4()}/messages",
@@ -448,9 +444,7 @@ async def test_pending_queue_narrowed_for_partner_manager(
     assert {msg_a, msg_b}.issubset(admin_ids)
 
 
-async def test_reject_without_reason_422s(
-    api: AsyncClient, auth_headers: dict[str, str]
-) -> None:
+async def test_reject_without_reason_422s(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     partner_id = await _partner_id(api, auth_headers)
     donor_id, headers = await _signup_donor(api, auth_headers)
     orphan = await _make_orphan(api, auth_headers, partner_id)
