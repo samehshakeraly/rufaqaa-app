@@ -22,7 +22,7 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -46,6 +46,11 @@ MESSAGE_MODERATOR_ROLES: tuple[str, ...] = ("partner_manager", *ADMIN_ROLES)
 # send messages via this surface (they have their own admin channels).
 SENDER_ROLES: tuple[str, ...] = ("donor", "guardian")
 
+# Max content length for the donor sponsorship-scoped compose surface (PR-9).
+# Kept here so the constant lives with the messages domain and any caller
+# (e.g. the donor portal router) imports a single source of truth.
+MESSAGE_MAX_LEN = 2000
+
 
 # ── Schemas ────────────────────────────────────────────────────────────
 
@@ -64,6 +69,14 @@ class MessageCreate(BaseModel):
 class MessageModerate(BaseModel):
     decision: Literal["approve", "reject"]
     notes: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def _reject_requires_reason(self) -> MessageModerate:
+        """A reject decision must carry a non-empty reason so the sender
+        learns why (the note is shown to them). Approve stays optional."""
+        if self.decision == "reject" and not (self.notes and self.notes.strip()):
+            raise ValueError("A moderation reason is required to reject a message")
+        return self
 
 
 class MessageRead(BaseModel):
@@ -279,13 +292,25 @@ async def list_pending_messages(
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> Page[MessageRead]:
     """Moderation queue. Returns the caller-org's pending messages, newest
-    first."""
+    first.
+
+    A partner-scoped moderator (``partner_manager`` bound to a single جهة) sees
+    ONLY the messages about that جهة's orphans — the review queue belongs to the
+    orphanage (عبر الدار). Admins / super_admin keep the org-wide queue.
+    """
     # Explicit org scope — the superuser DB connection bypasses RLS, so the
     # organization_id filter (not RLS) is what keeps the queue per-tenant.
     stmt = select(Message).where(
         Message.organization_id == user.organization_id,
         Message.moderation_status == "pending",
     )
+    # Additive narrowing for a جهة-bound manager: restrict to messages whose
+    # related orphan belongs to that partner org. Admins are unaffected.
+    if user.role == "partner_manager" and user.partner_organization_id is not None:
+        partner_orphan_ids = select(Orphan.id).where(
+            Orphan.partner_organization_id == user.partner_organization_id
+        )
+        stmt = stmt.where(Message.related_orphan_id.in_(partner_orphan_ids))
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = (
         await db.scalars(stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset))

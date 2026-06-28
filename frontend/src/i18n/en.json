@@ -1008,6 +1008,20 @@
         "super_admin": "Super admin",
         "unknown": "Unknown"
       }
+    },
+    "archive": {
+      "title": "Your messages to her",
+      "composePlaceholder": "Write your message to your child…",
+      "composeHelper": "Your message passes the orphanage's review before delivery.",
+      "send": "Send",
+      "sending": "Sending…",
+      "empty": "You haven't sent any messages yet. Write your first message to your child.",
+      "sendError": "Couldn't send your message. Please try again.",
+      "statusPending": "Under review",
+      "statusApproved": "Delivered",
+      "statusRead": "Read",
+      "statusRejected": "Not approved",
+      "rejectedNoteLabel": "Review note"
     }
   },
   "checkout": {

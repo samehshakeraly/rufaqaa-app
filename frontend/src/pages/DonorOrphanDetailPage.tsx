@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,13 @@ import { Link, useParams } from "react-router-dom";
 import { Skeleton } from "@/components/Skeleton";
 import { countryName } from "@/lib/countries";
 import { formatDate, formatDuration, humanDuration } from "@/lib/format";
+import type { MessageRead } from "@/lib/messages";
+import {
+  listSponsorshipMessages,
+  sendSponsorshipMessage,
+  SPONSORSHIP_MESSAGE_MAX_LEN,
+} from "@/lib/messages";
+import type { Page } from "@/lib/orphans";
 import type { PaymentDonorRead } from "@/lib/payments";
 import { listMyPayments } from "@/lib/payments";
 import type { PublicOrphan, SponsoredOrphanProfile } from "@/lib/public";
@@ -15,6 +22,7 @@ import type { ReportDonorRead } from "@/lib/reports";
 import { listMyReports } from "@/lib/reports";
 import type { Sponsorship } from "@/lib/sponsorships";
 import { listMySponsorships } from "@/lib/sponsorships";
+import { toast } from "@/store/toasts";
 
 const JUZ_TOTAL = 30;
 
@@ -119,8 +127,11 @@ function socialLabel(
  * optional — shown only when the backend includes it) as a warm, human
  * story, alongside the donor's own payments and the reports timeline.
  *
- * Out of scope here: child photos (privacy — a monogram avatar stands in)
- * and donor↔staff messaging. */
+ * The "أرشيف رسائلك إليها" archive (the donor's own moderated messages to
+ * this child) is fetched independently — it is the donor's OWN content, not
+ * part of the visibility-gated SponsoredOrphanProfile.
+ *
+ * Out of scope here: child photos (privacy — a monogram avatar stands in). */
 export function DonorOrphanDetailPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
@@ -252,6 +263,11 @@ export function DonorOrphanDetailPage() {
 
       {/* Existing, profile-independent sections. */}
       <Timeline name={name} reports={reports} loading={reportsQ.isLoading} lang={lang} />
+
+      {/* "أرشيف رسائلك إليها" — the donor's own moderated messages to this
+          child. Fetched independently (NOT a ProfileElement, NOT gated by
+          profile_visibility): this is the donor's OWN content. */}
+      <MessageArchiveSection orphanId={id} lang={lang} />
 
       <SponsorshipCard sponsorship={sponsorship} lang={lang} />
 
@@ -2617,5 +2633,210 @@ function ArrowIcon({ flip }: { flip: boolean }) {
     >
       <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* I) Message archive — "أرشيف رسائلك إليها"                            */
+/* ------------------------------------------------------------------ */
+
+const ARCHIVE_QUERY_KEY = (orphanId: string) =>
+  ["donor", "me", "sponsorshipMessages", orphanId] as const;
+
+/** The donor's own thread of moderated messages to this child, plus a
+ * composer. This is the donor's OWN content — fetched independently of the
+ * visibility-gated profile. Each message carries a status badge; a freshly
+ * sent message appears immediately as an optimistic "under review" entry and
+ * is reconciled with the server on settle. */
+function MessageArchiveSection({ orphanId, lang }: { orphanId: string; lang: string }) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [content, setContent] = useState("");
+
+  const q = useQuery({
+    queryKey: ARCHIVE_QUERY_KEY(orphanId),
+    queryFn: () => listSponsorshipMessages(orphanId, { limit: 100 }),
+    enabled: !!orphanId,
+  });
+
+  const send = useMutation({
+    mutationFn: (text: string) => sendSponsorshipMessage(orphanId, text),
+    onMutate: async (text): Promise<{ prev: Page<MessageRead> | undefined }> => {
+      await queryClient.cancelQueries({ queryKey: ARCHIVE_QUERY_KEY(orphanId) });
+      const prev = queryClient.getQueryData<Page<MessageRead>>(ARCHIVE_QUERY_KEY(orphanId));
+      // Optimistic "under review" entry so the donor sees their note land at
+      // once. The server reconciles it on settle (it lands `pending` too).
+      const optimistic: MessageRead = {
+        id: `optimistic-${Date.now()}`,
+        from_role: "donor",
+        from_name: "",
+        to_role: "",
+        to_name: "",
+        orphan_code: null,
+        message_type: "text",
+        content: text,
+        moderation_status: "pending",
+        moderation_notes: null,
+        is_read: false,
+        is_mine: true,
+        created_at: new Date().toISOString(),
+        moderated_at: null,
+        read_at: null,
+      };
+      queryClient.setQueryData<Page<MessageRead>>(ARCHIVE_QUERY_KEY(orphanId), (old) =>
+        old
+          ? { ...old, items: [optimistic, ...old.items], total: old.total + 1 }
+          : { items: [optimistic], total: 1, limit: 100, offset: 0 },
+      );
+      return { prev };
+    },
+    onError: (_err, _text, ctx) => {
+      if (ctx?.prev) {
+        queryClient.setQueryData(ARCHIVE_QUERY_KEY(orphanId), ctx.prev);
+      }
+      toast.error(t("donor.archive.sendError"));
+    },
+    onSuccess: () => {
+      setContent("");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ARCHIVE_QUERY_KEY(orphanId) });
+    },
+  });
+
+  const trimmed = content.trim();
+  const tooLong = content.length > SPONSORSHIP_MESSAGE_MAX_LEN;
+  const canSend = trimmed.length > 0 && !tooLong && !send.isPending;
+  const messages = q.data?.items ?? [];
+
+  return (
+    <section className="card space-y-4" aria-label={t("donor.archive.title")}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="flex h-7 w-7 items-center justify-center rounded-lg bg-trust-100 text-trust-600 dark:bg-trust-500/20 dark:text-tranquil-200"
+        >
+          <QuoteIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donor.archive.title")}
+        </h2>
+      </div>
+
+      {/* Composer — text only; the orphanage reviews before delivery. */}
+      <div className="space-y-2">
+        <label htmlFor="archive-compose" className="sr-only">
+          {t("donor.archive.composePlaceholder")}
+        </label>
+        <textarea
+          id="archive-compose"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          maxLength={SPONSORSHIP_MESSAGE_MAX_LEN}
+          rows={3}
+          placeholder={t("donor.archive.composePlaceholder")}
+          className="input w-full"
+        />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs text-trust-600 dark:text-tranquil-200">
+            {t("donor.archive.composeHelper")}
+          </p>
+          <button
+            type="button"
+            onClick={() => send.mutate(trimmed)}
+            disabled={!canSend}
+            className="btn-primary disabled:opacity-50"
+          >
+            {send.isPending ? t("donor.archive.sending") : t("donor.archive.send")}
+          </button>
+        </div>
+      </div>
+
+      {q.isLoading && <Skeleton className="h-24 w-full" />}
+
+      {q.error && (
+        <p
+          role="alert"
+          className="rounded-lg bg-danger-50 px-3 py-2 text-sm text-danger-700 dark:bg-danger-500/10 dark:text-danger-100"
+        >
+          {t("common.loadError")}
+        </p>
+      )}
+
+      {q.data && messages.length === 0 && (
+        <p className="rounded-lg border border-dashed border-sky-200 px-3 py-6 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+          {t("donor.archive.empty")}
+        </p>
+      )}
+
+      {messages.length > 0 && (
+        <ul className="space-y-3">
+          {messages.map((m) => (
+            <ArchiveMessage key={m.id} message={m} lang={lang} />
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+/** One message in the archive thread: a status badge, the date, the text,
+ * and — for a rejected note — the moderator's reason (sender-only, already
+ * filtered server-side). */
+function ArchiveMessage({ message: m, lang }: { message: MessageRead; lang: string }) {
+  const { t } = useTranslation();
+  return (
+    <li className="rounded-xl border border-trust-100 bg-tranquil-100/50 p-3 dark:border-trust-500/30 dark:bg-trust-500/10">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <ArchiveStatusBadge status={m.moderation_status} isRead={m.is_read} />
+        <time className="text-xs text-gray-500 dark:text-gray-400" dateTime={m.created_at}>
+          {formatDate(m.created_at, lang)}
+        </time>
+      </div>
+      {m.content && (
+        <p className="mt-2 whitespace-pre-line text-sm text-gray-800 dark:text-gray-200">
+          {m.content}
+        </p>
+      )}
+      {m.moderation_status === "rejected" && m.moderation_notes && (
+        <p className="mt-2 rounded-lg bg-tranquil-200 px-2.5 py-1.5 text-xs text-gray-600 dark:bg-gray-700/60 dark:text-gray-300">
+          <span className="font-semibold">{t("donor.archive.rejectedNoteLabel")}: </span>
+          {m.moderation_notes}
+        </p>
+      )}
+    </li>
+  );
+}
+
+/** Status badge: pending (warning), approved (success) + an optional "read"
+ * chip, rejected (muted/gray). Color is never the only signal — each carries
+ * a localized label. */
+function ArchiveStatusBadge({ status, isRead }: { status: string; isRead: boolean }) {
+  const { t } = useTranslation();
+  if (status === "approved") {
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <span className="rounded-full bg-success-50 px-2 py-0.5 text-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-100">
+          {t("donor.archive.statusApproved")}
+        </span>
+        {isRead && (
+          <span className="rounded-full bg-tranquil-200 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+            {t("donor.archive.statusRead")}
+          </span>
+        )}
+      </span>
+    );
+  }
+  if (status === "rejected") {
+    return (
+      <span className="rounded-full bg-tranquil-200 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+        {t("donor.archive.statusRejected")}
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-full bg-warning-50 px-2 py-0.5 text-xs font-medium text-warning-700 dark:bg-warning-500/15 dark:text-warning-100">
+      {t("donor.archive.statusPending")}
+    </span>
   );
 }
