@@ -89,6 +89,7 @@ _BLOCK_FIELDS = {
     "supervisor_word",
     "since_you_began",
     "media",
+    "in_her_words",
 }
 
 

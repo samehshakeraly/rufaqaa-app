@@ -113,6 +113,10 @@ const FULL_PROFILE = {
     milestones_count: 1,
     reports_count: 4,
   },
+  in_her_words: [
+    { text: "أحبّ الرسم في الصباح", said_on: "2025-05-01" },
+    { text: "أريد أن أتعلّم العزف", said_on: null },
+  ],
   media: {
     drawings: [
       {
@@ -326,6 +330,38 @@ describe("DonorOrphanDetailPage — composed donor profile", () => {
     await screen.findByText("عائشة");
     // The multidim arrow is mirrored in RTL so it points first → latest.
     expect(container.querySelector("svg.-scale-x-100")).not.toBeNull();
+  });
+});
+
+describe("DonorOrphanDetailPage — in her words", () => {
+  it("renders each curated phrase as a quote card", async () => {
+    renderPage();
+
+    // Section heading (بكلمات عائشة) + both phrases.
+    expect(await screen.findByText("بكلمات عائشة")).toBeInTheDocument();
+    expect(screen.getByText("أحبّ الرسم في الصباح")).toBeInTheDocument();
+    expect(screen.getByText("أريد أن أتعلّم العزف")).toBeInTheDocument();
+
+    // The internal id never appears (donor projection has none).
+    expect(screen.queryByText(/said_on/)).not.toBeInTheDocument();
+  });
+
+  it("omits the section entirely when there are no phrases", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByText(/بكلمات/)).not.toBeInTheDocument();
+  });
+
+  it("omits the section when the block is an empty array", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue({ ...IDENTITY, in_her_words: [] } as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByText(/بكلمات/)).not.toBeInTheDocument();
   });
 });
 

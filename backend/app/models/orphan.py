@@ -94,6 +94,18 @@ class Orphan(Base):
         JSONB, nullable=False, server_default=text("'{}'::jsonb"), default=dict
     )
 
+    # Curated "In Her Words" (بكلماتها) phrases (see migration 0025). An ordered
+    # JSONB list of supervisor-authored child phrases shown on the donor profile;
+    # each item is ``{"id": <uuid>, "text": <str>, "said_on": <ISO date|null>}``
+    # and the array order IS the display order. Governed by the per-element
+    # visibility map (ProfileElement.in_her_words) and, like every other element,
+    # stripped server-side when hidden. The donor projection exposes ONLY
+    # ``text`` + ``said_on`` — the internal id never leaves the server. WRITE
+    # path: staff GET/PUT /orphans/{id}/in-her-words (replace semantics).
+    in_her_words: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'[]'::jsonb"), default=list
+    )
+
     # Orphan browsing foundation (see migration 0009). ``available_since`` is
     # stamped the first time a child enters the available pool and is never
     # overwritten (see app.services.orphans.stamp_available_since). The two

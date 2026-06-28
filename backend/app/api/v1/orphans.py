@@ -2,7 +2,7 @@ import csv
 import io
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
@@ -44,6 +44,12 @@ from app.schemas.profile_visibility import (
     ProfileVisibilityRegistry,
     ProfileVisibilityUpdate,
     is_visible,
+)
+from app.schemas.sponsored_profile import (
+    IN_HER_WORDS_MAX_ITEMS,
+    InHerWordsItemUpdate,
+    InHerWordsList,
+    InHerWordsStaffItem,
 )
 from app.schemas.timeline import Timeline, TimelineEvent
 from app.services.audit import record_audit
@@ -787,6 +793,86 @@ async def set_orphan_profile_visibility(
     await db.commit()
     await db.refresh(orphan)
     return _visibility_registry(orphan)
+
+
+# ── "In Her Words" (بكلماتها) — curated child phrases ──────────────────────
+#
+# A supervisor-authored, ordered list of short child phrases shown on the donor
+# profile, governed by the same per-element visibility map as every other block
+# (ProfileElement.in_her_words). The management contract carries the stable id
+# of each phrase; the donor projection (donor_portal) strips it to text+said_on.
+# Org scope is ALWAYS explicit (a superuser connection bypasses RLS), with the
+# same جهة fence the other orphan detail endpoints use.
+
+
+def _in_her_words_list(orphan: Orphan) -> InHerWordsList:
+    """Project the stored JSONB array into the staff contract, preserving order
+    (the array order IS the display order)."""
+    return InHerWordsList(
+        items=[InHerWordsStaffItem.model_validate(item) for item in (orphan.in_her_words or [])]
+    )
+
+
+@router.get("/{orphan_id}/in-her-words", response_model=InHerWordsList)
+async def get_orphan_in_her_words(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> InHerWordsList:
+    """The full ordered list of curated phrases for one child (including the
+    stable ids the management UI needs). Org-scoped (explicit, never RLS) with
+    the same جهة fence as :func:`get_orphan` — an out-of-org/جهة id 404s."""
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
+    return _in_her_words_list(orphan)
+
+
+@router.put("/{orphan_id}/in-her-words", response_model=InHerWordsList)
+async def set_orphan_in_her_words(
+    orphan_id: UUID,
+    payload: list[InHerWordsItemUpdate],
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> InHerWordsList:
+    """Replace the whole curated-phrases array (the array order becomes the donor
+    display order). Per-item rules — trimmed non-empty text capped at 280 chars,
+    ``said_on`` never in the future — are enforced at the Pydantic boundary; the
+    list is capped at :data:`IN_HER_WORDS_MAX_ITEMS` here. Each item re-uses its
+    supplied ``id`` (edit/reorder) or is assigned a fresh ``uuid4`` (new phrase).
+    Same org + جهة scoping as the GET twin."""
+    if len(payload) > IN_HER_WORDS_MAX_ITEMS:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"At most {IN_HER_WORDS_MAX_ITEMS} phrases are allowed",
+        )
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
+
+    old = orphan.in_her_words or []
+    stored: list[dict[str, Any]] = [
+        {
+            "id": str(item.id or uuid4()),
+            "text": item.text,
+            "said_on": item.said_on.isoformat() if item.said_on else None,
+        }
+        for item in payload
+    ]
+    orphan.in_her_words = stored
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.in_her_words_updated",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"in_her_words": old},
+        new_values={"in_her_words": stored},
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return _in_her_words_list(orphan)
 
 
 @router.get("/{orphan_id}/timeline", response_model=Timeline)

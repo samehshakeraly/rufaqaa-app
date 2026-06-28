@@ -147,6 +147,10 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
           milestones_count: 1,
           reports_count: 4,
         },
+        in_her_words: [
+          { text: "أحبّ الرسم في الصباح", said_on: "2026-02-10" },
+          { text: "أريد أن أتعلّم العزف", said_on: null },
+        ],
       }),
     });
   });
@@ -198,4 +202,8 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
 
   // At least one milestone is celebrated.
   await expect(page.getByText("أتمّت حفظ جزء عمّ")).toBeVisible();
+
+  // "In her words" — the curated phrases render as quote cards.
+  await expect(page.getByText("أحبّ الرسم في الصباح")).toBeVisible();
+  await expect(page.getByText("أريد أن أتعلّم العزف")).toBeVisible();
 });
