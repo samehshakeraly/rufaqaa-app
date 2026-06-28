@@ -10,19 +10,21 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import date
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
+from app.api.v1.messages import MESSAGE_MAX_LEN, MessageRead, _project
 from app.api.v1.public import to_public_detail
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.media import Media
+from app.models.message import Message
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
@@ -61,6 +63,7 @@ from app.schemas.sponsored_profile import (
     TextDelta,
 )
 from app.schemas.sponsorship import SponsorshipRead
+from app.services.audit import record_audit
 from app.services.storage import presigned_get_url_for
 
 router = APIRouter()
@@ -150,6 +153,63 @@ async def _resolve_donor_id(db: AsyncSession, current_user: User, requested: UUI
     if donor is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Donor not found")
     return donor.id
+
+
+async def _resolve_my_sponsorship(
+    db: AsyncSession,
+    user: User,
+    orphan_id: UUID,
+    donor_id: UUID | None,
+    *,
+    active_only: bool = False,
+) -> Sponsorship:
+    """Resolve + own-check the caller's sponsorship of ``orphan_id``.
+
+    Mirrors the ``/sponsorships/{orphan_id}/profile`` convention: the path
+    param is the ORPHAN id and we locate the donor's own sponsorship from it.
+    A non-sponsored / foreign / soft-deleted orphan_id (or, when
+    ``active_only``, a cancelled/ended sponsorship) 404s exactly like an
+    unknown id, so existence never leaks. The ``Sponsorship.donor_id`` predicate
+    is the hard ownership scope — the app's superuser DB connection bypasses
+    RLS, so this filter (not RLS) is what keeps a donor to their own children.
+    """
+    did = await _resolve_donor_id(db, user, donor_id)
+    stmt = (
+        select(Sponsorship)
+        .join(Orphan, Orphan.id == Sponsorship.orphan_id)
+        .where(
+            Sponsorship.orphan_id == orphan_id,
+            Sponsorship.donor_id == did,
+            Orphan.deleted_at.is_(None),
+        )
+        .order_by(Sponsorship.start_date.asc())
+    )
+    if active_only:
+        stmt = stmt.where(Sponsorship.status == "active")
+    sponsorship = await db.scalar(stmt)
+    if sponsorship is None:
+        raise NotFound("Orphan")
+    return sponsorship
+
+
+class SponsorshipMessageCreate(BaseModel):
+    """Donor compose payload for the sponsorship-scoped archive (PR-9).
+
+    Deliberately minimal: the body carries ONLY the text. Every routing field
+    (recipient, orphan, sponsorship, organization) is SERVER-DERIVED from the
+    resolved sponsorship — the donor never supplies a recipient or an orphan id.
+    """
+
+    content: str = Field(min_length=1, max_length=MESSAGE_MAX_LEN)
+    message_type: Literal["text"] = "text"
+
+    @field_validator("content")
+    @classmethod
+    def _trim_non_empty(cls, v: str) -> str:
+        trimmed = v.strip()
+        if not trimmed:
+            raise ValueError("Message content cannot be empty")
+        return trimmed
 
 
 @router.get("/sponsorships", response_model=Page[SponsorshipRead])
@@ -485,6 +545,104 @@ async def my_sponsored_orphan_profile(
 
     media = await _build_media_block(db, orphan_id, orphan.profile_visibility or {})
     return _compose_sponsored_profile(orphan, partner_name, reports, sponsorship_start, media)
+
+
+# ── Sponsorship-scoped message archive (PR-9: أرشيف رسائلك إليها) ──────────
+#
+# The donor's OWN thread of messages to a child they sponsor, scoped to one
+# sponsorship. Every routing field is server-derived from the resolved
+# sponsorship — the donor never names a recipient or an orphan in the body.
+# The wire shape + the PII-omitting projection (`_project`) are reused from the
+# generic messages router so no user ids / emails / last names ever leak.
+
+
+@router.post(
+    "/sponsorships/{orphan_id}/messages",
+    response_model=MessageRead,
+    status_code=status.HTTP_201_CREATED,
+)
+async def send_sponsorship_message(
+    db: DbSession,
+    user: CurrentUser,
+    orphan_id: UUID,
+    payload: SponsorshipMessageCreate,
+) -> MessageRead:
+    """Donor sends a message to the child they sponsor.
+
+    The message lands ``pending`` with NO recipient (``to_user_id`` NULL): the
+    orphanage routes/relays it on approval. Org + sponsorship are derived from
+    the resolved sponsorship, never from the body. A child the donor does not
+    actively sponsor 404s without revealing whether it exists.
+    """
+    if user.role != "donor":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only donors can send messages here",
+        )
+    sponsorship = await _resolve_my_sponsorship(db, user, orphan_id, None, active_only=True)
+
+    msg = Message(
+        organization_id=sponsorship.organization_id,
+        from_user_id=user.id,
+        to_user_id=None,  # the orphanage routes/relays on approval
+        related_orphan_id=orphan_id,
+        related_sponsorship_id=sponsorship.id,
+        message_type="text",
+        content=payload.content,
+        moderation_status="pending",
+    )
+    db.add(msg)
+    await db.flush()
+    record_audit(
+        db,
+        organization_id=sponsorship.organization_id,
+        user_id=user.id,
+        action="message.sent",
+        entity_type="message",
+        entity_id=msg.id,
+        new_values={
+            "related_orphan_id": str(orphan_id),
+            "related_sponsorship_id": str(sponsorship.id),
+            "message_type": "text",
+        },
+    )
+    await db.commit()
+    await db.refresh(msg)
+    return await _project(msg, user, db)
+
+
+@router.get("/sponsorships/{orphan_id}/messages", response_model=Page[MessageRead])
+async def list_sponsorship_messages(
+    db: DbSession,
+    user: CurrentUser,
+    orphan_id: UUID,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> Page[MessageRead]:
+    """The donor's own archive of messages to one sponsored child.
+
+    Returns every message the caller sent about ``orphan_id`` — ALL statuses
+    (pending / approved / rejected), newest-first — so the sender always knows
+    where each note stands. Projected through ``_project`` so a rejected message
+    still carries its moderation note to the sender, and no internal ids leak.
+    The ``from_user_id == user.id`` predicate is the hard ownership scope.
+    """
+    await _resolve_my_sponsorship(db, user, orphan_id, None)
+
+    stmt = select(Message).where(
+        Message.from_user_id == user.id,
+        Message.related_orphan_id == orphan_id,
+    )
+    total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows = (
+        await db.scalars(stmt.order_by(Message.created_at.desc()).limit(limit).offset(offset))
+    ).all()
+    return Page(
+        items=[await _project(m, user, db) for m in rows],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get("/reports", response_model=Page[ReportDonorRead])

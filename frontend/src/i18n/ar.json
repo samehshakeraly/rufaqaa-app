@@ -1008,6 +1008,20 @@
         "super_admin": "مدير عام",
         "unknown": "غير معروف"
       }
+    },
+    "archive": {
+      "title": "أرشيف رسائلك إليها",
+      "composePlaceholder": "اكتب رسالتك إلى طفلك…",
+      "composeHelper": "تمرّ رسالتك على مراجعة الدار قبل التسليم.",
+      "send": "إرسال",
+      "sending": "جارٍ الإرسال…",
+      "empty": "لم ترسل أي رسالة بعد. اكتب أول رسالة إلى طفلك.",
+      "sendError": "تعذّر إرسال رسالتك. يرجى المحاولة مرة أخرى.",
+      "statusPending": "قيد المراجعة",
+      "statusApproved": "وصلت",
+      "statusRead": "قُرئت",
+      "statusRejected": "لم تُعتمد",
+      "rejectedNoteLabel": "ملاحظة المراجعة"
     }
   },
   "checkout": {

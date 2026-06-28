@@ -1166,6 +1166,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/sponsorships/{orphan_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Sponsorship Messages
+         * @description The donor's own archive of messages to one sponsored child.
+         *
+         *     Returns every message the caller sent about ``orphan_id`` — ALL statuses
+         *     (pending / approved / rejected), newest-first — so the sender always knows
+         *     where each note stands. Projected through ``_project`` so a rejected message
+         *     still carries its moderation note to the sender, and no internal ids leak.
+         *     The ``from_user_id == user.id`` predicate is the hard ownership scope.
+         */
+        get: operations["list_sponsorship_messages_api_v1_me_sponsorships__orphan_id__messages_get"];
+        put?: never;
+        /**
+         * Send Sponsorship Message
+         * @description Donor sends a message to the child they sponsor.
+         *
+         *     The message lands ``pending`` with NO recipient (``to_user_id`` NULL): the
+         *     orphanage routes/relays it on approval. Org + sponsorship are derived from
+         *     the resolved sponsorship, never from the body. A child the donor does not
+         *     actively sponsor 404s without revealing whether it exists.
+         */
+        post: operations["send_sponsorship_message_api_v1_me_sponsorships__orphan_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/sponsorships/{orphan_id}/profile": {
         parameters: {
             query?: never;
@@ -1431,6 +1466,10 @@ export interface paths {
          * List Pending Messages
          * @description Moderation queue. Returns the caller-org's pending messages, newest
          *     first.
+         *
+         *     A partner-scoped moderator (``partner_manager`` bound to a single جهة) sees
+         *     ONLY the messages about that جهة's orphans — the review queue belongs to the
+         *     orphanage (عبر الدار). Admins / super_admin keep the org-wide queue.
          */
         get: operations["list_pending_messages_api_v1_messages_pending_get"];
         put?: never;
@@ -7282,6 +7321,24 @@ export interface components {
              */
             start_date: string;
         };
+        /**
+         * SponsorshipMessageCreate
+         * @description Donor compose payload for the sponsorship-scoped archive (PR-9).
+         *
+         *     Deliberately minimal: the body carries ONLY the text. Every routing field
+         *     (recipient, orphan, sponsorship, organization) is SERVER-DERIVED from the
+         *     resolved sponsorship — the donor never supplies a recipient or an orphan id.
+         */
+        SponsorshipMessageCreate: {
+            /** Content */
+            content: string;
+            /**
+             * Message Type
+             * @default text
+             * @constant
+             */
+            message_type: "text";
+        };
         /** SponsorshipRead */
         SponsorshipRead: {
             /** Cancelled At */
@@ -9728,6 +9785,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Page_SponsorshipRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_sponsorship_messages_api_v1_me_sponsorships__orphan_id__messages_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_MessageRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_sponsorship_message_api_v1_me_sponsorships__orphan_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SponsorshipMessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageRead"];
                 };
             };
             /** @description Validation Error */

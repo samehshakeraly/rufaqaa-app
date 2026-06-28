@@ -65,3 +65,40 @@ export async function markDonorMessageRead(id: string): Promise<MessageRead> {
   );
   return data;
 }
+
+// ── Sponsorship-scoped message archive (PR-9: أرشيف رسائلك إليها) ───────
+//
+// The donor's OWN thread of messages to one sponsored child. The path param
+// is the ORPHAN id; the backend resolves the donor's sponsorship from it and
+// derives every routing field server-side — the body carries only the text.
+// Distinct from the cross-org /donor/me composer above: these hit the donor
+// portal (/me) routes and are always scoped to a single sponsored child.
+
+/** Max compose length, mirroring the backend MESSAGE_MAX_LEN (PR-9). */
+export const SPONSORSHIP_MESSAGE_MAX_LEN = 2000;
+
+/** The donor's archive of messages to one sponsored child, all statuses,
+ * newest-first. */
+export async function listSponsorshipMessages(
+  orphanId: string,
+  params?: { limit?: number; offset?: number },
+): Promise<Page<MessageRead>> {
+  const { data } = await api.get<Page<MessageRead>>(
+    `/me/sponsorships/${orphanId}/messages`,
+    { params },
+  );
+  return data;
+}
+
+/** Send a message to a sponsored child. Lands `pending` until the orphanage
+ * reviews it. Only `content` is sent — recipient/orphan are server-derived. */
+export async function sendSponsorshipMessage(
+  orphanId: string,
+  content: string,
+): Promise<MessageRead> {
+  const { data } = await api.post<MessageRead>(
+    `/me/sponsorships/${orphanId}/messages`,
+    { content },
+  );
+  return data;
+}

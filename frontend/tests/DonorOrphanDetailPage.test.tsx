@@ -19,7 +19,15 @@ vi.mock("@/lib/public", () => ({
   getPublicStats: vi.fn(),
   listPublicOrphans: vi.fn(),
 }));
+// The message archive ("أرشيف رسائلك إليها") fetches independently; mock the
+// two clients + the length constant so the section renders in isolation.
+vi.mock("@/lib/messages", () => ({
+  listSponsorshipMessages: vi.fn(),
+  sendSponsorshipMessage: vi.fn(),
+  SPONSORSHIP_MESSAGE_MAX_LEN: 2000,
+}));
 
+import { listSponsorshipMessages, sendSponsorshipMessage } from "@/lib/messages";
 import { listMyPayments } from "@/lib/payments";
 import { getPublicStats, getSponsoredOrphanProfile, listPublicOrphans } from "@/lib/public";
 import { listMyReports } from "@/lib/reports";
@@ -31,6 +39,8 @@ const paymentsMock = vi.mocked(listMyPayments);
 const profileMock = vi.mocked(getSponsoredOrphanProfile);
 const statsMock = vi.mocked(getPublicStats);
 const waitingMock = vi.mocked(listPublicOrphans);
+const archiveListMock = vi.mocked(listSponsorshipMessages);
+const archiveSendMock = vi.mocked(sendSponsorshipMessage);
 
 const ORPHAN_ID = "11111111-1111-1111-1111-111111111111";
 
@@ -232,6 +242,93 @@ beforeEach(async () => {
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   waitingMock.mockResolvedValue(page([]) as any);
+  archiveListMock.mockReset();
+  archiveSendMock.mockReset();
+  // Default: empty archive (most suites don't care about the messages block).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  archiveListMock.mockResolvedValue(page([]) as any);
+});
+
+// A privacy-safe MessageRead fixture in a given moderation state.
+function archiveMsg(over: Partial<Record<string, unknown>> = {}) {
+  return {
+    id: `m-${Math.random().toString(36).slice(2)}`,
+    from_role: "donor",
+    from_name: "",
+    to_role: "",
+    to_name: "",
+    orphan_code: null,
+    message_type: "text",
+    content: "نص الرسالة",
+    moderation_status: "pending",
+    moderation_notes: null,
+    is_read: false,
+    is_mine: true,
+    created_at: "2026-06-01T10:00:00Z",
+    moderated_at: null,
+    read_at: null,
+    ...over,
+  };
+}
+
+describe("DonorOrphanDetailPage — message archive (أرشيف رسائلك إليها)", () => {
+  it("renders each status with its badge, plus the rejected note", async () => {
+    archiveListMock.mockResolvedValue(
+      page([
+        archiveMsg({ content: "رسالة قيد المراجعة", moderation_status: "pending" }),
+        archiveMsg({
+          content: "رسالة وصلت وقُرئت",
+          moderation_status: "approved",
+          is_read: true,
+        }),
+        archiveMsg({
+          content: "رسالة مرفوضة",
+          moderation_status: "rejected",
+          moderation_notes: "خارج الموضوع",
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ]) as any,
+    );
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "أرشيف رسائلك إليها" });
+    // pending → warning badge (await the async archive query to resolve)
+    expect(await within(section).findByText("قيد المراجعة")).toBeInTheDocument();
+    // approved → "وصلت" + a "قُرئت" chip
+    expect(within(section).getByText("وصلت")).toBeInTheDocument();
+    expect(within(section).getByText("قُرئت")).toBeInTheDocument();
+    // rejected → "لم تُعتمد" + the moderation note (sender-only)
+    expect(within(section).getByText("لم تُعتمد")).toBeInTheDocument();
+    expect(within(section).getByText(/خارج الموضوع/)).toBeInTheDocument();
+  });
+
+  it("shows the empty state when there are no messages", async () => {
+    renderPage();
+    const section = await screen.findByRole("region", { name: "أرشيف رسائلك إليها" });
+    expect(
+      await within(section).findByText(/لم ترسل أي رسالة بعد/),
+    ).toBeInTheDocument();
+  });
+
+  it("posts a message and shows it immediately as an optimistic pending entry", async () => {
+    const user = userEvent.setup();
+    // The send never resolves during the assertion, so the entry can only
+    // appear via the optimistic update (not a refetch).
+    archiveSendMock.mockReturnValue(new Promise(() => {}) as never);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "أرشيف رسائلك إليها" });
+    const box = within(section).getByPlaceholderText(/اكتب رسالتك إلى طفلك/);
+    await user.type(box, "السلام عليك يا صغيرتي");
+    await user.click(within(section).getByRole("button", { name: "إرسال" }));
+
+    expect(archiveSendMock).toHaveBeenCalledWith(ORPHAN_ID, "السلام عليك يا صغيرتي");
+    // The optimistic entry appears at once, marked "under review". The content
+    // also lives in the textarea, so scope to the thread list item's badge.
+    expect(await within(section).findByText("قيد المراجعة")).toBeInTheDocument();
+    const rendered = within(section).getAllByText("السلام عليك يا صغيرتي");
+    expect(rendered.length).toBeGreaterThanOrEqual(1);
+  });
 });
 
 describe("DonorOrphanDetailPage — composed donor profile", () => {

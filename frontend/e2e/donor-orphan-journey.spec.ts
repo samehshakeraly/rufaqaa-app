@@ -155,6 +155,104 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
     });
   });
 
+  // --- The message archive ("أرشيف رسائلك إليها"). -------------------
+  // A mutable thread (newest-first) backs both GET and POST so a composed
+  // message persists across the post-send refetch. Registered AFTER the
+  // broad `me/sponsorships*` stub so it wins for this more specific URL.
+  const archiveThread: Record<string, unknown>[] = [
+    {
+      id: "am-1",
+      from_role: "donor",
+      from_name: "",
+      to_role: "",
+      to_name: "",
+      orphan_code: null,
+      message_type: "text",
+      content: "رسالة قيد المراجعة",
+      moderation_status: "pending",
+      moderation_notes: null,
+      is_read: false,
+      is_mine: true,
+      created_at: "2026-06-03T10:00:00Z",
+      moderated_at: null,
+      read_at: null,
+    },
+    {
+      id: "am-2",
+      from_role: "donor",
+      from_name: "",
+      to_role: "",
+      to_name: "",
+      orphan_code: null,
+      message_type: "text",
+      content: "رسالة وصلت وقُرئت",
+      moderation_status: "approved",
+      moderation_notes: null,
+      is_read: true,
+      is_mine: true,
+      created_at: "2026-06-02T10:00:00Z",
+      moderated_at: "2026-06-02T12:00:00Z",
+      read_at: "2026-06-02T13:00:00Z",
+    },
+    {
+      id: "am-3",
+      from_role: "donor",
+      from_name: "",
+      to_role: "",
+      to_name: "",
+      orphan_code: null,
+      message_type: "text",
+      content: "رسالة مرفوضة",
+      moderation_status: "rejected",
+      moderation_notes: "خارج الموضوع",
+      is_read: false,
+      is_mine: true,
+      created_at: "2026-06-01T10:00:00Z",
+      moderated_at: "2026-06-01T12:00:00Z",
+      read_at: null,
+    },
+  ];
+
+  await context.route(`**/api/v1/me/sponsorships/${ORPHAN_ID}/messages*`, async (route) => {
+    if (route.request().method() === "POST") {
+      const body = route.request().postDataJSON() as { content: string };
+      const created = {
+        id: `am-new-${Date.now()}`,
+        from_role: "donor",
+        from_name: "",
+        to_role: "",
+        to_name: "",
+        orphan_code: null,
+        message_type: "text",
+        content: body.content,
+        moderation_status: "pending",
+        moderation_notes: null,
+        is_read: false,
+        is_mine: true,
+        created_at: "2026-06-04T10:00:00Z",
+        moderated_at: null,
+        read_at: null,
+      };
+      archiveThread.unshift(created);
+      await route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify(created),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        items: archiveThread,
+        total: archiveThread.length,
+        limit: 100,
+        offset: 0,
+      }),
+    });
+  });
+
   // Pin the app to Arabic (its primary locale) before any script runs, so
   // the detector doesn't fall back to the runner's English `navigator.language`
   // — otherwise translated UI like the section headings would render in English
@@ -206,4 +304,18 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
   // "In her words" — the curated phrases render as quote cards.
   await expect(page.getByText("أحبّ الرسم في الصباح")).toBeVisible();
   await expect(page.getByText("أريد أن أتعلّم العزف")).toBeVisible();
+
+  // --- Message archive: the thread renders each status correctly. ---
+  const archive = page.getByRole("region", { name: "أرشيف رسائلك إليها" });
+  await expect(archive).toBeVisible();
+  await expect(archive.getByText("قيد المراجعة")).toBeVisible(); // pending
+  await expect(archive.getByText("وصلت")).toBeVisible(); // approved
+  await expect(archive.getByText("قُرئت")).toBeVisible(); // approved + read
+  await expect(archive.getByText("لم تُعتمد")).toBeVisible(); // rejected
+  await expect(archive.getByText(/خارج الموضوع/)).toBeVisible(); // reject note
+
+  // --- Compose: posting shows the message immediately as pending. ---
+  await archive.getByPlaceholder(/اكتب رسالتك إلى طفلك/).fill("شكراً لك يا صغيرتي");
+  await archive.getByRole("button", { name: "إرسال" }).click();
+  await expect(archive.getByText("شكراً لك يا صغيرتي")).toBeVisible();
 });
