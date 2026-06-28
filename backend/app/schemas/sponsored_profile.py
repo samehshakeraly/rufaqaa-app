@@ -23,7 +23,12 @@ from datetime import date
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+
+# Curated phrase limits — shared by the staff input contract and the donor
+# composition; kept here so backend and the generated TS types agree.
+IN_HER_WORDS_MAX_LEN = 280
+IN_HER_WORDS_MAX_ITEMS = 20
 
 # ── Per-element typed blocks ───────────────────────────────────────────────
 
@@ -137,6 +142,15 @@ class MediaBlock(BaseModel):
     recitations: list[MediaItem]
 
 
+class InHerWordsItem(BaseModel):
+    """One curated phrase, in the child's own words. DONOR-FACING slice — exposes
+    only the phrase ``text`` and an optional ``said_on`` date; never the internal
+    id or any authoring metadata."""
+
+    text: str
+    said_on: date | None = None
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -170,3 +184,52 @@ class SponsoredOrphanProfile(BaseModel):
     supervisor_word: SupervisorWordBlock | None = None
     since_you_began: SinceYouBeganBlock | None = None
     media: MediaBlock | None = None
+    in_her_words: list[InHerWordsItem] | None = None
+
+
+# ── Staff management contract (full list, incl. ids) ───────────────────────
+
+
+class InHerWordsStaffItem(BaseModel):
+    """One curated phrase as the management UI sees it — carries the stable
+    ``id`` (so edits/reorders re-use it) alongside the editable fields."""
+
+    id: UUID
+    text: str
+    said_on: date | None = None
+
+
+class InHerWordsList(BaseModel):
+    """Staff GET response: the full ordered list of phrases. The array order IS
+    the donor display order — the PUT controls it."""
+
+    items: list[InHerWordsStaffItem]
+
+
+class InHerWordsItemUpdate(BaseModel):
+    """One phrase as supplied by the management UI on PUT. ``id`` is re-used when
+    present (an edit/reorder) and assigned server-side when absent (a new
+    phrase). Per-item rules — trimmed non-empty ``text`` capped at
+    :data:`IN_HER_WORDS_MAX_LEN`, ``said_on`` never in the future — are enforced
+    here at the Pydantic boundary (violation ⇒ 422)."""
+
+    id: UUID | None = None
+    text: str
+    said_on: date | None = None
+
+    @field_validator("text")
+    @classmethod
+    def _trim_non_empty(cls, value: str) -> str:
+        trimmed = value.strip()
+        if not trimmed:
+            raise ValueError("text must not be empty")
+        if len(trimmed) > IN_HER_WORDS_MAX_LEN:
+            raise ValueError(f"text must be at most {IN_HER_WORDS_MAX_LEN} characters")
+        return trimmed
+
+    @field_validator("said_on")
+    @classmethod
+    def _not_future(cls, value: date | None) -> date | None:
+        if value is not None and value > date.today():
+            raise ValueError("said_on must not be in the future")
+        return value

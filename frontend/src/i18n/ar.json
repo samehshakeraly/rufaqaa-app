@@ -3489,7 +3489,9 @@
       "actionNewReportSub": "يستغرق أقلّ من دقيقة",
       "lastReportTitle": "آخر تقرير",
       "tabMedia": "الوسائط",
-      "mediaTitle": "وسائط صندوق الذكريات"
+      "mediaTitle": "وسائط صندوق الذكريات",
+      "tabInHerWords": "بكلماتها",
+      "inHerWordsTitle": "بكلماتها"
     },
     "report": {
       "backToOrphan": "صفحة {{name}}",
@@ -3638,6 +3640,10 @@
       "since_you_began": {
         "label": "منذ بدأت كفالتك",
         "help": "أثر كفالتك منذ انضمامك."
+      },
+      "in_her_words": {
+        "label": "بكلماتها",
+        "help": "عبارات قصيرة منتقاة بصوت الطفلة نفسها."
       }
     },
     "showAction": "إظهار {{name}} للكافل",
@@ -3647,6 +3653,39 @@
     "previewHidden": "مخفية عن الكافل ({{n}})",
     "previewNoneVisible": "لا يوجد عنصر ظاهر.",
     "previewNoneHidden": "لا يوجد عنصر مخفيّ.",
+    "save": "حفظ التغييرات",
+    "saving": "جارٍ الحفظ…",
+    "saved": "تم الحفظ",
+    "saveError": "تعذّر الحفظ. حاول مرة أخرى."
+  },
+  "inHerWords": {
+    "intro": "انتقِ عبارات قصيرة بصوت الطفلة نفسها. تظهر العبارات المحفوظة في ملف الكافل بالترتيب المعروض هنا. يمكن إخفاء القسم بالكامل من تبويب الظهور.",
+    "loadError": "تعذّر تحميل العبارات. حاول لاحقًا.",
+    "empty": "لا توجد عبارات بعد — أضف الأولى من الأعلى.",
+    "listLabel": "العبارات المحفوظة",
+    "charCount": "{{n}}/{{max}} حرفًا",
+    "add": {
+      "title": "إضافة عبارة",
+      "phrase": "العبارة",
+      "date": "تاريخ القول (اختياري)",
+      "submit": "إضافة العبارة"
+    },
+    "edit": {
+      "phrase": "تعديل العبارة",
+      "date": "تاريخ القول (اختياري)",
+      "done": "تمّ"
+    },
+    "actions": {
+      "edit": "تعديل",
+      "delete": "حذف",
+      "deleteLabel": "حذف هذه العبارة"
+    },
+    "errors": {
+      "empty": "لا يمكن أن تكون العبارة فارغة.",
+      "tooLong": "اجعلها أقل من {{max}} حرف.",
+      "tooMany": "{{max}} عبارات كحدّ أقصى.",
+      "future": "لا يمكن أن يكون التاريخ في المستقبل."
+    },
     "save": "حفظ التغييرات",
     "saving": "جارٍ الحفظ…",
     "saved": "تم الحفظ",
@@ -4490,6 +4529,8 @@
     "recentUpdatesLink": "اطّلع على كل التحديثات",
     "supervisorWordTitle": "كلمة من المشرف",
     "herWorldTitle": "عالم {{name}} اليوم",
+    "inHerWordsTitle": "بكلمات {{name}}",
+    "inHerWordsSubtitle": "عبارات شاركتها بصوتها.",
     "memoryTitle": "صندوق ذكريات {{name}}",
     "memoryDrawings": "رسومات {{name}}",
     "memoryCertificates": "شهادات {{name}}",

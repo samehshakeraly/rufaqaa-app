@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { OrphanInHerWordsManager } from "@/components/OrphanInHerWordsManager";
 import { OrphanMediaManager } from "@/components/OrphanMediaManager";
 import { ProfileVisibilityPanel } from "@/components/ProfileVisibilityPanel";
 import { Skeleton } from "@/components/Skeleton";
@@ -16,7 +17,7 @@ import { ageFromDob } from "@/lib/orphanSelf";
 // Mirror the guardian detail page; reuse its styles (god-*).
 import "./GuardianOrphanDetailPage.css";
 
-type TabKey = "overview" | "reports" | "visibility" | "media";
+type TabKey = "overview" | "reports" | "visibility" | "media" | "inHerWords";
 
 /** Detail page for one of the dar's resident orphans. Profile facts come from
  * GET /orphanage/me/orphans (filtered to this id); the Reports tab reads the
@@ -134,6 +135,9 @@ export function OrphanageManagerOrphanDetailPage() {
               <TabButton id="media" current={tab} onSelect={setTab}>
                 {t("orphanageManager.detail.tabMedia")}
               </TabButton>
+              <TabButton id="inHerWords" current={tab} onSelect={setTab}>
+                {t("orphanageManager.detail.tabInHerWords")}
+              </TabButton>
             </div>
 
             {tab === "overview" && (
@@ -181,6 +185,13 @@ export function OrphanageManagerOrphanDetailPage() {
               <div role="tabpanel" className="god-tab-panel">
                 <h2 className="god-panel-title">{t("orphanageManager.detail.mediaTitle")}</h2>
                 <OrphanMediaManager orphanId={orphan.id} />
+              </div>
+            )}
+
+            {tab === "inHerWords" && (
+              <div role="tabpanel" className="god-tab-panel">
+                <h2 className="god-panel-title">{t("orphanageManager.detail.inHerWordsTitle")}</h2>
+                <OrphanInHerWordsManager orphanId={orphan.id} />
               </div>
             )}
 

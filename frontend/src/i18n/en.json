@@ -3489,7 +3489,9 @@
       "actionNewReportSub": "Takes less than a minute",
       "lastReportTitle": "Last report",
       "tabMedia": "Media",
-      "mediaTitle": "Memory box media"
+      "mediaTitle": "Memory box media",
+      "tabInHerWords": "In her words",
+      "inHerWordsTitle": "In her words"
     },
     "report": {
       "backToOrphan": "{{name}}'s page",
@@ -3638,6 +3640,10 @@
       "since_you_began": {
         "label": "Since you began",
         "help": "The impact of your sponsorship since you joined."
+      },
+      "in_her_words": {
+        "label": "In her words",
+        "help": "Curated short phrases in the child's own voice."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -3647,6 +3653,39 @@
     "previewHidden": "Hidden from sponsor ({{n}})",
     "previewNoneVisible": "No elements are visible.",
     "previewNoneHidden": "No elements are hidden.",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "saveError": "Couldn't save. Please try again."
+  },
+  "inHerWords": {
+    "intro": "Curate short phrases in the child's own voice. Saved phrases appear on the sponsor's profile in the order shown here. Hide the whole section from the visibility tab.",
+    "loadError": "Couldn't load phrases. Please try again later.",
+    "empty": "No phrases yet — add the first one above.",
+    "listLabel": "Saved phrases",
+    "charCount": "{{n}}/{{max}} characters",
+    "add": {
+      "title": "Add a phrase",
+      "phrase": "Phrase",
+      "date": "When said (optional)",
+      "submit": "Add phrase"
+    },
+    "edit": {
+      "phrase": "Edit phrase",
+      "date": "When said (optional)",
+      "done": "Done"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteLabel": "Delete this phrase"
+    },
+    "errors": {
+      "empty": "Phrase can't be empty.",
+      "tooLong": "Keep it under {{max}} characters.",
+      "tooMany": "At most {{max}} phrases.",
+      "future": "The date can't be in the future."
+    },
     "save": "Save changes",
     "saving": "Saving…",
     "saved": "Saved",
@@ -4490,6 +4529,8 @@
     "recentUpdatesLink": "See all updates",
     "supervisorWordTitle": "A word from the supervisor",
     "herWorldTitle": "{{name}}'s world today",
+    "inHerWordsTitle": "In {{name}}'s words",
+    "inHerWordsSubtitle": "Phrases shared in her own voice.",
     "memoryTitle": "{{name}}'s memory box",
     "memoryDrawings": "{{name}}'s drawings",
     "memoryCertificates": "{{name}}'s certificates",

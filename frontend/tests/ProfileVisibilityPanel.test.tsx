@@ -9,7 +9,7 @@ import { ProfileVisibilityPanel } from "@/components/ProfileVisibilityPanel";
 import i18n from "@/i18n";
 
 // Mock only the two network helpers; PROFILE_ELEMENTS (and the types) stay real
-// so the component renders the canonical eight-element set.
+// so the component renders the canonical element set (counts derived from it).
 vi.mock("@/lib/profileVisibility", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/profileVisibility")>();
   return {
@@ -38,11 +38,14 @@ const LABELS: Partial<Record<ProfileElement, string>> = {
   dream: "الحلم",
   her_world: "عالمه الخاص",
   milestones: "إنجازاته",
+  in_her_words: "بكلماتها",
 };
 const SAVE = "حفظ التغييرات";
 
 const dreamSwitch = () => screen.getByRole("switch", { name: new RegExp(LABELS.dream!) });
 const herWorldSwitch = () => screen.getByRole("switch", { name: new RegExp(LABELS.her_world!) });
+const inHerWordsSwitch = () =>
+  screen.getByRole("switch", { name: new RegExp(LABELS.in_her_words!) });
 
 /** Build a registry from a map of hidden keys (everything else visible). */
 function registryFrom(hidden: Partial<Record<ProfileElement, boolean>>): ProfileVisibilityRegistry {
@@ -88,6 +91,9 @@ describe("ProfileVisibilityPanel — structure", () => {
     expect(dreamSwitch()).toHaveAttribute("aria-checked", "true");
     expect(herWorldSwitch()).toHaveAttribute("aria-checked", "false");
 
+    // The PR-8 "In her words" element is present as its own toggle.
+    expect(inHerWordsSwitch()).toHaveAttribute("aria-checked", "true");
+
     // The identity row is locked (rendered, but carries no switch).
     expect(screen.getByText("الهوية والبيانات الأساسية")).toBeInTheDocument();
     expect(screen.getAllByText("يظهر دائماً").length).toBeGreaterThan(0);
@@ -98,8 +104,9 @@ describe("ProfileVisibilityPanel — structure", () => {
     renderPanel();
     await screen.findAllByRole("switch");
 
-    // 7 visible · 1 hidden.
-    expect(screen.getByText("7 ظاهر · 1 مخفيّ")).toBeInTheDocument();
+    // All-but-one visible · 1 hidden (count derived so it survives new elements).
+    const visibleCount = PROFILE_ELEMENTS.length - 1;
+    expect(screen.getByText(`${visibleCount} ظاهر · 1 مخفيّ`)).toBeInTheDocument();
 
     // Preview: hidden column lists the hidden element, visible column the rest.
     const hiddenCol = screen.getByText(/مخفية عن الكافل/).closest("div")!;

@@ -1959,6 +1959,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/{orphan_id}/in-her-words": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orphan In Her Words
+         * @description The full ordered list of curated phrases for one child (including the
+         *     stable ids the management UI needs). Org-scoped (explicit, never RLS) with
+         *     the same جهة fence as :func:`get_orphan` — an out-of-org/جهة id 404s.
+         */
+        get: operations["get_orphan_in_her_words_api_v1_orphans__orphan_id__in_her_words_get"];
+        /**
+         * Set Orphan In Her Words
+         * @description Replace the whole curated-phrases array (the array order becomes the donor
+         *     display order). Per-item rules — trimmed non-empty text capped at 280 chars,
+         *     ``said_on`` never in the future — are enforced at the Pydantic boundary; the
+         *     list is capped at :data:`IN_HER_WORDS_MAX_ITEMS` here. Each item re-uses its
+         *     supplied ``id`` (edit/reorder) or is assigned a fresh ``uuid4`` (new phrase).
+         *     Same org + جهة scoping as the GET twin.
+         */
+        put: operations["set_orphan_in_her_words_api_v1_orphans__orphan_id__in_her_words_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}/profile-visibility": {
         parameters: {
             query?: never;
@@ -4483,6 +4514,59 @@ export interface components {
             /** Tags */
             tags: string[];
         };
+        /**
+         * InHerWordsItem
+         * @description One curated phrase, in the child's own words. DONOR-FACING slice — exposes
+         *     only the phrase ``text`` and an optional ``said_on`` date; never the internal
+         *     id or any authoring metadata.
+         */
+        InHerWordsItem: {
+            /** Said On */
+            said_on?: string | null;
+            /** Text */
+            text: string;
+        };
+        /**
+         * InHerWordsItemUpdate
+         * @description One phrase as supplied by the management UI on PUT. ``id`` is re-used when
+         *     present (an edit/reorder) and assigned server-side when absent (a new
+         *     phrase). Per-item rules — trimmed non-empty ``text`` capped at
+         *     :data:`IN_HER_WORDS_MAX_LEN`, ``said_on`` never in the future — are enforced
+         *     here at the Pydantic boundary (violation ⇒ 422).
+         */
+        InHerWordsItemUpdate: {
+            /** Id */
+            id?: string | null;
+            /** Said On */
+            said_on?: string | null;
+            /** Text */
+            text: string;
+        };
+        /**
+         * InHerWordsList
+         * @description Staff GET response: the full ordered list of phrases. The array order IS
+         *     the donor display order — the PUT controls it.
+         */
+        InHerWordsList: {
+            /** Items */
+            items: components["schemas"]["InHerWordsStaffItem"][];
+        };
+        /**
+         * InHerWordsStaffItem
+         * @description One curated phrase as the management UI sees it — carries the stable
+         *     ``id`` (so edits/reorders re-use it) alongside the editable fields.
+         */
+        InHerWordsStaffItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Said On */
+            said_on?: string | null;
+            /** Text */
+            text: string;
+        };
         /** InboundWebhookLogRead */
         InboundWebhookLogRead: {
             /** Error */
@@ -6586,7 +6670,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7141,6 +7225,8 @@ export interface components {
              */
             gender: "M" | "F";
             her_world?: components["schemas"]["HerWorldBlock"] | null;
+            /** In Her Words */
+            in_her_words?: components["schemas"]["InHerWordsItem"][] | null;
             /** Is Hafiz */
             is_hafiz: boolean;
             media?: components["schemas"]["MediaBlock"] | null;
@@ -10972,6 +11058,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DocumentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orphan_in_her_words_api_v1_orphans__orphan_id__in_her_words_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InHerWordsList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_orphan_in_her_words_api_v1_orphans__orphan_id__in_her_words_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InHerWordsItemUpdate"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InHerWordsList"];
                 };
             };
             /** @description Validation Error */

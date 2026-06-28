@@ -238,6 +238,13 @@ export function DonorOrphanDetailPage() {
 
       {profile?.her_world && <HerWorldSection name={name} world={profile.her_world} />}
 
+      {/* "In her words" — curated phrases in the child's own voice. Server
+          strips the block entirely when hidden or empty, so a present array is
+          always non-empty. */}
+      {profile?.in_her_words && profile.in_her_words.length > 0 && (
+        <InHerWordsSection name={name} phrases={profile.in_her_words} lang={lang} />
+      )}
+
       {/* The "memory box" — donor-cleared artefacts, placed right before the
           factual timeline/payments so warmth precedes paperwork. Renders
           NOTHING when media is null or every group is empty. */}
@@ -1067,6 +1074,67 @@ function WorldChip({ children, tone }: { children: React.ReactNode; tone: Tone }
       {children}
     </li>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.5) In her words — curated phrases in the child's own voice        */
+/* ------------------------------------------------------------------ */
+
+type InHerWordsPhrase = NonNullable<SponsoredOrphanProfile["in_her_words"]>[number];
+
+/** Curated child phrases as a column of quote cards. Each card opens with a
+ * quote glyph, carries the phrase text, and — when present — a month+year
+ * caption localized to the active language. The server has already stripped a
+ * hidden/empty block, so `phrases` is always non-empty here. */
+function InHerWordsSection({
+  name,
+  phrases,
+  lang,
+}: {
+  name: string;
+  phrases: InHerWordsPhrase[];
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section aria-label={t("donorProfile.inHerWordsTitle", { name })} className="space-y-4">
+      <div>
+        <h2 className="flex items-center gap-1.5 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.inHerWordsTitle", { name })}
+        </h2>
+        <p className="mt-1 text-sm text-trust-600 dark:text-tranquil-200">
+          {t("donorProfile.inHerWordsSubtitle")}
+        </p>
+      </div>
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {phrases.map((phrase, i) => (
+          <li key={i}>
+            <figure className="h-full rounded-2xl border-s-4 border-trust-300 bg-tranquil-100 p-5 dark:border-trust-500/40 dark:bg-trust-500/10">
+              <span className="text-trust-400 dark:text-trust-300" aria-hidden="true">
+                <QuoteIcon />
+              </span>
+              <blockquote className="mt-1 whitespace-pre-line text-base font-medium leading-relaxed text-trust-800 dark:text-tranquil-100">
+                {phrase.text}
+              </blockquote>
+              {phrase.said_on && (
+                <figcaption className="mt-3 text-xs text-trust-600 dark:text-tranquil-200">
+                  {formatMonthYear(phrase.said_on, lang)}
+                </figcaption>
+              )}
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Month + year only (e.g. "فبراير ٢٠٢٦"), localized to the active language.
+ * Falls back to the raw value when unparseable. */
+function formatMonthYear(value: string, lang: string): string {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString(lang, { year: "numeric", month: "long" });
 }
 
 /* ------------------------------------------------------------------ */

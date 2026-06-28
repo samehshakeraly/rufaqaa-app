@@ -32,6 +32,7 @@ class ProfileElement(StrEnum):
     supervisor_word = "supervisor_word"
     since_you_began = "since_you_began"
     media = "media"
+    in_her_words = "in_her_words"
 
 
 def is_visible(profile_visibility: dict[str, bool], key: ProfileElement) -> bool:

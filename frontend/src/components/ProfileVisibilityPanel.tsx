@@ -13,9 +13,9 @@ import {
 
 type VisibilityMap = Record<ProfileElement, boolean>;
 
-/** Build the FULL 8-key visibility map from a registry. An element is visible
- * to the donor UNLESS the registry reports it hidden; any key the registry
- * omits defaults to visible (the product default). */
+/** Build the full visibility map (one entry per PROFILE_ELEMENTS key) from a
+ * registry. An element is visible to the donor UNLESS the registry reports it
+ * hidden; any key the registry omits defaults to visible (the product default). */
 function toMap(registry: ProfileVisibilityRegistry): VisibilityMap {
   const map = {} as VisibilityMap;
   for (const key of PROFILE_ELEMENTS) map[key] = true;

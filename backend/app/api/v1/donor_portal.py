@@ -44,6 +44,7 @@ from app.schemas.report import (
 from app.schemas.sponsored_profile import (
     DreamBlock,
     HerWorldBlock,
+    InHerWordsItem,
     MediaBlock,
     MediaItem,
     MilestoneItem,
@@ -391,6 +392,16 @@ def _compose_sponsored_profile(
             reports_count=len(reports),
         )
 
+    # in_her_words ── curated child phrases, in the child's own voice. The stored
+    # ids/authoring data NEVER reach the donor — only text + said_on. Hidden OR
+    # empty ⇒ the whole block stays None (omitted), mirroring every other element.
+    in_her_words = None
+    if is_visible(vis, ProfileElement.in_her_words) and orphan.in_her_words:
+        in_her_words = [
+            InHerWordsItem(text=item["text"], said_on=item.get("said_on"))
+            for item in orphan.in_her_words
+        ]
+
     return SponsoredOrphanProfile(
         first_name=detail.first_name,
         age_years=detail.age_years,
@@ -411,6 +422,7 @@ def _compose_sponsored_profile(
         supervisor_word=supervisor_word,
         since_you_began=since_you_began,
         media=media,
+        in_her_words=in_her_words,
     )
 
 
