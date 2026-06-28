@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
@@ -14,10 +14,14 @@ import { DonorOrphanDetailPage } from "@/pages/DonorOrphanDetailPage";
 vi.mock("@/lib/sponsorships", () => ({ listMySponsorships: vi.fn() }));
 vi.mock("@/lib/reports", () => ({ listMyReports: vi.fn() }));
 vi.mock("@/lib/payments", () => ({ listMyPayments: vi.fn() }));
-vi.mock("@/lib/public", () => ({ getSponsoredOrphanProfile: vi.fn() }));
+vi.mock("@/lib/public", () => ({
+  getSponsoredOrphanProfile: vi.fn(),
+  getPublicStats: vi.fn(),
+  listPublicOrphans: vi.fn(),
+}));
 
 import { listMyPayments } from "@/lib/payments";
-import { getSponsoredOrphanProfile } from "@/lib/public";
+import { getPublicStats, getSponsoredOrphanProfile, listPublicOrphans } from "@/lib/public";
 import { listMyReports } from "@/lib/reports";
 import { listMySponsorships } from "@/lib/sponsorships";
 
@@ -25,6 +29,8 @@ const sponsorshipsMock = vi.mocked(listMySponsorships);
 const reportsMock = vi.mocked(listMyReports);
 const paymentsMock = vi.mocked(listMyPayments);
 const profileMock = vi.mocked(getSponsoredOrphanProfile);
+const statsMock = vi.mocked(getPublicStats);
+const waitingMock = vi.mocked(listPublicOrphans);
 
 const ORPHAN_ID = "11111111-1111-1111-1111-111111111111";
 
@@ -204,12 +210,24 @@ beforeEach(async () => {
   reportsMock.mockReset();
   paymentsMock.mockReset();
   profileMock.mockReset();
+  statsMock.mockReset();
+  waitingMock.mockReset();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sponsorshipsMock.mockResolvedValue(page([SPONSORSHIP]) as any);
   reportsMock.mockResolvedValue(page([]) as never);
   paymentsMock.mockResolvedValue(page([]) as never);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   profileMock.mockResolvedValue(FULL_PROFILE as any);
+  // Closing-zone public queries default to benign values so the existing
+  // suites are unaffected; individual tests override as needed.
+  statsMock.mockResolvedValue({
+    orphans_available: 12,
+    orphans_sponsored: 120,
+    donors_total: 45,
+    countries_served: 7,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  waitingMock.mockResolvedValue(page([]) as any);
 });
 
 describe("DonorOrphanDetailPage — composed donor profile", () => {
@@ -225,9 +243,10 @@ describe("DonorOrphanDetailPage — composed donor profile", () => {
     expect(screen.getByText("منذ أن بدأت")).toBeInTheDocument();
     expect(screen.getByText("+3 جزءًا")).toBeInTheDocument();
 
-    // Dream — the emotional anchor.
+    // Dream — the emotional anchor. The aspiration also appears as the
+    // roadmap's dream node, so it legitimately occurs more than once.
     expect(screen.getByText("يحلم بأن…")).toBeInTheDocument();
-    expect(screen.getByText("أن تصبح معلمة")).toBeInTheDocument();
+    expect(screen.getAllByText("أن تصبح معلمة").length).toBeGreaterThan(0);
 
     // Qur'an growth — multi-point caption, not the single-point one.
     expect(screen.getByText("رحلة الحفظ")).toBeInTheDocument();
@@ -411,5 +430,182 @@ describe("DonorOrphanDetailPage — memory box", () => {
 
     await screen.findByText("عائشة");
     expect(screen.queryByText(/صندوق ذكريات/)).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — dream roadmap", () => {
+  it("marks the current step at education_stage and ends at the aspiration", async () => {
+    // IDENTITY has no `dream` block, so the aspiration text appears only in
+    // the roadmap's dream node (unique getByText).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue({ ...IDENTITY, education_stage: "preparatory" } as any);
+    const { container } = renderPage();
+
+    expect(await screen.findByText("خريطة الحلم")).toBeInTheDocument();
+    // Dream node carries the aspiration.
+    expect(screen.getByText("أن تصبح معلمة")).toBeInTheDocument();
+    expect(screen.getAllByText("الحلم").length).toBeGreaterThan(0);
+
+    // The current marker lands on the matching stage (preparatory → إعدادي).
+    const current = container.querySelector('[aria-current="step"]');
+    expect(current).not.toBeNull();
+    expect(current?.textContent).toContain("إعدادي");
+    expect(current?.textContent).toContain("أنت هنا");
+  });
+
+  it("renders the path and dream node without a marker when stage is null", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue({ ...IDENTITY, education_stage: null } as any);
+    const { container } = renderPage();
+
+    expect(await screen.findByText("خريطة الحلم")).toBeInTheDocument();
+    expect(screen.getByText("أن تصبح معلمة")).toBeInTheDocument();
+    // No "you are here" step is marked.
+    expect(container.querySelector('[aria-current="step"]')).toBeNull();
+    expect(screen.queryByText("أنت هنا")).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — impact tree", () => {
+  it("renders the tree and caption from since_you_began", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      since_you_began: {
+        start_date: monthsAgo(14),
+        juz_gained: 3,
+        milestones_count: 2,
+        reports_count: 4,
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    expect(await screen.findByText("شجرة أثرك")).toBeInTheDocument();
+    // Bond duration line + leaf/fruit caption pieces.
+    expect(screen.getByText(/ثمرة رعايتك تنمو منذ/)).toBeInTheDocument();
+    expect(screen.getByText(/14 ورقة/)).toBeInTheDocument();
+    expect(screen.getByText(/2 ثمرة/)).toBeInTheDocument();
+    // The metaphor SVG is voiced.
+    expect(
+      screen.getByRole("img", { name: "شجرة ترمز إلى أثر رعايتك، تنمو مع الوقت" }),
+    ).toBeInTheDocument();
+  });
+
+  it("is omitted when since_you_began is absent", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByText("شجرة أثرك")).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — part of something bigger", () => {
+  it("renders the three collective figures", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    statsMock.mockResolvedValue({
+      orphans_available: 12,
+      orphans_sponsored: 120,
+      donors_total: 45,
+      countries_served: 7,
+    });
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "جزء من شيء أكبر" });
+    // The figures appear once the public stats query resolves (skeleton first).
+    expect(await within(section).findByText("120")).toBeInTheDocument();
+    expect(within(section).getByText("45")).toBeInTheDocument();
+    expect(within(section).getByText("7")).toBeInTheDocument();
+    expect(within(section).getByText("طفل تحت الرعاية")).toBeInTheDocument();
+    expect(within(section).getByText("كفيل")).toBeInTheDocument();
+    expect(within(section).getByText("دولة")).toBeInTheDocument();
+  });
+
+  it("omits the section entirely when the stats query rejects", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    statsMock.mockRejectedValue(new Error("stats down"));
+    renderPage();
+
+    await screen.findByText("عائشة");
+    await waitFor(() => expect(screen.queryByText("جزء من شيء أكبر")).not.toBeInTheDocument());
+  });
+});
+
+describe("DonorOrphanDetailPage — children waiting", () => {
+  const WAITING = [
+    {
+      code: "ORF-99", // same as SPONSORSHIP.orphan_code → must be excluded
+      first_name: "مستبعد",
+      age_years: 9,
+      gender: "F" as const,
+      country: "EG",
+      case_status: "available",
+      partner_organization_name: "دار أ",
+    },
+    {
+      code: "P-1",
+      first_name: "سارة",
+      age_years: 8,
+      gender: "F" as const,
+      country: "SY",
+      case_status: "available",
+      partner_organization_name: "دار ب",
+    },
+    {
+      code: "P-2",
+      first_name: "يوسف",
+      age_years: 11,
+      gender: "M" as const,
+      country: "YE",
+      case_status: "available",
+      partner_organization_name: "دار ج",
+    },
+    {
+      code: "P-3",
+      first_name: "ليلى",
+      age_years: 7,
+      gender: "F" as const,
+      country: "JO",
+      case_status: "available",
+      partner_organization_name: "دار د",
+    },
+  ];
+
+  it("renders up to 3 cards, excludes the current orphan, and links out", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    waitingMock.mockResolvedValue(page(WAITING) as any);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "أطفال في انتظار كفيل" });
+
+    // The current child (ORF-99) is filtered out; the next three remain.
+    expect(within(section).queryByText("مستبعد")).not.toBeInTheDocument();
+    expect(within(section).getByText("سارة")).toBeInTheDocument();
+    expect(within(section).getByText("يوسف")).toBeInTheDocument();
+    expect(within(section).getByText("ليلى")).toBeInTheDocument();
+
+    // Each card is a real link to the public child page.
+    const card = within(section).getByRole("link", { name: "تعرّف على سارة" });
+    expect(card.getAttribute("href")).toBe("/orphans/P-1");
+
+    // Closing CTA links to the public browse page.
+    const cta = within(section).getByRole("link", { name: /اكفل طفلًا آخر/ });
+    expect(cta.getAttribute("href")).toBe("/orphans");
+  });
+
+  it("omits the section when there are no available children", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    waitingMock.mockResolvedValue(page([]) as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByText("أطفال في انتظار كفيل")).not.toBeInTheDocument();
   });
 });
