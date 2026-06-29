@@ -256,6 +256,11 @@ export function DonorOrphanDetailPage() {
         <InHerWordsSection name={name} phrases={profile.in_her_words} lang={lang} />
       )}
 
+      {/* "ذكرى الأب" — a dignified remembrance of the deceased father. Double-
+          gated server-side (guardian consent AND supervisor visibility); the
+          block is present here only when both gates are satisfied. */}
+      {profile?.father_memory && <FatherMemorySection memory={profile.father_memory} />}
+
       {/* The "memory box" — donor-cleared artefacts, placed right before the
           factual timeline/payments so warmth precedes paperwork. Renders
           NOTHING when media is null or every group is empty. */}
@@ -1151,6 +1156,69 @@ function formatMonthYear(value: string, lang: string): string {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleDateString(lang, { year: "numeric", month: "long" });
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.6) Father's memory — a dignified, somber remembrance              */
+/* ------------------------------------------------------------------ */
+
+/** "ذكرى الأب" — the deceased father's name and the YEAR of his passing, shown
+ * with deliberate restraint: a quiet, somber card (muted tones, never the
+ * celebratory success palette), a "في ذمّة الله" lead, and a respectful
+ * commemorative line. The backend double-gates this block (guardian consent AND
+ * supervisor visibility) and exposes ONLY the name + year — never the
+ * certificate or the full date — so a present `memory` is always safe to show.
+ * The year is intentionally rendered as a plain integer (not date-formatted) so
+ * no day/month can ever surface. */
+function FatherMemorySection({
+  memory,
+}: {
+  memory: NonNullable<SponsoredOrphanProfile["father_memory"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section aria-label={t("donorProfile.fatherMemoryTitle")}>
+      <figure className="rounded-2xl border-s-4 border-trust-300 bg-tranquil-100 p-6 dark:border-trust-500/40 dark:bg-trust-500/10">
+        <figcaption className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-trust-500">
+          <DoveIcon />
+          {t("donorProfile.fatherMemoryTitle")}
+        </figcaption>
+        <p className="mt-3 text-sm font-medium text-trust-600 dark:text-tranquil-200">
+          {t("donorProfile.fatherMemoryInGodsCare")}
+        </p>
+        <p className="mt-1 text-xl font-bold text-trust-800 dark:text-tranquil-100">
+          {memory.father_name}
+        </p>
+        {memory.death_year != null && (
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {t("donorProfile.fatherMemoryDied", { year: memory.death_year })}
+          </p>
+        )}
+        <p className="mt-4 text-sm italic leading-relaxed text-trust-700 dark:text-tranquil-200">
+          {t("donorProfile.fatherMemoryCommemoration")}
+        </p>
+      </figure>
+    </section>
+  );
+}
+
+/** A small, calm dove glyph — a quiet motif for the remembrance card. */
+function DoveIcon() {
+  return (
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 13c4 0 6-2 8-5 1.5-2.2 3.5-3 6-3 0 4-2 7-5 8" />
+      <path d="M11 8c-1 4-4 7-8 8 2 2 5 3 8 3 4 0 7-3 7-7" />
+    </svg>
+  );
 }
 
 /* ------------------------------------------------------------------ */

@@ -1892,6 +1892,46 @@ components:
       - updated_at
       title: FamilyRead
       type: object
+    FatherMemory:
+      description: '``father_memory`` — a dignified remembrance of the child''s deceased father.
+
+
+        DONOR-FACING slice — exposes ONLY the father''s name and the YEAR of death.
+
+        The death CERTIFICATE and the full death DATE never leave the server, and
+
+        this block is emitted only when guardian consent is on record AND the
+
+        supervisor left the element visible (the double gate).'
+      properties:
+        death_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Death Year
+        father_name:
+          title: Father Name
+          type: string
+      required:
+      - father_name
+      title: FatherMemory
+      type: object
+    FatherMemoryConsent:
+      description: 'Staff GET/PATCH contract for the father''s-memory guardian consent — the
+
+        first of the two gates that disclose the father''s memory to donors. The
+
+        visibility gate is the existing ``father_memory`` element on
+
+        ``profile_visibility``; both must be on for the block to reach the donor.'
+      properties:
+        consent:
+          title: Consent
+          type: boolean
+      required:
+      - consent
+      title: FatherMemoryConsent
+      type: object
     FileUploadResponse:
       description: 'Thin metadata blob the frontend hands straight to
 
@@ -6851,6 +6891,7 @@ components:
       - since_you_began
       - media
       - in_her_words
+      - father_memory
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -7853,6 +7894,10 @@ components:
           - type: string
           - type: 'null'
           title: Education Stage
+        father_memory:
+          anyOf:
+          - $ref: '#/components/schemas/FatherMemory'
+          - type: 'null'
         first_name:
           title: First Name
           type: string
@@ -12841,6 +12886,83 @@ paths:
       summary: Attach Document To Orphan
       tags:
       - documents
+  /api/v1/orphans/{orphan_id}/father-memory-consent:
+    get:
+      description: 'The current guardian-consent state for disclosing the child''s father''s
+
+        memory. Org-scoped (explicit, never RLS) with the same جهة fence as
+
+        :func:`get_orphan` — an out-of-org/جهة id 404s.'
+      operationId: get_orphan_father_memory_consent_api_v1_orphans__orphan_id__father_memory_consent_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FatherMemoryConsent'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get Orphan Father Memory Consent
+      tags:
+      - orphans
+    patch:
+      description: 'Record (or revoke) the guardian''s consent to disclose the child''s
+
+        father''s memory on the donor profile. This is the FIRST of the two gates;
+
+        the supervisor visibility toggle (PUT /profile-visibility) is the second —
+
+        the block reaches the donor only when both are on. Same org + جهة scoping as
+
+        the GET twin.'
+      operationId: set_orphan_father_memory_consent_api_v1_orphans__orphan_id__father_memory_consent_patch
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FatherMemoryConsent'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FatherMemoryConsent'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Set Orphan Father Memory Consent
+      tags:
+      - orphans
   /api/v1/orphans/{orphan_id}/in-her-words:
     get:
       description: 'The full ordered list of curated phrases for one child (including the

@@ -90,6 +90,7 @@ _BLOCK_FIELDS = {
     "since_you_began",
     "media",
     "in_her_words",
+    "father_memory",
 }
 
 

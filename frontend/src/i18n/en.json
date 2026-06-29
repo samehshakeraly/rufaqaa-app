@@ -3658,6 +3658,10 @@
       "in_her_words": {
         "label": "In her words",
         "help": "Curated short phrases in the child's own voice."
+      },
+      "father_memory": {
+        "label": "Father's memory",
+        "help": "The deceased father's name and year of death only — also requires the guardian's consent."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -3671,6 +3675,22 @@
     "saving": "Saving…",
     "saved": "Saved",
     "saveError": "Couldn't save. Please try again."
+  },
+  "fatherMemoryConsent": {
+    "title": "Father's memory",
+    "help": "The deceased father's name and year of death are shown to the sponsor only when the guardian's consent and the element's visibility are both on. The death certificate and the full date are never disclosed.",
+    "consentLabel": "Guardian's consent",
+    "consentHint": "Confirm the guardian agreed to share the father's memory with the sponsor.",
+    "grantAction": "Record guardian's consent",
+    "revokeAction": "Withdraw guardian's consent",
+    "visibilityLabel": "Element visible to sponsor",
+    "visibilityHint": "Set from the “Father's memory” toggle in the visibility panel below.",
+    "gateOn": "On",
+    "gateOff": "Off",
+    "shownToDonor": "Both gates are on — the father's memory is shown to the sponsor.",
+    "hiddenFromDonor": "Hidden from the sponsor — both the guardian's consent and the element's visibility must be on.",
+    "loadError": "Couldn't load the consent state. Please try again later.",
+    "saveError": "Couldn't save the consent. Please try again."
   },
   "inHerWords": {
     "intro": "Curate short phrases in the child's own voice. Saved phrases appear on the sponsor's profile in the order shown here. Hide the whole section from the visibility tab.",
@@ -4545,6 +4565,10 @@
     "herWorldTitle": "{{name}}'s world today",
     "inHerWordsTitle": "In {{name}}'s words",
     "inHerWordsSubtitle": "Phrases shared in her own voice.",
+    "fatherMemoryTitle": "The father's memory",
+    "fatherMemoryInGodsCare": "In God's care",
+    "fatherMemoryDied": "Passed away in {{year}}",
+    "fatherMemoryCommemoration": "May God envelop him in His vast mercy, and may this care be counted among his good deeds.",
     "memoryTitle": "{{name}}'s memory box",
     "memoryDrawings": "{{name}}'s drawings",
     "memoryCertificates": "{{name}}'s certificates",

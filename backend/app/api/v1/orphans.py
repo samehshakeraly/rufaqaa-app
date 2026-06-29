@@ -47,6 +47,7 @@ from app.schemas.profile_visibility import (
 )
 from app.schemas.sponsored_profile import (
     IN_HER_WORDS_MAX_ITEMS,
+    FatherMemoryConsent,
     InHerWordsItemUpdate,
     InHerWordsList,
     InHerWordsStaffItem,
@@ -793,6 +794,66 @@ async def set_orphan_profile_visibility(
     await db.commit()
     await db.refresh(orphan)
     return _visibility_registry(orphan)
+
+
+# ── Father's memory (ذكرى الأب) — guardian-consent gate ────────────────────
+#
+# The donor-facing "father's memory" block (the father's name + the YEAR of
+# death) is DOUBLE-GATED: it reaches the donor ONLY when BOTH guardian consent
+# is on record (this endpoint) AND the supervisor left the ``father_memory``
+# element visible (the existing profile-visibility PUT). Default is hidden until
+# explicitly consented. This sets only the consent gate — the visibility toggle
+# reuses PUT /orphans/{id}/profile-visibility. Org scope is ALWAYS explicit (a
+# superuser connection bypasses RLS), with the same جهة fence the other orphan
+# detail endpoints use.
+
+
+@router.get("/{orphan_id}/father-memory-consent", response_model=FatherMemoryConsent)
+async def get_orphan_father_memory_consent(
+    orphan_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> FatherMemoryConsent:
+    """The current guardian-consent state for disclosing the child's father's
+    memory. Org-scoped (explicit, never RLS) with the same جهة fence as
+    :func:`get_orphan` — an out-of-org/جهة id 404s."""
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
+    return FatherMemoryConsent(consent=orphan.father_memory_consent)
+
+
+@router.patch("/{orphan_id}/father-memory-consent", response_model=FatherMemoryConsent)
+async def set_orphan_father_memory_consent(
+    orphan_id: UUID,
+    payload: FatherMemoryConsent,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+) -> FatherMemoryConsent:
+    """Record (or revoke) the guardian's consent to disclose the child's
+    father's memory on the donor profile. This is the FIRST of the two gates;
+    the supervisor visibility toggle (PUT /profile-visibility) is the second —
+    the block reaches the donor only when both are on. Same org + جهة scoping as
+    the GET twin."""
+    orphan = await get_in_org_or_404(db, Orphan, orphan_id, user, Orphan.deleted_at.is_(None))
+    if partner_scope_hides(user, orphan.partner_organization_id):
+        raise NotFound("Orphan")
+
+    old = orphan.father_memory_consent
+    orphan.father_memory_consent = payload.consent
+    record_audit(
+        db,
+        organization_id=user.organization_id,
+        user_id=user.id,
+        action="orphan.father_memory_consent_updated",
+        entity_type="orphan",
+        entity_id=orphan.id,
+        old_values={"father_memory_consent": old},
+        new_values={"father_memory_consent": payload.consent},
+    )
+    await db.commit()
+    await db.refresh(orphan)
+    return FatherMemoryConsent(consent=orphan.father_memory_consent)
 
 
 # ── "In Her Words" (بكلماتها) — curated child phrases ──────────────────────

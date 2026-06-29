@@ -57,6 +57,14 @@ class Orphan(Base):
     father_name: Mapped[str | None] = mapped_column(String(255))
     father_death_date: Mapped[date | None] = mapped_column(Date)
     father_death_certificate: Mapped[str | None] = mapped_column(String(100))
+    # Gates donor disclosure of the father's memory (see migration 0026). The
+    # donor-facing block (father's name + YEAR of death) is exposed ONLY when
+    # this guardian consent is on record AND the supervisor left the
+    # ``father_memory`` element visible — default hidden until explicitly
+    # consented. The death certificate / full date never leave the server.
+    father_memory_consent: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false"), default=False
+    )
 
     # Richer registration intake (see migration 0021). ``lives_with`` is
     # enum-coded and validated only in the Pydantic layer (no DB CHECK), the
