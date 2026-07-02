@@ -47,6 +47,21 @@ PriorityLevel = Literal["normal", "high", "urgent"]
 # Who the child currently lives with. Enum-coded like the profile fields above;
 # validated here in Pydantic only (no DB CHECK — mirrors education_stage).
 LivesWith = Literal["mother", "relative", "orphanage", "other"]
+# Donor-facing orphanhood status, DERIVED — never stored (migration 0016
+# dropped ``parental_status`` deliberately). In this domain the father is
+# always deceased, so the only split is whether the mother is too.
+OrphanStatus = Literal["father", "both"]
+
+
+def derive_orphan_status(mother_status: str) -> OrphanStatus:
+    """Derive the donor-facing orphanhood status from ``mother_status``.
+
+    The father is always deceased (an orphan is defined by their father —
+    ``father_name`` + death certificate are core intake), so a deceased mother
+    means orphaned of both parents; anything else (alive/unknown) is a
+    paternal orphan."""
+    return "both" if mother_status == "deceased" else "father"
+
 
 # Sort options for the staff orphan list (GET /orphans). ``balanced`` is
 # intentionally excluded here — it lands in a later batch.
@@ -93,6 +108,12 @@ class OrphanBase(BaseModel):
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] = Field(default_factory=list)
+
+    # Small identity fields (see migration 0027). ``languages`` mirrors the
+    # ``tags`` list pattern; ``current_juz`` is the juz' currently being
+    # memorised — bounded 1–30 here in Pydantic only (no DB CHECK).
+    languages: list[str] = Field(default_factory=list)
+    current_juz: int | None = Field(default=None, ge=1, le=30)
 
     # Orphan browsing foundation (see migration 0009). Optional at creation —
     # both fall back to the DB default ('unknown' / 'normal') when omitted.
@@ -247,6 +268,9 @@ class OrphanUpdate(BaseModel):
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] | None = None
+
+    languages: list[str] | None = None
+    current_juz: int | None = Field(default=None, ge=1, le=30)
 
     mother_status: MotherStatus | None = None
     priority_level: PriorityLevel | None = None

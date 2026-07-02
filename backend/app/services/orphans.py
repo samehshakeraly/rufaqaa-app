@@ -355,6 +355,8 @@ async def create_orphan_record(
         aspiration=data.aspiration,
         challenges=data.challenges,
         tags=data.tags,
+        languages=data.languages,
+        current_juz=data.current_juz,
         mother_status=data.mother_status,
         priority_level=data.priority_level,
         created_by=user.id,

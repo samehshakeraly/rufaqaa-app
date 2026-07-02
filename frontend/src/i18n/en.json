@@ -1563,6 +1563,7 @@
       "schoolName": "School name",
       "quranSection": "Qur'an",
       "quranJuzMemorized": "Juz' memorized",
+      "currentJuz": "Current juz'",
       "quranNote": "Memorization note",
       "healthSection": "Health",
       "healthStatus": "Health status",
@@ -1607,6 +1608,17 @@
         "placeholder": "Type a tag and press Enter",
         "add": "Add",
         "remove": "Remove {{tag}}"
+      },
+      "languages": {
+        "label": "Languages",
+        "placeholder": "Type a language and press Enter",
+        "add": "Add",
+        "remove": "Remove {{language}}"
+      },
+      "orphanStatus": {
+        "label": "Orphan status",
+        "father": "Paternal orphan",
+        "both": "Orphaned of both parents"
       }
     }
   },
@@ -2632,6 +2644,7 @@
     "addGuardian": "Add guardian",
     "guardianName": "Full name",
     "relation": "Relation",
+    "occupation": "Occupation",
     "phone": "Phone",
     "email": "Email",
     "housingStatus": {

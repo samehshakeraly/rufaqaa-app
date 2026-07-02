@@ -24,6 +24,7 @@ from app.models.donor import Donor
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.sponsorship import Sponsorship
+from app.schemas.orphan import OrphanStatus, derive_orphan_status
 
 router = APIRouter()
 
@@ -63,6 +64,11 @@ class PublicOrphanDetail(PublicOrphanCard):
     education_stage: str | None = None
     quran_juz_memorized: int | None = None
     tags: list[str] = Field(default_factory=list)
+    # Small identity additions (R1). ``languages`` the child speaks;
+    # ``orphan_status`` is DERIVED from mother_status (never stored) — the
+    # coded value ("father"/"both"), localized by the frontend.
+    languages: list[str] = Field(default_factory=list)
+    orphan_status: OrphanStatus
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -120,6 +126,8 @@ def to_public_detail(orphan: Orphan, partner_name: str | None) -> PublicOrphanDe
         education_stage=orphan.education_stage,
         quran_juz_memorized=orphan.quran_juz_memorized,
         tags=orphan.tags,
+        languages=orphan.languages,
+        orphan_status=derive_orphan_status(orphan.mother_status),
     )
 
 

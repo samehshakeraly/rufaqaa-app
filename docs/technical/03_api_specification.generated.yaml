@@ -2027,6 +2027,12 @@ components:
             type: string
           - type: 'null'
           title: National Id
+        occupation:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Occupation
         phone:
           anyOf:
           - maxLength: 30
@@ -2197,6 +2203,13 @@ components:
           additionalProperties: true
           title: Country Specific
           type: object
+        current_juz:
+          anyOf:
+          - maximum: 30.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Current Juz
         date_of_birth:
           format: date
           title: Date Of Birth
@@ -2265,6 +2278,11 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        languages:
+          items:
+            type: string
+          title: Languages
+          type: array
         lives_with:
           anyOf:
           - enum:
@@ -2532,6 +2550,12 @@ components:
             type: string
           - type: 'null'
           title: National Id
+        occupation:
+          anyOf:
+          - maxLength: 100
+            type: string
+          - type: 'null'
+          title: Occupation
         organization_id:
           format: uuid
           title: Organization Id
@@ -2689,6 +2713,11 @@ components:
     HerWorldBlock:
       description: '``her_world`` — a snapshot of where the child is right now.'
       properties:
+        current_juz:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Juz
         education_stage:
           anyOf:
           - type: string
@@ -3944,6 +3973,13 @@ components:
           additionalProperties: true
           title: Country Specific
           type: object
+        current_juz:
+          anyOf:
+          - maximum: 30.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Current Juz
         date_of_birth:
           format: date
           title: Date Of Birth
@@ -4022,6 +4058,11 @@ components:
           anyOf:
           - $ref: '#/components/schemas/OrphanHomeAddress'
           - type: 'null'
+        languages:
+          items:
+            type: string
+          title: Languages
+          type: array
         lives_with:
           anyOf:
           - enum:
@@ -4459,6 +4500,13 @@ components:
           pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
           title: Current Balance
           type: string
+        current_juz:
+          anyOf:
+          - maximum: 30.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Current Juz
         date_of_birth:
           format: date
           title: Date Of Birth
@@ -4541,6 +4589,11 @@ components:
         is_sponsored:
           title: Is Sponsored
           type: boolean
+        languages:
+          items:
+            type: string
+          title: Languages
+          type: array
         lives_with:
           anyOf:
           - enum:
@@ -4717,6 +4770,13 @@ components:
           - type: string
           - type: 'null'
           title: Chronic Conditions
+        current_juz:
+          anyOf:
+          - maximum: 30.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Current Juz
         date_of_birth:
           anyOf:
           - format: date
@@ -4794,6 +4854,13 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        languages:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Languages
         lives_with:
           anyOf:
           - enum:
@@ -7070,6 +7137,17 @@ components:
           readOnly: true
           title: Is Hafiz
           type: boolean
+        languages:
+          items:
+            type: string
+          title: Languages
+          type: array
+        orphan_status:
+          enum:
+          - father
+          - both
+          title: Orphan Status
+          type: string
         partner_organization_name:
           anyOf:
           - type: string
@@ -7098,6 +7176,7 @@ components:
       - country
       - case_status
       - partner_organization_name
+      - orphan_status
       - is_hafiz
       title: PublicOrphanDetail
       type: object
@@ -7921,6 +8000,11 @@ components:
         is_hafiz:
           title: Is Hafiz
           type: boolean
+        languages:
+          items:
+            type: string
+          title: Languages
+          type: array
         media:
           anyOf:
           - $ref: '#/components/schemas/MediaBlock'
@@ -7933,6 +8017,12 @@ components:
           anyOf:
           - $ref: '#/components/schemas/MultidimGrowthBlock'
           - type: 'null'
+        orphan_status:
+          enum:
+          - father
+          - both
+          title: Orphan Status
+          type: string
         partner_organization_name:
           anyOf:
           - type: string
@@ -7970,6 +8060,8 @@ components:
       - gender
       - tags
       - is_hafiz
+      - languages
+      - orphan_status
       title: SponsoredOrphanProfile
       type: object
     SponsorshipCancel:

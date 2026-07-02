@@ -65,6 +65,10 @@ export interface Orphan {
   aspiration?: string | null;
   challenges?: string | null;
   tags?: string[];
+  /** Languages the child speaks (free tags, e.g. "ar", "en"). */
+  languages?: string[];
+  /** The juz' currently being memorised (1–30). */
+  current_juz?: number | null;
   /** Derived (not stored): a child who has memorised the whole Qur'an. */
   is_hafiz?: boolean;
 }
@@ -137,6 +141,8 @@ export interface OrphanCreateInput {
   aspiration?: string;
   challenges?: string;
   tags?: string[];
+  languages?: string[];
+  current_juz?: number;
 }
 
 export async function listOrphans(params?: {
@@ -253,6 +259,8 @@ export interface OrphanUpdateInput {
   aspiration?: string | null;
   challenges?: string | null;
   tags?: string[];
+  languages?: string[];
+  current_juz?: number | null;
 }
 
 export async function updateOrphan(

@@ -69,6 +69,9 @@ class GuardianBase(BaseModel):
     date_of_birth: date | None = None
     gender: Gender | None = None
     relation: Relation
+    # Staff-facing only (see migration 0027) — never exposed on any donor
+    # surface in this batch.
+    occupation: str | None = Field(default=None, max_length=100)
     phone: str | None = Field(default=None, max_length=30)
     whatsapp: str | None = Field(default=None, max_length=30)
     email: EmailStr | None = None

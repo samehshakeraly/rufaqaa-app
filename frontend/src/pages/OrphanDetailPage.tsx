@@ -488,6 +488,7 @@ interface ProfileDraft {
   academic_level: string;
   school_name: string;
   quran_juz_memorized: string;
+  current_juz: string;
   quran_note: string;
   health_status: string;
   health_coverage: string;
@@ -497,6 +498,7 @@ interface ProfileDraft {
   aspiration: string;
   challenges: string;
   tags: string[];
+  languages: string[];
 }
 
 function draftFromOrphan(o: Orphan): ProfileDraft {
@@ -507,6 +509,7 @@ function draftFromOrphan(o: Orphan): ProfileDraft {
     school_name: o.school_name ?? "",
     quran_juz_memorized:
       o.quran_juz_memorized != null ? String(o.quran_juz_memorized) : "",
+    current_juz: o.current_juz != null ? String(o.current_juz) : "",
     quran_note: o.quran_note ?? "",
     health_status: o.health_status ?? "",
     health_coverage: o.health_coverage ?? "",
@@ -516,6 +519,7 @@ function draftFromOrphan(o: Orphan): ProfileDraft {
     aspiration: o.aspiration ?? "",
     challenges: o.challenges ?? "",
     tags: o.tags ?? [],
+    languages: o.languages ?? [],
   };
 }
 
@@ -569,9 +573,21 @@ function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
     payload.quran_juz_memorized = qNext;
   }
 
+  const cjStr = d.current_juz.trim();
+  const cjNext = cjStr === "" ? null : Number(cjStr);
+  const cjOrig = o.current_juz ?? null;
+  if (cjNext !== cjOrig && !(cjNext !== null && Number.isNaN(cjNext))) {
+    payload.current_juz = cjNext;
+  }
+
   const tagsOrig = o.tags ?? [];
   if (JSON.stringify(d.tags) !== JSON.stringify(tagsOrig)) {
     payload.tags = d.tags;
+  }
+
+  const languagesOrig = o.languages ?? [];
+  if (JSON.stringify(d.languages) !== JSON.stringify(languagesOrig)) {
+    payload.languages = d.languages;
   }
 
   return payload;
@@ -583,6 +599,7 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<ProfileDraft>(() => draftFromOrphan(orphan));
   const [tagInput, setTagInput] = useState("");
+  const [languageInput, setLanguageInput] = useState("");
 
   // Org dars, to render the assignment by name (read) and offer the picker
   // (edit). Shares the ["orphanages"] cache with the list/create surfaces.
@@ -617,11 +634,13 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
   function beginEdit() {
     setDraft(draftFromOrphan(orphan));
     setTagInput("");
+    setLanguageInput("");
     setEditing(true);
   }
 
   function cancel() {
     setTagInput("");
+    setLanguageInput("");
     setEditing(false);
   }
 
@@ -646,6 +665,20 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
 
   function removeTag(tag: string) {
     setDraft((d) => ({ ...d, tags: d.tags.filter((x) => x !== tag) }));
+  }
+
+  function addLanguage() {
+    const next = languageInput.trim();
+    if (!next || draft.languages.includes(next)) {
+      setLanguageInput("");
+      return;
+    }
+    setDraft((d) => ({ ...d, languages: [...d.languages, next] }));
+    setLanguageInput("");
+  }
+
+  function removeLanguage(language: string) {
+    setDraft((d) => ({ ...d, languages: d.languages.filter((x) => x !== language) }));
   }
 
   const notSet = <span className="ps-info-muted">{t("orphans.profile.notSet")}</span>;
@@ -706,6 +739,13 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
               notSet
             )}
           </ProfileRow>
+          <ProfileRow label={t("orphans.profile.currentJuz")}>
+            {orphan.current_juz != null ? (
+              <span className="tabular-nums">{orphan.current_juz}</span>
+            ) : (
+              notSet
+            )}
+          </ProfileRow>
           <ProfileRow label={t("orphans.profile.quranNote")}>
             {text(orphan.quran_note)}
           </ProfileRow>
@@ -744,6 +784,19 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
                 {orphan.tags.map((tag) => (
                   <span key={tag} className="ps-badge partner">
                     {tag}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              notSet
+            )}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.languages.label")}>
+            {orphan.languages && orphan.languages.length > 0 ? (
+              <span className="ps-tag-chips">
+                {orphan.languages.map((language) => (
+                  <span key={language} className="ps-badge partner">
+                    {language}
                   </span>
                 ))}
               </span>
@@ -822,6 +875,19 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
                 value={draft.quran_juz_memorized}
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, quran_juz_memorized: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.currentJuz")}>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                step={1}
+                className="input"
+                value={draft.current_juz}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, current_juz: e.target.value }))
                 }
               />
             </ProfileEditField>
@@ -955,6 +1021,37 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     addTag();
+                  }
+                }}
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.languages.label")}>
+              {draft.languages.length > 0 && (
+                <div className="ps-tag-chips ps-tag-chips-edit">
+                  {draft.languages.map((language) => (
+                    <span key={language} className="ps-badge partner">
+                      {language}
+                      <button
+                        type="button"
+                        aria-label={t("orphans.profile.languages.remove", { language })}
+                        className="ps-tag-remove"
+                        onClick={() => removeLanguage(language)}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <input
+                className="input"
+                value={languageInput}
+                placeholder={t("orphans.profile.languages.placeholder")}
+                onChange={(e) => setLanguageInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addLanguage();
                   }
                 }}
               />

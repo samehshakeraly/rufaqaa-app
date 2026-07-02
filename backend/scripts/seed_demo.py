@@ -240,6 +240,7 @@ CITIES_BY_COUNTRY: dict[str, list[str]] = {
 
 HOUSING_STATUSES = ["owned", "rented", "donated", "homeless"]
 GUARDIAN_RELATIONS = ["mother", "grandfather", "uncle", "grandmother", "aunt", "sibling"]
+GUARDIAN_OCCUPATIONS = ["خياطة", "معلّمة", "بائع", "ربّة منزل", "عامل بناء", "متقاعد"]
 LITERACY_LEVELS = ["illiterate", "low", "medium", "high"]
 HEALTH_STATUSES = ["good", "good", "good", "chronic_condition", "under_treatment", "disability"]
 HEALTH_COVERAGES = ["none", "government", "charity", "private"]
@@ -739,6 +740,7 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 date_of_birth=date(1972 + (i % 18), 1 + (i % 12), 1 + (i % 27)),
                 gender=gender,
                 relation=relation,
+                occupation=GUARDIAN_OCCUPATIONS[i % len(GUARDIAN_OCCUPATIONS)],
                 phone=f"+9655{i:07d}",
                 whatsapp=f"+9655{i:07d}",
                 literacy_level=rng.choice(LITERACY_LEVELS),
@@ -792,6 +794,11 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
         give_id = country in ("EG", "JO") or i % 2 == 0
         national_id = _national_id(country, i) if give_id else None
 
+        # Qur'an progress: juz' memorised so far + the one currently underway
+        # (R1 — surfaces on the donor her_world block).
+        juz_memorized = min(30, (age - 2) + (i % 4))
+        current_juz = min(30, juz_memorized + 1)
+
         code = ORPHAN_CODE.format(i + 1)
         orphan = await _get_orphan(db, code)
         if orphan is None:
@@ -816,7 +823,8 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 education_stage=education,
                 academic_level=ACADEMIC_LEVELS[i % len(ACADEMIC_LEVELS)],
                 school_name=f"مدرسة {rng.choice(CITIES_BY_COUNTRY[country])} النموذجية",
-                quran_juz_memorized=min(30, (age - 2) + (i % 4)),
+                quran_juz_memorized=juz_memorized,
+                current_juz=current_juz,
                 quran_note="يواظب على حلقة التحفيظ.",
                 health_status=HEALTH_STATUSES[i % len(HEALTH_STATUSES)],
                 health_coverage=HEALTH_COVERAGES[i % len(HEALTH_COVERAGES)],
@@ -824,6 +832,9 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 aspiration=rng.choice(["طبيب", "مهندس", "معلّم", "طيّار", "مبرمج", "إعلامي"]),
                 challenges="يحتاج إلى دعم في مادة الرياضيات." if i % 5 == 0 else None,
                 tags=rng.sample(ORPHAN_TAGS, k=2),
+                # Languages the child speaks (R1) — renders on the donor
+                # identity block.
+                languages=["ar", "en"],
                 # national_id → Fernet ciphertext + deterministic blind index, the
                 # exact write path the create endpoint uses (keeps the per-org
                 # uniqueness guard and decrypt-on-read invariants intact).

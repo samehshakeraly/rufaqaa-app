@@ -4242,6 +4242,8 @@ export interface components {
             literacy_level: "illiterate" | "low" | "medium" | "high";
             /** National Id */
             national_id?: string | null;
+            /** Occupation */
+            occupation?: string | null;
             /** Phone */
             phone?: string | null;
             /**
@@ -4326,6 +4328,8 @@ export interface components {
             country_specific?: {
                 [key: string]: unknown;
             };
+            /** Current Juz */
+            current_juz?: number | null;
             /**
              * Date Of Birth
              * Format: date
@@ -4352,6 +4356,8 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Languages */
+            languages?: string[];
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -4502,6 +4508,8 @@ export interface components {
             literacy_level: "illiterate" | "low" | "medium" | "high";
             /** National Id */
             national_id?: string | null;
+            /** Occupation */
+            occupation?: string | null;
             /**
              * Organization Id
              * Format: uuid
@@ -4600,6 +4608,8 @@ export interface components {
          * @description ``her_world`` — a snapshot of where the child is right now.
          */
         HerWorldBlock: {
+            /** Current Juz */
+            current_juz?: number | null;
             /** Education Stage */
             education_stage?: string | null;
             /** Is Hafiz */
@@ -5298,6 +5308,8 @@ export interface components {
             country_specific?: {
                 [key: string]: unknown;
             };
+            /** Current Juz */
+            current_juz?: number | null;
             /**
              * Date Of Birth
              * Format: date
@@ -5327,6 +5339,8 @@ export interface components {
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             home_address?: components["schemas"]["OrphanHomeAddress"] | null;
+            /** Languages */
+            languages?: string[];
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -5557,6 +5571,8 @@ export interface components {
             created_at: string;
             /** Current Balance */
             current_balance: string;
+            /** Current Juz */
+            current_juz?: number | null;
             /**
              * Date Of Birth
              * Format: date
@@ -5597,6 +5613,8 @@ export interface components {
             readonly is_hafiz: boolean;
             /** Is Sponsored */
             is_sponsored: boolean;
+            /** Languages */
+            languages?: string[];
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -5680,6 +5698,8 @@ export interface components {
             challenges?: string | null;
             /** Chronic Conditions */
             chronic_conditions?: string | null;
+            /** Current Juz */
+            current_juz?: number | null;
             /** Date Of Birth */
             date_of_birth?: string | null;
             /** Education Stage */
@@ -5700,6 +5720,8 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Languages */
+            languages?: string[] | null;
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -6869,6 +6891,13 @@ export interface components {
              * @description Derived (not stored): a child who has memorised the whole Qur'an.
              */
             readonly is_hafiz: boolean;
+            /** Languages */
+            languages?: string[];
+            /**
+             * Orphan Status
+             * @enum {string}
+             */
+            orphan_status: "father" | "both";
             /** Partner Organization Name */
             partner_organization_name: string | null;
             /** Quran Juz Memorized */
@@ -7325,9 +7354,16 @@ export interface components {
             in_her_words?: components["schemas"]["InHerWordsItem"][] | null;
             /** Is Hafiz */
             is_hafiz: boolean;
+            /** Languages */
+            languages: string[];
             media?: components["schemas"]["MediaBlock"] | null;
             milestones?: components["schemas"]["MilestonesBlock"] | null;
             multidim_growth?: components["schemas"]["MultidimGrowthBlock"] | null;
+            /**
+             * Orphan Status
+             * @enum {string}
+             */
+            orphan_status: "father" | "both";
             /** Partner Organization Name */
             partner_organization_name?: string | null;
             quran_growth?: components["schemas"]["QuranGrowthBlock"] | null;

@@ -353,12 +353,16 @@ def _compose_sponsored_profile(
     # her_world ── where the child is right now.
     her_world = None
     if is_visible(vis, ProfileElement.her_world) and (
-        orphan.education_stage or orphan.tags or orphan.quran_juz_memorized is not None
+        orphan.education_stage
+        or orphan.tags
+        or orphan.quran_juz_memorized is not None
+        or orphan.current_juz is not None
     ):
         her_world = HerWorldBlock(
             education_stage=orphan.education_stage,
             tags=list(orphan.tags),
             quran_juz_memorized=orphan.quran_juz_memorized,
+            current_juz=orphan.current_juz,
             is_hafiz=detail.is_hafiz,
         )
 
@@ -490,6 +494,8 @@ def _compose_sponsored_profile(
         quran_juz_memorized=detail.quran_juz_memorized,
         tags=detail.tags,
         is_hafiz=detail.is_hafiz,
+        languages=detail.languages,
+        orphan_status=detail.orphan_status,
         dream=dream,
         her_world=her_world,
         quran_growth=quran_growth,

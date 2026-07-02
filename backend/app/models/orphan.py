@@ -88,6 +88,17 @@ class Orphan(Base):
         ARRAY(Text), nullable=False, server_default=text("'{}'::text[]"), default=list
     )
 
+    # Small identity fields (see migration 0027). ``languages`` mirrors the
+    # ``tags`` array pattern; ``current_juz`` is the juz' the child is
+    # currently memorising (1–30, validated in Pydantic only — no DB CHECK,
+    # like quran_juz_memorized above). The donor-facing ``orphan_status``
+    # (father/both) is deliberately NOT stored — it is derived from
+    # ``mother_status`` at read time (0016 dropped ``parental_status``).
+    languages: Mapped[list[str]] = mapped_column(
+        ARRAY(Text), nullable=False, server_default=text("'{}'::text[]"), default=list
+    )
+    current_juz: Mapped[int | None] = mapped_column(SmallInteger)
+
     case_status: Mapped[str] = mapped_column(String(30), default="pending_review")
 
     # Per-element donor-profile visibility (see migration 0023). A JSONB map

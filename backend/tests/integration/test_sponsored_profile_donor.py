@@ -52,6 +52,7 @@ _FORBIDDEN_FIELDS = {
     "family_name",
     "lives_with",
     "guardian",
+    "occupation",
     "address",
     "gps",
     "country_specific",
@@ -75,6 +76,8 @@ _IDENTITY_FIELDS = {
     "quran_juz_memorized",
     "tags",
     "is_hafiz",
+    "languages",
+    "orphan_status",
 }
 
 # One optional block per ProfileElement — always a top-level key (null when the

@@ -31,6 +31,10 @@ export interface PublicOrphanDetail extends PublicOrphan {
   quran_juz_memorized: number | null;
   is_hafiz: boolean;
   tags: string[];
+  /** Languages the child speaks. */
+  languages: string[];
+  /** Derived orphanhood status code ("father" | "both"); localized on the client. */
+  orphan_status: "father" | "both";
 }
 
 export interface PublicOrphansPage {
