@@ -1979,6 +1979,33 @@ components:
           type: boolean
       title: ForgotPasswordResponse
       type: object
+    GuardianBlock:
+      description: '``guardian`` — who cares for the child, without identifying them.
+
+        SENSITIVE: this is GUARDIAN data on a donor surface, so the slice is a
+
+        strict allowlist — ONLY the coded relation (the frontend localizes it) and
+
+        the occupation. ``full_name`` / ``national_id`` / ``phone`` / ``whatsapp``
+
+        / ``email`` / ``bank_account_info`` / ``literacy_level`` /
+
+        ``date_of_birth`` / ``user_id`` / ``code`` stay staff-only and must NEVER
+
+        be added here.'
+      properties:
+        occupation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Occupation
+        relation:
+          title: Relation
+          type: string
+      required:
+      - relation
+      title: GuardianBlock
+      type: object
     GuardianCreate:
       properties:
         date_of_birth:
@@ -2795,6 +2822,33 @@ components:
       - tags
       - is_hafiz
       title: HerWorldBlock
+      type: object
+    HomeBlock:
+      description: '``home`` — a minimal, PII-free glimpse of the child''s home. SENSITIVE:
+
+        this is FAMILY data on a donor surface, so the slice is a strict allowlist —
+
+        ONLY the governorate (region at GOVERNORATE level, never finer) and the
+
+        coded housing status (the frontend localizes it). ``city`` / ``district`` /
+
+        ``village`` / ``street`` / ``house_number`` / ``floor`` / ``address_details``
+
+        / coordinates / ``notes`` / ``code`` / ``family_name`` / ``monthly_income``
+
+        stay staff-only and must NEVER be added here.'
+      properties:
+        governorate:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Governorate
+        housing_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Housing Status
+      title: HomeBlock
       type: object
     InHerWordsItem:
       description: 'One curated phrase, in the child''s own words. DONOR-FACING slice — exposes
@@ -7060,6 +7114,8 @@ components:
       - in_her_words
       - father_memory
       - health
+      - home
+      - guardian
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -8087,6 +8143,10 @@ components:
           - F
           title: Gender
           type: string
+        guardian:
+          anyOf:
+          - $ref: '#/components/schemas/GuardianBlock'
+          - type: 'null'
         health:
           anyOf:
           - $ref: '#/components/schemas/HealthBlock'
@@ -8094,6 +8154,10 @@ components:
         her_world:
           anyOf:
           - $ref: '#/components/schemas/HerWorldBlock'
+          - type: 'null'
+        home:
+          anyOf:
+          - $ref: '#/components/schemas/HomeBlock'
           - type: 'null'
         in_her_words:
           anyOf:

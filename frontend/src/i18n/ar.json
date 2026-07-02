@@ -3686,6 +3686,14 @@
       "health": {
         "label": "الاطمئنان الصحي",
         "help": "خلاصة مطمئنة فقط: الحالة العامة وآخر فحص طبي والتطعيمات — دون أي تشخيصات أو أمراض أو تفاصيل تغطية."
+      },
+      "home": {
+        "label": "بيتها",
+        "help": "لمحة آمنة فقط: المحافظة ونوع السكن — دون أي مدينة أو شارع أو عنوان أو إحداثيات أو دخل."
+      },
+      "guardian": {
+        "label": "من يرعاها",
+        "help": "صلة قرابة الراعي الأساسي ومهنته فقط — دون أي اسم أو هاتف أو بيانات تعريفية."
       }
     },
     "showAction": "إظهار {{name}} للكافل",
@@ -4596,6 +4604,12 @@
     },
     "healthLastCheckup": "آخر فحص طبي",
     "healthVaccinations": "التطعيمات",
+    "homeTitle": "بيت {{name}}",
+    "homeGovernorate": "المحافظة",
+    "homeHousing": "السكن",
+    "guardianTitle": "من يرعى {{name}}",
+    "guardianRelation": "صلة القرابة",
+    "guardianOccupation": "المهنة",
     "inHerWordsTitle": "بكلمات {{name}}",
     "inHerWordsSubtitle": "عبارات شاركتها بصوتها.",
     "fatherMemoryTitle": "ذكرى الأب",

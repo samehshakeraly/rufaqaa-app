@@ -181,6 +181,32 @@ class HealthBlock(BaseModel):
     vaccinations_status: VaccinationsStatus | None = None
 
 
+class HomeBlock(BaseModel):
+    """``home`` — a minimal, PII-free glimpse of the child's home. SENSITIVE:
+    this is FAMILY data on a donor surface, so the slice is a strict allowlist —
+    ONLY the governorate (region at GOVERNORATE level, never finer) and the
+    coded housing status (the frontend localizes it). ``city`` / ``district`` /
+    ``village`` / ``street`` / ``house_number`` / ``floor`` / ``address_details``
+    / coordinates / ``notes`` / ``code`` / ``family_name`` / ``monthly_income``
+    stay staff-only and must NEVER be added here."""
+
+    governorate: str | None = None
+    housing_status: str | None = None
+
+
+class GuardianBlock(BaseModel):
+    """``guardian`` — who cares for the child, without identifying them.
+    SENSITIVE: this is GUARDIAN data on a donor surface, so the slice is a
+    strict allowlist — ONLY the coded relation (the frontend localizes it) and
+    the occupation. ``full_name`` / ``national_id`` / ``phone`` / ``whatsapp``
+    / ``email`` / ``bank_account_info`` / ``literacy_level`` /
+    ``date_of_birth`` / ``user_id`` / ``code`` stay staff-only and must NEVER
+    be added here."""
+
+    relation: str
+    occupation: str | None = None
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -221,6 +247,8 @@ class SponsoredOrphanProfile(BaseModel):
     in_her_words: list[InHerWordsItem] | None = None
     father_memory: FatherMemory | None = None
     health: HealthBlock | None = None
+    home: HomeBlock | None = None
+    guardian: GuardianBlock | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────

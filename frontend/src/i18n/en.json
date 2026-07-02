@@ -3686,6 +3686,14 @@
       "health": {
         "label": "Health reassurance",
         "help": "A reassuring summary only: the general status, last checkup and vaccinations — never diagnoses, conditions or coverage details."
+      },
+      "home": {
+        "label": "Her home",
+        "help": "A safe glimpse only: the governorate and the housing status — never a city, street, address, coordinates or income."
+      },
+      "guardian": {
+        "label": "Who cares for her",
+        "help": "The primary caregiver's relation and occupation only — never a name, phone or any identifying detail."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -4596,6 +4604,12 @@
     },
     "healthLastCheckup": "Last checkup",
     "healthVaccinations": "Vaccinations",
+    "homeTitle": "{{name}}'s home",
+    "homeGovernorate": "Governorate",
+    "homeHousing": "Housing",
+    "guardianTitle": "Who cares for {{name}}",
+    "guardianRelation": "Relation",
+    "guardianOccupation": "Occupation",
     "inHerWordsTitle": "In {{name}}'s words",
     "inHerWordsSubtitle": "Phrases shared in her own voice.",
     "fatherMemoryTitle": "The father's memory",

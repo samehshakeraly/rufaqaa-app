@@ -727,7 +727,13 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
             )
         )
         if existing_guardian is None:
-            relation = GUARDIAN_RELATIONS[i % len(GUARDIAN_RELATIONS)]
+            # Family 0 belongs to the demo child (orphans[0], sponsored by the
+            # login donor): keep her caregiver a MOTHER with an occupation so
+            # the gated donor ``guardian`` block (R3) renders. Her family's
+            # governorate + housing_status (always set above) feed the ``home``
+            # block the same way — both elements stay visible via the default
+            # profile_visibility={}.
+            relation = "mother" if i == 0 else GUARDIAN_RELATIONS[i % len(GUARDIAN_RELATIONS)]
             gender = "F" if relation in ("mother", "grandmother", "aunt") else "M"
             guardian = Guardian(
                 organization_id=org_id,
