@@ -42,6 +42,9 @@ EducationStage = Literal[
 AcademicLevel = Literal["weak", "good", "excellent"]
 HealthStatus = Literal["good", "chronic_condition", "disability", "under_treatment"]
 HealthCoverage = Literal["none", "government", "private", "charity"]
+# Coded vaccinations status (see migration 0028). Validated here in Pydantic
+# only (no DB CHECK — mirrors health_status).
+VaccinationsStatus = Literal["up_to_date", "partial", "unknown"]
 MotherStatus = Literal["alive", "deceased", "unknown"]
 PriorityLevel = Literal["normal", "high", "urgent"]
 # Who the child currently lives with. Enum-coded like the profile fields above;
@@ -105,6 +108,11 @@ class OrphanBase(BaseModel):
     health_status: HealthStatus | None = None
     health_coverage: HealthCoverage | None = None
     chronic_conditions: str | None = None
+    # Static health fields (see migration 0028). Both optional everywhere;
+    # only the coded pair (health_status + these two) may reach the gated
+    # donor ``health`` block — coverage/chronic text above stay staff-only.
+    last_checkup: date | None = None
+    vaccinations_status: VaccinationsStatus | None = None
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] = Field(default_factory=list)
@@ -265,6 +273,8 @@ class OrphanUpdate(BaseModel):
     health_status: HealthStatus | None = None
     health_coverage: HealthCoverage | None = None
     chronic_conditions: str | None = None
+    last_checkup: date | None = None
+    vaccinations_status: VaccinationsStatus | None = None
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] | None = None

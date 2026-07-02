@@ -1580,6 +1580,13 @@
         "private": "خاصة",
         "charity": "خيرية"
       },
+      "lastCheckup": "آخر فحص طبي",
+      "vaccinationsStatus": "التطعيمات",
+      "vaccinationsStatusOptions": {
+        "up_to_date": "مكتملة",
+        "partial": "جزئية",
+        "unknown": "غير معروفة"
+      },
       "motherStatus": "حالة الأم",
       "motherStatusOptions": {
         "alive": "على قيد الحياة",
@@ -3675,6 +3682,10 @@
       "father_memory": {
         "label": "ذكرى الأب",
         "help": "اسم الأب المتوفّى وسنة وفاته فقط — يتطلّب موافقة الوليّ أيضًا."
+      },
+      "health": {
+        "label": "الاطمئنان الصحي",
+        "help": "خلاصة مطمئنة فقط: الحالة العامة وآخر فحص طبي والتطعيمات — دون أي تشخيصات أو أمراض أو تفاصيل تغطية."
       }
     },
     "showAction": "إظهار {{name}} للكافل",
@@ -4576,6 +4587,15 @@
     "recentUpdatesLink": "اطّلع على كل التحديثات",
     "supervisorWordTitle": "كلمة من المشرف",
     "herWorldTitle": "عالم {{name}} اليوم",
+    "healthTitle": "الاطمئنان على صحة {{name}}",
+    "healthStatusOptions": {
+      "good": "بصحة جيدة والحمد لله",
+      "chronic_condition": "تحت متابعة صحية منتظمة",
+      "disability": "برعاية خاصة واهتمام",
+      "under_treatment": "تحت رعاية طبية"
+    },
+    "healthLastCheckup": "آخر فحص طبي",
+    "healthVaccinations": "التطعيمات",
     "inHerWordsTitle": "بكلمات {{name}}",
     "inHerWordsSubtitle": "عبارات شاركتها بصوتها.",
     "fatherMemoryTitle": "ذكرى الأب",

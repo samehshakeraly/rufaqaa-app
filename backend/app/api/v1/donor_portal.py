@@ -46,6 +46,7 @@ from app.schemas.report import (
 from app.schemas.sponsored_profile import (
     DreamBlock,
     FatherMemory,
+    HealthBlock,
     HerWorldBlock,
     InHerWordsItem,
     MediaBlock,
@@ -483,6 +484,25 @@ def _compose_sponsored_profile(
             death_year=orphan.father_death_date.year if orphan.father_death_date else None,
         )
 
+    # health ── a reassuring, non-clinical summary (the FIRST health data on
+    # any donor surface). MINIMAL SLICE: the coded status_label + last_checkup
+    # + coded vaccinations_status ONLY — chronic_conditions / health_coverage /
+    # challenges never reach this block. Gated exactly like the sibling
+    # elements: hidden OR no underlying value ⇒ omitted (None).
+    health = None
+    if is_visible(vis, ProfileElement.health) and (
+        orphan.health_status is not None
+        or orphan.last_checkup is not None
+        or orphan.vaccinations_status is not None
+    ):
+        health = HealthBlock.model_validate(
+            {
+                "status_label": orphan.health_status,
+                "last_checkup": orphan.last_checkup,
+                "vaccinations_status": orphan.vaccinations_status,
+            }
+        )
+
     return SponsoredOrphanProfile(
         first_name=detail.first_name,
         age_years=detail.age_years,
@@ -507,6 +527,7 @@ def _compose_sponsored_profile(
         media=media,
         in_her_words=in_her_words,
         father_memory=father_memory,
+        health=health,
     )
 
 

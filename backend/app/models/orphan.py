@@ -99,6 +99,15 @@ class Orphan(Base):
     )
     current_juz: Mapped[int | None] = mapped_column(SmallInteger)
 
+    # Static health fields (see migration 0028). ``vaccinations_status`` is
+    # coded and validated in the Pydantic layer only (no DB CHECK — mirrors
+    # health_status above). Together with the coded ``health_status`` these
+    # back the gated donor ``health`` element — the deliberately minimal slice;
+    # ``health_coverage`` / ``chronic_conditions`` / ``challenges`` stay
+    # staff-only and never reach any donor surface.
+    last_checkup: Mapped[date | None] = mapped_column(Date)
+    vaccinations_status: Mapped[str | None] = mapped_column(String(20))
+
     case_status: Mapped[str] = mapped_column(String(30), default="pending_review")
 
     # Per-element donor-profile visibility (see migration 0023). A JSONB map

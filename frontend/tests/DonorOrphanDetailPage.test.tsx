@@ -193,6 +193,11 @@ const FULL_PROFILE = {
     ],
   },
   father_memory: { father_name: "أحمد", death_year: 2019 },
+  health: {
+    status_label: "good",
+    last_checkup: "2026-04-10",
+    vaccinations_status: "up_to_date",
+  },
 };
 
 // Identity only — every element block omitted (backend hid/absent them all).
@@ -496,6 +501,46 @@ describe("DonorOrphanDetailPage — father's memory (ذكرى الأب)", () => 
     await screen.findByText("عائشة");
     expect(screen.queryByRole("region", { name: "ذكرى الأب" })).not.toBeInTheDocument();
     expect(screen.queryByText("في ذمّة الله")).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — health (الاطمئنان الصحي)", () => {
+  it("renders the reassuring summary with localized coded values only", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "الاطمئنان على صحة عائشة" });
+    // Coded status → warm localized label, never the raw code.
+    expect(within(section).getByText("بصحة جيدة والحمد لله")).toBeInTheDocument();
+    expect(within(section).getByText("آخر فحص طبي")).toBeInTheDocument();
+    expect(within(section).getByText("التطعيمات")).toBeInTheDocument();
+    expect(within(section).getByText("مكتملة")).toBeInTheDocument();
+    expect(within(section).queryByText("up_to_date")).not.toBeInTheDocument();
+    expect(within(section).queryByText("good")).not.toBeInTheDocument();
+  });
+
+  it("renders only the fields the backend included", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      health: { status_label: null, last_checkup: "2026-01-05", vaccinations_status: null },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "الاطمئنان على صحة عائشة" });
+    expect(within(section).getByText("آخر فحص طبي")).toBeInTheDocument();
+    expect(within(section).queryByText("التطعيمات")).not.toBeInTheDocument();
+    expect(within(section).queryByText("بصحة جيدة والحمد لله")).not.toBeInTheDocument();
+  });
+
+  it("omits the section entirely when the block is absent (hidden or no data)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(
+      screen.queryByRole("region", { name: /الاطمئنان على صحة/ }),
+    ).not.toBeInTheDocument();
   });
 });
 
