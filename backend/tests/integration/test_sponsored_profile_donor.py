@@ -94,6 +94,7 @@ _BLOCK_FIELDS = {
     "media",
     "in_her_words",
     "father_memory",
+    "health",
 }
 
 

@@ -31,12 +31,21 @@ import {
   type PriorityLevel,
   type Orphan,
   type OrphanUpdateInput,
+  type VaccinationsStatus,
 } from "@/lib/orphans";
 import { listOrphanPhotos, moderateMedia } from "@/lib/media";
 import { listReports } from "@/lib/reports";
 import { toast } from "@/store/toasts";
 
 import "./OrphanDetailPage.css";
+
+// Coded vaccinations statuses (mirrors the backend VaccinationsStatus
+// Literal). Only the staff edit form offers them — the create form does not.
+const VACCINATIONS_STATUSES: readonly VaccinationsStatus[] = [
+  "up_to_date",
+  "partial",
+  "unknown",
+] as const;
 
 // Map a case_status onto a hero-badge variant (PS-04 visual language).
 const STATUS_BADGE: Record<string, string> = {
@@ -493,6 +502,8 @@ interface ProfileDraft {
   health_status: string;
   health_coverage: string;
   chronic_conditions: string;
+  last_checkup: string;
+  vaccinations_status: string;
   mother_status: string;
   priority_level: string;
   aspiration: string;
@@ -514,6 +525,8 @@ function draftFromOrphan(o: Orphan): ProfileDraft {
     health_status: o.health_status ?? "",
     health_coverage: o.health_coverage ?? "",
     chronic_conditions: o.chronic_conditions ?? "",
+    last_checkup: o.last_checkup ?? "",
+    vaccinations_status: o.vaccinations_status ?? "",
     mother_status: o.mother_status ?? "",
     priority_level: o.priority_level ?? "",
     aspiration: o.aspiration ?? "",
@@ -557,6 +570,11 @@ function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
     payload.health_coverage = coverage as HealthCoverage | null;
   const chronic = diffStr(o.chronic_conditions, d.chronic_conditions);
   if (chronic !== undefined) payload.chronic_conditions = chronic;
+  const checkup = diffStr(o.last_checkup, d.last_checkup);
+  if (checkup !== undefined) payload.last_checkup = checkup;
+  const vaccinations = diffStr(o.vaccinations_status, d.vaccinations_status);
+  if (vaccinations !== undefined)
+    payload.vaccinations_status = vaccinations as VaccinationsStatus | null;
   const mother = diffStr(o.mother_status, d.mother_status);
   if (mother !== undefined) payload.mother_status = mother as MotherStatus | null;
   const priority = diffStr(o.priority_level, d.priority_level);
@@ -759,6 +777,18 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
               ? t(`orphans.profile.healthCoverageOptions.${orphan.health_coverage}`)
               : notSet}
           </ProfileRow>
+          <ProfileRow label={t("orphans.profile.lastCheckup")}>
+            {orphan.last_checkup ? (
+              <span className="tabular-nums">{orphan.last_checkup}</span>
+            ) : (
+              notSet
+            )}
+          </ProfileRow>
+          <ProfileRow label={t("orphans.profile.vaccinationsStatus")}>
+            {orphan.vaccinations_status
+              ? t(`orphans.profile.vaccinationsStatusOptions.${orphan.vaccinations_status}`)
+              : notSet}
+          </ProfileRow>
           <ProfileRow label={t("orphans.profile.motherStatus")}>
             {orphan.mother_status
               ? t(`orphans.profile.motherStatusOptions.${orphan.mother_status}`)
@@ -928,6 +958,32 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
                 {HEALTH_COVERAGES.map((s) => (
                   <option key={s} value={s}>
                     {t(`orphans.profile.healthCoverageOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.lastCheckup")}>
+              <input
+                type="date"
+                className="input"
+                value={draft.last_checkup}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, last_checkup: e.target.value }))
+                }
+              />
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.vaccinationsStatus")}>
+              <select
+                className="input"
+                value={draft.vaccinations_status}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, vaccinations_status: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {VACCINATIONS_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.vaccinationsStatusOptions.${s}`)}
                   </option>
                 ))}
               </select>

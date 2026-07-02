@@ -4358,6 +4358,8 @@ export interface components {
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Languages */
             languages?: string[];
+            /** Last Checkup */
+            last_checkup?: string | null;
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -4388,6 +4390,8 @@ export interface components {
             school_name?: string | null;
             /** Tags */
             tags?: string[];
+            /** Vaccinations Status */
+            vaccinations_status?: ("up_to_date" | "partial" | "unknown") | null;
         };
         /**
          * GuardianOrphanFinancials
@@ -4595,6 +4599,23 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HealthBlock
+         * @description ``health`` — a reassuring, non-clinical health summary. SENSITIVE: this
+         *     is the FIRST health data on any donor surface, so the slice is deliberately
+         *     minimal — ONLY the coded high-level status (the frontend localizes it), the
+         *     date of the last checkup, and the coded vaccinations status.
+         *     ``chronic_conditions``, ``health_coverage``, ``challenges`` and every free
+         *     text stay staff-only and must NEVER be added here.
+         */
+        HealthBlock: {
+            /** Last Checkup */
+            last_checkup?: string | null;
+            /** Status Label */
+            status_label?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Vaccinations Status */
+            vaccinations_status?: ("up_to_date" | "partial" | "unknown") | null;
         };
         /** HealthStatus */
         HealthStatus: {
@@ -5341,6 +5362,8 @@ export interface components {
             home_address?: components["schemas"]["OrphanHomeAddress"] | null;
             /** Languages */
             languages?: string[];
+            /** Last Checkup */
+            last_checkup?: string | null;
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -5378,6 +5401,8 @@ export interface components {
             school_name?: string | null;
             /** Tags */
             tags?: string[];
+            /** Vaccinations Status */
+            vaccinations_status?: ("up_to_date" | "partial" | "unknown") | null;
         };
         /**
          * OrphanHomeAddress
@@ -5615,6 +5640,8 @@ export interface components {
             is_sponsored: boolean;
             /** Languages */
             languages?: string[];
+            /** Last Checkup */
+            last_checkup?: string | null;
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -5660,6 +5687,8 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+            /** Vaccinations Status */
+            vaccinations_status?: ("up_to_date" | "partial" | "unknown") | null;
         };
         /** OrphanRejectPayload */
         OrphanRejectPayload: {
@@ -5722,6 +5751,8 @@ export interface components {
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             /** Languages */
             languages?: string[] | null;
+            /** Last Checkup */
+            last_checkup?: string | null;
             /** Lives With */
             lives_with?: ("mother" | "relative" | "orphanage" | "other") | null;
             /** Middle Name */
@@ -5744,6 +5775,8 @@ export interface components {
             school_name?: string | null;
             /** Tags */
             tags?: string[] | null;
+            /** Vaccinations Status */
+            vaccinations_status?: ("up_to_date" | "partial" | "unknown") | null;
         };
         /** OrphanageCreate */
         OrphanageCreate: {
@@ -6787,7 +6820,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7349,6 +7382,7 @@ export interface components {
              * @enum {string}
              */
             gender: "M" | "F";
+            health?: components["schemas"]["HealthBlock"] | null;
             her_world?: components["schemas"]["HerWorldBlock"] | null;
             /** In Her Words */
             in_her_words?: components["schemas"]["InHerWordsItem"][] | null;

@@ -14,6 +14,7 @@ export type AcademicLevel = "weak" | "good" | "excellent";
 export type LivesWith = "mother" | "relative" | "orphanage" | "other";
 export type HealthStatus = "good" | "chronic_condition" | "disability" | "under_treatment";
 export type HealthCoverage = "none" | "government" | "private" | "charity";
+export type VaccinationsStatus = "up_to_date" | "partial" | "unknown";
 export type MotherStatus = "alive" | "deceased" | "unknown";
 export type PriorityLevel = "normal" | "high" | "urgent";
 
@@ -60,6 +61,10 @@ export interface Orphan {
   health_status?: HealthStatus | null;
   health_coverage?: HealthCoverage | null;
   chronic_conditions?: string | null;
+  /** Date (ISO) of the most recent medical checkup. */
+  last_checkup?: string | null;
+  /** Coded vaccinations status. Mirrors schema.gen.ts VaccinationsStatus. */
+  vaccinations_status?: VaccinationsStatus | null;
   mother_status?: MotherStatus | null;
   priority_level?: PriorityLevel | null;
   aspiration?: string | null;
@@ -136,6 +141,8 @@ export interface OrphanCreateInput {
   health_status?: "good" | "chronic_condition" | "disability" | "under_treatment";
   health_coverage?: "none" | "government" | "private" | "charity";
   chronic_conditions?: string;
+  last_checkup?: string;
+  vaccinations_status?: VaccinationsStatus;
   mother_status?: MotherStatus;
   priority_level?: PriorityLevel;
   aspiration?: string;
@@ -254,6 +261,8 @@ export interface OrphanUpdateInput {
   health_status?: HealthStatus | null;
   health_coverage?: HealthCoverage | null;
   chronic_conditions?: string | null;
+  last_checkup?: string | null;
+  vaccinations_status?: VaccinationsStatus | null;
   mother_status?: MotherStatus | null;
   priority_level?: PriorityLevel | null;
   aspiration?: string | null;

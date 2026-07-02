@@ -249,6 +249,11 @@ export function DonorOrphanDetailPage() {
 
       {profile?.her_world && <HerWorldSection name={name} world={profile.her_world} />}
 
+      {/* Health — the FIRST health data on any donor surface: a reassuring,
+          non-clinical summary (coded status + last checkup + vaccinations),
+          stripped server-side when hidden or empty. Present ⇒ safe to show. */}
+      {profile?.health && <HealthSection name={name} health={profile.health} lang={lang} />}
+
       {/* "In her words" — curated phrases in the child's own voice. Server
           strips the block entirely when hidden or empty, so a present array is
           always non-empty. */}
@@ -1094,6 +1099,96 @@ function WorldChip({ children, tone }: { children: React.ReactNode; tone: Tone }
     >
       {children}
     </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.4) Health — a reassuring, non-clinical summary                    */
+/* ------------------------------------------------------------------ */
+
+// Static (profile-level) health status codes → tones, staying on the
+// hopeful/respectful side of the palette like every child-standing signal:
+// `warning` is the lowest tone ever used, never alarmist red.
+const STATIC_HEALTH_TONE: Record<string, Tone> = {
+  good: "success",
+  chronic_condition: "sky",
+  disability: "sky",
+  under_treatment: "warning",
+};
+
+/** "الاطمئنان على الصحة" — the gated donor health element. The backend emits
+ * this block only when the supervisor left it visible AND at least one value
+ * exists, and it carries ONLY the coded status, the last checkup date and the
+ * coded vaccinations status — never a diagnosis, coverage or free text — so a
+ * present `health` is always safe to show. Every row is independently
+ * optional. */
+function HealthSection({
+  name,
+  health,
+  lang,
+}: {
+  name: string;
+  health: NonNullable<SponsoredOrphanProfile["health"]>;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  const statusTone: Tone = health.status_label
+    ? (STATIC_HEALTH_TONE[health.status_label] ?? "gray")
+    : "gray";
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.healthTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.success}`}
+        >
+          <HeartIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.healthTitle", { name })}
+        </h2>
+      </div>
+
+      {health.status_label && (
+        <p>
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${TONE_CHIP[statusTone]}`}
+          >
+            {t(`donorProfile.healthStatusOptions.${health.status_label}`, {
+              defaultValue: health.status_label,
+            })}
+          </span>
+        </p>
+      )}
+
+      {(health.last_checkup || health.vaccinations_status) && (
+        <dl className="grid gap-3 sm:grid-cols-2">
+          {health.last_checkup && (
+            <div className={`rounded-xl border p-4 ${TONE_TILE.trust}`}>
+              <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                {t("donorProfile.healthLastCheckup")}
+              </dt>
+              <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                {formatDate(health.last_checkup, lang)}
+              </dd>
+            </div>
+          )}
+          {health.vaccinations_status && (
+            <div className={`rounded-xl border p-4 ${TONE_TILE.sky}`}>
+              <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                {t("donorProfile.healthVaccinations")}
+              </dt>
+              <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+                {t(`orphans.profile.vaccinationsStatusOptions.${health.vaccinations_status}`, {
+                  defaultValue: health.vaccinations_status,
+                })}
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </section>
   );
 }
 

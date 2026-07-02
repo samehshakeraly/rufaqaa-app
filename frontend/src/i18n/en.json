@@ -1580,6 +1580,13 @@
         "private": "Private",
         "charity": "Charity"
       },
+      "lastCheckup": "Last checkup",
+      "vaccinationsStatus": "Vaccinations",
+      "vaccinationsStatusOptions": {
+        "up_to_date": "Up to date",
+        "partial": "Partial",
+        "unknown": "Unknown"
+      },
       "motherStatus": "Mother's status",
       "motherStatusOptions": {
         "alive": "Alive",
@@ -3675,6 +3682,10 @@
       "father_memory": {
         "label": "Father's memory",
         "help": "The deceased father's name and year of death only — also requires the guardian's consent."
+      },
+      "health": {
+        "label": "Health reassurance",
+        "help": "A reassuring summary only: the general status, last checkup and vaccinations — never diagnoses, conditions or coverage details."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -4576,6 +4587,15 @@
     "recentUpdatesLink": "See all updates",
     "supervisorWordTitle": "A word from the supervisor",
     "herWorldTitle": "{{name}}'s world today",
+    "healthTitle": "Reassurance about {{name}}'s health",
+    "healthStatusOptions": {
+      "good": "In good health, praise be to God",
+      "chronic_condition": "Under regular health follow-up",
+      "disability": "Receiving attentive special care",
+      "under_treatment": "Under medical care"
+    },
+    "healthLastCheckup": "Last checkup",
+    "healthVaccinations": "Vaccinations",
     "inHerWordsTitle": "In {{name}}'s words",
     "inHerWordsSubtitle": "Phrases shared in her own voice.",
     "fatherMemoryTitle": "The father's memory",

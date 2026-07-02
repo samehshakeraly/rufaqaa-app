@@ -25,7 +25,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, field_validator
 
-from app.schemas.orphan import OrphanStatus
+from app.schemas.orphan import HealthStatus, OrphanStatus, VaccinationsStatus
 
 # Curated phrase limits — shared by the staff input contract and the donor
 # composition; kept here so backend and the generated TS types agree.
@@ -168,6 +168,19 @@ class FatherMemory(BaseModel):
     death_year: int | None = None
 
 
+class HealthBlock(BaseModel):
+    """``health`` — a reassuring, non-clinical health summary. SENSITIVE: this
+    is the FIRST health data on any donor surface, so the slice is deliberately
+    minimal — ONLY the coded high-level status (the frontend localizes it), the
+    date of the last checkup, and the coded vaccinations status.
+    ``chronic_conditions``, ``health_coverage``, ``challenges`` and every free
+    text stay staff-only and must NEVER be added here."""
+
+    status_label: HealthStatus | None = None
+    last_checkup: date | None = None
+    vaccinations_status: VaccinationsStatus | None = None
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -207,6 +220,7 @@ class SponsoredOrphanProfile(BaseModel):
     media: MediaBlock | None = None
     in_her_words: list[InHerWordsItem] | None = None
     father_memory: FatherMemory | None = None
+    health: HealthBlock | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────

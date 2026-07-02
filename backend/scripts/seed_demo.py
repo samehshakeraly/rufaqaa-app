@@ -829,6 +829,10 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
                 health_status=HEALTH_STATUSES[i % len(HEALTH_STATUSES)],
                 health_coverage=HEALTH_COVERAGES[i % len(HEALTH_COVERAGES)],
                 chronic_conditions="ربو خفيف" if i % 7 == 0 else None,
+                # Static health fields (R2) — surface on the gated donor
+                # ``health`` block (all elements left visible below).
+                last_checkup=_add_months(today, -(1 + i % 6)),
+                vaccinations_status="up_to_date",
                 aspiration=rng.choice(["طبيب", "مهندس", "معلّم", "طيّار", "مبرمج", "إعلامي"]),
                 challenges="يحتاج إلى دعم في مادة الرياضيات." if i % 5 == 0 else None,
                 tags=rng.sample(ORPHAN_TAGS, k=2),
