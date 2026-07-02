@@ -79,6 +79,9 @@ class Guardian(Base):
     gender: Mapped[str | None] = mapped_column(String(1))
 
     relation: Mapped[str] = mapped_column(String(50), nullable=False)
+    # Staff-facing only (see migration 0027) — never exposed on any donor
+    # surface in this batch.
+    occupation: Mapped[str | None] = mapped_column(String(100))
 
     phone: Mapped[str | None] = mapped_column(String(30))
     whatsapp: Mapped[str | None] = mapped_column(String(30))

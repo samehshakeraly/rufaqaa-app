@@ -113,6 +113,8 @@ async def test_public_orphan_detail_exposes_donor_safe_profile(
             "education_stage": "secondary",
             "quran_juz_memorized": 30,
             "tags": ["football", "drawing"],
+            "languages": ["ar", "en"],
+            "mother_status": "deceased",
             # Sensitive — must stay internal
             "school_name": "Secret School",
             "academic_level": "excellent",
@@ -142,6 +144,8 @@ async def test_public_orphan_detail_exposes_donor_safe_profile(
         "quran_juz_memorized",
         "is_hafiz",
         "tags",
+        "languages",
+        "orphan_status",
     }
 
     # Donor-safe values are returned as stored.
@@ -151,6 +155,9 @@ async def test_public_orphan_detail_exposes_donor_safe_profile(
     assert body["quran_juz_memorized"] == 30
     assert body["is_hafiz"] is True
     assert body["tags"] == ["football", "drawing"]
+    assert body["languages"] == ["ar", "en"]
+    # Derived, never stored: a deceased mother ⇒ orphaned of both parents.
+    assert body["orphan_status"] == "both"
 
     # Sensitive profile + identity fields are NEVER present in the public schema.
     for forbidden in (

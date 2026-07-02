@@ -25,6 +25,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, field_validator
 
+from app.schemas.orphan import OrphanStatus
+
 # Curated phrase limits — shared by the staff input contract and the donor
 # composition; kept here so backend and the generated TS types agree.
 IN_HER_WORDS_MAX_LEN = 280
@@ -45,6 +47,9 @@ class HerWorldBlock(BaseModel):
     education_stage: str | None = None
     tags: list[str]
     quran_juz_memorized: int | None = None
+    # The juz' currently being memorised (R1) — gated by the her_world
+    # element exactly like the sibling fields above.
+    current_juz: int | None = None
     is_hafiz: bool
 
 
@@ -185,6 +190,10 @@ class SponsoredOrphanProfile(BaseModel):
     quran_juz_memorized: int | None = None
     tags: list[str]
     is_hafiz: bool
+    # Small identity additions (R1) — same vetted slice as PublicOrphanDetail:
+    # the child's languages and the DERIVED (never stored) orphanhood status.
+    languages: list[str]
+    orphan_status: OrphanStatus
 
     # One optional block per ProfileElement (None ⇒ hidden or no data).
     dream: DreamBlock | None = None

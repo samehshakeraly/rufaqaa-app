@@ -1563,6 +1563,7 @@
       "schoolName": "اسم المدرسة",
       "quranSection": "القرآن الكريم",
       "quranJuzMemorized": "عدد الأجزاء المحفوظة",
+      "currentJuz": "الجزء الحالي",
       "quranNote": "ملاحظة حول الحفظ",
       "healthSection": "الصحة",
       "healthStatus": "الحالة الصحية",
@@ -1607,6 +1608,17 @@
         "placeholder": "اكتب سمة ثم اضغط Enter",
         "add": "إضافة",
         "remove": "إزالة {{tag}}"
+      },
+      "languages": {
+        "label": "اللغات",
+        "placeholder": "اكتب لغة ثم اضغط Enter",
+        "add": "إضافة",
+        "remove": "إزالة {{language}}"
+      },
+      "orphanStatus": {
+        "label": "حالة اليُتم",
+        "father": "يتيم الأب",
+        "both": "يتيم الأبوين"
       }
     }
   },
@@ -2632,6 +2644,7 @@
     "addGuardian": "إضافة ولي",
     "guardianName": "الاسم الكامل",
     "relation": "صلة القرابة",
+    "occupation": "المهنة",
     "phone": "الهاتف",
     "email": "البريد الإلكتروني",
     "housingStatus": {

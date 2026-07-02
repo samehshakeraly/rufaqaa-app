@@ -169,6 +169,7 @@ function NewGuardianForm({
   const [v, setV] = useState<GuardianCreateInput>({
     full_name: "",
     relation: "mother",
+    occupation: "",
     phone: "",
     email: "",
   });
@@ -178,11 +179,12 @@ function NewGuardianForm({
       createGuardian(familyId, {
         full_name: v.full_name,
         relation: v.relation,
+        ...(v.occupation ? { occupation: v.occupation } : {}),
         ...(v.phone ? { phone: v.phone } : {}),
         ...(v.email ? { email: v.email } : {}),
       }),
     onSuccess: () => {
-      setV({ full_name: "", relation: "mother", phone: "", email: "" });
+      setV({ full_name: "", relation: "mother", occupation: "", phone: "", email: "" });
       onCreated();
     },
     onError: (err) => {
@@ -226,6 +228,13 @@ function NewGuardianForm({
               </option>
             ))}
           </select>
+        </label>
+        <label className="adm-field">
+          <span>{t("families.occupation")}</span>
+          <input
+            value={v.occupation ?? ""}
+            onChange={(e) => setV({ ...v, occupation: e.target.value })}
+          />
         </label>
         <label className="adm-field">
           <span>{t("families.phone")}</span>

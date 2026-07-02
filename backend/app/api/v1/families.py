@@ -243,6 +243,7 @@ async def create_guardian(
         date_of_birth=payload.date_of_birth,
         gender=payload.gender,
         relation=payload.relation,
+        occupation=payload.occupation,
         phone=payload.phone,
         whatsapp=payload.whatsapp,
         email=payload.email,

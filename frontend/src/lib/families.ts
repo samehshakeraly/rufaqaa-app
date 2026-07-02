@@ -32,6 +32,7 @@ export interface Guardian {
   family_id: string | null;
   full_name: string;
   relation: string;
+  occupation: string | null;
   phone: string | null;
   email: string | null;
   status: string;
@@ -49,6 +50,7 @@ export interface GuardianCreateInput {
     | "aunt"
     | "sibling"
     | "other";
+  occupation?: string;
   phone?: string;
   email?: string;
   family_id?: string;
