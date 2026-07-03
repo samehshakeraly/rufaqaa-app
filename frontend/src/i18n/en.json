@@ -1587,6 +1587,14 @@
         "partial": "Partial",
         "unknown": "Unknown"
       },
+      "independenceStage": "Independence stage",
+      "independenceStageOptions": {
+        "childhood": "Childhood",
+        "skill_building": "Skill building",
+        "vocational_training": "Vocational training",
+        "empowerment": "Empowerment",
+        "independence": "Independence"
+      },
       "motherStatus": "Mother's status",
       "motherStatusOptions": {
         "alive": "Alive",
@@ -3704,6 +3712,10 @@
       "skills": {
         "label": "Her skills",
         "help": "Each skill's name, category and level only — the staff note never reaches the sponsor."
+      },
+      "independence": {
+        "label": "Independence journey",
+        "help": "Only the current coded stage of the independence journey — never any free text."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -4679,6 +4691,12 @@
     "siblingsSponsored": "Sponsored",
     "siblingsAwaiting": "Awaiting a sponsor",
     "siblingsSponsorCta": "Sponsor this sibling",
+    "independenceTitle": "{{name}}'s journey to independence",
+    "independenceCurrentStage": "Current stage",
+    "independenceNextStep": "Next step",
+    "independenceJourneyComplete": "Independence reached — the journey is complete, praise be to God",
+    "independenceCharterTitle": "The Empowerment Charter",
+    "independenceCharter": "We walk with {{name}} step by step — from childhood to independence — until she stands on her own feet and provides for herself with dignity.",
     "inHerWordsTitle": "In {{name}}'s words",
     "inHerWordsSubtitle": "Phrases shared in her own voice.",
     "fatherMemoryTitle": "The father's memory",

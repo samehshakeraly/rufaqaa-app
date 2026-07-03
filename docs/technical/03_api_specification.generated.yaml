@@ -2305,6 +2305,17 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        independence_stage:
+          anyOf:
+          - enum:
+            - childhood
+            - skill_building
+            - vocational_training
+            - empowerment
+            - independence
+            type: string
+          - type: 'null'
+          title: Independence Stage
         languages:
           items:
             type: string
@@ -2995,6 +3006,33 @@ components:
       - replayed_from
       - replayed_count
       title: InboundWebhookLogRead
+      type: object
+    IndependenceBlock:
+      description: '``independence`` — the child''s current readiness-for-independence stage.
+
+
+        The slice is ONLY the coded ``stage`` — NOTHING else may ever be added: the
+
+        "next step" label is DERIVED on the frontend from the ordered
+
+        :data:`~app.schemas.orphan.IndependenceStage` vocabulary and the empowerment
+
+        charter (ميثاق التمكين) is static, localized frontend text — neither is a
+
+        data field.'
+      properties:
+        stage:
+          enum:
+          - childhood
+          - skill_building
+          - vocational_training
+          - empowerment
+          - independence
+          title: Stage
+          type: string
+      required:
+      - stage
+      title: IndependenceBlock
       type: object
     LoginRequest:
       properties:
@@ -4167,6 +4205,17 @@ components:
           anyOf:
           - $ref: '#/components/schemas/OrphanHomeAddress'
           - type: 'null'
+        independence_stage:
+          anyOf:
+          - enum:
+            - childhood
+            - skill_building
+            - vocational_training
+            - empowerment
+            - independence
+            type: string
+          - type: 'null'
+          title: Independence Stage
         languages:
           items:
             type: string
@@ -4705,6 +4754,17 @@ components:
           format: uuid
           title: Id
           type: string
+        independence_stage:
+          anyOf:
+          - enum:
+            - childhood
+            - skill_building
+            - vocational_training
+            - empowerment
+            - independence
+            type: string
+          - type: 'null'
+          title: Independence Stage
         is_hafiz:
           description: 'Derived (not stored): a child who has memorised the whole Qur''an.'
           readOnly: true
@@ -4993,6 +5053,17 @@ components:
             type: string
           - type: 'null'
           title: Health Status
+        independence_stage:
+          anyOf:
+          - enum:
+            - childhood
+            - skill_building
+            - vocational_training
+            - empowerment
+            - independence
+            type: string
+          - type: 'null'
+          title: Independence Stage
         languages:
           anyOf:
           - items:
@@ -7118,6 +7189,7 @@ components:
       - guardian
       - siblings
       - skills
+      - independence
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -8401,6 +8473,10 @@ components:
             type: array
           - type: 'null'
           title: In Her Words
+        independence:
+          anyOf:
+          - $ref: '#/components/schemas/IndependenceBlock'
+          - type: 'null'
         is_hafiz:
           title: Is Hafiz
           type: boolean

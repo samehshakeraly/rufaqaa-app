@@ -29,6 +29,7 @@ export const PROFILE_ELEMENTS: readonly ProfileElement[] = [
   "guardian",
   "siblings",
   "skills",
+  "independence",
 ] as const;
 
 /** Staff read of the donor-profile visibility registry for one orphan. */

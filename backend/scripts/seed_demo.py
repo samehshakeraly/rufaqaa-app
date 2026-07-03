@@ -1335,6 +1335,13 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
             )
             summary.skills += 1
 
+        # ── R6 independence: give the same demo child a current
+        # readiness-for-independence stage so the gated donor ``independence``
+        # block renders (the frontend derives the "next step" — vocational
+        # training — from the ordered vocabulary). The element stays visible
+        # via the default profile_visibility={}.
+        aisha.independence_stage = "skill_building"
+
     await db.commit()
     return summary
 

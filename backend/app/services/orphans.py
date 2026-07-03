@@ -354,6 +354,7 @@ async def create_orphan_record(
         chronic_conditions=data.chronic_conditions,
         last_checkup=data.last_checkup,
         vaccinations_status=data.vaccinations_status,
+        independence_stage=data.independence_stage,
         aspiration=data.aspiration,
         challenges=data.challenges,
         tags=data.tags,

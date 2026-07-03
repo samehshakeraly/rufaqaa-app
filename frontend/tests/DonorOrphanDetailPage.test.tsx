@@ -218,6 +218,7 @@ const FULL_PROFILE = {
       },
     ],
   },
+  independence: { stage: "skill_building" },
 };
 
 // Identity only — every element block omitted (backend hid/absent them all).
@@ -666,6 +667,54 @@ describe("DonorOrphanDetailPage — siblings (إخوتها)", () => {
 
     await screen.findByText("عائشة");
     expect(screen.queryByRole("region", { name: "إخوة عائشة" })).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — independence (رحلة الاستقلال)", () => {
+  it("renders the localized stage, derives the next step and shows the charter", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "رحلة عائشة نحو الاستقلال" });
+    // Current stage tile — the coded value is localized, never rendered raw.
+    expect(within(section).getByText("المرحلة الحالية")).toBeInTheDocument();
+    expect(within(section).getAllByText("بناء المهارات").length).toBeGreaterThan(0);
+    expect(within(section).queryByText("skill_building")).not.toBeInTheDocument();
+    // The next step is DERIVED from the ordered vocabulary (skill_building →
+    // vocational_training) — the backend never sent it.
+    expect(within(section).getByText("الخطوة التالية")).toBeInTheDocument();
+    expect(within(section).getAllByText("التدريب المهني").length).toBeGreaterThan(0);
+    // The stepper walks the full ordered vocabulary, current stage marked.
+    const steps = within(section).getAllByRole("listitem");
+    expect(steps).toHaveLength(5);
+    expect(steps[1]).toHaveAttribute("aria-current", "step");
+    // The static, localized empowerment charter.
+    expect(within(section).getByText("ميثاق التمكين")).toBeInTheDocument();
+    expect(within(section).getByText(/نرافق عائشة خطوة بخطوة/)).toBeInTheDocument();
+  });
+
+  it("shows the journey-complete phrasing on the final stage", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      independence: { stage: "independence" },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "رحلة عائشة نحو الاستقلال" });
+    expect(
+      within(section).getByText("بلغت الاستقلال — اكتملت الرحلة بفضل الله"),
+    ).toBeInTheDocument();
+  });
+
+  it("omits the section entirely when the block is absent (hidden or no stage)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(
+      screen.queryByRole("region", { name: /رحلة .* نحو الاستقلال/ }),
+    ).not.toBeInTheDocument();
   });
 });
 

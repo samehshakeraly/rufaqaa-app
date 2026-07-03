@@ -45,6 +45,18 @@ HealthCoverage = Literal["none", "government", "private", "charity"]
 # Coded vaccinations status (see migration 0028). Validated here in Pydantic
 # only (no DB CHECK — mirrors health_status).
 VaccinationsStatus = Literal["up_to_date", "partial", "unknown"]
+# Coded readiness-for-independence stage (see migration 0030), ORDERED:
+# طفولة → مهارات → تدريب مهني → تمكين → استقلال. This ordered tuple is the
+# single source of truth for the vocabulary — the frontend derives the donor
+# "next step" from this order, so it must never be reordered. Validated here
+# in Pydantic only (no DB CHECK — mirrors mother_status/health_status).
+IndependenceStage = Literal[
+    "childhood",
+    "skill_building",
+    "vocational_training",
+    "empowerment",
+    "independence",
+]
 MotherStatus = Literal["alive", "deceased", "unknown"]
 PriorityLevel = Literal["normal", "high", "urgent"]
 # Who the child currently lives with. Enum-coded like the profile fields above;
@@ -113,6 +125,10 @@ class OrphanBase(BaseModel):
     # donor ``health`` block — coverage/chronic text above stay staff-only.
     last_checkup: date | None = None
     vaccinations_status: VaccinationsStatus | None = None
+    # Readiness-for-independence stage (see migration 0030). Coded by the
+    # ordered vocabulary above; optional everywhere (brand-new column — no
+    # legacy rows to keep permissive).
+    independence_stage: IndependenceStage | None = None
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] = Field(default_factory=list)
@@ -275,6 +291,7 @@ class OrphanUpdate(BaseModel):
     chronic_conditions: str | None = None
     last_checkup: date | None = None
     vaccinations_status: VaccinationsStatus | None = None
+    independence_stage: IndependenceStage | None = None
     aspiration: str | None = None
     challenges: str | None = None
     tags: list[str] | None = None

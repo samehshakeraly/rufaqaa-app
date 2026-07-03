@@ -15,7 +15,24 @@ export type LivesWith = "mother" | "relative" | "orphanage" | "other";
 export type HealthStatus = "good" | "chronic_condition" | "disability" | "under_treatment";
 export type HealthCoverage = "none" | "government" | "private" | "charity";
 export type VaccinationsStatus = "up_to_date" | "partial" | "unknown";
+export type IndependenceStage =
+  | "childhood"
+  | "skill_building"
+  | "vocational_training"
+  | "empowerment"
+  | "independence";
 export type MotherStatus = "alive" | "deceased" | "unknown";
+
+// The ORDERED readiness-for-independence vocabulary — mirrors the backend
+// `IndependenceStage` Literal exactly. The order IS data: the donor page
+// derives the "next step" from it, so it must never be reordered.
+export const INDEPENDENCE_STAGES: readonly IndependenceStage[] = [
+  "childhood",
+  "skill_building",
+  "vocational_training",
+  "empowerment",
+  "independence",
+] as const;
 export type PriorityLevel = "normal" | "high" | "urgent";
 
 // Sort options for the staff orphan list. Mirrors the backend `OrphanSort`
@@ -65,6 +82,8 @@ export interface Orphan {
   last_checkup?: string | null;
   /** Coded vaccinations status. Mirrors schema.gen.ts VaccinationsStatus. */
   vaccinations_status?: VaccinationsStatus | null;
+  /** Coded readiness-for-independence stage (ordered vocabulary). */
+  independence_stage?: IndependenceStage | null;
   mother_status?: MotherStatus | null;
   priority_level?: PriorityLevel | null;
   aspiration?: string | null;
@@ -143,6 +162,7 @@ export interface OrphanCreateInput {
   chronic_conditions?: string;
   last_checkup?: string;
   vaccinations_status?: VaccinationsStatus;
+  independence_stage?: IndependenceStage;
   mother_status?: MotherStatus;
   priority_level?: PriorityLevel;
   aspiration?: string;
@@ -263,6 +283,7 @@ export interface OrphanUpdateInput {
   chronic_conditions?: string | null;
   last_checkup?: string | null;
   vaccinations_status?: VaccinationsStatus | null;
+  independence_stage?: IndependenceStage | null;
   mother_status?: MotherStatus | null;
   priority_level?: PriorityLevel | null;
   aspiration?: string | null;
