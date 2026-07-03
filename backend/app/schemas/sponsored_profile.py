@@ -26,6 +26,7 @@ from uuid import UUID
 from pydantic import BaseModel, field_validator
 
 from app.schemas.orphan import HealthStatus, OrphanStatus, VaccinationsStatus
+from app.schemas.skill import SkillCard
 
 # Curated phrase limits — shared by the staff input contract and the donor
 # composition; kept here so backend and the generated TS types agree.
@@ -231,6 +232,14 @@ class SiblingsBlock(BaseModel):
     items: list[SiblingCard]
 
 
+class SkillsBlock(BaseModel):
+    """``skills`` — the child's skills and talents, oldest first. Each item is
+    the strict :class:`SkillCard` allowlist (name + coded category/level); the
+    staff-only ``note`` never reaches this block."""
+
+    items: list[SkillCard]
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -274,6 +283,7 @@ class SponsoredOrphanProfile(BaseModel):
     home: HomeBlock | None = None
     guardian: GuardianBlock | None = None
     siblings: SiblingsBlock | None = None
+    skills: SkillsBlock | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────

@@ -30,6 +30,7 @@ from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
 from app.models.report import OrphanReport
+from app.models.skill import OrphanSkill
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
@@ -44,6 +45,7 @@ from app.schemas.report import (
     QuranProgress,
     ReportDonorRead,
 )
+from app.schemas.skill import SkillCard
 from app.schemas.sponsored_profile import (
     DreamBlock,
     FatherMemory,
@@ -65,6 +67,7 @@ from app.schemas.sponsored_profile import (
     SiblingCard,
     SiblingsBlock,
     SinceYouBeganBlock,
+    SkillsBlock,
     SponsoredOrphanProfile,
     SupervisorWordBlock,
     TextDelta,
@@ -455,6 +458,39 @@ async def _build_siblings_block(
     )
 
 
+async def _build_skills_block(
+    db: AsyncSession, orphan: Orphan, visibility: dict[str, bool]
+) -> SkillsBlock | None:
+    """Assemble the donor-safe ``skills`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``skills`` element is
+    hidden or the child has no skills on record. Skills are loaded with an
+    EXPLICIT ``organization_id`` filter matching the orphan's org (the app's
+    superuser connection bypasses RLS, so this predicate — not RLS — is the
+    cross-org fence), oldest first. Only the strict :class:`SkillCard`
+    allowlist leaves the server: the name plus the coded category/level (the
+    frontend localizes them). The staff-only free-text ``note`` — and every
+    id/timestamp — must NEVER be added here.
+    """
+    if not is_visible(visibility, ProfileElement.skills):
+        return None
+    rows = (
+        await db.scalars(
+            select(OrphanSkill)
+            .where(
+                OrphanSkill.orphan_id == orphan.id,
+                OrphanSkill.organization_id == orphan.organization_id,
+            )
+            .order_by(OrphanSkill.created_at.asc())
+        )
+    ).all()
+    if not rows:
+        return None
+    return SkillsBlock(
+        items=[SkillCard(name=s.name, category=s.category, level=s.level) for s in rows]
+    )
+
+
 def _compose_sponsored_profile(
     orphan: Orphan,
     partner_name: str | None,
@@ -464,6 +500,7 @@ def _compose_sponsored_profile(
     home: HomeBlock | None = None,
     guardian: GuardianBlock | None = None,
     siblings: SiblingsBlock | None = None,
+    skills: SkillsBlock | None = None,
 ) -> SponsoredOrphanProfile:
     """Assemble the donor-safe profile from already-safe parts.
 
@@ -665,6 +702,7 @@ def _compose_sponsored_profile(
         home=home,
         guardian=guardian,
         siblings=siblings,
+        skills=skills,
     )
 
 
@@ -730,8 +768,9 @@ async def my_sponsored_orphan_profile(
     home = await _build_home_block(db, orphan, vis)
     guardian = await _build_guardian_block(db, orphan, vis)
     siblings = await _build_siblings_block(db, orphan, vis)
+    skills = await _build_skills_block(db, orphan, vis)
     return _compose_sponsored_profile(
-        orphan, partner_name, reports, sponsorship_start, media, home, guardian, siblings
+        orphan, partner_name, reports, sponsorship_start, media, home, guardian, siblings, skills
     )
 
 

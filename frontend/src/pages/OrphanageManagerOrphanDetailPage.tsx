@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import { FatherMemoryConsentPanel } from "@/components/FatherMemoryConsentPanel";
 import { OrphanInHerWordsManager } from "@/components/OrphanInHerWordsManager";
 import { OrphanMediaManager } from "@/components/OrphanMediaManager";
+import { OrphanSkillsManager } from "@/components/OrphanSkillsManager";
 import { ProfileVisibilityPanel } from "@/components/ProfileVisibilityPanel";
 import { Skeleton } from "@/components/Skeleton";
 import {
@@ -18,7 +19,7 @@ import { ageFromDob } from "@/lib/orphanSelf";
 // Mirror the guardian detail page; reuse its styles (god-*).
 import "./GuardianOrphanDetailPage.css";
 
-type TabKey = "overview" | "reports" | "visibility" | "media" | "inHerWords";
+type TabKey = "overview" | "reports" | "visibility" | "media" | "inHerWords" | "skills";
 
 /** Detail page for one of the dar's resident orphans. Profile facts come from
  * GET /orphanage/me/orphans (filtered to this id); the Reports tab reads the
@@ -139,6 +140,9 @@ export function OrphanageManagerOrphanDetailPage() {
               <TabButton id="inHerWords" current={tab} onSelect={setTab}>
                 {t("orphanageManager.detail.tabInHerWords")}
               </TabButton>
+              <TabButton id="skills" current={tab} onSelect={setTab}>
+                {t("orphanageManager.detail.tabSkills")}
+              </TabButton>
             </div>
 
             {tab === "overview" && (
@@ -194,6 +198,13 @@ export function OrphanageManagerOrphanDetailPage() {
               <div role="tabpanel" className="god-tab-panel">
                 <h2 className="god-panel-title">{t("orphanageManager.detail.inHerWordsTitle")}</h2>
                 <OrphanInHerWordsManager orphanId={orphan.id} />
+              </div>
+            )}
+
+            {tab === "skills" && (
+              <div role="tabpanel" className="god-tab-panel">
+                <h2 className="god-panel-title">{t("orphanageManager.detail.skillsTitle")}</h2>
+                <OrphanSkillsManager orphanId={orphan.id} />
               </div>
             )}
 

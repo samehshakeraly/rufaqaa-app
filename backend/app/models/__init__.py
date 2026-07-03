@@ -10,6 +10,7 @@ from app.models.payment import Payment
 from app.models.platform_settings import PlatformSettings
 from app.models.report import OrphanReport
 from app.models.session import UserSession
+from app.models.skill import OrphanSkill
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 
@@ -23,6 +24,7 @@ __all__ = [
     "Organization",
     "Orphan",
     "OrphanReport",
+    "OrphanSkill",
     "Orphanage",
     "PartnerOrganization",
     "Payment",

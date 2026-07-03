@@ -101,6 +101,7 @@ _BLOCK_FIELDS = {
     "home",
     "guardian",
     "siblings",
+    "skills",
 }
 
 
