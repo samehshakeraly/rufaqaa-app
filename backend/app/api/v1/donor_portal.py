@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.api.v1.messages import MESSAGE_MAX_LEN, MessageRead, _project
-from app.api.v1.public import to_public_detail
+from app.api.v1.public import _age_years, to_public_detail
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.family import Family, Guardian
@@ -62,6 +62,8 @@ from app.schemas.sponsored_profile import (
     QuranGrowthPoint,
     RecentUpdateItem,
     RecentUpdatesBlock,
+    SiblingCard,
+    SiblingsBlock,
     SinceYouBeganBlock,
     SponsoredOrphanProfile,
     SupervisorWordBlock,
@@ -390,6 +392,69 @@ async def _build_guardian_block(
     return GuardianBlock(relation=primary.relation, occupation=primary.occupation)
 
 
+async def _build_siblings_block(
+    db: AsyncSession, orphan: Orphan, visibility: dict[str, bool]
+) -> SiblingsBlock | None:
+    """Assemble the donor-safe ``siblings`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``siblings`` element
+    is hidden, the child has no family on record, or the family has no other
+    (non-deleted) children. Sibling orphans are loaded with an EXPLICIT
+    ``organization_id`` filter matching the orphan's org (the app's superuser
+    connection bypasses RLS, so this predicate — not RLS — is the cross-org
+    fence), the child itself excluded, oldest first. Each sibling's standing
+    reuses the platform's active-sponsorship predicate
+    (``Sponsorship.status == 'active'``): an active sponsorship ⇒ "sponsored",
+    else "awaiting_sponsor". Only the strict :class:`SiblingCard` allowlist
+    leaves the server — and ``code`` ONLY for an awaiting_sponsor sibling (the
+    public sponsorship link); a sponsored sibling's code stays None. Family
+    name, ids, health, address, case internals and sponsor identity stay
+    staff-only.
+    """
+    if not is_visible(visibility, ProfileElement.siblings) or orphan.family_id is None:
+        return None
+    siblings = (
+        await db.scalars(
+            select(Orphan)
+            .where(
+                Orphan.family_id == orphan.family_id,
+                Orphan.id != orphan.id,
+                Orphan.organization_id == orphan.organization_id,
+                Orphan.deleted_at.is_(None),
+            )
+            .order_by(Orphan.date_of_birth.asc(), Orphan.created_at.asc())
+        )
+    ).all()
+    if not siblings:
+        return None
+    actively_sponsored = set(
+        (
+            await db.scalars(
+                select(Sponsorship.orphan_id).where(
+                    Sponsorship.orphan_id.in_([s.id for s in siblings]),
+                    Sponsorship.status == "active",
+                )
+            )
+        ).all()
+    )
+    return SiblingsBlock(
+        items=[
+            SiblingCard.model_validate(
+                {
+                    "first_name": s.first_name,
+                    "age_years": _age_years(s.date_of_birth),
+                    "gender": s.gender,
+                    "sponsorship_status": (
+                        "sponsored" if s.id in actively_sponsored else "awaiting_sponsor"
+                    ),
+                    "code": None if s.id in actively_sponsored else s.code,
+                }
+            )
+            for s in siblings
+        ]
+    )
+
+
 def _compose_sponsored_profile(
     orphan: Orphan,
     partner_name: str | None,
@@ -398,6 +463,7 @@ def _compose_sponsored_profile(
     media: MediaBlock | None = None,
     home: HomeBlock | None = None,
     guardian: GuardianBlock | None = None,
+    siblings: SiblingsBlock | None = None,
 ) -> SponsoredOrphanProfile:
     """Assemble the donor-safe profile from already-safe parts.
 
@@ -598,6 +664,7 @@ def _compose_sponsored_profile(
         health=health,
         home=home,
         guardian=guardian,
+        siblings=siblings,
     )
 
 
@@ -662,8 +729,9 @@ async def my_sponsored_orphan_profile(
     media = await _build_media_block(db, orphan_id, vis)
     home = await _build_home_block(db, orphan, vis)
     guardian = await _build_guardian_block(db, orphan, vis)
+    siblings = await _build_siblings_block(db, orphan, vis)
     return _compose_sponsored_profile(
-        orphan, partner_name, reports, sponsorship_start, media, home, guardian
+        orphan, partner_name, reports, sponsorship_start, media, home, guardian, siblings
     )
 
 

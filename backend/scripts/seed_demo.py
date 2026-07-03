@@ -951,7 +951,12 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
 
         # Status: keep the rich-report donors (0..9) fully active; sprinkle a
         # couple paused/overdue among the rest for realism — all still "sponsored".
-        if 30 <= s <= 31:
+        # Orphans 15 and 30 share family 0 with the demo child (orphans[0]), and
+        # the gated donor ``siblings`` block (R4) derives a sibling's standing
+        # from the ACTIVE-sponsorship predicate — keep both active (the paused
+        # slot moved 30 → 28) so they read "sponsored" next to the awaiting
+        # sibling pinned available below.
+        if s in (28, 31):
             sp_status = "paused"
         elif 32 <= s <= 33:
             sp_status = "overdue"
@@ -1003,7 +1008,17 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
     for j, orphan in enumerate(orphans[SPONSORED_ORPHANS:]):
         orphan.is_sponsored = False
         orphan.current_balance = Decimal("0")
-        status_value = pipeline_statuses[j % len(pipeline_statuses)]
+        # Orphan 45 shares family 0 with the demo child (orphans[0], sponsored
+        # by the login donor): pin it AVAILABLE so the gated donor ``siblings``
+        # block (R4) shows an awaiting_sponsor sibling whose sponsorship CTA
+        # resolves on the public page. With the actively sponsored siblings
+        # (orphans 15/30) the demo family renders BOTH states — the element
+        # stays visible via the default profile_visibility={}.
+        status_value = (
+            "available"
+            if orphan.family_id == families[0].id
+            else pipeline_statuses[j % len(pipeline_statuses)]
+        )
         orphan.case_status = status_value
         if status_value == "available":
             stamp_available_since(orphan)

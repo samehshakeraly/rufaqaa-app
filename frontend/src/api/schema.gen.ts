@@ -6852,7 +6852,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7371,6 +7371,44 @@ export interface components {
             token: string;
         };
         /**
+         * SiblingCard
+         * @description One sibling of the sponsored child. SENSITIVE: these are OTHER children
+         *     on a donor surface, so the slice is a strict allowlist — the first name,
+         *     the age, the gender and the coded sponsorship standing (the frontend
+         *     localizes it). ``code`` is populated ONLY for an awaiting_sponsor sibling
+         *     (that child is already publicly listable, so the code links the public
+         *     sponsorship page); for a sponsored sibling it MUST stay None so a donor
+         *     can never dereference another donor's child. ``family_name`` /
+         *     ``national_id`` / health / address / father details / case internals /
+         *     sponsor identity stay staff-only and must NEVER be added here.
+         */
+        SiblingCard: {
+            /** Age Years */
+            age_years: number;
+            /** Code */
+            code?: string | null;
+            /** First Name */
+            first_name: string;
+            /**
+             * Gender
+             * @enum {string}
+             */
+            gender: "M" | "F";
+            /**
+             * Sponsorship Status
+             * @enum {string}
+             */
+            sponsorship_status: "sponsored" | "awaiting_sponsor";
+        };
+        /**
+         * SiblingsBlock
+         * @description ``siblings`` — the child's brothers and sisters, oldest first.
+         */
+        SiblingsBlock: {
+            /** Items */
+            items: components["schemas"]["SiblingCard"][];
+        };
+        /**
          * SinceYouBeganBlock
          * @description ``since_you_began`` — what changed since this donor's sponsorship began.
          */
@@ -7438,6 +7476,7 @@ export interface components {
             /** Quran Juz Memorized */
             quran_juz_memorized?: number | null;
             recent_updates?: components["schemas"]["RecentUpdatesBlock"] | null;
+            siblings?: components["schemas"]["SiblingsBlock"] | null;
             since_you_began?: components["schemas"]["SinceYouBeganBlock"] | null;
             supervisor_word?: components["schemas"]["SupervisorWordBlock"] | null;
             /** Tags */

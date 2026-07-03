@@ -7116,6 +7116,7 @@ components:
       - health
       - home
       - guardian
+      - siblings
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -8073,6 +8074,67 @@ components:
       - new_password
       title: ResetPasswordRequest
       type: object
+    SiblingCard:
+      description: 'One sibling of the sponsored child. SENSITIVE: these are OTHER children
+
+        on a donor surface, so the slice is a strict allowlist — the first name,
+
+        the age, the gender and the coded sponsorship standing (the frontend
+
+        localizes it). ``code`` is populated ONLY for an awaiting_sponsor sibling
+
+        (that child is already publicly listable, so the code links the public
+
+        sponsorship page); for a sponsored sibling it MUST stay None so a donor
+
+        can never dereference another donor''s child. ``family_name`` /
+
+        ``national_id`` / health / address / father details / case internals /
+
+        sponsor identity stay staff-only and must NEVER be added here.'
+      properties:
+        age_years:
+          title: Age Years
+          type: integer
+        code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Code
+        first_name:
+          title: First Name
+          type: string
+        gender:
+          enum:
+          - M
+          - F
+          title: Gender
+          type: string
+        sponsorship_status:
+          enum:
+          - sponsored
+          - awaiting_sponsor
+          title: Sponsorship Status
+          type: string
+      required:
+      - first_name
+      - age_years
+      - gender
+      - sponsorship_status
+      title: SiblingCard
+      type: object
+    SiblingsBlock:
+      description: '``siblings`` — the child''s brothers and sisters, oldest first.'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/SiblingCard'
+          title: Items
+          type: array
+      required:
+      - items
+      title: SiblingsBlock
+      type: object
     SinceYouBeganBlock:
       description: '``since_you_began`` — what changed since this donor''s sponsorship began.'
       properties:
@@ -8209,6 +8271,10 @@ components:
         recent_updates:
           anyOf:
           - $ref: '#/components/schemas/RecentUpdatesBlock'
+          - type: 'null'
+        siblings:
+          anyOf:
+          - $ref: '#/components/schemas/SiblingsBlock'
           - type: 'null'
         since_you_began:
           anyOf:

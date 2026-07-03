@@ -207,6 +207,30 @@ class GuardianBlock(BaseModel):
     occupation: str | None = None
 
 
+class SiblingCard(BaseModel):
+    """One sibling of the sponsored child. SENSITIVE: these are OTHER children
+    on a donor surface, so the slice is a strict allowlist — the first name,
+    the age, the gender and the coded sponsorship standing (the frontend
+    localizes it). ``code`` is populated ONLY for an awaiting_sponsor sibling
+    (that child is already publicly listable, so the code links the public
+    sponsorship page); for a sponsored sibling it MUST stay None so a donor
+    can never dereference another donor's child. ``family_name`` /
+    ``national_id`` / health / address / father details / case internals /
+    sponsor identity stay staff-only and must NEVER be added here."""
+
+    first_name: str
+    age_years: int
+    gender: Literal["M", "F"]
+    sponsorship_status: Literal["sponsored", "awaiting_sponsor"]
+    code: str | None = None
+
+
+class SiblingsBlock(BaseModel):
+    """``siblings`` — the child's brothers and sisters, oldest first."""
+
+    items: list[SiblingCard]
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -249,6 +273,7 @@ class SponsoredOrphanProfile(BaseModel):
     health: HealthBlock | None = None
     home: HomeBlock | None = None
     guardian: GuardianBlock | None = None
+    siblings: SiblingsBlock | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────
