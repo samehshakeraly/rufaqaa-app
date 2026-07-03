@@ -264,6 +264,14 @@ export function DonorOrphanDetailPage() {
           hidden or absent. Present ⇒ safe to show. */}
       {profile?.guardian && <GuardianSection name={name} guardian={profile.guardian} />}
 
+      {/* "إخوتها" — the child's siblings: first name + age + gender + coded
+          sponsorship standing ONLY (never a family name or any case detail),
+          stripped server-side when hidden or empty. An awaiting sibling links
+          its public sponsorship page via the donor-safe code. */}
+      {profile?.siblings && profile.siblings.items.length > 0 && (
+        <SiblingsSection name={name} siblings={profile.siblings} />
+      )}
+
       {/* "In her words" — curated phrases in the child's own voice. Server
           strips the block entirely when hidden or empty, so a present array is
           always non-empty. */}
@@ -1316,6 +1324,94 @@ function GuardianSection({
           </div>
         )}
       </dl>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.4d) Siblings — the child's brothers and sisters                   */
+/* ------------------------------------------------------------------ */
+
+/** "إخوتها" — the gated donor siblings element. The backend emits this block
+ * only when the supervisor left it visible AND the family has other children,
+ * and each card exposes ONLY the first name, age, gender and coded sponsorship
+ * standing — never a family name, id or any case detail — so a present
+ * `siblings` is always safe to show. An awaiting_sponsor sibling carries the
+ * public code (that child is already publicly listable), so its card links the
+ * sponsorship CTA; a sponsored sibling's code never leaves the server. */
+function SiblingsSection({
+  name,
+  siblings,
+}: {
+  name: string;
+  siblings: NonNullable<SponsoredOrphanProfile["siblings"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.siblingsTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.trust}`}
+        >
+          <PersonIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.siblingsTitle", { name })}
+        </h2>
+      </div>
+
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {siblings.items.map((sib, i) => {
+          const sponsored = sib.sponsorship_status === "sponsored";
+          return (
+            <li
+              key={`${sib.first_name}-${i}`}
+              className={`flex items-center gap-3 rounded-xl border p-4 ${
+                sponsored ? TONE_TILE.trust : TONE_TILE.sky
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-trust-300 to-trust-600 text-base font-bold text-white"
+              >
+                {sib.first_name.trim().charAt(0) || "•"}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold text-gray-900 dark:text-gray-100">
+                  {sib.first_name}
+                </span>
+                <span className="block text-xs text-gray-500 dark:text-gray-400">
+                  {t("donorProfile.waitingAge", { age: sib.age_years })}
+                  {" · "}
+                  {sib.gender === "M"
+                    ? t("donor.orphanDetail.male")
+                    : t("donor.orphanDetail.female")}
+                </span>
+                <span
+                  className={`mt-1.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                    sponsored ? TONE_CHIP.success : TONE_CHIP.warning
+                  }`}
+                >
+                  {sponsored && <CheckIcon />}
+                  {sponsored
+                    ? t("donorProfile.siblingsSponsored")
+                    : t("donorProfile.siblingsAwaiting")}
+                </span>
+              </span>
+              {!sponsored && sib.code && (
+                <Link
+                  to={`/orphans/${sib.code}`}
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-trust-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-trust-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-trust-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800"
+                >
+                  <HeartIcon />
+                  {t("donorProfile.siblingsSponsorCta")}
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }

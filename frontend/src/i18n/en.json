@@ -3694,6 +3694,10 @@
       "guardian": {
         "label": "Who cares for her",
         "help": "The primary caregiver's relation and occupation only — never a name, phone or any identifying detail."
+      },
+      "siblings": {
+        "label": "Her siblings",
+        "help": "Each sibling's first name, age and sponsorship standing only — never a family name, identity or any case detail."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -4610,6 +4614,10 @@
     "guardianTitle": "Who cares for {{name}}",
     "guardianRelation": "Relation",
     "guardianOccupation": "Occupation",
+    "siblingsTitle": "{{name}}'s siblings",
+    "siblingsSponsored": "Sponsored",
+    "siblingsAwaiting": "Awaiting a sponsor",
+    "siblingsSponsorCta": "Sponsor this sibling",
     "inHerWordsTitle": "In {{name}}'s words",
     "inHerWordsSubtitle": "Phrases shared in her own voice.",
     "fatherMemoryTitle": "The father's memory",

@@ -200,6 +200,24 @@ const FULL_PROFILE = {
   },
   home: { governorate: "الفروانية", housing_status: "rented" },
   guardian: { relation: "mother", occupation: "معلّمة" },
+  siblings: {
+    items: [
+      {
+        first_name: "سلمى",
+        age_years: 15,
+        gender: "F",
+        sponsorship_status: "sponsored",
+        code: null,
+      },
+      {
+        first_name: "يوسف",
+        age_years: 7,
+        gender: "M",
+        sponsorship_status: "awaiting_sponsor",
+        code: "ORP-2044",
+      },
+    ],
+  },
 };
 
 // Identity only — every element block omitted (backend hid/absent them all).
@@ -615,6 +633,39 @@ describe("DonorOrphanDetailPage — guardian (من يرعاها)", () => {
 
     await screen.findByText("عائشة");
     expect(screen.queryByRole("region", { name: "من يرعى عائشة" })).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — siblings (إخوتها)", () => {
+  it("renders one card per sibling with localized status labels", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "إخوة عائشة" });
+    expect(within(section).getByText("سلمى")).toBeInTheDocument();
+    expect(within(section).getByText("تحت الكفالة")).toBeInTheDocument();
+    expect(within(section).getByText("يوسف")).toBeInTheDocument();
+    expect(within(section).getByText("بانتظار كافل")).toBeInTheDocument();
+    // Coded statuses are localized, never rendered raw.
+    expect(within(section).queryByText("sponsored")).not.toBeInTheDocument();
+    expect(within(section).queryByText("awaiting_sponsor")).not.toBeInTheDocument();
+  });
+
+  it("links the sponsorship CTA only for the awaiting sibling", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "إخوة عائشة" });
+    const links = within(section).getAllByRole("link", { name: /بادر بالكفالة/ });
+    expect(links).toHaveLength(1);
+    expect(links[0]).toHaveAttribute("href", "/orphans/ORP-2044");
+  });
+
+  it("omits the section entirely when the block is absent (hidden or no data)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByRole("region", { name: "إخوة عائشة" })).not.toBeInTheDocument();
   });
 });
 

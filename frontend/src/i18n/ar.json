@@ -3694,6 +3694,10 @@
       "guardian": {
         "label": "من يرعاها",
         "help": "صلة قرابة الراعي الأساسي ومهنته فقط — دون أي اسم أو هاتف أو بيانات تعريفية."
+      },
+      "siblings": {
+        "label": "إخوتها",
+        "help": "الاسم الأول لكل شقيق وعمره وحالة كفالته فقط — دون اسم العائلة أو أي هوية أو تفاصيل حالة."
       }
     },
     "showAction": "إظهار {{name}} للكافل",
@@ -4610,6 +4614,10 @@
     "guardianTitle": "من يرعى {{name}}",
     "guardianRelation": "صلة القرابة",
     "guardianOccupation": "المهنة",
+    "siblingsTitle": "إخوة {{name}}",
+    "siblingsSponsored": "تحت الكفالة",
+    "siblingsAwaiting": "بانتظار كافل",
+    "siblingsSponsorCta": "بادر بالكفالة",
     "inHerWordsTitle": "بكلمات {{name}}",
     "inHerWordsSubtitle": "عبارات شاركتها بصوتها.",
     "fatherMemoryTitle": "ذكرى الأب",
