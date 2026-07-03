@@ -198,6 +198,8 @@ const FULL_PROFILE = {
     last_checkup: "2026-04-10",
     vaccinations_status: "up_to_date",
   },
+  home: { governorate: "الفروانية", housing_status: "rented" },
+  guardian: { relation: "mother", occupation: "معلّمة" },
 };
 
 // Identity only — every element block omitted (backend hid/absent them all).
@@ -541,6 +543,78 @@ describe("DonorOrphanDetailPage — health (الاطمئنان الصحي)", () 
     expect(
       screen.queryByRole("region", { name: /الاطمئنان على صحة/ }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — home (بيت عائشة)", () => {
+  it("renders the PII-free home glimpse with localized coded housing", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "بيت عائشة" });
+    expect(within(section).getByText("المحافظة")).toBeInTheDocument();
+    expect(within(section).getByText("الفروانية")).toBeInTheDocument();
+    expect(within(section).getByText("السكن")).toBeInTheDocument();
+    // Coded housing status → localized label, never the raw code.
+    expect(within(section).getByText("إيجار")).toBeInTheDocument();
+    expect(within(section).queryByText("rented")).not.toBeInTheDocument();
+  });
+
+  it("renders only the fields the backend included", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      home: { governorate: "الفروانية", housing_status: null },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "بيت عائشة" });
+    expect(within(section).getByText("الفروانية")).toBeInTheDocument();
+    expect(within(section).queryByText("السكن")).not.toBeInTheDocument();
+  });
+
+  it("omits the section entirely when the block is absent (hidden or no data)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByRole("region", { name: "بيت عائشة" })).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — guardian (من يرعاها)", () => {
+  it("renders only the localized coded relation and the occupation", async () => {
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "من يرعى عائشة" });
+    expect(within(section).getByText("صلة القرابة")).toBeInTheDocument();
+    // Coded relation → localized label, never the raw code.
+    expect(within(section).getByText("أم")).toBeInTheDocument();
+    expect(within(section).getByText("المهنة")).toBeInTheDocument();
+    expect(within(section).getByText("معلّمة")).toBeInTheDocument();
+    expect(within(section).queryByText("mother")).not.toBeInTheDocument();
+  });
+
+  it("omits the occupation tile when the backend sent none", async () => {
+    profileMock.mockResolvedValue({
+      ...IDENTITY,
+      guardian: { relation: "grandmother", occupation: null },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+    renderPage();
+
+    const section = await screen.findByRole("region", { name: "من يرعى عائشة" });
+    expect(within(section).getByText("جدة")).toBeInTheDocument();
+    expect(within(section).queryByText("المهنة")).not.toBeInTheDocument();
+  });
+
+  it("omits the section entirely when the block is absent (hidden or no data)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    expect(screen.queryByRole("region", { name: "من يرعى عائشة" })).not.toBeInTheDocument();
   });
 });
 

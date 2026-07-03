@@ -35,6 +35,8 @@ class ProfileElement(StrEnum):
     in_her_words = "in_her_words"
     father_memory = "father_memory"
     health = "health"
+    home = "home"
+    guardian = "guardian"
 
 
 def is_visible(profile_visibility: dict[str, bool], key: ProfileElement) -> bool:

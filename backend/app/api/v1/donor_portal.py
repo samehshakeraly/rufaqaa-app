@@ -23,6 +23,7 @@ from app.api.v1.messages import MESSAGE_MAX_LEN, MessageRead, _project
 from app.api.v1.public import to_public_detail
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.family import Family, Guardian
 from app.models.media import Media
 from app.models.message import Message
 from app.models.orphan import Orphan
@@ -46,8 +47,10 @@ from app.schemas.report import (
 from app.schemas.sponsored_profile import (
     DreamBlock,
     FatherMemory,
+    GuardianBlock,
     HealthBlock,
     HerWorldBlock,
+    HomeBlock,
     InHerWordsItem,
     MediaBlock,
     MediaItem,
@@ -324,12 +327,77 @@ async def _build_media_block(
     )
 
 
+async def _build_home_block(
+    db: AsyncSession, orphan: Orphan, visibility: dict[str, bool]
+) -> HomeBlock | None:
+    """Assemble the donor-safe ``home`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``home`` element is
+    hidden, the child has no family on record, or neither allowlisted value is
+    present. The family row is loaded with an EXPLICIT ``organization_id``
+    filter (the app's superuser connection bypasses RLS, so this predicate —
+    not RLS — is what keeps the read inside the orphan's org). Only the strict
+    :class:`HomeBlock` allowlist leaves the server: the governorate (region at
+    GOVERNORATE level, never finer) and the coded housing status. The exact
+    address, income, notes and every other family field stay staff-only.
+    """
+    if not is_visible(visibility, ProfileElement.home) or orphan.family_id is None:
+        return None
+    family = await db.scalar(
+        select(Family).where(
+            Family.id == orphan.family_id,
+            Family.organization_id == orphan.organization_id,
+        )
+    )
+    if family is None or not (family.governorate or family.housing_status):
+        return None
+    return HomeBlock(governorate=family.governorate, housing_status=family.housing_status)
+
+
+async def _build_guardian_block(
+    db: AsyncSession, orphan: Orphan, visibility: dict[str, bool]
+) -> GuardianBlock | None:
+    """Assemble the donor-safe ``guardian`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``guardian`` element
+    is hidden, the child has no family on record, or the family has no
+    guardian. Guardians are loaded with an EXPLICIT ``organization_id`` filter
+    (the app's superuser connection bypasses RLS, so this predicate — not RLS —
+    is what keeps the read inside the orphan's org). The primary caregiver is
+    preferred by relation ("mother", then "grandmother"), else the first on
+    record. Only the strict :class:`GuardianBlock` allowlist leaves the server:
+    the coded relation + occupation. Names, ids, contact and banking details
+    stay staff-only.
+    """
+    if not is_visible(visibility, ProfileElement.guardian) or orphan.family_id is None:
+        return None
+    guardians = (
+        await db.scalars(
+            select(Guardian)
+            .where(
+                Guardian.family_id == orphan.family_id,
+                Guardian.organization_id == orphan.organization_id,
+            )
+            .order_by(Guardian.created_at.asc())
+        )
+    ).all()
+    if not guardians:
+        return None
+    primary = next(
+        (g for wanted in ("mother", "grandmother") for g in guardians if g.relation == wanted),
+        guardians[0],
+    )
+    return GuardianBlock(relation=primary.relation, occupation=primary.occupation)
+
+
 def _compose_sponsored_profile(
     orphan: Orphan,
     partner_name: str | None,
     reports: list[ReportDonorRead],
     sponsorship_start: date,
     media: MediaBlock | None = None,
+    home: HomeBlock | None = None,
+    guardian: GuardianBlock | None = None,
 ) -> SponsoredOrphanProfile:
     """Assemble the donor-safe profile from already-safe parts.
 
@@ -528,6 +596,8 @@ def _compose_sponsored_profile(
         in_her_words=in_her_words,
         father_memory=father_memory,
         health=health,
+        home=home,
+        guardian=guardian,
     )
 
 
@@ -588,8 +658,13 @@ async def my_sponsored_orphan_profile(
     ).all()
     reports = [_donor_report_view(r) for r in report_rows]
 
-    media = await _build_media_block(db, orphan_id, orphan.profile_visibility or {})
-    return _compose_sponsored_profile(orphan, partner_name, reports, sponsorship_start, media)
+    vis = orphan.profile_visibility or {}
+    media = await _build_media_block(db, orphan_id, vis)
+    home = await _build_home_block(db, orphan, vis)
+    guardian = await _build_guardian_block(db, orphan, vis)
+    return _compose_sponsored_profile(
+        orphan, partner_name, reports, sponsorship_start, media, home, guardian
+    )
 
 
 # ── Sponsorship-scoped message archive (PR-9: أرشيف رسائلك إليها) ──────────

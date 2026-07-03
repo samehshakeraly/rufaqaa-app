@@ -79,8 +79,9 @@ class Guardian(Base):
     gender: Mapped[str | None] = mapped_column(String(1))
 
     relation: Mapped[str] = mapped_column(String(50), nullable=False)
-    # Staff-facing only (see migration 0027) — never exposed on any donor
-    # surface in this batch.
+    # ``relation`` + ``occupation`` are the ONLY guardian fields on any donor
+    # surface — the gated ``guardian`` block (R3) on the sponsored profile.
+    # Every other column here stays staff-only.
     occupation: Mapped[str | None] = mapped_column(String(100))
 
     phone: Mapped[str | None] = mapped_column(String(30))

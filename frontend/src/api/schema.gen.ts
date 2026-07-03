@@ -4222,6 +4222,22 @@ export interface components {
              */
             sent: boolean;
         };
+        /**
+         * GuardianBlock
+         * @description ``guardian`` — who cares for the child, without identifying them.
+         *     SENSITIVE: this is GUARDIAN data on a donor surface, so the slice is a
+         *     strict allowlist — ONLY the coded relation (the frontend localizes it) and
+         *     the occupation. ``full_name`` / ``national_id`` / ``phone`` / ``whatsapp``
+         *     / ``email`` / ``bank_account_info`` / ``literacy_level`` /
+         *     ``date_of_birth`` / ``user_id`` / ``code`` stay staff-only and must NEVER
+         *     be added here.
+         */
+        GuardianBlock: {
+            /** Occupation */
+            occupation?: string | null;
+            /** Relation */
+            relation: string;
+        };
         /** GuardianCreate */
         GuardianCreate: {
             /** Date Of Birth */
@@ -4639,6 +4655,22 @@ export interface components {
             quran_juz_memorized?: number | null;
             /** Tags */
             tags: string[];
+        };
+        /**
+         * HomeBlock
+         * @description ``home`` — a minimal, PII-free glimpse of the child's home. SENSITIVE:
+         *     this is FAMILY data on a donor surface, so the slice is a strict allowlist —
+         *     ONLY the governorate (region at GOVERNORATE level, never finer) and the
+         *     coded housing status (the frontend localizes it). ``city`` / ``district`` /
+         *     ``village`` / ``street`` / ``house_number`` / ``floor`` / ``address_details``
+         *     / coordinates / ``notes`` / ``code`` / ``family_name`` / ``monthly_income``
+         *     stay staff-only and must NEVER be added here.
+         */
+        HomeBlock: {
+            /** Governorate */
+            governorate?: string | null;
+            /** Housing Status */
+            housing_status?: string | null;
         };
         /**
          * InHerWordsItem
@@ -6820,7 +6852,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7382,8 +7414,10 @@ export interface components {
              * @enum {string}
              */
             gender: "M" | "F";
+            guardian?: components["schemas"]["GuardianBlock"] | null;
             health?: components["schemas"]["HealthBlock"] | null;
             her_world?: components["schemas"]["HerWorldBlock"] | null;
+            home?: components["schemas"]["HomeBlock"] | null;
             /** In Her Words */
             in_her_words?: components["schemas"]["InHerWordsItem"][] | null;
             /** Is Hafiz */

@@ -51,7 +51,10 @@ _FORBIDDEN_FIELDS = {
     "family_id",
     "family_name",
     "lives_with",
-    "guardian",
+    # NOTE: "guardian" became a sanctioned BLOCK key in R3 (see _BLOCK_FIELDS);
+    # its strict allowlist (relation + occupation only) is enforced in
+    # test_donor_home_guardian.py. "occupation" here guards the TOP level only.
+    "guardian_id",
     "occupation",
     "address",
     "gps",
@@ -95,6 +98,8 @@ _BLOCK_FIELDS = {
     "in_her_words",
     "father_memory",
     "health",
+    "home",
+    "guardian",
 }
 
 

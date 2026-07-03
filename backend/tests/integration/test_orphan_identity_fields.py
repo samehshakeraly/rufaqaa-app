@@ -369,15 +369,16 @@ async def test_current_juz_in_her_world_when_visible_omitted_when_hidden(
     assert body["orphan_status"] == "father"
 
 
-# ── occupation never reaches donors ────────────────────────────────────────
+# ── occupation reaches donors ONLY via the gated guardian block (R3) ───────
 
 
-async def test_occupation_absent_from_every_donor_facing_response(
+async def test_occupation_reaches_donor_only_via_guardian_block(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
-    """occupation is staff-facing only in this batch: it must not appear in
-    the public browse/detail payloads nor anywhere in the composed donor
-    profile — even when the child's family has a guardian with one set."""
+    """R3 sanctioned ``occupation`` on EXACTLY ONE donor surface: the gated
+    ``guardian`` block of the sponsored profile. It appears there (element
+    visible + data present), nowhere else in the composed profile, and never
+    on the public browse/detail payloads."""
     partner_id = await _partner_id(api, auth_headers)
     donor_id, donor_headers = await _signup_donor(api, auth_headers)
 
@@ -406,8 +407,12 @@ async def test_occupation_absent_from_every_donor_facing_response(
         await db.commit()
 
     profile = await _sponsored_profile(api, donor_headers, orphan["id"])
-    # Deep check — no nested block may carry it either.
-    assert "occupation" not in json.dumps(profile)
+    # The ONE sanctioned appearance: the gated guardian block (R3), carrying
+    # exactly the coded relation + occupation.
+    assert profile["guardian"] == {"relation": "mother", "occupation": "معلّمة"}
+    # Deep check — no OTHER block may carry it.
+    rest = {k: v for k, v in profile.items() if k != "guardian"}
+    assert "occupation" not in json.dumps(rest)
 
     r = await api.get(f"/api/v1/public/orphans/{orphan['code']}")
     assert r.status_code == 200

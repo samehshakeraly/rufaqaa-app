@@ -254,6 +254,16 @@ export function DonorOrphanDetailPage() {
           stripped server-side when hidden or empty. Present ⇒ safe to show. */}
       {profile?.health && <HealthSection name={name} health={profile.health} lang={lang} />}
 
+      {/* "بيت سارة" — a PII-free glimpse of the child's home: governorate-level
+          region + coded housing status ONLY (never a city, street, address or
+          income), stripped server-side when hidden or empty. Present ⇒ safe. */}
+      {profile?.home && <HomeSection name={name} home={profile.home} />}
+
+      {/* "من يرعاها" — who cares for the child: coded relation + occupation
+          ONLY (never a name or contact detail), stripped server-side when
+          hidden or absent. Present ⇒ safe to show. */}
+      {profile?.guardian && <GuardianSection name={name} guardian={profile.guardian} />}
+
       {/* "In her words" — curated phrases in the child's own voice. Server
           strips the block entirely when hidden or empty, so a present array is
           always non-empty. */}
@@ -1188,6 +1198,124 @@ function HealthSection({
           )}
         </dl>
       )}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.4b) Home — a PII-free glimpse of the child's home                 */
+/* ------------------------------------------------------------------ */
+
+/** "بيت سارة" — the gated donor home element. The backend emits this block only
+ * when the supervisor left it visible AND the linked family carries at least
+ * one of the two values, and it exposes ONLY the governorate (region at
+ * governorate level, never finer) and the coded housing status (localized
+ * through the shared families map) — never a city, street, address,
+ * coordinates or income — so a present `home` is always safe to show. Each
+ * tile is independently optional. */
+function HomeSection({
+  name,
+  home,
+}: {
+  name: string;
+  home: NonNullable<SponsoredOrphanProfile["home"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.homeTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.trust}`}
+        >
+          <HomeIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.homeTitle", { name })}
+        </h2>
+      </div>
+
+      <dl className="grid gap-3 sm:grid-cols-2">
+        {home.governorate && (
+          <div className={`rounded-xl border p-4 ${TONE_TILE.trust}`}>
+            <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+              {t("donorProfile.homeGovernorate")}
+            </dt>
+            <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+              {home.governorate}
+            </dd>
+          </div>
+        )}
+        {home.housing_status && (
+          <div className={`rounded-xl border p-4 ${TONE_TILE.sky}`}>
+            <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+              {t("donorProfile.homeHousing")}
+            </dt>
+            <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+              {t(`families.housingStatus.${home.housing_status}`, {
+                defaultValue: home.housing_status,
+              })}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.4c) Guardian — who cares for the child, without identifying them  */
+/* ------------------------------------------------------------------ */
+
+/** "من يرعاها" — the gated donor guardian element. The backend emits this block
+ * only when the supervisor left it visible AND the family has a guardian, and
+ * it exposes ONLY the coded relation (localized through the shared families
+ * map) and the occupation — never a name, phone or any identifying detail —
+ * so a present `guardian` is always safe to show. */
+function GuardianSection({
+  name,
+  guardian,
+}: {
+  name: string;
+  guardian: NonNullable<SponsoredOrphanProfile["guardian"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.guardianTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.trust}`}
+        >
+          <PersonIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.guardianTitle", { name })}
+        </h2>
+      </div>
+
+      <dl className="grid gap-3 sm:grid-cols-2">
+        <div className={`rounded-xl border p-4 ${TONE_TILE.trust}`}>
+          <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+            {t("donorProfile.guardianRelation")}
+          </dt>
+          <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            {t(`families.relations.${guardian.relation}`, {
+              defaultValue: guardian.relation,
+            })}
+          </dd>
+        </div>
+        {guardian.occupation && (
+          <div className={`rounded-xl border p-4 ${TONE_TILE.sky}`}>
+            <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+              {t("donorProfile.guardianOccupation")}
+            </dt>
+            <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+              {guardian.occupation}
+            </dd>
+          </div>
+        )}
+      </dl>
     </section>
   );
 }
