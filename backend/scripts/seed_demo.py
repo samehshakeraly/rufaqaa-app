@@ -76,6 +76,7 @@ from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
 from app.models.report import OrphanReport
+from app.models.skill import OrphanSkill
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.services.orphans import recompute_profile_completion, stamp_available_since
@@ -546,6 +547,7 @@ class Summary:
     reports_by_status: dict[str, int] = field(default_factory=lambda: defaultdict(int))
     documents: int = 0
     media: int = 0
+    skills: int = 0
 
 
 # ── Generic upsert-by-lookup helpers (typed, no raw SQL) ──────────────────────
@@ -636,8 +638,9 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
 
     # ── Replace regenerable children up-front (idempotent re-run) ──────────────
     # Identity-bearing rows below are upserted by code; these have no stable code,
-    # so we wipe the demo-org-scoped set and rebuild it. Order: media → reports →
-    # documents → payments (children before the parents they reference).
+    # so we wipe the demo-org-scoped set and rebuild it. Order: skills → media →
+    # reports → documents → payments (children before the parents they reference).
+    await db.execute(delete(OrphanSkill).where(OrphanSkill.organization_id == org_id))
     await db.execute(text("DELETE FROM media WHERE organization_id = :o"), {"o": str(org_id)})
     await db.execute(delete(OrphanReport).where(OrphanReport.organization_id == org_id))
     await db.execute(delete(Document).where(Document.organization_id == org_id))
@@ -1306,6 +1309,32 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
         )
         summary.media += 3
 
+        # ── R5 skills: give the same demo child a small skills list so the
+        # gated donor ``skills`` block renders. One row carries a STAFF-ONLY
+        # ``note`` on purpose — the donor payload must strip it (the SkillCard
+        # allowlist is name/category/level only). The element stays visible via
+        # the default profile_visibility={}.
+        for offset, (name, category, level, skill_note) in enumerate(
+            (
+                ("حفظ القرآن الكريم", "quran", "advanced", "أنهت خمسة أجزاء في حلقة التحفيظ."),
+                ("الرسم بالألوان المائية", "arts", "intermediate", None),
+                ("نط الحبل", "sports", "beginner", None),
+            )
+        ):
+            db.add(
+                OrphanSkill(
+                    organization_id=org_id,
+                    orphan_id=aisha.id,
+                    name=name,
+                    category=category,
+                    level=level,
+                    note=skill_note,
+                    created_at=now - timedelta(days=45 - offset),
+                    updated_at=now - timedelta(days=45 - offset),
+                )
+            )
+            summary.skills += 1
+
     await db.commit()
     return summary
 
@@ -1378,6 +1407,7 @@ async def _purge() -> None:
             print(f"✔ nothing to purge — no organisation with code {ORG_CODE!r}.")
             return
         org_id = org.id
+        await db.execute(delete(OrphanSkill).where(OrphanSkill.organization_id == org_id))
         await db.execute(text("DELETE FROM media WHERE organization_id = :o"), {"o": str(org_id)})
         await db.execute(delete(OrphanReport).where(OrphanReport.organization_id == org_id))
         await db.execute(delete(Document).where(Document.organization_id == org_id))
@@ -1424,6 +1454,7 @@ def _print_summary(summary: Summary) -> None:
         print(f"      - {status_value:<22}: {count}")
     print(f"  documents    : {summary.documents}")
     print(f"  media        : {summary.media}")
+    print(f"  skills       : {summary.skills}")
 
     print("\n  Demo logins (clearly fake — local/dev only):")
     print(f"    staff/admin : {STAFF_LOGIN['email']} / {STAFF_LOGIN['password']}")

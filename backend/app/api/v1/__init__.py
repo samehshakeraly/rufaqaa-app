@@ -25,6 +25,7 @@ from app.api.v1 import (
     platform,
     public,
     reports,
+    skills,
     sponsorships,
     stats,
     twofa,
@@ -64,3 +65,4 @@ api_router.include_router(guardian_self.router, prefix="/guardian", tags=["guard
 api_router.include_router(orphan_self.router, prefix="/orphan", tags=["orphan-self"])
 api_router.include_router(orphanage_self.router, prefix="/orphanage", tags=["orphanage-self"])
 api_router.include_router(messages.router, prefix="/messages", tags=["messages"])
+api_router.include_router(skills.router, tags=["skills"])

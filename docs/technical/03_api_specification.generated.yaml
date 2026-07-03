@@ -7117,6 +7117,7 @@ components:
       - home
       - guardian
       - siblings
+      - skills
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -8158,6 +8159,178 @@ components:
       - reports_count
       title: SinceYouBeganBlock
       type: object
+    SkillCard:
+      description: 'DONOR-FACING slice of one skill — a STRICT allowlist: the name plus the
+
+        coded category/level (the frontend localizes them). ``note`` is staff-only
+
+        free text and — like ids and timestamps — must NEVER be added here.'
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+        name:
+          title: Name
+          type: string
+      required:
+      - name
+      title: SkillCard
+      type: object
+    SkillCreate:
+      description: 'Staff POST body. ``name`` is required (trimmed, 1–60 chars); the coded
+
+        qualifiers and the staff-only ``note`` are optional.'
+      properties:
+        category:
+          anyOf:
+          - enum:
+            - quran
+            - academic
+            - arts
+            - sports
+            - languages
+            - crafts
+            - social
+            - other
+            type: string
+          - type: 'null'
+          title: Category
+        level:
+          anyOf:
+          - enum:
+            - beginner
+            - intermediate
+            - advanced
+            type: string
+          - type: 'null'
+          title: Level
+        name:
+          maxLength: 60
+          minLength: 1
+          title: Name
+          type: string
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      required:
+      - name
+      title: SkillCreate
+      type: object
+    SkillRead:
+      description: 'STAFF view of one skill row — carries the stable ids, the staff-only
+
+        ``note`` and the timestamps. Never serialised to a donor.'
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+        name:
+          title: Name
+          type: string
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - orphan_id
+      - name
+      - created_at
+      - updated_at
+      title: SkillRead
+      type: object
+    SkillUpdate:
+      additionalProperties: false
+      description: 'Staff PATCH body — every field optional; only supplied fields are
+
+        applied (``exclude_unset``). An unknown key is rejected with 422.'
+      properties:
+        category:
+          anyOf:
+          - enum:
+            - quran
+            - academic
+            - arts
+            - sports
+            - languages
+            - crafts
+            - social
+            - other
+            type: string
+          - type: 'null'
+          title: Category
+        level:
+          anyOf:
+          - enum:
+            - beginner
+            - intermediate
+            - advanced
+            type: string
+          - type: 'null'
+          title: Level
+        name:
+          anyOf:
+          - maxLength: 60
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      title: SkillUpdate
+      type: object
+    SkillsBlock:
+      description: '``skills`` — the child''s skills and talents, oldest first. Each item is
+
+        the strict :class:`SkillCard` allowlist (name + coded category/level); the
+
+        staff-only ``note`` never reaches this block.'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/SkillCard'
+          title: Items
+          type: array
+      required:
+      - items
+      title: SkillsBlock
+      type: object
     SponsoredOrphanProfile:
       description: 'The donor-safe profile of a sponsored child. Identity fields are always
 
@@ -8279,6 +8452,10 @@ components:
         since_you_began:
           anyOf:
           - $ref: '#/components/schemas/SinceYouBeganBlock'
+          - type: 'null'
+        skills:
+          anyOf:
+          - $ref: '#/components/schemas/SkillsBlock'
           - type: 'null'
         supervisor_word:
           anyOf:
@@ -13521,6 +13698,87 @@ paths:
       summary: Release Orphan
       tags:
       - orphans
+  /api/v1/orphans/{orphan_id}/skills:
+    get:
+      description: 'Staff view of ALL of an orphan''s skills (including the staff-only
+
+        ``note``), oldest first — the donor block renders the same order. Explicit
+
+        org scope (never RLS); a cross-org orphan id 404s before anything lists.'
+      operationId: list_orphan_skills_api_v1_orphans__orphan_id__skills_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SkillRead'
+                title: Response List Orphan Skills Api V1 Orphans  Orphan Id  Skills Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Skills
+      tags:
+      - skills
+    post:
+      description: 'Record one skill/talent for an orphan.
+
+
+        The orphan is loaded FIRST, filtered by the caller''s ``organization_id``
+
+        (explicit scope, never RLS) — a cross-org orphan id 404s without revealing
+
+        its existence, so a skill can never be attached to another org''s child.
+
+        The skill''s org is then taken from the orphan row itself.'
+      operationId: create_orphan_skill_api_v1_orphans__orphan_id__skills_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Orphan Skill
+      tags:
+      - skills
   /api/v1/orphans/{orphan_id}/timeline:
     get:
       description: 'Chronological feed of everything that has happened around an orphan:
@@ -14929,6 +15187,73 @@ paths:
       summary: Submit Report
       tags:
       - reports
+  /api/v1/skills/{skill_id}:
+    delete:
+      description: 'Hard-delete one skill row. Explicit org scope (never RLS) — a cross-org
+
+        skill id 404s rather than revealing (or deleting) another org''s row.'
+      operationId: delete_skill_api_v1_skills__skill_id__delete
+      parameters:
+      - in: path
+        name: skill_id
+        required: true
+        schema:
+          format: uuid
+          title: Skill Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Delete Skill
+      tags:
+      - skills
+    patch:
+      description: 'Update a skill''s name/category/level/note. Only the fields actually
+
+        supplied are applied (``exclude_unset``). Explicit org scope (never RLS) —
+
+        a cross-org skill id 404s, so no other org''s row can be read or mutated.'
+      operationId: update_skill_api_v1_skills__skill_id__patch
+      parameters:
+      - in: path
+        name: skill_id
+        required: true
+        schema:
+          format: uuid
+          title: Skill Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Skill
+      tags:
+      - skills
   /api/v1/sponsorships:
     get:
       operationId: list_sponsorships_api_v1_sponsorships_get

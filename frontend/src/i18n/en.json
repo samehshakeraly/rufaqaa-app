@@ -3525,7 +3525,9 @@
       "tabMedia": "Media",
       "mediaTitle": "Memory box media",
       "tabInHerWords": "In her words",
-      "inHerWordsTitle": "In her words"
+      "inHerWordsTitle": "In her words",
+      "tabSkills": "Skills",
+      "skillsTitle": "Skills & talents"
     },
     "report": {
       "backToOrphan": "{{name}}'s page",
@@ -3698,6 +3700,10 @@
       "siblings": {
         "label": "Her siblings",
         "help": "Each sibling's first name, age and sponsorship standing only — never a family name, identity or any case detail."
+      },
+      "skills": {
+        "label": "Her skills",
+        "help": "Each skill's name, category and level only — the staff note never reaches the sponsor."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -3758,6 +3764,61 @@
     },
     "save": "Save changes",
     "saving": "Saving…",
+    "saved": "Saved",
+    "saveError": "Couldn't save. Please try again."
+  },
+  "orphanSkills": {
+    "intro": "Record the child's skills and talents. The sponsor sees only each skill's name, category and level — the note stays staff-only.",
+    "loadError": "Couldn't load skills. Please try again later.",
+    "empty": "No skills yet — add the first one above.",
+    "listLabel": "Recorded skills",
+    "fields": {
+      "name": "Skill",
+      "category": "Category",
+      "level": "Level",
+      "note": "Staff note (optional)"
+    },
+    "noteHint": "Internal note for the team — never shown to the sponsor.",
+    "notePrefix": "Staff note:",
+    "add": {
+      "title": "Add a skill",
+      "submit": "Add skill",
+      "submitting": "Adding…"
+    },
+    "edit": {
+      "name": "Edit skill name",
+      "category": "Edit category",
+      "level": "Edit level",
+      "note": "Edit staff note",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteLabel": "Delete this skill"
+    },
+    "errors": {
+      "empty": "The skill name can't be empty.",
+      "tooLong": "Keep it under {{max}} characters."
+    },
+    "category": {
+      "none": "No category",
+      "quran": "Qur'an",
+      "academic": "Academics",
+      "arts": "Arts",
+      "sports": "Sports",
+      "languages": "Languages",
+      "crafts": "Crafts",
+      "social": "Social",
+      "other": "Other"
+    },
+    "level": {
+      "none": "No level",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
     "saved": "Saved",
     "saveError": "Couldn't save. Please try again."
   },

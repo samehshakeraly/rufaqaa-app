@@ -2132,6 +2132,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/{orphan_id}/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Skills
+         * @description Staff view of ALL of an orphan's skills (including the staff-only
+         *     ``note``), oldest first — the donor block renders the same order. Explicit
+         *     org scope (never RLS); a cross-org orphan id 404s before anything lists.
+         */
+        get: operations["list_orphan_skills_api_v1_orphans__orphan_id__skills_get"];
+        put?: never;
+        /**
+         * Create Orphan Skill
+         * @description Record one skill/talent for an orphan.
+         *
+         *     The orphan is loaded FIRST, filtered by the caller's ``organization_id``
+         *     (explicit scope, never RLS) — a cross-org orphan id 404s without revealing
+         *     its existence, so a skill can never be attached to another org's child.
+         *     The skill's org is then taken from the orphan row itself.
+         */
+        post: operations["create_orphan_skill_api_v1_orphans__orphan_id__skills_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}/timeline": {
         parameters: {
             query?: never;
@@ -2710,6 +2741,33 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/skills/{skill_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Skill
+         * @description Hard-delete one skill row. Explicit org scope (never RLS) — a cross-org
+         *     skill id 404s rather than revealing (or deleting) another org's row.
+         */
+        delete: operations["delete_skill_api_v1_skills__skill_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Skill
+         * @description Update a skill's name/category/level/note. Only the fields actually
+         *     supplied are applied (``exclude_unset``). Explicit org scope (never RLS) —
+         *     a cross-org skill id 404s, so no other org's row can be read or mutated.
+         */
+        patch: operations["update_skill_api_v1_skills__skill_id__patch"];
         trace?: never;
     };
     "/api/v1/sponsorships": {
@@ -6852,7 +6910,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings" | "skills";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7426,6 +7484,95 @@ export interface components {
             start_date: string;
         };
         /**
+         * SkillCard
+         * @description DONOR-FACING slice of one skill — a STRICT allowlist: the name plus the
+         *     coded category/level (the frontend localizes them). ``note`` is staff-only
+         *     free text and — like ids and timestamps — must NEVER be added here.
+         */
+        SkillCard: {
+            /** Category */
+            category?: string | null;
+            /** Level */
+            level?: string | null;
+            /** Name */
+            name: string;
+        };
+        /**
+         * SkillCreate
+         * @description Staff POST body. ``name`` is required (trimmed, 1–60 chars); the coded
+         *     qualifiers and the staff-only ``note`` are optional.
+         */
+        SkillCreate: {
+            /** Category */
+            category?: ("quran" | "academic" | "arts" | "sports" | "languages" | "crafts" | "social" | "other") | null;
+            /** Level */
+            level?: ("beginner" | "intermediate" | "advanced") | null;
+            /** Name */
+            name: string;
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * SkillRead
+         * @description STAFF view of one skill row — carries the stable ids, the staff-only
+         *     ``note`` and the timestamps. Never serialised to a donor.
+         */
+        SkillRead: {
+            /** Category */
+            category?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Level */
+            level?: string | null;
+            /** Name */
+            name: string;
+            /** Note */
+            note?: string | null;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * SkillUpdate
+         * @description Staff PATCH body — every field optional; only supplied fields are
+         *     applied (``exclude_unset``). An unknown key is rejected with 422.
+         */
+        SkillUpdate: {
+            /** Category */
+            category?: ("quran" | "academic" | "arts" | "sports" | "languages" | "crafts" | "social" | "other") | null;
+            /** Level */
+            level?: ("beginner" | "intermediate" | "advanced") | null;
+            /** Name */
+            name?: string | null;
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * SkillsBlock
+         * @description ``skills`` — the child's skills and talents, oldest first. Each item is
+         *     the strict :class:`SkillCard` allowlist (name + coded category/level); the
+         *     staff-only ``note`` never reaches this block.
+         */
+        SkillsBlock: {
+            /** Items */
+            items: components["schemas"]["SkillCard"][];
+        };
+        /**
          * SponsoredOrphanProfile
          * @description The donor-safe profile of a sponsored child. Identity fields are always
          *     present; each element block is non-null only when visible AND backed by data.
@@ -7478,6 +7625,7 @@ export interface components {
             recent_updates?: components["schemas"]["RecentUpdatesBlock"] | null;
             siblings?: components["schemas"]["SiblingsBlock"] | null;
             since_you_began?: components["schemas"]["SinceYouBeganBlock"] | null;
+            skills?: components["schemas"]["SkillsBlock"] | null;
             supervisor_word?: components["schemas"]["SupervisorWordBlock"] | null;
             /** Tags */
             tags: string[];
@@ -11661,6 +11809,72 @@ export interface operations {
             };
         };
     };
+    list_orphan_skills_api_v1_orphans__orphan_id__skills_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_orphan_skill_api_v1_orphans__orphan_id__skills_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     orphan_timeline_api_v1_orphans__orphan_id__timeline_get: {
         parameters: {
             query?: never;
@@ -12779,6 +12993,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReportRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_skill_api_v1_skills__skill_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skill_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_skill_api_v1_skills__skill_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skill_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillRead"];
                 };
             };
             /** @description Validation Error */
