@@ -340,9 +340,7 @@ async def test_public_detail_exposes_no_independence(
     """PublicOrphanDetail is untouched: no independence field reaches the
     public browse/detail surfaces."""
     partner_id = await _partner_id(api, auth_headers)
-    orphan = await _make_orphan(
-        api, auth_headers, partner_id, independence_stage="skill_building"
-    )
+    orphan = await _make_orphan(api, auth_headers, partner_id, independence_stage="skill_building")
     async with make_session() as db:
         await db.execute(
             text("UPDATE orphans SET case_status='available' WHERE id=:id"),
