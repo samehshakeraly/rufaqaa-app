@@ -71,6 +71,7 @@ from app.core.security import hash_password
 from app.models.document import Document
 from app.models.donor import Donor
 from app.models.family import Family, Guardian
+from app.models.need import OrphanNeed
 from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
@@ -79,6 +80,7 @@ from app.models.report import OrphanReport
 from app.models.skill import OrphanSkill
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
+from app.models.wish import OrphanWish
 from app.services.orphans import recompute_profile_completion, stamp_available_since
 from app.services.storage import ensure_bucket, put_object
 
@@ -548,6 +550,8 @@ class Summary:
     documents: int = 0
     media: int = 0
     skills: int = 0
+    wishes: int = 0
+    needs: int = 0
 
 
 # ── Generic upsert-by-lookup helpers (typed, no raw SQL) ──────────────────────
@@ -638,8 +642,11 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
 
     # ── Replace regenerable children up-front (idempotent re-run) ──────────────
     # Identity-bearing rows below are upserted by code; these have no stable code,
-    # so we wipe the demo-org-scoped set and rebuild it. Order: skills → media →
-    # reports → documents → payments (children before the parents they reference).
+    # so we wipe the demo-org-scoped set and rebuild it. Order: wishes/needs →
+    # skills → media → reports → documents → payments (children before the
+    # parents they reference).
+    await db.execute(delete(OrphanWish).where(OrphanWish.organization_id == org_id))
+    await db.execute(delete(OrphanNeed).where(OrphanNeed.organization_id == org_id))
     await db.execute(delete(OrphanSkill).where(OrphanSkill.organization_id == org_id))
     await db.execute(text("DELETE FROM media WHERE organization_id = :o"), {"o": str(org_id)})
     await db.execute(delete(OrphanReport).where(OrphanReport.organization_id == org_id))
@@ -1342,6 +1349,113 @@ async def _seed(db: AsyncSession, assets: DemoAssets) -> Summary:
         # via the default profile_visibility={}.
         aisha.independence_stage = "skill_building"
 
+        # ── R7 wishes: give the same demo child a small wish list so the
+        # gated donor ``wishes`` block renders. One open wish carries a
+        # PARTIAL ``raised_amount`` set DIRECTLY on the model (no R7 endpoint
+        # can move it — that is R8's webhook) so the donor progress bar shows
+        # a real mid-way state; one is already fulfilled (raised == target,
+        # progress 100); one carries a STAFF-ONLY ``internal_note`` on purpose
+        # — the donor payload must strip it (the WishCard allowlist). The
+        # element stays visible via the default profile_visibility={}.
+        for offset, (w_title, w_descr, w_note, w_target, w_raised, w_status) in enumerate(
+            (
+                (
+                    "دراجة هوائية",
+                    "تحلم بدراجة تذهب بها إلى حلقة التحفيظ مع صديقاتها.",
+                    None,
+                    Decimal("45.00"),
+                    Decimal("18.00"),
+                    "open",
+                ),
+                (
+                    "طقم ألوان مائية احترافي",
+                    "موهوبة في الرسم وتتمنى طقم ألوان لتشارك في معرض المدرسة.",
+                    "تم ترشيحها لمعرض نهاية العام — يُفضّل التنفيذ قبل مايو.",
+                    Decimal("20.00"),
+                    Decimal("0"),
+                    "open",
+                ),
+                (
+                    "مصحف مجوّد كبير",
+                    "أتمّت خمسة أجزاء وتتمنى مصحفًا مجوّدًا خاصًا بها.",
+                    None,
+                    Decimal("10.00"),
+                    Decimal("10.00"),
+                    "fulfilled",
+                ),
+            )
+        ):
+            db.add(
+                OrphanWish(
+                    organization_id=org_id,
+                    orphan_id=aisha.id,
+                    title=w_title,
+                    description=w_descr,
+                    internal_note=w_note,
+                    target_amount=w_target,
+                    currency="KWD",
+                    raised_amount=w_raised,
+                    status=w_status,
+                    created_at=now - timedelta(days=40 - offset),
+                    updated_at=now - timedelta(days=40 - offset),
+                )
+            )
+            summary.wishes += 1
+
+        # ── R7 needs: same demo child, coded categories, varied status. One
+        # open need carries a partial ``raised_amount`` (set directly — same
+        # rationale as the wish above) and one a STAFF-ONLY ``internal_note``;
+        # the archived row proves donors never see archived items. The element
+        # stays visible via the default profile_visibility={}.
+        for offset, (n_title, n_descr, n_note, n_cat, n_target, n_raised, n_status) in enumerate(
+            (
+                (
+                    "بدل إيجار ثلاثة أشهر",
+                    "مساهمة في إيجار بيت الأسرة حتى نهاية الفصل الدراسي.",
+                    "المالك وافق على جدولة الدفعات — التنسيق مع الأخصائية سلمى.",
+                    "rent",
+                    Decimal("90.00"),
+                    Decimal("30.00"),
+                    "open",
+                ),
+                (
+                    "علاج الربو الموسمي",
+                    "بخاخ الربو والمتابعة الطبية للموسم القادم.",
+                    None,
+                    "medicine",
+                    Decimal("25.00"),
+                    Decimal("25.00"),
+                    "met",
+                ),
+                (
+                    "حقيبة مدرسية قديمة",
+                    "استُبدلت بحملة القرطاسية العامة.",
+                    None,
+                    "supplies",
+                    Decimal("8.00"),
+                    Decimal("0"),
+                    "archived",
+                ),
+            )
+        ):
+            db.add(
+                OrphanNeed(
+                    organization_id=org_id,
+                    orphan_id=aisha.id,
+                    title=n_title,
+                    description=n_descr,
+                    internal_note=n_note,
+                    category=n_cat,
+                    target_amount=n_target,
+                    currency="KWD",
+                    raised_amount=n_raised,
+                    status=n_status,
+                    created_at=now - timedelta(days=35 - offset),
+                    updated_at=now - timedelta(days=35 - offset),
+                )
+            )
+            summary.needs += 1
+
     await db.commit()
     return summary
 
@@ -1414,6 +1528,8 @@ async def _purge() -> None:
             print(f"✔ nothing to purge — no organisation with code {ORG_CODE!r}.")
             return
         org_id = org.id
+        await db.execute(delete(OrphanWish).where(OrphanWish.organization_id == org_id))
+        await db.execute(delete(OrphanNeed).where(OrphanNeed.organization_id == org_id))
         await db.execute(delete(OrphanSkill).where(OrphanSkill.organization_id == org_id))
         await db.execute(text("DELETE FROM media WHERE organization_id = :o"), {"o": str(org_id)})
         await db.execute(delete(OrphanReport).where(OrphanReport.organization_id == org_id))
@@ -1462,6 +1578,8 @@ def _print_summary(summary: Summary) -> None:
     print(f"  documents    : {summary.documents}")
     print(f"  media        : {summary.media}")
     print(f"  skills       : {summary.skills}")
+    print(f"  wishes       : {summary.wishes}")
+    print(f"  needs        : {summary.needs}")
 
     print("\n  Demo logins (clearly fake — local/dev only):")
     print(f"    staff/admin : {STAFF_LOGIN['email']} / {STAFF_LOGIN['password']}")

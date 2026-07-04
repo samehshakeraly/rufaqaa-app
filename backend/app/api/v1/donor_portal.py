@@ -26,6 +26,7 @@ from app.models.donor import Donor
 from app.models.family import Family, Guardian
 from app.models.media import Media
 from app.models.message import Message
+from app.models.need import OrphanNeed
 from app.models.orphan import Orphan
 from app.models.partner import PartnerOrganization
 from app.models.payment import Payment
@@ -33,8 +34,10 @@ from app.models.report import OrphanReport
 from app.models.skill import OrphanSkill
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
+from app.models.wish import OrphanWish
 from app.schemas.common import Page
 from app.schemas.media import CONSENT_REQUIRED_CATEGORIES, MediaCategory
+from app.schemas.need import NeedCard
 from app.schemas.payment import PaymentDonorRead
 from app.schemas.profile_visibility import ProfileElement, is_visible
 from app.schemas.report import (
@@ -60,6 +63,7 @@ from app.schemas.sponsored_profile import (
     MilestoneItem,
     MilestonesBlock,
     MultidimGrowthBlock,
+    NeedsBlock,
     NumberDelta,
     QuranGrowthBlock,
     QuranGrowthPoint,
@@ -72,8 +76,10 @@ from app.schemas.sponsored_profile import (
     SponsoredOrphanProfile,
     SupervisorWordBlock,
     TextDelta,
+    WishesBlock,
 )
 from app.schemas.sponsorship import SponsorshipRead
+from app.schemas.wish import WishCard, progress_percent
 from app.services.audit import record_audit
 from app.services.storage import presigned_get_url_for
 
@@ -492,6 +498,101 @@ async def _build_skills_block(
     )
 
 
+async def _build_wishes_block(
+    db: AsyncSession, orphan: Orphan, visibility: dict[str, bool]
+) -> WishesBlock | None:
+    """Assemble the donor-safe ``wishes`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``wishes`` element is
+    hidden or no non-archived wish exists. Wishes are loaded with an EXPLICIT
+    ``organization_id`` filter matching the orphan's org (the app's superuser
+    connection bypasses RLS, so this predicate — not RLS — is the cross-org
+    fence), oldest first; ``archived`` rows are excluded server-side (an open
+    or fulfilled wish still shows — the coded status lets the frontend render
+    the celebration state). Only the strict :class:`WishCard` allowlist leaves
+    the server: title/description/money trail/coded status plus the DERIVED
+    ``progress``. The staff-only ``internal_note`` — and every id/timestamp —
+    must NEVER be added here.
+    """
+    if not is_visible(visibility, ProfileElement.wishes):
+        return None
+    rows = (
+        await db.scalars(
+            select(OrphanWish)
+            .where(
+                OrphanWish.orphan_id == orphan.id,
+                OrphanWish.organization_id == orphan.organization_id,
+                OrphanWish.status != "archived",
+            )
+            .order_by(OrphanWish.created_at.asc())
+        )
+    ).all()
+    if not rows:
+        return None
+    return WishesBlock(
+        items=[
+            WishCard(
+                title=w.title,
+                description=w.description,
+                target_amount=w.target_amount,
+                currency=w.currency,
+                raised_amount=w.raised_amount,
+                status=w.status,
+                progress=progress_percent(w.raised_amount, w.target_amount),
+            )
+            for w in rows
+        ]
+    )
+
+
+async def _build_needs_block(
+    db: AsyncSession, orphan: Orphan, visibility: dict[str, bool]
+) -> NeedsBlock | None:
+    """Assemble the donor-safe ``needs`` block for one sponsored child.
+
+    Returns ``None`` — the whole block omitted — when the ``needs`` element is
+    hidden or no non-archived need exists. Needs are loaded with an EXPLICIT
+    ``organization_id`` filter matching the orphan's org (the app's superuser
+    connection bypasses RLS, so this predicate — not RLS — is the cross-org
+    fence), oldest first; ``archived`` rows are excluded server-side (an open
+    or met need still shows — the coded status lets the frontend render the
+    fulfilled state). Only the strict :class:`NeedCard` allowlist leaves the
+    server: title/description/coded category/money trail/coded status plus the
+    DERIVED ``progress``. The staff-only ``internal_note`` — and every
+    id/timestamp — must NEVER be added here.
+    """
+    if not is_visible(visibility, ProfileElement.needs):
+        return None
+    rows = (
+        await db.scalars(
+            select(OrphanNeed)
+            .where(
+                OrphanNeed.orphan_id == orphan.id,
+                OrphanNeed.organization_id == orphan.organization_id,
+                OrphanNeed.status != "archived",
+            )
+            .order_by(OrphanNeed.created_at.asc())
+        )
+    ).all()
+    if not rows:
+        return None
+    return NeedsBlock(
+        items=[
+            NeedCard(
+                title=n.title,
+                description=n.description,
+                category=n.category,
+                target_amount=n.target_amount,
+                currency=n.currency,
+                raised_amount=n.raised_amount,
+                status=n.status,
+                progress=progress_percent(n.raised_amount, n.target_amount),
+            )
+            for n in rows
+        ]
+    )
+
+
 def _compose_sponsored_profile(
     orphan: Orphan,
     partner_name: str | None,
@@ -502,6 +603,8 @@ def _compose_sponsored_profile(
     guardian: GuardianBlock | None = None,
     siblings: SiblingsBlock | None = None,
     skills: SkillsBlock | None = None,
+    wishes: WishesBlock | None = None,
+    needs: NeedsBlock | None = None,
 ) -> SponsoredOrphanProfile:
     """Assemble the donor-safe profile from already-safe parts.
 
@@ -714,6 +817,8 @@ def _compose_sponsored_profile(
         siblings=siblings,
         skills=skills,
         independence=independence,
+        wishes=wishes,
+        needs=needs,
     )
 
 
@@ -780,8 +885,20 @@ async def my_sponsored_orphan_profile(
     guardian = await _build_guardian_block(db, orphan, vis)
     siblings = await _build_siblings_block(db, orphan, vis)
     skills = await _build_skills_block(db, orphan, vis)
+    wishes = await _build_wishes_block(db, orphan, vis)
+    needs = await _build_needs_block(db, orphan, vis)
     return _compose_sponsored_profile(
-        orphan, partner_name, reports, sponsorship_start, media, home, guardian, siblings, skills
+        orphan,
+        partner_name,
+        reports,
+        sponsorship_start,
+        media,
+        home,
+        guardian,
+        siblings,
+        skills,
+        wishes,
+        needs,
     )
 
 

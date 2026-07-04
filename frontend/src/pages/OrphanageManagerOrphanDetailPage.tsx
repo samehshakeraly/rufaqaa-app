@@ -6,7 +6,9 @@ import { Link, useParams } from "react-router-dom";
 import { FatherMemoryConsentPanel } from "@/components/FatherMemoryConsentPanel";
 import { OrphanInHerWordsManager } from "@/components/OrphanInHerWordsManager";
 import { OrphanMediaManager } from "@/components/OrphanMediaManager";
+import { OrphanNeedsManager } from "@/components/OrphanNeedsManager";
 import { OrphanSkillsManager } from "@/components/OrphanSkillsManager";
+import { OrphanWishesManager } from "@/components/OrphanWishesManager";
 import { ProfileVisibilityPanel } from "@/components/ProfileVisibilityPanel";
 import { Skeleton } from "@/components/Skeleton";
 import {
@@ -19,7 +21,15 @@ import { ageFromDob } from "@/lib/orphanSelf";
 // Mirror the guardian detail page; reuse its styles (god-*).
 import "./GuardianOrphanDetailPage.css";
 
-type TabKey = "overview" | "reports" | "visibility" | "media" | "inHerWords" | "skills";
+type TabKey =
+  | "overview"
+  | "reports"
+  | "visibility"
+  | "media"
+  | "inHerWords"
+  | "skills"
+  | "wishes"
+  | "needs";
 
 /** Detail page for one of the dar's resident orphans. Profile facts come from
  * GET /orphanage/me/orphans (filtered to this id); the Reports tab reads the
@@ -143,6 +153,12 @@ export function OrphanageManagerOrphanDetailPage() {
               <TabButton id="skills" current={tab} onSelect={setTab}>
                 {t("orphanageManager.detail.tabSkills")}
               </TabButton>
+              <TabButton id="wishes" current={tab} onSelect={setTab}>
+                {t("orphanageManager.detail.tabWishes")}
+              </TabButton>
+              <TabButton id="needs" current={tab} onSelect={setTab}>
+                {t("orphanageManager.detail.tabNeeds")}
+              </TabButton>
             </div>
 
             {tab === "overview" && (
@@ -205,6 +221,20 @@ export function OrphanageManagerOrphanDetailPage() {
               <div role="tabpanel" className="god-tab-panel">
                 <h2 className="god-panel-title">{t("orphanageManager.detail.skillsTitle")}</h2>
                 <OrphanSkillsManager orphanId={orphan.id} />
+              </div>
+            )}
+
+            {tab === "wishes" && (
+              <div role="tabpanel" className="god-tab-panel">
+                <h2 className="god-panel-title">{t("orphanageManager.detail.wishesTitle")}</h2>
+                <OrphanWishesManager orphanId={orphan.id} />
+              </div>
+            )}
+
+            {tab === "needs" && (
+              <div role="tabpanel" className="god-tab-panel">
+                <h2 className="god-panel-title">{t("orphanageManager.detail.needsTitle")}</h2>
+                <OrphanNeedsManager orphanId={orphan.id} />
               </div>
             )}
 
