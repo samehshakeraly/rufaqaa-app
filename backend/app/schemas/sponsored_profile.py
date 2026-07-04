@@ -25,6 +25,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, field_validator
 
+from app.schemas.need import NeedCard
 from app.schemas.orphan import (
     HealthStatus,
     IndependenceStage,
@@ -32,6 +33,7 @@ from app.schemas.orphan import (
     VaccinationsStatus,
 )
 from app.schemas.skill import SkillCard
+from app.schemas.wish import WishCard
 
 # Curated phrase limits — shared by the staff input contract and the donor
 # composition; kept here so backend and the generated TS types agree.
@@ -245,6 +247,26 @@ class SkillsBlock(BaseModel):
     items: list[SkillCard]
 
 
+class WishesBlock(BaseModel):
+    """``wishes`` — the child's donor-fundable wishes, oldest first (archived
+    ones excluded server-side). Each item is the strict :class:`WishCard`
+    allowlist (title/description/money trail/coded status + derived progress);
+    the staff-only ``internal_note`` — and every id/timestamp — never reaches
+    this block."""
+
+    items: list[WishCard]
+
+
+class NeedsBlock(BaseModel):
+    """``needs`` — the child's donor-fundable material needs, oldest first
+    (archived ones excluded server-side). Each item is the strict
+    :class:`NeedCard` allowlist (title/description/coded category/money trail/
+    coded status + derived progress); the staff-only ``internal_note`` — and
+    every id/timestamp — never reaches this block."""
+
+    items: list[NeedCard]
+
+
 class IndependenceBlock(BaseModel):
     """``independence`` — the child's current readiness-for-independence stage.
 
@@ -302,6 +324,8 @@ class SponsoredOrphanProfile(BaseModel):
     siblings: SiblingsBlock | None = None
     skills: SkillsBlock | None = None
     independence: IndependenceBlock | None = None
+    wishes: WishesBlock | None = None
+    needs: NeedsBlock | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────

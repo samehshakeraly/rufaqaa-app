@@ -55,6 +55,12 @@ class Payment(Base):
 
     source_type: Mapped[str | None] = mapped_column(String(50))
     source_id: Mapped[str | None] = mapped_column(String(255))
+    # R7: lets a FUTURE one-time donation point at a wish/need (coded
+    # target_type 'wish'/'need' + the row's id). Nullable, no FK/CHECK —
+    # validated in Pydantic when R8 wires the donation flow; NULL on every
+    # existing flow.
+    target_type: Mapped[str | None] = mapped_column(String(20))
+    target_id: Mapped[UUID | None] = mapped_column(PG_UUID(as_uuid=True))
     acquisition_channel_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("marketing_channels.id")
     )

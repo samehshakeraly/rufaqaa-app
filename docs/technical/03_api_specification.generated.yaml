@@ -3792,6 +3792,267 @@ components:
       - regex
       title: NationalIdRequirements
       type: object
+    NeedCard:
+      description: 'DONOR-FACING slice of one need — a STRICT allowlist: the title, the
+
+        donor-facing description, the coded category (the frontend localizes it),
+
+        the money trail (target/currency/raised), the coded status and the DERIVED
+
+        ``progress`` (0–100). ``internal_note`` is staff-only free text and — like
+
+        ids, timestamps and ``orphan_id`` — must NEVER be added here.'
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        currency:
+          title: Currency
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        progress:
+          maximum: 100.0
+          minimum: 0.0
+          title: Progress
+          type: integer
+        raised_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Raised Amount
+          type: string
+        status:
+          title: Status
+          type: string
+        target_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Target Amount
+          type: string
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      - target_amount
+      - currency
+      - raised_amount
+      - status
+      - progress
+      title: NeedCard
+      type: object
+    NeedCreate:
+      additionalProperties: false
+      description: 'Staff POST body. ``raised_amount`` and ``status`` are NOT members —
+
+        the system starts every need at 0 / ``open`` (``extra="forbid"`` makes
+
+        supplying either a 422, never a silent ignore).'
+      properties:
+        category:
+          anyOf:
+          - enum:
+            - rent
+            - medicine
+            - supplies
+            - clothing
+            - education
+            - food
+            - other
+            type: string
+          - type: 'null'
+          title: Category
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        internal_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Note
+        target_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Target Amount
+        title:
+          maxLength: 120
+          minLength: 1
+          title: Title
+          type: string
+      required:
+      - title
+      - target_amount
+      - currency
+      title: NeedCreate
+      type: object
+    NeedRead:
+      description: 'STAFF view of one need row — carries the stable ids, the staff-only
+
+        ``internal_note``, the system-managed ``raised_amount`` and the
+
+        timestamps. Never serialised to a donor.'
+      properties:
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        currency:
+          title: Currency
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        internal_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Note
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        raised_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Raised Amount
+          type: string
+        status:
+          title: Status
+          type: string
+        target_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Target Amount
+          type: string
+        title:
+          title: Title
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - orphan_id
+      - title
+      - target_amount
+      - currency
+      - raised_amount
+      - status
+      - created_at
+      - updated_at
+      title: NeedRead
+      type: object
+    NeedUpdate:
+      additionalProperties: false
+      description: 'Staff PATCH body — every field optional; only supplied fields are
+
+        applied (``exclude_unset``). ``status`` is the ONLY controlled transition
+
+        surface (open/met/archived). ``raised_amount`` is deliberately NOT a
+
+        member — with ``extra="forbid"`` supplying it (or any unknown key) is 422,
+
+        so no R7 endpoint can ever move it.'
+      properties:
+        category:
+          anyOf:
+          - enum:
+            - rent
+            - medicine
+            - supplies
+            - clothing
+            - education
+            - food
+            - other
+            type: string
+          - type: 'null'
+          title: Category
+        currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Currency
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        internal_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Note
+        status:
+          anyOf:
+          - enum:
+            - open
+            - met
+            - archived
+            type: string
+          - type: 'null'
+          title: Status
+        target_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          - type: 'null'
+          title: Target Amount
+        title:
+          anyOf:
+          - maxLength: 120
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Title
+      title: NeedUpdate
+      type: object
+    NeedsBlock:
+      description: '``needs`` — the child''s donor-fundable material needs, oldest first
+
+        (archived ones excluded server-side). Each item is the strict
+
+        :class:`NeedCard` allowlist (title/description/coded category/money trail/
+
+        coded status + derived progress); the staff-only ``internal_note`` — and
+
+        every id/timestamp — never reaches this block.'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/NeedCard'
+          title: Items
+          type: array
+      required:
+      - items
+      title: NeedsBlock
+      type: object
     NotificationPreferences:
       description: 'Channel-level toggles for transactional and marketing notifications.
 
@@ -7190,6 +7451,8 @@ components:
       - siblings
       - skills
       - independence
+      - wishes
+      - needs
       title: ProfileElement
       type: string
     ProfileElementState:
@@ -8497,6 +8760,10 @@ components:
           anyOf:
           - $ref: '#/components/schemas/MultidimGrowthBlock'
           - type: 'null'
+        needs:
+          anyOf:
+          - $ref: '#/components/schemas/NeedsBlock'
+          - type: 'null'
         orphan_status:
           enum:
           - father
@@ -8542,6 +8809,10 @@ components:
             type: string
           title: Tags
           type: array
+        wishes:
+          anyOf:
+          - $ref: '#/components/schemas/WishesBlock'
+          - type: 'null'
       required:
       - first_name
       - age_years
@@ -9161,6 +9432,231 @@ components:
       - msg
       - type
       title: ValidationError
+      type: object
+    WishCard:
+      description: 'DONOR-FACING slice of one wish — a STRICT allowlist: the title, the
+
+        donor-facing description, the money trail (target/currency/raised), the
+
+        coded status (the frontend localizes it) and the DERIVED ``progress``
+
+        (0–100). ``internal_note`` is staff-only free text and — like ids,
+
+        timestamps and ``orphan_id`` — must NEVER be added here.'
+      properties:
+        currency:
+          title: Currency
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        progress:
+          maximum: 100.0
+          minimum: 0.0
+          title: Progress
+          type: integer
+        raised_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Raised Amount
+          type: string
+        status:
+          title: Status
+          type: string
+        target_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Target Amount
+          type: string
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      - target_amount
+      - currency
+      - raised_amount
+      - status
+      - progress
+      title: WishCard
+      type: object
+    WishCreate:
+      additionalProperties: false
+      description: 'Staff POST body. ``raised_amount`` and ``status`` are NOT members —
+
+        the system starts every wish at 0 / ``open`` (``extra="forbid"`` makes
+
+        supplying either a 422, never a silent ignore).'
+      properties:
+        currency:
+          maxLength: 3
+          minLength: 3
+          title: Currency
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        internal_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Note
+        target_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          title: Target Amount
+        title:
+          maxLength: 120
+          minLength: 1
+          title: Title
+          type: string
+      required:
+      - title
+      - target_amount
+      - currency
+      title: WishCreate
+      type: object
+    WishRead:
+      description: 'STAFF view of one wish row — carries the stable ids, the staff-only
+
+        ``internal_note``, the system-managed ``raised_amount`` and the
+
+        timestamps. Never serialised to a donor.'
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        currency:
+          title: Currency
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        internal_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Note
+        orphan_id:
+          format: uuid
+          title: Orphan Id
+          type: string
+        raised_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Raised Amount
+          type: string
+        status:
+          title: Status
+          type: string
+        target_amount:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Target Amount
+          type: string
+        title:
+          title: Title
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - orphan_id
+      - title
+      - target_amount
+      - currency
+      - raised_amount
+      - status
+      - created_at
+      - updated_at
+      title: WishRead
+      type: object
+    WishUpdate:
+      additionalProperties: false
+      description: 'Staff PATCH body — every field optional; only supplied fields are
+
+        applied (``exclude_unset``). ``status`` is the ONLY controlled transition
+
+        surface (open/fulfilled/archived). ``raised_amount`` is deliberately NOT a
+
+        member — with ``extra="forbid"`` supplying it (or any unknown key) is 422,
+
+        so no R7 endpoint can ever move it.'
+      properties:
+        currency:
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
+          title: Currency
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        internal_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Internal Note
+        status:
+          anyOf:
+          - enum:
+            - open
+            - fulfilled
+            - archived
+            type: string
+          - type: 'null'
+          title: Status
+        target_amount:
+          anyOf:
+          - exclusiveMinimum: 0.0
+            type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,8}|(?=[\d.]{1,11}0*$)\d{0,8}\.\d{0,2}0*$)
+            type: string
+          - type: 'null'
+          title: Target Amount
+        title:
+          anyOf:
+          - maxLength: 120
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Title
+      title: WishUpdate
+      type: object
+    WishesBlock:
+      description: '``wishes`` — the child''s donor-fundable wishes, oldest first (archived
+
+        ones excluded server-side). Each item is the strict :class:`WishCard`
+
+        allowlist (title/description/money trail/coded status + derived progress);
+
+        the staff-only ``internal_note`` — and every id/timestamp — never reaches
+
+        this block.'
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/WishCard'
+          title: Items
+          type: array
+      required:
+      - items
+      title: WishesBlock
       type: object
   securitySchemes:
     OAuth2PasswordBearer:
@@ -12334,6 +12830,79 @@ paths:
       summary: Mark Message Read
       tags:
       - messages
+  /api/v1/needs/{need_id}:
+    delete:
+      description: 'Hard-delete one need row. Explicit org scope (never RLS) — a cross-org
+
+        need id 404s rather than revealing (or deleting) another org''s row.'
+      operationId: delete_need_api_v1_needs__need_id__delete
+      parameters:
+      - in: path
+        name: need_id
+        required: true
+        schema:
+          format: uuid
+          title: Need Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Delete Need
+      tags:
+      - needs
+    patch:
+      description: 'Update a need''s title/description/internal_note/category/target_amount/
+
+        currency, or transition its coded ``status`` — the only controlled
+
+        lifecycle surface. Only the fields actually supplied are applied
+
+        (``exclude_unset``); ``raised_amount`` is not accepted at all. Explicit org
+
+        scope (never RLS) — a cross-org need id 404s, so no other org''s row can be
+
+        read or mutated.'
+      operationId: update_need_api_v1_needs__need_id__patch
+      parameters:
+      - in: path
+        name: need_id
+        required: true
+        schema:
+          format: uuid
+          title: Need Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NeedUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NeedRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Need
+      tags:
+      - needs
   /api/v1/organization:
     get:
       operationId: get_current_organization_api_v1_organization_get
@@ -13625,6 +14194,93 @@ paths:
       summary: Set Orphan In Her Words
       tags:
       - orphans
+  /api/v1/orphans/{orphan_id}/needs:
+    get:
+      description: 'Staff view of ALL of an orphan''s needs (every status, including the
+
+        staff-only ``internal_note``), oldest first — the donor block renders the
+
+        same order. Explicit org scope (never RLS); a cross-org orphan id 404s
+
+        before anything lists.'
+      operationId: list_orphan_needs_api_v1_orphans__orphan_id__needs_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NeedRead'
+                title: Response List Orphan Needs Api V1 Orphans  Orphan Id  Needs Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Needs
+      tags:
+      - needs
+    post:
+      description: 'Record one need for an orphan.
+
+
+        The orphan is loaded FIRST, filtered by the caller''s ``organization_id``
+
+        (explicit scope, never RLS) — a cross-org orphan id 404s without revealing
+
+        its existence, so a need can never be attached to another org''s child.
+
+        The need''s org is then taken from the orphan row itself. ``raised_amount``
+
+        / ``status`` start at the system defaults (0 / open) — neither is settable
+
+        here.'
+      operationId: create_orphan_need_api_v1_orphans__orphan_id__needs_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NeedCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NeedRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Orphan Need
+      tags:
+      - needs
   /api/v1/orphans/{orphan_id}/profile-visibility:
     get:
       description: 'The donor-profile visibility registry for one child: every
@@ -13889,6 +14545,93 @@ paths:
       summary: Orphan Timeline
       tags:
       - orphans
+  /api/v1/orphans/{orphan_id}/wishes:
+    get:
+      description: 'Staff view of ALL of an orphan''s wishes (every status, including the
+
+        staff-only ``internal_note``), oldest first — the donor block renders the
+
+        same order. Explicit org scope (never RLS); a cross-org orphan id 404s
+
+        before anything lists.'
+      operationId: list_orphan_wishes_api_v1_orphans__orphan_id__wishes_get
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WishRead'
+                title: Response List Orphan Wishes Api V1 Orphans  Orphan Id  Wishes Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Orphan Wishes
+      tags:
+      - wishes
+    post:
+      description: 'Record one wish for an orphan.
+
+
+        The orphan is loaded FIRST, filtered by the caller''s ``organization_id``
+
+        (explicit scope, never RLS) — a cross-org orphan id 404s without revealing
+
+        its existence, so a wish can never be attached to another org''s child.
+
+        The wish''s org is then taken from the orphan row itself. ``raised_amount``
+
+        / ``status`` start at the system defaults (0 / open) — neither is settable
+
+        here.'
+      operationId: create_orphan_wish_api_v1_orphans__orphan_id__wishes_post
+      parameters:
+      - in: path
+        name: orphan_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphan Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WishCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WishRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Orphan Wish
+      tags:
+      - wishes
   /api/v1/partners:
     get:
       operationId: list_partners_api_v1_partners_get
@@ -16223,3 +16966,74 @@ paths:
       summary: Myfatoorah Webhook
       tags:
       - webhooks
+  /api/v1/wishes/{wish_id}:
+    delete:
+      description: 'Hard-delete one wish row. Explicit org scope (never RLS) — a cross-org
+
+        wish id 404s rather than revealing (or deleting) another org''s row.'
+      operationId: delete_wish_api_v1_wishes__wish_id__delete
+      parameters:
+      - in: path
+        name: wish_id
+        required: true
+        schema:
+          format: uuid
+          title: Wish Id
+          type: string
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Delete Wish
+      tags:
+      - wishes
+    patch:
+      description: 'Update a wish''s title/description/internal_note/target_amount/currency,
+
+        or transition its coded ``status`` — the only controlled lifecycle surface.
+
+        Only the fields actually supplied are applied (``exclude_unset``);
+
+        ``raised_amount`` is not accepted at all. Explicit org scope (never RLS) —
+
+        a cross-org wish id 404s, so no other org''s row can be read or mutated.'
+      operationId: update_wish_api_v1_wishes__wish_id__patch
+      parameters:
+      - in: path
+        name: wish_id
+        required: true
+        schema:
+          format: uuid
+          title: Wish Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WishUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WishRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update Wish
+      tags:
+      - wishes

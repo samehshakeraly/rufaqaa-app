@@ -15,6 +15,7 @@ from app.api.v1 import (
     marketing_channels,
     media,
     messages,
+    needs,
     organization,
     orphan_self,
     orphanage_self,
@@ -31,6 +32,7 @@ from app.api.v1 import (
     twofa,
     users,
     webhooks,
+    wishes,
 )
 
 api_router = APIRouter()
@@ -66,3 +68,5 @@ api_router.include_router(orphan_self.router, prefix="/orphan", tags=["orphan-se
 api_router.include_router(orphanage_self.router, prefix="/orphanage", tags=["orphanage-self"])
 api_router.include_router(messages.router, prefix="/messages", tags=["messages"])
 api_router.include_router(skills.router, tags=["skills"])
+api_router.include_router(wishes.router, tags=["wishes"])
+api_router.include_router(needs.router, tags=["needs"])

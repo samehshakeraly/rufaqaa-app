@@ -3535,7 +3535,11 @@
       "tabInHerWords": "In her words",
       "inHerWordsTitle": "In her words",
       "tabSkills": "Skills",
-      "skillsTitle": "Skills & talents"
+      "skillsTitle": "Skills & talents",
+      "tabWishes": "Wishes",
+      "wishesTitle": "Wishes",
+      "tabNeeds": "Needs",
+      "needsTitle": "Needs"
     },
     "report": {
       "backToOrphan": "{{name}}'s page",
@@ -3716,6 +3720,14 @@
       "independence": {
         "label": "Independence journey",
         "help": "Only the current coded stage of the independence journey — never any free text."
+      },
+      "wishes": {
+        "label": "Her wishes",
+        "help": "Each wish's title, pitch, amounts, status and progress only — the internal staff note never reaches the sponsor, and archived wishes are never shown."
+      },
+      "needs": {
+        "label": "Her needs",
+        "help": "Each need's title, pitch, category, amounts, status and progress only — the internal staff note never reaches the sponsor, and archived needs are never shown."
       }
     },
     "showAction": "Show {{name}} to the sponsor",
@@ -3830,6 +3842,120 @@
       "beginner": "Beginner",
       "intermediate": "Intermediate",
       "advanced": "Advanced"
+    },
+    "saved": "Saved",
+    "saveError": "Couldn't save. Please try again."
+  },
+  "orphanWishes": {
+    "intro": "Record the child's donor-fundable wishes. The sponsor sees only the title, the pitch, the amounts, the status and the progress — the internal note stays staff-only, and the raised amount is managed by the system.",
+    "loadError": "Couldn't load wishes. Please try again later.",
+    "empty": "No wishes yet — add the first one above.",
+    "listLabel": "Recorded wishes",
+    "fields": {
+      "title": "Wish",
+      "description": "Pitch to the sponsor (optional)",
+      "internalNote": "Staff note (optional)",
+      "targetAmount": "Target amount",
+      "currency": "Currency",
+      "status": "Status"
+    },
+    "descriptionHint": "Shown to the sponsor — write it warmly, in the child's voice where possible.",
+    "noteHint": "Internal note for the team — never shown to the sponsor.",
+    "notePrefix": "Staff note:",
+    "raised": "Raised {{raised}} of {{target}} {{currency}}",
+    "add": {
+      "title": "Add a wish",
+      "submit": "Add wish",
+      "submitting": "Adding…"
+    },
+    "edit": {
+      "title": "Edit wish title",
+      "description": "Edit sponsor pitch",
+      "internalNote": "Edit staff note",
+      "targetAmount": "Edit target amount",
+      "currency": "Edit currency",
+      "status": "Edit status",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteLabel": "Delete this wish"
+    },
+    "errors": {
+      "empty": "The wish title can't be empty.",
+      "tooLong": "Keep it under {{max}} characters.",
+      "amount": "Enter a target amount greater than zero.",
+      "currency": "Enter a 3-letter currency code (e.g. KWD)."
+    },
+    "status": {
+      "open": "Open",
+      "fulfilled": "Fulfilled",
+      "archived": "Archived"
+    },
+    "saved": "Saved",
+    "saveError": "Couldn't save. Please try again."
+  },
+  "orphanNeeds": {
+    "intro": "Record the child's donor-fundable material needs. The sponsor sees only the title, the pitch, the category, the amounts, the status and the progress — the internal note stays staff-only, and the raised amount is managed by the system.",
+    "loadError": "Couldn't load needs. Please try again later.",
+    "empty": "No needs yet — add the first one above.",
+    "listLabel": "Recorded needs",
+    "fields": {
+      "title": "Need",
+      "description": "Pitch to the sponsor (optional)",
+      "internalNote": "Staff note (optional)",
+      "category": "Category",
+      "targetAmount": "Target amount",
+      "currency": "Currency",
+      "status": "Status"
+    },
+    "descriptionHint": "Shown to the sponsor — write it warmly and concretely.",
+    "noteHint": "Internal note for the team — never shown to the sponsor.",
+    "notePrefix": "Staff note:",
+    "raised": "Raised {{raised}} of {{target}} {{currency}}",
+    "add": {
+      "title": "Add a need",
+      "submit": "Add need",
+      "submitting": "Adding…"
+    },
+    "edit": {
+      "title": "Edit need title",
+      "description": "Edit sponsor pitch",
+      "internalNote": "Edit staff note",
+      "category": "Edit category",
+      "targetAmount": "Edit target amount",
+      "currency": "Edit currency",
+      "status": "Edit status",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteLabel": "Delete this need"
+    },
+    "errors": {
+      "empty": "The need title can't be empty.",
+      "tooLong": "Keep it under {{max}} characters.",
+      "amount": "Enter a target amount greater than zero.",
+      "currency": "Enter a 3-letter currency code (e.g. KWD)."
+    },
+    "category": {
+      "none": "No category",
+      "rent": "Rent",
+      "medicine": "Medicine",
+      "supplies": "School supplies",
+      "clothing": "Clothing",
+      "education": "Education",
+      "food": "Food",
+      "other": "Other"
+    },
+    "status": {
+      "open": "Open",
+      "met": "Met",
+      "archived": "Archived"
     },
     "saved": "Saved",
     "saveError": "Couldn't save. Please try again."
@@ -4697,6 +4823,13 @@
     "independenceJourneyComplete": "Independence reached — the journey is complete, praise be to God",
     "independenceCharterTitle": "The Empowerment Charter",
     "independenceCharter": "We walk with {{name}} step by step — from childhood to independence — until she stands on her own feet and provides for herself with dignity.",
+    "wishesTitle": "{{name}}'s wishes",
+    "wishFulfilled": "Fulfilled",
+    "wishCta": "Fulfil this wish",
+    "needsTitle": "{{name}}'s needs",
+    "needMet": "Met",
+    "needCta": "Support this need",
+    "wishNeedRaised": "Raised {{raised}} of {{target}} {{currency}}",
     "inHerWordsTitle": "In {{name}}'s words",
     "inHerWordsSubtitle": "Phrases shared in her own voice.",
     "fatherMemoryTitle": "The father's memory",

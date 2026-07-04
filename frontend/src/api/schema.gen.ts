@@ -1545,6 +1545,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/needs/{need_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Need
+         * @description Hard-delete one need row. Explicit org scope (never RLS) — a cross-org
+         *     need id 404s rather than revealing (or deleting) another org's row.
+         */
+        delete: operations["delete_need_api_v1_needs__need_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Need
+         * @description Update a need's title/description/internal_note/category/target_amount/
+         *     currency, or transition its coded ``status`` — the only controlled
+         *     lifecycle surface. Only the fields actually supplied are applied
+         *     (``exclude_unset``); ``raised_amount`` is not accepted at all. Explicit org
+         *     scope (never RLS) — a cross-org need id 404s, so no other org's row can be
+         *     read or mutated.
+         */
+        patch: operations["update_need_api_v1_needs__need_id__patch"];
+        trace?: never;
+    };
     "/api/v1/organization": {
         parameters: {
             query?: never;
@@ -2059,6 +2089,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/{orphan_id}/needs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Needs
+         * @description Staff view of ALL of an orphan's needs (every status, including the
+         *     staff-only ``internal_note``), oldest first — the donor block renders the
+         *     same order. Explicit org scope (never RLS); a cross-org orphan id 404s
+         *     before anything lists.
+         */
+        get: operations["list_orphan_needs_api_v1_orphans__orphan_id__needs_get"];
+        put?: never;
+        /**
+         * Create Orphan Need
+         * @description Record one need for an orphan.
+         *
+         *     The orphan is loaded FIRST, filtered by the caller's ``organization_id``
+         *     (explicit scope, never RLS) — a cross-org orphan id 404s without revealing
+         *     its existence, so a need can never be attached to another org's child.
+         *     The need's org is then taken from the orphan row itself. ``raised_amount``
+         *     / ``status`` start at the system defaults (0 / open) — neither is settable
+         *     here.
+         */
+        post: operations["create_orphan_need_api_v1_orphans__orphan_id__needs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}/profile-visibility": {
         parameters: {
             query?: never;
@@ -2179,6 +2243,40 @@ export interface paths {
         get: operations["orphan_timeline_api_v1_orphans__orphan_id__timeline_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orphans/{orphan_id}/wishes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Orphan Wishes
+         * @description Staff view of ALL of an orphan's wishes (every status, including the
+         *     staff-only ``internal_note``), oldest first — the donor block renders the
+         *     same order. Explicit org scope (never RLS); a cross-org orphan id 404s
+         *     before anything lists.
+         */
+        get: operations["list_orphan_wishes_api_v1_orphans__orphan_id__wishes_get"];
+        put?: never;
+        /**
+         * Create Orphan Wish
+         * @description Record one wish for an orphan.
+         *
+         *     The orphan is loaded FIRST, filtered by the caller's ``organization_id``
+         *     (explicit scope, never RLS) — a cross-org orphan id 404s without revealing
+         *     its existence, so a wish can never be attached to another org's child.
+         *     The wish's org is then taken from the orphan row itself. ``raised_amount``
+         *     / ``status`` start at the system defaults (0 / open) — neither is settable
+         *     here.
+         */
+        post: operations["create_orphan_wish_api_v1_orphans__orphan_id__wishes_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3300,6 +3398,35 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/wishes/{wish_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Wish
+         * @description Hard-delete one wish row. Explicit org scope (never RLS) — a cross-org
+         *     wish id 404s rather than revealing (or deleting) another org's row.
+         */
+        delete: operations["delete_wish_api_v1_wishes__wish_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Wish
+         * @description Update a wish's title/description/internal_note/target_amount/currency,
+         *     or transition its coded ``status`` — the only controlled lifecycle surface.
+         *     Only the fields actually supplied are applied (``exclude_unset``);
+         *     ``raised_amount`` is not accepted at all. Explicit org scope (never RLS) —
+         *     a cross-org wish id 404s, so no other org's row can be read or mutated.
+         */
+        patch: operations["update_wish_api_v1_wishes__wish_id__patch"];
         trace?: never;
     };
 }
@@ -5244,6 +5371,132 @@ export interface components {
             required: boolean;
         };
         /**
+         * NeedCard
+         * @description DONOR-FACING slice of one need — a STRICT allowlist: the title, the
+         *     donor-facing description, the coded category (the frontend localizes it),
+         *     the money trail (target/currency/raised), the coded status and the DERIVED
+         *     ``progress`` (0–100). ``internal_note`` is staff-only free text and — like
+         *     ids, timestamps and ``orphan_id`` — must NEVER be added here.
+         */
+        NeedCard: {
+            /** Category */
+            category?: string | null;
+            /** Currency */
+            currency: string;
+            /** Description */
+            description?: string | null;
+            /** Progress */
+            progress: number;
+            /** Raised Amount */
+            raised_amount: string;
+            /** Status */
+            status: string;
+            /** Target Amount */
+            target_amount: string;
+            /** Title */
+            title: string;
+        };
+        /**
+         * NeedCreate
+         * @description Staff POST body. ``raised_amount`` and ``status`` are NOT members —
+         *     the system starts every need at 0 / ``open`` (``extra="forbid"`` makes
+         *     supplying either a 422, never a silent ignore).
+         */
+        NeedCreate: {
+            /** Category */
+            category?: ("rent" | "medicine" | "supplies" | "clothing" | "education" | "food" | "other") | null;
+            /** Currency */
+            currency: string;
+            /** Description */
+            description?: string | null;
+            /** Internal Note */
+            internal_note?: string | null;
+            /** Target Amount */
+            target_amount: number | string;
+            /** Title */
+            title: string;
+        };
+        /**
+         * NeedRead
+         * @description STAFF view of one need row — carries the stable ids, the staff-only
+         *     ``internal_note``, the system-managed ``raised_amount`` and the
+         *     timestamps. Never serialised to a donor.
+         */
+        NeedRead: {
+            /** Category */
+            category?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Currency */
+            currency: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Internal Note */
+            internal_note?: string | null;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /** Raised Amount */
+            raised_amount: string;
+            /** Status */
+            status: string;
+            /** Target Amount */
+            target_amount: string;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * NeedUpdate
+         * @description Staff PATCH body — every field optional; only supplied fields are
+         *     applied (``exclude_unset``). ``status`` is the ONLY controlled transition
+         *     surface (open/met/archived). ``raised_amount`` is deliberately NOT a
+         *     member — with ``extra="forbid"`` supplying it (or any unknown key) is 422,
+         *     so no R7 endpoint can ever move it.
+         */
+        NeedUpdate: {
+            /** Category */
+            category?: ("rent" | "medicine" | "supplies" | "clothing" | "education" | "food" | "other") | null;
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Internal Note */
+            internal_note?: string | null;
+            /** Status */
+            status?: ("open" | "met" | "archived") | null;
+            /** Target Amount */
+            target_amount?: number | string | null;
+            /** Title */
+            title?: string | null;
+        };
+        /**
+         * NeedsBlock
+         * @description ``needs`` — the child's donor-fundable material needs, oldest first
+         *     (archived ones excluded server-side). Each item is the strict
+         *     :class:`NeedCard` allowlist (title/description/coded category/money trail/
+         *     coded status + derived progress); the staff-only ``internal_note`` — and
+         *     every id/timestamp — never reaches this block.
+         */
+        NeedsBlock: {
+            /** Items */
+            items: components["schemas"]["NeedCard"][];
+        };
+        /**
          * NotificationPreferences
          * @description Channel-level toggles for transactional and marketing notifications.
          *
@@ -6935,7 +7188,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings" | "skills" | "independence";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings" | "skills" | "independence" | "wishes" | "needs";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7638,6 +7891,7 @@ export interface components {
             media?: components["schemas"]["MediaBlock"] | null;
             milestones?: components["schemas"]["MilestonesBlock"] | null;
             multidim_growth?: components["schemas"]["MultidimGrowthBlock"] | null;
+            needs?: components["schemas"]["NeedsBlock"] | null;
             /**
              * Orphan Status
              * @enum {string}
@@ -7655,6 +7909,7 @@ export interface components {
             supervisor_word?: components["schemas"]["SupervisorWordBlock"] | null;
             /** Tags */
             tags: string[];
+            wishes?: components["schemas"]["WishesBlock"] | null;
         };
         /** SponsorshipCancel */
         SponsorshipCancel: {
@@ -7997,6 +8252,124 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * WishCard
+         * @description DONOR-FACING slice of one wish — a STRICT allowlist: the title, the
+         *     donor-facing description, the money trail (target/currency/raised), the
+         *     coded status (the frontend localizes it) and the DERIVED ``progress``
+         *     (0–100). ``internal_note`` is staff-only free text and — like ids,
+         *     timestamps and ``orphan_id`` — must NEVER be added here.
+         */
+        WishCard: {
+            /** Currency */
+            currency: string;
+            /** Description */
+            description?: string | null;
+            /** Progress */
+            progress: number;
+            /** Raised Amount */
+            raised_amount: string;
+            /** Status */
+            status: string;
+            /** Target Amount */
+            target_amount: string;
+            /** Title */
+            title: string;
+        };
+        /**
+         * WishCreate
+         * @description Staff POST body. ``raised_amount`` and ``status`` are NOT members —
+         *     the system starts every wish at 0 / ``open`` (``extra="forbid"`` makes
+         *     supplying either a 422, never a silent ignore).
+         */
+        WishCreate: {
+            /** Currency */
+            currency: string;
+            /** Description */
+            description?: string | null;
+            /** Internal Note */
+            internal_note?: string | null;
+            /** Target Amount */
+            target_amount: number | string;
+            /** Title */
+            title: string;
+        };
+        /**
+         * WishRead
+         * @description STAFF view of one wish row — carries the stable ids, the staff-only
+         *     ``internal_note``, the system-managed ``raised_amount`` and the
+         *     timestamps. Never serialised to a donor.
+         */
+        WishRead: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Currency */
+            currency: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Internal Note */
+            internal_note?: string | null;
+            /**
+             * Orphan Id
+             * Format: uuid
+             */
+            orphan_id: string;
+            /** Raised Amount */
+            raised_amount: string;
+            /** Status */
+            status: string;
+            /** Target Amount */
+            target_amount: string;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * WishUpdate
+         * @description Staff PATCH body — every field optional; only supplied fields are
+         *     applied (``exclude_unset``). ``status`` is the ONLY controlled transition
+         *     surface (open/fulfilled/archived). ``raised_amount`` is deliberately NOT a
+         *     member — with ``extra="forbid"`` supplying it (or any unknown key) is 422,
+         *     so no R7 endpoint can ever move it.
+         */
+        WishUpdate: {
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Internal Note */
+            internal_note?: string | null;
+            /** Status */
+            status?: ("open" | "fulfilled" | "archived") | null;
+            /** Target Amount */
+            target_amount?: number | string | null;
+            /** Title */
+            title?: string | null;
+        };
+        /**
+         * WishesBlock
+         * @description ``wishes`` — the child's donor-fundable wishes, oldest first (archived
+         *     ones excluded server-side). Each item is the strict :class:`WishCard`
+         *     allowlist (title/description/money trail/coded status + derived progress);
+         *     the staff-only ``internal_note`` — and every id/timestamp — never reaches
+         *     this block.
+         */
+        WishesBlock: {
+            /** Items */
+            items: components["schemas"]["WishCard"][];
         };
     };
     responses: never;
@@ -10773,6 +11146,70 @@ export interface operations {
             };
         };
     };
+    delete_need_api_v1_needs__need_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_need_api_v1_needs__need_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                need_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NeedUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_current_organization_api_v1_organization_get: {
         parameters: {
             query?: never;
@@ -11703,6 +12140,72 @@ export interface operations {
             };
         };
     };
+    list_orphan_needs_api_v1_orphans__orphan_id__needs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_orphan_need_api_v1_orphans__orphan_id__needs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NeedCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeedRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_orphan_profile_visibility_api_v1_orphans__orphan_id__profile_visibility_get: {
         parameters: {
             query?: never;
@@ -11919,6 +12422,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Timeline"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_orphan_wishes_api_v1_orphans__orphan_id__wishes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WishRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_orphan_wish_api_v1_orphans__orphan_id__wishes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WishCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WishRead"];
                 };
             };
             /** @description Validation Error */
@@ -13857,6 +14426,70 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_wish_api_v1_wishes__wish_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                wish_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_wish_api_v1_wishes__wish_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                wish_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WishUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WishRead"];
                 };
             };
             /** @description Validation Error */
