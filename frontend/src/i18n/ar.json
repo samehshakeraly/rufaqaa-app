@@ -1587,6 +1587,14 @@
         "partial": "جزئية",
         "unknown": "غير معروفة"
       },
+      "independenceStage": "مرحلة الاستقلال",
+      "independenceStageOptions": {
+        "childhood": "الطفولة",
+        "skill_building": "بناء المهارات",
+        "vocational_training": "التدريب المهني",
+        "empowerment": "التمكين",
+        "independence": "الاستقلال"
+      },
       "motherStatus": "حالة الأم",
       "motherStatusOptions": {
         "alive": "على قيد الحياة",
@@ -3704,6 +3712,10 @@
       "skills": {
         "label": "مهاراتها",
         "help": "اسم كل مهارة وتصنيفها ومستواها فقط — ملاحظة الفريق لا تصل إلى الكافل أبدًا."
+      },
+      "independence": {
+        "label": "رحلة الاستقلال",
+        "help": "المرحلة الحالية من رحلة الاستقلال فقط — قيمة مُرمّزة دون أي نص حر."
       }
     },
     "showAction": "إظهار {{name}} للكافل",
@@ -4679,6 +4691,12 @@
     "siblingsSponsored": "تحت الكفالة",
     "siblingsAwaiting": "بانتظار كافل",
     "siblingsSponsorCta": "بادر بالكفالة",
+    "independenceTitle": "رحلة {{name}} نحو الاستقلال",
+    "independenceCurrentStage": "المرحلة الحالية",
+    "independenceNextStep": "الخطوة التالية",
+    "independenceJourneyComplete": "بلغت الاستقلال — اكتملت الرحلة بفضل الله",
+    "independenceCharterTitle": "ميثاق التمكين",
+    "independenceCharter": "نرافق {{name}} خطوة بخطوة — من الطفولة إلى الاستقلال — حتى تقف على قدميها وتعول نفسها بكرامة.",
     "inHerWordsTitle": "بكلمات {{name}}",
     "inHerWordsSubtitle": "عبارات شاركتها بصوتها.",
     "fatherMemoryTitle": "ذكرى الأب",

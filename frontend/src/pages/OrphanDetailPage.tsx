@@ -27,6 +27,8 @@ import {
   type EducationStage,
   type HealthCoverage,
   type HealthStatus,
+  type IndependenceStage,
+  INDEPENDENCE_STAGES,
   type MotherStatus,
   type PriorityLevel,
   type Orphan,
@@ -504,6 +506,7 @@ interface ProfileDraft {
   chronic_conditions: string;
   last_checkup: string;
   vaccinations_status: string;
+  independence_stage: string;
   mother_status: string;
   priority_level: string;
   aspiration: string;
@@ -527,6 +530,7 @@ function draftFromOrphan(o: Orphan): ProfileDraft {
     chronic_conditions: o.chronic_conditions ?? "",
     last_checkup: o.last_checkup ?? "",
     vaccinations_status: o.vaccinations_status ?? "",
+    independence_stage: o.independence_stage ?? "",
     mother_status: o.mother_status ?? "",
     priority_level: o.priority_level ?? "",
     aspiration: o.aspiration ?? "",
@@ -575,6 +579,9 @@ function buildProfilePayload(o: Orphan, d: ProfileDraft): OrphanUpdateInput {
   const vaccinations = diffStr(o.vaccinations_status, d.vaccinations_status);
   if (vaccinations !== undefined)
     payload.vaccinations_status = vaccinations as VaccinationsStatus | null;
+  const independence = diffStr(o.independence_stage, d.independence_stage);
+  if (independence !== undefined)
+    payload.independence_stage = independence as IndependenceStage | null;
   const mother = diffStr(o.mother_status, d.mother_status);
   if (mother !== undefined) payload.mother_status = mother as MotherStatus | null;
   const priority = diffStr(o.priority_level, d.priority_level);
@@ -789,6 +796,11 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
               ? t(`orphans.profile.vaccinationsStatusOptions.${orphan.vaccinations_status}`)
               : notSet}
           </ProfileRow>
+          <ProfileRow label={t("orphans.profile.independenceStage")}>
+            {orphan.independence_stage
+              ? t(`orphans.profile.independenceStageOptions.${orphan.independence_stage}`)
+              : notSet}
+          </ProfileRow>
           <ProfileRow label={t("orphans.profile.motherStatus")}>
             {orphan.mother_status
               ? t(`orphans.profile.motherStatusOptions.${orphan.mother_status}`)
@@ -984,6 +996,22 @@ function OrphanProfileCard({ orphan }: { orphan: Orphan }) {
                 {VACCINATIONS_STATUSES.map((s) => (
                   <option key={s} value={s}>
                     {t(`orphans.profile.vaccinationsStatusOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </ProfileEditField>
+            <ProfileEditField label={t("orphans.profile.independenceStage")}>
+              <select
+                className="input"
+                value={draft.independence_stage}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, independence_stage: e.target.value }))
+                }
+              >
+                <option value="">{t("orphans.profile.notSpecified")}</option>
+                {INDEPENDENCE_STAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`orphans.profile.independenceStageOptions.${s}`)}
                   </option>
                 ))}
               </select>

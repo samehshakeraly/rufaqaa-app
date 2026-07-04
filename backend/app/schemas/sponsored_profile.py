@@ -25,7 +25,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, field_validator
 
-from app.schemas.orphan import HealthStatus, OrphanStatus, VaccinationsStatus
+from app.schemas.orphan import (
+    HealthStatus,
+    IndependenceStage,
+    OrphanStatus,
+    VaccinationsStatus,
+)
 from app.schemas.skill import SkillCard
 
 # Curated phrase limits — shared by the staff input contract and the donor
@@ -240,6 +245,18 @@ class SkillsBlock(BaseModel):
     items: list[SkillCard]
 
 
+class IndependenceBlock(BaseModel):
+    """``independence`` — the child's current readiness-for-independence stage.
+
+    The slice is ONLY the coded ``stage`` — NOTHING else may ever be added: the
+    "next step" label is DERIVED on the frontend from the ordered
+    :data:`~app.schemas.orphan.IndependenceStage` vocabulary and the empowerment
+    charter (ميثاق التمكين) is static, localized frontend text — neither is a
+    data field."""
+
+    stage: IndependenceStage
+
+
 # ── The composed, donor-safe profile ───────────────────────────────────────
 
 
@@ -284,6 +301,7 @@ class SponsoredOrphanProfile(BaseModel):
     guardian: GuardianBlock | None = None
     siblings: SiblingsBlock | None = None
     skills: SkillsBlock | None = None
+    independence: IndependenceBlock | None = None
 
 
 # ── Staff management contract (full list, incl. ids) ───────────────────────

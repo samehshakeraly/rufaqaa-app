@@ -4430,6 +4430,8 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Independence Stage */
+            independence_stage?: ("childhood" | "skill_building" | "vocational_training" | "empowerment" | "independence") | null;
             /** Languages */
             languages?: string[];
             /** Last Checkup */
@@ -4813,6 +4815,23 @@ export interface components {
             signature: string | null;
             /** Source */
             source: string;
+        };
+        /**
+         * IndependenceBlock
+         * @description ``independence`` — the child's current readiness-for-independence stage.
+         *
+         *     The slice is ONLY the coded ``stage`` — NOTHING else may ever be added: the
+         *     "next step" label is DERIVED on the frontend from the ordered
+         *     :data:`~app.schemas.orphan.IndependenceStage` vocabulary and the empowerment
+         *     charter (ميثاق التمكين) is static, localized frontend text — neither is a
+         *     data field.
+         */
+        IndependenceBlock: {
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "childhood" | "skill_building" | "vocational_training" | "empowerment" | "independence";
         };
         /** LoginRequest */
         LoginRequest: {
@@ -5450,6 +5469,8 @@ export interface components {
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
             home_address?: components["schemas"]["OrphanHomeAddress"] | null;
+            /** Independence Stage */
+            independence_stage?: ("childhood" | "skill_building" | "vocational_training" | "empowerment" | "independence") | null;
             /** Languages */
             languages?: string[];
             /** Last Checkup */
@@ -5721,6 +5742,8 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /** Independence Stage */
+            independence_stage?: ("childhood" | "skill_building" | "vocational_training" | "empowerment" | "independence") | null;
             /**
              * Is Hafiz
              * @description Derived (not stored): a child who has memorised the whole Qur'an.
@@ -5839,6 +5862,8 @@ export interface components {
             health_coverage?: ("none" | "government" | "private" | "charity") | null;
             /** Health Status */
             health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+            /** Independence Stage */
+            independence_stage?: ("childhood" | "skill_building" | "vocational_training" | "empowerment" | "independence") | null;
             /** Languages */
             languages?: string[] | null;
             /** Last Checkup */
@@ -6910,7 +6935,7 @@ export interface components {
          *     :class:`app.schemas.sponsored_profile.SponsoredOrphanProfile`).
          * @enum {string}
          */
-        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings" | "skills";
+        ProfileElement: "dream" | "her_world" | "quran_growth" | "multidim_growth" | "milestones" | "recent_updates" | "supervisor_word" | "since_you_began" | "media" | "in_her_words" | "father_memory" | "health" | "home" | "guardian" | "siblings" | "skills" | "independence";
         /**
          * ProfileElementState
          * @description One row of the staff registry: an element + its current effective state.
@@ -7605,6 +7630,7 @@ export interface components {
             home?: components["schemas"]["HomeBlock"] | null;
             /** In Her Words */
             in_her_words?: components["schemas"]["InHerWordsItem"][] | null;
+            independence?: components["schemas"]["IndependenceBlock"] | null;
             /** Is Hafiz */
             is_hafiz: boolean;
             /** Languages */

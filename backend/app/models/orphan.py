@@ -108,6 +108,15 @@ class Orphan(Base):
     last_checkup: Mapped[date | None] = mapped_column(Date)
     vaccinations_status: Mapped[str | None] = mapped_column(String(20))
 
+    # Readiness-for-independence stage (see migration 0030). Coded by the
+    # ORDERED ``IndependenceStage`` Literal (childhood → skill_building →
+    # vocational_training → empowerment → independence) and validated in the
+    # Pydantic layer only (no DB CHECK — mirrors mother_status/health_status).
+    # Backs the gated donor ``independence`` element, whose slice is ONLY this
+    # stage — the "next step" is derived on the frontend from the ordered
+    # vocabulary, never stored.
+    independence_stage: Mapped[str | None] = mapped_column(String(30))
+
     case_status: Mapped[str] = mapped_column(String(30), default="pending_review")
 
     # Per-element donor-profile visibility (see migration 0023). A JSONB map

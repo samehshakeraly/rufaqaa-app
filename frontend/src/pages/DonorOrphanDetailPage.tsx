@@ -13,7 +13,7 @@ import {
   sendSponsorshipMessage,
   SPONSORSHIP_MESSAGE_MAX_LEN,
 } from "@/lib/messages";
-import type { Page } from "@/lib/orphans";
+import { INDEPENDENCE_STAGES, type Page } from "@/lib/orphans";
 import type { PaymentDonorRead } from "@/lib/payments";
 import { listMyPayments } from "@/lib/payments";
 import type { PublicOrphan, SponsoredOrphanProfile } from "@/lib/public";
@@ -270,6 +270,14 @@ export function DonorOrphanDetailPage() {
           its public sponsorship page via the donor-safe code. */}
       {profile?.siblings && profile.siblings.items.length > 0 && (
         <SiblingsSection name={name} siblings={profile.siblings} />
+      )}
+
+      {/* "رحلة الاستقلال" — the child's readiness-for-independence stage. The
+          block carries ONLY the coded stage, stripped server-side when hidden
+          or unset; the journey stepper, the "next step" and the empowerment
+          charter are all derived/localized here from the ordered vocabulary. */}
+      {profile?.independence && (
+        <IndependenceSection name={name} independence={profile.independence} />
       )}
 
       {/* "In her words" — curated phrases in the child's own voice. Server
@@ -1412,6 +1420,102 @@ function SiblingsSection({
           );
         })}
       </ul>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.4e) Independence — her journey toward self-reliance               */
+/* ------------------------------------------------------------------ */
+
+/** "رحلة الاستقلال" — the gated donor independence element. The backend emits
+ * this block only when the supervisor left it visible AND a stage is set, and
+ * it carries ONLY the coded stage. Everything else in this section is derived
+ * client-side: the journey stepper and the "next step" come from the ORDERED
+ * `INDEPENDENCE_STAGES` vocabulary, and the empowerment charter (ميثاق
+ * التمكين) is static, localized text — none of it is server data. */
+function IndependenceSection({
+  name,
+  independence,
+}: {
+  name: string;
+  independence: NonNullable<SponsoredOrphanProfile["independence"]>;
+}) {
+  const { t } = useTranslation();
+  const idx = INDEPENDENCE_STAGES.indexOf(independence.stage);
+  // The next step, derived from the ordered vocabulary — null on the final
+  // stage (the journey is complete).
+  const next = idx >= 0 && idx + 1 < INDEPENDENCE_STAGES.length ? INDEPENDENCE_STAGES[idx + 1] : null;
+  const stageLabel = (stage: string) =>
+    t(`orphans.profile.independenceStageOptions.${stage}`, { defaultValue: stage });
+
+  return (
+    <section
+      className="card space-y-4"
+      aria-label={t("donorProfile.independenceTitle", { name })}
+    >
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.success}`}
+        >
+          <LeafIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.independenceTitle", { name })}
+        </h2>
+      </div>
+
+      {/* The journey itself — the ordered vocabulary as a stepper, with every
+          reached stage tinted and the current one highlighted. */}
+      <ol className="flex flex-wrap items-center gap-2">
+        {INDEPENDENCE_STAGES.map((stage, i) => {
+          const isCurrent = stage === independence.stage;
+          const reached = idx >= 0 && i <= idx;
+          return (
+            <li
+              key={stage}
+              aria-current={isCurrent ? "step" : undefined}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                isCurrent ? TONE_CHIP.success : reached ? TONE_CHIP.trust : TONE_CHIP.gray
+              }`}
+            >
+              {reached && <CheckIcon />}
+              {stageLabel(stage)}
+            </li>
+          );
+        })}
+      </ol>
+
+      <dl className="grid gap-3 sm:grid-cols-2">
+        <div className={`rounded-xl border p-4 ${TONE_TILE.trust}`}>
+          <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+            {t("donorProfile.independenceCurrentStage")}
+          </dt>
+          <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            {stageLabel(independence.stage)}
+          </dd>
+        </div>
+        <div className={`rounded-xl border p-4 ${TONE_TILE.sky}`}>
+          <dt className="text-xs font-medium text-gray-600 dark:text-gray-300">
+            {t("donorProfile.independenceNextStep")}
+          </dt>
+          <dd className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+            {next ? stageLabel(next) : t("donorProfile.independenceJourneyComplete")}
+          </dd>
+        </div>
+      </dl>
+
+      {/* ميثاق التمكين — the static, localized commitment to walk with her
+          until self-reliance. Never server data. */}
+      <div className={`rounded-xl border p-4 ${TONE_TILE.success}`}>
+        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.independenceCharterTitle")}
+        </p>
+        <p className="mt-1 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          {t("donorProfile.independenceCharter", { name })}
+        </p>
+      </div>
     </section>
   );
 }

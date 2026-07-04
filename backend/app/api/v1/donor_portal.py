@@ -53,6 +53,7 @@ from app.schemas.sponsored_profile import (
     HealthBlock,
     HerWorldBlock,
     HomeBlock,
+    IndependenceBlock,
     InHerWordsItem,
     MediaBlock,
     MediaItem,
@@ -674,6 +675,15 @@ def _compose_sponsored_profile(
             }
         )
 
+    # independence ── the child's readiness-for-independence stage. Gated
+    # exactly like her_world: hidden OR no stored stage ⇒ omitted (None). The
+    # slice is ONLY the coded stage — the "next step" is derived on the
+    # frontend from the ordered vocabulary and the empowerment charter is
+    # static frontend text, so nothing else ever leaves the server here.
+    independence = None
+    if is_visible(vis, ProfileElement.independence) and orphan.independence_stage is not None:
+        independence = IndependenceBlock.model_validate({"stage": orphan.independence_stage})
+
     return SponsoredOrphanProfile(
         first_name=detail.first_name,
         age_years=detail.age_years,
@@ -703,6 +713,7 @@ def _compose_sponsored_profile(
         guardian=guardian,
         siblings=siblings,
         skills=skills,
+        independence=independence,
     )
 
 
