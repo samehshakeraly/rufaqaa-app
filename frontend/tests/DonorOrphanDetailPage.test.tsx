@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "@/i18n";
@@ -44,6 +44,15 @@ const archiveSendMock = vi.mocked(sendSponsorshipMessage);
 
 const ORPHAN_ID = "11111111-1111-1111-1111-111111111111";
 
+// The seven v4 tabs, by their Arabic titles.
+const TAB_ABOUT = "من أنا";
+const TAB_EDUCATION = "التعليم والتربية";
+const TAB_REPORTS = "التقارير";
+const TAB_MEDIA = "الميديا";
+const TAB_SPONSORSHIP = "كفالتك";
+const TAB_GIFTS = "الهدايا والأمنيات";
+const TAB_IMPACT = "أثرك";
+
 function monthsAgo(n: number): string {
   const d = new Date();
   d.setMonth(d.getMonth() - n);
@@ -83,6 +92,8 @@ const IDENTITY = {
   quran_juz_memorized: 5,
   is_hafiz: false,
   tags: ["نشيطة"],
+  languages: ["العربية"],
+  orphan_status: "father" as const,
 };
 
 // A fully-composed profile: every optional block is present.
@@ -219,6 +230,49 @@ const FULL_PROFILE = {
     ],
   },
   independence: { stage: "skill_building" },
+  skills: {
+    items: [
+      { name: "الخطّ العربي", category: "arts", level: "beginner" },
+      { name: "القراءة الجهرية", category: "academic", level: null },
+    ],
+  },
+  wishes: {
+    items: [
+      {
+        title: "دراجة هوائية",
+        description: "تحلم بدراجة تذهب بها إلى مركز التحفيظ.",
+        target_amount: "50",
+        raised_amount: "20",
+        currency: "KWD",
+        status: "open",
+        progress: 40,
+      },
+    ],
+  },
+  needs: {
+    items: [
+      {
+        title: "حقيبة مدرسية",
+        description: null,
+        category: "supplies",
+        target_amount: "30",
+        raised_amount: "30",
+        currency: "KWD",
+        status: "met",
+        progress: 100,
+      },
+      {
+        title: "معطف شتوي",
+        description: "لموسم البرد القادم.",
+        category: "clothing",
+        target_amount: "25",
+        raised_amount: "5",
+        currency: "KWD",
+        status: "open",
+        progress: 20,
+      },
+    ],
+  },
 };
 
 // Identity only — every element block omitted (backend hid/absent them all).
@@ -228,14 +282,28 @@ function page<T>(items: T[]) {
   return { items, total: items.length, limit: 100, offset: 0 };
 }
 
-function renderPage() {
+/** Exposes the current location search so URL-backed tab state is testable. */
+function LocationProbe() {
+  const location = useLocation();
+  return <span data-testid="location-search">{location.search}</span>;
+}
+
+function renderPage(initialPath = `/donor/orphans/${ORPHAN_ID}`) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const ui: ReactNode = (
     <QueryClientProvider client={qc}>
       <I18nextProvider i18n={i18n}>
-        <MemoryRouter initialEntries={[`/donor/orphans/${ORPHAN_ID}`]}>
+        <MemoryRouter initialEntries={[initialPath]}>
           <Routes>
-            <Route path="/donor/orphans/:id" element={<DonorOrphanDetailPage />} />
+            <Route
+              path="/donor/orphans/:id"
+              element={
+                <>
+                  <DonorOrphanDetailPage />
+                  <LocationProbe />
+                </>
+              }
+            />
             <Route path="/donor/orphans" element={<div>orphans list</div>} />
           </Routes>
         </MemoryRouter>
@@ -243,6 +311,13 @@ function renderPage() {
     </QueryClientProvider>
   );
   return render(ui);
+}
+
+/** Click a tab by its accessible name (waits for the tablist to mount). */
+async function openTab(name: string) {
+  const user = userEvent.setup();
+  const tab = await screen.findByRole("tab", { name });
+  await user.click(tab);
 }
 
 beforeEach(async () => {
@@ -276,29 +351,165 @@ beforeEach(async () => {
   archiveListMock.mockResolvedValue(page([]) as any);
 });
 
-// A privacy-safe MessageRead fixture in a given moderation state.
-function archiveMsg(over: Partial<Record<string, unknown>> = {}) {
-  return {
-    id: `m-${Math.random().toString(36).slice(2)}`,
-    from_role: "donor",
-    from_name: "",
-    to_role: "",
-    to_name: "",
-    orphan_code: null,
-    message_type: "text",
-    content: "نص الرسالة",
-    moderation_status: "pending",
-    moderation_notes: null,
-    is_read: false,
-    is_mine: true,
-    created_at: "2026-06-01T10:00:00Z",
-    moderated_at: null,
-    read_at: null,
-    ...over,
-  };
-}
+describe("DonorOrphanDetailPage — v4 app-shell (tabs + rail)", () => {
+  it("renders the seven tabs in order with من أنا selected by default", async () => {
+    renderPage();
+
+    const tabs = await screen.findAllByRole("tab");
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      TAB_ABOUT,
+      TAB_EDUCATION,
+      TAB_REPORTS,
+      TAB_MEDIA,
+      TAB_SPONSORSHIP,
+      TAB_GIFTS,
+      TAB_IMPACT,
+    ]);
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+
+    // The default tab shows "who she is"; other tabs' content stays absent.
+    expect(await screen.findByText("عالم عائشة اليوم")).toBeInTheDocument();
+    expect(screen.queryByText("رحلة الحفظ")).not.toBeInTheDocument();
+    expect(screen.queryByText("مسار الشفافية المالية")).not.toBeInTheDocument();
+  });
+
+  it("switches tabs on click and mirrors the tab in the URL", async () => {
+    renderPage();
+
+    await openTab(TAB_MEDIA);
+
+    expect(screen.getByTestId("location-search").textContent).toContain("tab=media");
+    expect(
+      await screen.findByRole("region", { name: "أرشيف رسائلك إليها" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("عالم عائشة اليوم")).not.toBeInTheDocument();
+  });
+
+  it("deep-links a tab from the URL (shareable)", async () => {
+    renderPage(`/donor/orphans/${ORPHAN_ID}?tab=education`);
+
+    expect(await screen.findByRole("heading", { name: "رحلة الحفظ" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: TAB_EDUCATION })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+  });
+
+  it("moves the selection with arrow keys (RTL-aware)", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const aboutTab = await screen.findByRole("tab", { name: TAB_ABOUT });
+    await user.click(aboutTab);
+    // In RTL, ArrowLeft moves toward the reading direction — the next tab.
+    await user.keyboard("{ArrowLeft}");
+
+    expect(screen.getByRole("tab", { name: TAB_EDUCATION })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(await screen.findByRole("heading", { name: "رحلة الحفظ" })).toBeInTheDocument();
+  });
+
+  it("shows a sticky chapter nav for the present sections of the active tab", async () => {
+    renderPage();
+
+    const nav = await screen.findByRole("navigation", { name: "محتويات القسم" });
+    // Chapters mirror the PRESENT blocks, in tab order.
+    expect(within(nav).getByRole("button", { name: "خريطة الحلم" })).toBeInTheDocument();
+    expect(within(nav).getByRole("button", { name: "عالمها اليوم" })).toBeInTheDocument();
+    expect(within(nav).getByRole("button", { name: "ذكرى الأب" })).toBeInTheDocument();
+    // Chapters of other tabs don't leak in.
+    expect(within(nav).queryByRole("button", { name: "رحلة الحفظ" })).not.toBeInTheDocument();
+  });
+
+  it("shows a gentle empty state for a tab with no present sections", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    await openTab(TAB_GIFTS);
+
+    expect(await screen.findByText("لا شيء هنا بعد")).toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — identity rail", () => {
+  it("renders identity, chips, rings, counters, dream and the next-payment summary", async () => {
+    renderPage();
+
+    const rail = await screen.findByRole("complementary", { name: "بطاقة عائشة" });
+
+    // Identity: name (page h1) + code + facts.
+    expect(within(rail).getByRole("heading", { level: 1, name: "عائشة" })).toBeInTheDocument();
+    expect(within(rail).getByText("ORF-99")).toBeInTheDocument();
+    expect(within(rail).getByText("مصر")).toBeInTheDocument();
+    expect(within(rail).getByText("دار الأمل")).toBeInTheDocument();
+    // Derived orphanhood status + languages chips — localized, never raw.
+    expect(within(rail).getByText("يتيم الأب")).toBeInTheDocument();
+    expect(within(rail).getByText("العربية")).toBeInTheDocument();
+    expect(within(rail).queryByText("father")).not.toBeInTheDocument();
+
+    // Two progress rings, each voiced with its value.
+    expect(
+      within(rail).getByRole("img", { name: "حفظت 5 من 30 جزءًا" }),
+    ).toBeInTheDocument();
+    expect(within(rail).getByRole("img", { name: "نسبة الحضور 95٪" })).toBeInTheDocument();
+
+    // Two stat counters (milestones · updates).
+    expect(within(rail).getByText("محطّات بارزة")).toBeInTheDocument();
+    expect(within(rail).getByText("تحديثات")).toBeInTheDocument();
+
+    // "تحلم بأن…" — the aspiration's ONE home on the page.
+    expect(within(rail).getByText("يحلم بأن…")).toBeInTheDocument();
+    expect(within(rail).getByText("أن تصبح معلمة")).toBeInTheDocument();
+
+    // Next-payment summary is READ-ONLY: a label + date, never a pay button.
+    expect(within(rail).getByText("تاريخ السداد القادم")).toBeInTheDocument();
+    expect(within(rail).queryByRole("button", { name: /ادفع|سداد/ })).not.toBeInTheDocument();
+  });
+
+  it("jumps to the messages chapter of the media tab from اكتب رسالة", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const rail = await screen.findByRole("complementary", { name: "بطاقة عائشة" });
+    await user.click(within(rail).getByRole("button", { name: "اكتب رسالة" }));
+
+    expect(
+      await screen.findByRole("region", { name: "أرشيف رسائلك إليها" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: TAB_MEDIA })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+  });
+});
 
 describe("DonorOrphanDetailPage — message archive (أرشيف رسائلك إليها)", () => {
+  // A privacy-safe MessageRead fixture in a given moderation state.
+  function archiveMsg(over: Partial<Record<string, unknown>> = {}) {
+    return {
+      id: `m-${Math.random().toString(36).slice(2)}`,
+      from_role: "donor",
+      from_name: "",
+      to_role: "",
+      to_name: "",
+      orphan_code: null,
+      message_type: "text",
+      content: "نص الرسالة",
+      moderation_status: "pending",
+      moderation_notes: null,
+      is_read: false,
+      is_mine: true,
+      created_at: "2026-06-01T10:00:00Z",
+      moderated_at: null,
+      read_at: null,
+      ...over,
+    };
+  }
+
   it("renders each status with its badge, plus the rejected note", async () => {
     archiveListMock.mockResolvedValue(
       page([
@@ -317,6 +528,7 @@ describe("DonorOrphanDetailPage — message archive (أرشيف رسائلك إ�
       ]) as any,
     );
     renderPage();
+    await openTab(TAB_MEDIA);
 
     const section = await screen.findByRole("region", { name: "أرشيف رسائلك إليها" });
     // pending → warning badge (await the async archive query to resolve)
@@ -331,6 +543,7 @@ describe("DonorOrphanDetailPage — message archive (أرشيف رسائلك إ�
 
   it("shows the empty state when there are no messages", async () => {
     renderPage();
+    await openTab(TAB_MEDIA);
     const section = await screen.findByRole("region", { name: "أرشيف رسائلك إليها" });
     expect(
       await within(section).findByText(/لم ترسل أي رسالة بعد/),
@@ -343,6 +556,7 @@ describe("DonorOrphanDetailPage — message archive (أرشيف رسائلك إ�
     // appear via the optimistic update (not a refetch).
     archiveSendMock.mockReturnValue(new Promise(() => {}) as never);
     renderPage();
+    await openTab(TAB_MEDIA);
 
     const section = await screen.findByRole("region", { name: "أرشيف رسائلك إليها" });
     const box = within(section).getByPlaceholderText(/اكتب رسالتك إلى طفلك/);
@@ -359,54 +573,53 @@ describe("DonorOrphanDetailPage — message archive (أرشيف رسائلك إ�
 });
 
 describe("DonorOrphanDetailPage — composed donor profile", () => {
-  it("renders every composed block when the full profile is present", async () => {
+  it("renders the من أنا blocks on the default tab", async () => {
     renderPage();
 
-    // Identity header.
-    expect(await screen.findByText("عائشة")).toBeInTheDocument();
-    expect(screen.getByText("مصر")).toBeInTheDocument(); // EG → human name
-    expect(screen.getByText("دار الأمل")).toBeInTheDocument(); // partner org
+    // Her world (default tab) + the dream roadmap.
+    expect(await screen.findByText("عالم عائشة اليوم")).toBeInTheDocument();
+    expect(screen.getByText("تحبّ الرسم")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "خريطة الحلم" })).toBeInTheDocument();
 
-    // "Since you began" delta strip.
-    expect(screen.getByText("منذ أن بدأت")).toBeInTheDocument();
-    expect(screen.getByText("+3 جزءًا")).toBeInTheDocument();
+    // No raw schema keys leak into the DOM.
+    expect(screen.queryByText(/juz_memorized/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/multidim_growth/)).not.toBeInTheDocument();
+  });
 
-    // Dream — the emotional anchor. The aspiration also appears as the
-    // roadmap's dream node, so it legitimately occurs more than once.
-    expect(screen.getByText("يحلم بأن…")).toBeInTheDocument();
-    expect(screen.getAllByText("أن تصبح معلمة").length).toBeGreaterThan(0);
+  it("renders the education-and-growth blocks in their tab", async () => {
+    renderPage();
+    await openTab(TAB_EDUCATION);
 
     // Qur'an growth — multi-point caption, not the single-point one.
-    expect(screen.getByText("رحلة الحفظ")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "رحلة الحفظ" })).toBeInTheDocument();
     expect(screen.getByText("من 2 إلى 5 جزءًا — ما شاء الله.")).toBeInTheDocument();
 
-    // Multidimensional growth — localized before → now.
-    expect(screen.getByText("لمحة عن التقدّم")).toBeInTheDocument();
-    expect(screen.getByText("جيّد")).toBeInTheDocument(); // social latest "good"
-    expect(screen.getByText("95٪")).toBeInTheDocument(); // attendance latest
+    // Multidimensional growth — localized before → now. (The attendance %
+    // also feeds the rail's ring, so scope to the section.)
+    const multidim = screen.getByRole("region", { name: "لمحة عن التقدّم" });
+    expect(within(multidim).getByText("جيّد")).toBeInTheDocument(); // social latest "good"
+    expect(within(multidim).getByText("95٪")).toBeInTheDocument(); // attendance latest
 
     // Milestones.
     expect(screen.getByText("محطّات بارزة في الطريق")).toBeInTheDocument();
     expect(screen.getByText("أتمّت حفظ جزء عمّ")).toBeInTheDocument();
 
-    // Recent updates + link to the full timeline.
-    expect(screen.getByText("أحدث التحديثات")).toBeInTheDocument();
-    expect(screen.getByText("تحسّن ملحوظ في القراءة")).toBeInTheDocument();
-    const allUpdates = screen.getByText("اطّلع على كل التحديثات");
-    expect(allUpdates.getAttribute("href")).toBe("#reports-timeline");
-
     // Supervisor's word.
     expect(screen.getByText("كلمة من المشرف")).toBeInTheDocument();
     expect(screen.getByText(/عائشة فتاة مجتهدة/)).toBeInTheDocument();
     expect(screen.getByText(/الأستاذة منى/)).toBeInTheDocument();
+  });
 
-    // Her world.
-    expect(screen.getByText("عالم عائشة اليوم")).toBeInTheDocument();
-    expect(screen.getByText("تحبّ الرسم")).toBeInTheDocument();
+  it("renders recent updates with the timeline link in the reports tab", async () => {
+    renderPage();
+    await openTab(TAB_REPORTS);
 
-    // No raw schema keys leak into the DOM.
-    expect(screen.queryByText(/juz_memorized/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/multidim_growth/)).not.toBeInTheDocument();
+    expect(await screen.findByText("أحدث التحديثات")).toBeInTheDocument();
+    expect(screen.getByText("تحسّن ملحوظ في القراءة")).toBeInTheDocument();
+    const allUpdates = screen.getByText("اطّلع على كل التحديثات");
+    expect(allUpdates.getAttribute("href")).toBe("#reports-timeline");
+    // The timeline itself lives in the same tab, so the anchor resolves.
+    expect(screen.getByText("كيف حاله؟")).toBeInTheDocument();
   });
 
   it("renders only the identity when all element blocks are absent", async () => {
@@ -414,21 +627,28 @@ describe("DonorOrphanDetailPage — composed donor profile", () => {
     profileMock.mockResolvedValue(IDENTITY_ONLY as any);
     renderPage();
 
-    // Identity still renders intentionally.
+    // Identity (rail) still renders intentionally — including the dream,
+    // which comes from the ungated identity aspiration.
     expect(await screen.findByText("عائشة")).toBeInTheDocument();
     expect(screen.getByText("مصر")).toBeInTheDocument();
+    expect(screen.getByText("يحلم بأن…")).toBeInTheDocument();
 
-    // None of the optional sections appear — and nothing crashes.
-    expect(screen.queryByText("يحلم بأن…")).not.toBeInTheDocument();
+    // None of the block-gated sections appear — and nothing crashes.
+    expect(screen.queryByText("عالم عائشة اليوم")).not.toBeInTheDocument();
+    expect(screen.queryByText("منذ أن بدأت")).not.toBeInTheDocument();
+
+    // The education tab has no present block → gentle empty state.
+    await openTab(TAB_EDUCATION);
+    expect(await screen.findByText("لا شيء هنا بعد")).toBeInTheDocument();
     expect(screen.queryByText("رحلة الحفظ")).not.toBeInTheDocument();
     expect(screen.queryByText("لمحة عن التقدّم")).not.toBeInTheDocument();
     expect(screen.queryByText("محطّات بارزة في الطريق")).not.toBeInTheDocument();
-    expect(screen.queryByText("أحدث التحديثات")).not.toBeInTheDocument();
     expect(screen.queryByText("كلمة من المشرف")).not.toBeInTheDocument();
-    expect(screen.queryByText("منذ أن بدأت")).not.toBeInTheDocument();
 
-    // The reports timeline (profile-independent) still mounts.
-    expect(screen.getByText("كيف حاله؟")).toBeInTheDocument();
+    // The reports timeline (profile-independent) still mounts in its tab.
+    await openTab(TAB_REPORTS);
+    expect(await screen.findByText("كيف حاله؟")).toBeInTheDocument();
+    expect(screen.queryByText("أحدث التحديثات")).not.toBeInTheDocument();
   });
 
   it("renders a single-point Qur'an series without a fabricated trend", async () => {
@@ -438,6 +658,7 @@ describe("DonorOrphanDetailPage — composed donor profile", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     const { container } = renderPage();
+    await openTab(TAB_EDUCATION);
 
     expect(await screen.findByText("رحلة الحفظ")).toBeInTheDocument();
     // Single-point caption, never the "from → to" slope caption.
@@ -450,8 +671,9 @@ describe("DonorOrphanDetailPage — composed donor profile", () => {
 
   it("is RTL-correct in Arabic — the before→now arrow flips", async () => {
     const { container } = renderPage();
+    await openTab(TAB_EDUCATION);
 
-    await screen.findByText("عائشة");
+    await screen.findByText("لمحة عن التقدّم");
     // The multidim arrow is mirrored in RTL so it points first → latest.
     expect(container.querySelector("svg.-scale-x-100")).not.toBeNull();
   });
@@ -461,7 +683,7 @@ describe("DonorOrphanDetailPage — in her words", () => {
   it("renders each curated phrase as a quote card", async () => {
     renderPage();
 
-    // Section heading (بكلمات عائشة) + both phrases.
+    // Section heading (بكلمات عائشة) + both phrases — default tab.
     expect(await screen.findByText("بكلمات عائشة")).toBeInTheDocument();
     expect(screen.getByText("أحبّ الرسم في الصباح")).toBeInTheDocument();
     expect(screen.getByText("أريد أن أتعلّم العزف")).toBeInTheDocument();
@@ -673,6 +895,7 @@ describe("DonorOrphanDetailPage — siblings (إخوتها)", () => {
 describe("DonorOrphanDetailPage — independence (رحلة الاستقلال)", () => {
   it("renders the localized stage, derives the next step and shows the charter", async () => {
     renderPage();
+    await openTab(TAB_EDUCATION);
 
     const section = await screen.findByRole("region", { name: "رحلة عائشة نحو الاستقلال" });
     // Current stage tile — the coded value is localized, never rendered raw.
@@ -699,6 +922,7 @@ describe("DonorOrphanDetailPage — independence (رحلة الاستقلال)",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     renderPage();
+    await openTab(TAB_EDUCATION);
 
     const section = await screen.findByRole("region", { name: "رحلة عائشة نحو الاستقلال" });
     expect(
@@ -712,15 +936,80 @@ describe("DonorOrphanDetailPage — independence (رحلة الاستقلال)",
     renderPage();
 
     await screen.findByText("عائشة");
+    await openTab(TAB_EDUCATION);
     expect(
       screen.queryByRole("region", { name: /رحلة .* نحو الاستقلال/ }),
     ).not.toBeInTheDocument();
   });
 });
 
+describe("DonorOrphanDetailPage — skills (المهارات)", () => {
+  it("renders each skill with its localized category and level", async () => {
+    renderPage();
+    await openTab(TAB_EDUCATION);
+
+    const section = await screen.findByRole("region", { name: "مهارات عائشة" });
+    expect(within(section).getByText("الخطّ العربي")).toBeInTheDocument();
+    expect(within(section).getByText("فنون")).toBeInTheDocument();
+    expect(within(section).getByText("مبتدئة")).toBeInTheDocument();
+    // A skill without a level renders name-only; codes never leak raw.
+    expect(within(section).getByText("القراءة الجهرية")).toBeInTheDocument();
+    expect(within(section).queryByText("arts")).not.toBeInTheDocument();
+    expect(within(section).queryByText("beginner")).not.toBeInTheDocument();
+  });
+
+  it("omits the section entirely when the block is absent (hidden or empty)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    profileMock.mockResolvedValue(IDENTITY_ONLY as any);
+    renderPage();
+
+    await screen.findByText("عائشة");
+    await openTab(TAB_EDUCATION);
+    expect(screen.queryByRole("region", { name: "مهارات عائشة" })).not.toBeInTheDocument();
+  });
+});
+
+describe("DonorOrphanDetailPage — gifts (الهدايا والأمنيات)", () => {
+  it("renders wishes with the money trail and a DISABLED CTA (finance deferred)", async () => {
+    renderPage();
+    await openTab(TAB_GIFTS);
+
+    const section = await screen.findByRole("region", { name: "أمنيات عائشة" });
+    expect(within(section).getByText("دراجة هوائية")).toBeInTheDocument();
+    expect(within(section).getByText(/تحلم بدراجة/)).toBeInTheDocument();
+    expect(within(section).getByText("جُمع 20 من 50 KWD")).toBeInTheDocument();
+    expect(within(section).getByText("مفتوحة")).toBeInTheDocument();
+
+    // The donation CTA renders DISABLED and is never wired to a flow.
+    const cta = within(section).getByRole("button", { name: "حقّق هذه الأمنية" });
+    expect(cta).toBeDisabled();
+    expect(within(section).getByText(/التبرّعات المباشرة ستتوفّر قريبًا/)).toBeInTheDocument();
+  });
+
+  it("renders needs with category chips; a met need carries no CTA", async () => {
+    renderPage();
+    await openTab(TAB_GIFTS);
+
+    const section = await screen.findByRole("region", { name: "احتياجات عائشة" });
+    // Met need: localized category + status, no CTA.
+    expect(within(section).getByText("حقيبة مدرسية")).toBeInTheDocument();
+    expect(within(section).getByText("مستلزمات دراسية")).toBeInTheDocument();
+    expect(within(section).getByText("تمّت تلبيته")).toBeInTheDocument();
+    // Open need: disabled CTA only.
+    expect(within(section).getByText("معطف شتوي")).toBeInTheDocument();
+    const ctas = within(section).getAllByRole("button", { name: "ادعم هذا الاحتياج" });
+    expect(ctas).toHaveLength(1);
+    expect(ctas[0]).toBeDisabled();
+    // Raw codes never leak.
+    expect(within(section).queryByText("supplies")).not.toBeInTheDocument();
+    expect(within(section).queryByText("met")).not.toBeInTheDocument();
+  });
+});
+
 describe("DonorOrphanDetailPage — memory box", () => {
   it("renders each media group with the right counts and an audio player", async () => {
     const { container } = renderPage();
+    await openTab(TAB_MEDIA);
 
     // Zone heading.
     expect(await screen.findByText("صندوق ذكريات عائشة")).toBeInTheDocument();
@@ -744,9 +1033,33 @@ describe("DonorOrphanDetailPage — memory box", () => {
     expect(screen.getByText("1:35")).toBeInTheDocument();
   });
 
+  it("filters the box to one group via the toggle chips (no 'all' chip)", async () => {
+    const user = userEvent.setup();
+    const { container } = renderPage();
+    await openTab(TAB_MEDIA);
+
+    await screen.findByText("صندوق ذكريات عائشة");
+    const filters = screen.getByRole("group", { name: "تصفية الوسائط" });
+    // One chip per NON-EMPTY group — and deliberately no "all" chip.
+    expect(within(filters).getAllByRole("button")).toHaveLength(4);
+    expect(within(filters).queryByRole("button", { name: /الكل/ })).not.toBeInTheDocument();
+
+    // Toggle ON: only the recitations group remains.
+    await user.click(within(filters).getByRole("button", { name: "تلاوات" }));
+    expect(screen.getByText("تلاوات عائشة")).toBeInTheDocument();
+    expect(screen.queryByText("رسومات عائشة")).not.toBeInTheDocument();
+    expect(container.querySelectorAll("img")).toHaveLength(0);
+
+    // Toggle OFF: every group returns.
+    await user.click(within(filters).getByRole("button", { name: "تلاوات" }));
+    expect(screen.getByText("رسومات عائشة")).toBeInTheDocument();
+    expect(screen.getByText("شهادات عائشة")).toBeInTheDocument();
+  });
+
   it("opens the lightbox on a tile click and closes it on Escape", async () => {
     const user = userEvent.setup();
     renderPage();
+    await openTab(TAB_MEDIA);
 
     await screen.findByText("صندوق ذكريات عائشة");
 
@@ -789,13 +1102,16 @@ describe("DonorOrphanDetailPage — memory box", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     renderPage();
+    await openTab(TAB_MEDIA);
 
     // The drawings sub-section renders…
     expect(await screen.findByText("رسومات عائشة")).toBeInTheDocument();
-    // …while the empty groups are omitted entirely.
+    // …while the empty groups are omitted entirely, and a single-group box
+    // needs no filter bar.
     expect(screen.queryByText("شهادات عائشة")).not.toBeInTheDocument();
     expect(screen.queryByText("ألبوم لحظات عائشة")).not.toBeInTheDocument();
     expect(screen.queryByText("تلاوات عائشة")).not.toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "تصفية الوسائط" })).not.toBeInTheDocument();
   });
 
   it("renders nothing for the zone when media is null", async () => {
@@ -803,6 +1119,7 @@ describe("DonorOrphanDetailPage — memory box", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     profileMock.mockResolvedValue(IDENTITY_ONLY as any);
     renderPage();
+    await openTab(TAB_MEDIA);
 
     await screen.findByText("عائشة");
     expect(screen.queryByText(/صندوق ذكريات/)).not.toBeInTheDocument();
@@ -816,6 +1133,7 @@ describe("DonorOrphanDetailPage — memory box", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     renderPage();
+    await openTab(TAB_MEDIA);
 
     await screen.findByText("عائشة");
     expect(screen.queryByText(/صندوق ذكريات/)).not.toBeInTheDocument();
@@ -824,15 +1142,13 @@ describe("DonorOrphanDetailPage — memory box", () => {
 
 describe("DonorOrphanDetailPage — dream roadmap", () => {
   it("marks the current step at education_stage and ends at the aspiration", async () => {
-    // IDENTITY has no `dream` block, so the aspiration text appears only in
-    // the roadmap's dream node (unique getByText).
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     profileMock.mockResolvedValue({ ...IDENTITY, education_stage: "preparatory" } as any);
     const { container } = renderPage();
 
     expect(await screen.findByText("خريطة الحلم")).toBeInTheDocument();
-    // Dream node carries the aspiration.
-    expect(screen.getByText("أن تصبح معلمة")).toBeInTheDocument();
+    // Dream node carries the aspiration (which also lives in the rail).
+    expect(screen.getAllByText("أن تصبح معلمة").length).toBeGreaterThan(0);
     expect(screen.getAllByText("الحلم").length).toBeGreaterThan(0);
 
     // The current marker lands on the matching stage (preparatory → إعدادي).
@@ -848,15 +1164,15 @@ describe("DonorOrphanDetailPage — dream roadmap", () => {
     const { container } = renderPage();
 
     expect(await screen.findByText("خريطة الحلم")).toBeInTheDocument();
-    expect(screen.getByText("أن تصبح معلمة")).toBeInTheDocument();
+    expect(screen.getAllByText("أن تصبح معلمة").length).toBeGreaterThan(0);
     // No "you are here" step is marked.
     expect(container.querySelector('[aria-current="step"]')).toBeNull();
     expect(screen.queryByText("أنت هنا")).not.toBeInTheDocument();
   });
 });
 
-describe("DonorOrphanDetailPage — impact tree", () => {
-  it("renders the tree and caption from since_you_began", async () => {
+describe("DonorOrphanDetailPage — impact tab (أثرك)", () => {
+  it("renders the since-you-began strip and the impact tree", async () => {
     profileMock.mockResolvedValue({
       ...IDENTITY,
       since_you_began: {
@@ -868,9 +1184,14 @@ describe("DonorOrphanDetailPage — impact tree", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     renderPage();
+    await openTab(TAB_IMPACT);
 
-    expect(await screen.findByText("شجرة أثرك")).toBeInTheDocument();
-    // Bond duration line + leaf/fruit caption pieces.
+    // "Since you began" delta strip.
+    expect(await screen.findByText("منذ أن بدأت")).toBeInTheDocument();
+    expect(screen.getByText("+3 جزءًا")).toBeInTheDocument();
+
+    // The tree + caption pieces.
+    expect(screen.getByText("شجرة أثرك")).toBeInTheDocument();
     expect(screen.getByText(/ثمرة رعايتك تنمو منذ/)).toBeInTheDocument();
     expect(screen.getByText(/14 ورقة/)).toBeInTheDocument();
     expect(screen.getByText(/2 ثمرة/)).toBeInTheDocument();
@@ -880,13 +1201,15 @@ describe("DonorOrphanDetailPage — impact tree", () => {
     ).toBeInTheDocument();
   });
 
-  it("is omitted when since_you_began is absent", async () => {
+  it("omits the growth chapter when since_you_began is absent", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     profileMock.mockResolvedValue(IDENTITY_ONLY as any);
     renderPage();
+    await openTab(TAB_IMPACT);
 
     await screen.findByText("عائشة");
     expect(screen.queryByText("شجرة أثرك")).not.toBeInTheDocument();
+    expect(screen.queryByText("منذ أن بدأت")).not.toBeInTheDocument();
   });
 });
 
@@ -901,6 +1224,7 @@ describe("DonorOrphanDetailPage — part of something bigger", () => {
       countries_served: 7,
     });
     renderPage();
+    await openTab(TAB_IMPACT);
 
     const section = await screen.findByRole("region", { name: "جزء من شيء أكبر" });
     // The figures appear once the public stats query resolves (skeleton first).
@@ -917,6 +1241,7 @@ describe("DonorOrphanDetailPage — part of something bigger", () => {
     profileMock.mockResolvedValue(IDENTITY_ONLY as any);
     statsMock.mockRejectedValue(new Error("stats down"));
     renderPage();
+    await openTab(TAB_IMPACT);
 
     await screen.findByText("عائشة");
     await waitFor(() => expect(screen.queryByText("جزء من شيء أكبر")).not.toBeInTheDocument());
@@ -969,6 +1294,7 @@ describe("DonorOrphanDetailPage — children waiting", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     waitingMock.mockResolvedValue(page(WAITING) as any);
     renderPage();
+    await openTab(TAB_IMPACT);
 
     const section = await screen.findByRole("region", { name: "أطفال في انتظار كفيل" });
 
@@ -982,7 +1308,7 @@ describe("DonorOrphanDetailPage — children waiting", () => {
     const card = within(section).getByRole("link", { name: "تعرّف على سارة" });
     expect(card.getAttribute("href")).toBe("/orphans/P-1");
 
-    // Closing CTA links to the public browse page.
+    // Closing CTA links to the public browse page — never a payment.
     const cta = within(section).getByRole("link", { name: /اكفل طفلًا آخر/ });
     expect(cta.getAttribute("href")).toBe("/orphans");
   });
@@ -993,6 +1319,7 @@ describe("DonorOrphanDetailPage — children waiting", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     waitingMock.mockResolvedValue(page([]) as any);
     renderPage();
+    await openTab(TAB_IMPACT);
 
     await screen.findByText("عائشة");
     expect(screen.queryByText("أطفال في انتظار كفيل")).not.toBeInTheDocument();

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Happy path for the donor "child journey" detail page (D-07).
+ * Happy path for the donor "child journey" detail page (D-07, v4 app-shell).
  *
  * The page is frontend-only: it consumes the already donor-scoped
  * /me/sponsorships, /me/reports, and /me/sponsorships/:id/profile endpoints.
@@ -10,9 +10,11 @@ import { expect, test } from "@playwright/test";
  * full author → partner → org → publish chain, so this spec instead signs up
  * a real donor (for a valid auth token) and stubs the three data endpoints at
  * the network layer — the same interception style as the payment loop spec —
- * then asserts the dream, the growth section, and at least one milestone.
+ * then walks the v4 shell: the persistent identity rail, the seven tabs
+ * (default "من أنا", URL-backed switching), the growth story, the DISABLED
+ * gift CTA (finances deferred), and the message archive.
  */
-test("donor opens a sponsored orphan and sees the dream, growth, and a milestone", async ({
+test("donor walks the v4 shell: rail, tabs, growth, gifts, and messages", async ({
   page,
   context,
 }) => {
@@ -112,6 +114,8 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
         quran_juz_memorized: 5,
         is_hafiz: false,
         tags: ["نشيطة"],
+        languages: ["العربية"],
+        orphan_status: "father",
         dream: { aspiration: "أن تصبح معلمة" },
         her_world: {
           education_stage: "primary",
@@ -151,6 +155,19 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
           { text: "أحبّ الرسم في الصباح", said_on: "2026-02-10" },
           { text: "أريد أن أتعلّم العزف", said_on: null },
         ],
+        wishes: {
+          items: [
+            {
+              title: "دراجة هوائية",
+              description: "تحلم بدراجة تذهب بها إلى مركز التحفيظ.",
+              target_amount: "50",
+              raised_amount: "20",
+              currency: "KWD",
+              status: "open",
+              progress: 40,
+            },
+          ],
+        },
       }),
     });
   });
@@ -286,26 +303,51 @@ test("donor opens a sponsored orphan and sees the dream, growth, and a milestone
   // --- Open the sponsored orphan's journey page. --------------------
   await page.goto(`/donor/orphans/${ORPHAN_ID}`);
 
-  // Identity header carries the child's name (level-1 heading).
-  await expect(page.getByRole("heading", { name: "عائشة", level: 1 })).toBeVisible();
+  // --- The persistent identity rail (right in RTL). ------------------
+  const rail = page.getByRole("complementary", { name: "بطاقة عائشة" });
+  await expect(rail.getByRole("heading", { name: "عائشة", level: 1 })).toBeVisible();
+  await expect(rail.getByText(ORPHAN_CODE)).toBeVisible();
+  // Derived orphanhood status + language chips — localized, never raw codes.
+  await expect(rail.getByText("يتيم الأب")).toBeVisible();
+  await expect(rail.getByText("العربية")).toBeVisible();
+  // The two progress rings are voiced with their values.
+  await expect(rail.getByRole("img", { name: "حفظت 5 من 30 جزءًا" })).toBeVisible();
+  await expect(rail.getByRole("img", { name: "نسبة الحضور 95٪" })).toBeVisible();
+  // "تحلم بأن…" — the aspiration's ONE home on the page.
+  await expect(rail.getByText("يحلم بأن…")).toBeVisible();
+  await expect(rail.getByText("أن تصبح معلمة")).toBeVisible();
+  // Next-payment summary is READ-ONLY — no pay action anywhere.
+  await expect(rail.getByText("تاريخ السداد القادم")).toBeVisible();
 
-  // Her dream — the emotional anchor.
-  await expect(page.getByText("أن تصبح معلمة").first()).toBeVisible();
+  // --- Seven tabs, "من أنا" selected by default. ---------------------
+  await expect(page.getByRole("tab")).toHaveCount(7);
+  await expect(page.getByRole("tab", { name: "من أنا" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
 
-  // The Qur'an growth section renders: its Arabic heading + the inline area
-  // chart (the polyline is unique to this multi-point growth visual, and is
-  // language-independent).
-  await expect(page.getByText("رحلة الحفظ")).toBeVisible();
-  await expect(page.locator("section svg polyline").first()).toBeVisible();
-
-  // At least one milestone is celebrated.
-  await expect(page.getByText("أتمّت حفظ جزء عمّ")).toBeVisible();
-
-  // "In her words" — the curated phrases render as quote cards.
+  // Default tab: "in her words" quote cards are present.
   await expect(page.getByText("أحبّ الرسم في الصباح")).toBeVisible();
   await expect(page.getByText("أريد أن أتعلّم العزف")).toBeVisible();
 
-  // --- Message archive: the thread renders each status correctly. ---
+  // --- التعليم والتربية: growth story + a milestone. ------------------
+  await page.getByRole("tab", { name: "التعليم والتربية" }).click();
+  // The tab is mirrored into the URL (shareable / back-button friendly).
+  await expect(page).toHaveURL(/tab=education/);
+  await expect(page.getByRole("heading", { name: "رحلة الحفظ" })).toBeVisible();
+  await expect(page.locator("section svg polyline").first()).toBeVisible();
+  await expect(page.getByText("أتمّت حفظ جزء عمّ")).toBeVisible();
+
+  // --- الهدايا والأمنيات: the wish renders with a DISABLED CTA. -------
+  await page.getByRole("tab", { name: "الهدايا والأمنيات" }).click();
+  await expect(page.getByText("دراجة هوائية")).toBeVisible();
+  const wishCta = page.getByRole("button", { name: "حقّق هذه الأمنية" });
+  await expect(wishCta).toBeVisible();
+  await expect(wishCta).toBeDisabled();
+
+  // --- الميديا: message archive with its delivery trail. --------------
+  await page.getByRole("tab", { name: "الميديا" }).click();
+  await expect(page).toHaveURL(/tab=media/);
   const archive = page.getByRole("region", { name: "أرشيف رسائلك إليها" });
   await expect(archive).toBeVisible();
   // Badges use exact matching — Playwright's getByText defaults to substring,
