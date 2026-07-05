@@ -4,7 +4,10 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
+import { ChapterNav, TabList } from "@/components/ProfileShellTabs";
 import { Skeleton } from "@/components/Skeleton";
+import { useUrlTab } from "@/hooks/useUrlTab";
+import { chapterDomId, scrollToChapter, tabDomId, tabPanelDomId } from "@/lib/profileShell";
 import { countryName } from "@/lib/countries";
 import { formatDate, formatDuration, humanDuration } from "@/lib/format";
 import type { MessageRead } from "@/lib/messages";
@@ -116,7 +119,29 @@ function socialLabel(
   });
 }
 
-/** D-07 — the donor's "child journey" detail page.
+/** The seven tabs of the v4 app-shell, in their final order. Tab state
+ * lives in the URL (`?tab=…`) so a tab is shareable; "about" is default. */
+const PROFILE_TABS = [
+  "about",
+  "education",
+  "reports",
+  "media",
+  "sponsorship",
+  "gifts",
+  "impact",
+] as const;
+
+type ProfileTabId = (typeof PROFILE_TABS)[number];
+
+/** One present section inside the active tab: an anchor id, the localized
+ * chapter label for the sticky nav, and the (existing) section node. */
+interface Chapter {
+  id: string;
+  label: string;
+  node: React.ReactNode;
+}
+
+/** D-07 — the donor's "child journey" detail page (v4 app-shell).
  *
  * Route: /donor/orphans/:id  (:id is the orphan_id).
  *
@@ -126,6 +151,12 @@ function socialLabel(
  * composed, donor-safe `SponsoredOrphanProfile` (every element block is
  * optional — shown only when the backend includes it) as a warm, human
  * story, alongside the donor's own payments and the reports timeline.
+ *
+ * v4 layout: a PERSISTENT identity rail (start side — right in RTL) next
+ * to a tabbed main stage. Every section of the former single-scroll page
+ * lives in exactly ONE of seven tabs; each tab carries a sticky
+ * chapter-navigation bar over its present sections. Finances stay
+ * deferred: nothing here ever initiates a payment.
  *
  * The "أرشيف رسائلك إليها" archive (the donor's own moderated messages to
  * this child) is fetched independently — it is the donor's OWN content, not
@@ -169,6 +200,23 @@ export function DonorOrphanDetailPage() {
     .filter((r) => r.orphan_id === id)
     .sort((a, b) => new Date(b.period_start).getTime() - new Date(a.period_start).getTime());
 
+  // Active tab lives in the URL (`?tab=…`) — shareable + back-button
+  // friendly; defaults to "من أنا" without rewriting the URL.
+  const [activeTab, selectTab] = useUrlTab(PROFILE_TABS, "about");
+
+  // The rail's "اكتب رسالة" button jumps to the composer: switch to the
+  // media tab, then scroll to the messages chapter once it has rendered.
+  const [pendingChapter, setPendingChapter] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pendingChapter) return;
+    scrollToChapter(pendingChapter);
+    setPendingChapter(null);
+  }, [activeTab, pendingChapter]);
+  const openMessageComposer = () => {
+    selectTab("media");
+    setPendingChapter("messages");
+  };
+
   if (sponsorshipsQ.isLoading) {
     return (
       <div className="space-y-4">
@@ -207,168 +255,320 @@ export function DonorOrphanDetailPage() {
   const name = sponsorship.orphan_name ?? profile?.first_name ?? "—";
   const isRtl = lang === "ar";
 
+  const tabs = PROFILE_TABS.map((tabId) => ({
+    id: tabId,
+    label: t(`donorShell.tabs.${tabId}`),
+  }));
+
+  /* Every block keeps EXACTLY its previous conditional rendering — a
+     hidden/None block ⇒ its chapter is absent; a tab with no present
+     chapter shows a gentle empty state. Nothing is fabricated client-side. */
+  const chapter = (chId: string, node: React.ReactNode): Chapter => ({
+    id: chId,
+    label: t(`donorShell.chapters.${chId}`),
+    node,
+  });
+
+  const chaptersByTab: Record<ProfileTabId, Chapter[]> = {
+    // ---- من أنا — who she is today. No dedicated static-social block
+    // exists on SponsoredOrphanProfile (social lives in her_world tags and
+    // the multidim facet), so the social chapter is omitted gracefully.
+    about: [
+      // The dream roadmap (خريطة الحلم): the real education stages leading
+      // to the child's stated aspiration.
+      ...(profile?.aspiration
+        ? [
+            chapter(
+              "dreamMap",
+              <DreamRoadmapSection
+                name={name}
+                aspiration={profile.aspiration}
+                educationStage={profile.education_stage ?? null}
+              />,
+            ),
+          ]
+        : []),
+      ...(profile?.her_world
+        ? [chapter("herWorld", <HerWorldSection name={name} world={profile.her_world} />)]
+        : []),
+      // Curated phrases in the child's own voice; a present array is
+      // always non-empty (server strips hidden/empty blocks).
+      ...(profile?.in_her_words && profile.in_her_words.length > 0
+        ? [
+            chapter(
+              "inHerWords",
+              <InHerWordsSection name={name} phrases={profile.in_her_words} lang={lang} />,
+            ),
+          ]
+        : []),
+      // Health — reassuring, non-clinical summary. Present ⇒ safe to show.
+      ...(profile?.health
+        ? [chapter("health", <HealthSection name={name} health={profile.health} lang={lang} />)]
+        : []),
+      // "بيت سارة" + "من يرعاها" — PII-free home & guardian glimpses.
+      ...(profile?.home ? [chapter("home", <HomeSection name={name} home={profile.home} />)] : []),
+      ...(profile?.guardian
+        ? [chapter("guardian", <GuardianSection name={name} guardian={profile.guardian} />)]
+        : []),
+      ...(profile?.siblings && profile.siblings.items.length > 0
+        ? [chapter("siblings", <SiblingsSection name={name} siblings={profile.siblings} />)]
+        : []),
+      // "ذكرى الأب" — double-gated server-side (consent AND visibility).
+      ...(profile?.father_memory
+        ? [chapter("fatherMemory", <FatherMemorySection memory={profile.father_memory} />)]
+        : []),
+    ],
+
+    // ---- التعليم والتربية — the learning-and-growth story.
+    education: [
+      ...(profile?.quran_growth
+        ? [chapter("quran", <QuranGrowthSection growth={profile.quran_growth} lang={lang} />)]
+        : []),
+      ...(profile?.multidim_growth
+        ? [
+            chapter(
+              "progress",
+              <MultidimGrowthSection growth={profile.multidim_growth} isRtl={isRtl} />,
+            ),
+          ]
+        : []),
+      ...(profile?.milestones && profile.milestones.items.length > 0
+        ? [chapter("milestones", <MilestonesSection milestones={profile.milestones} lang={lang} />)]
+        : []),
+      // Readiness stepper + derived next step + the static ميثاق التمكين.
+      ...(profile?.independence
+        ? [
+            chapter(
+              "independence",
+              <IndependenceSection name={name} independence={profile.independence} />,
+            ),
+          ]
+        : []),
+      ...(profile?.skills && profile.skills.items.length > 0
+        ? [chapter("skills", <SkillsSection name={name} skills={profile.skills} />)]
+        : []),
+      ...(profile?.supervisor_word
+        ? [
+            chapter(
+              "supervisor",
+              <SupervisorWordSection word={profile.supervisor_word} lang={lang} />,
+            ),
+          ]
+        : []),
+    ],
+
+    // ---- التقارير — the chronological record (year headers live inside
+    // Timeline; milestone reports render as highlighted nodes).
+    reports: [
+      ...(profile?.recent_updates && profile.recent_updates.items.length > 0
+        ? [chapter("updates", <RecentUpdatesSection updates={profile.recent_updates} lang={lang} />)]
+        : []),
+      chapter(
+        "timeline",
+        <Timeline name={name} reports={reports} loading={reportsQ.isLoading} lang={lang} />,
+      ),
+    ],
+
+    // ---- الميديا — the memory box (filterable), derived occasions, and
+    // the donor's own message archive with its delivery trail.
+    media: [
+      ...(profile?.media && mediaHasAny(profile.media)
+        ? [chapter("memoryBox", <MediaTabSection name={name} media={profile.media} lang={lang} />)]
+        : []),
+      // Occasions are DERIVED, never fabricated: the academic-year countdown
+      // is pure calendar math; a birthday countdown would need the child's
+      // DOB, which the donor-safe profile intentionally never exposes — so
+      // it is omitted rather than invented.
+      chapter("occasions", <OccasionsSection lang={lang} />),
+      chapter("messages", <MessageArchiveSection orphanId={id} lang={lang} />),
+    ],
+
+    // ---- كفالتك — sponsorship facts + the money trail. READ-ONLY.
+    sponsorship: [
+      chapter("details", <SponsorshipCard sponsorship={sponsorship} lang={lang} />),
+      chapter(
+        "payments",
+        <MoneyTrail
+          sponsorship={sponsorship}
+          payments={paymentsQ.data?.items ?? []}
+          loading={paymentsQ.isLoading}
+          lang={lang}
+        />,
+      ),
+    ],
+
+    // ---- الهدايا والأمنيات — wishes then needs. Every donation CTA is
+    // DISABLED (finances deferred) and never wired to an initiate flow.
+    // There is no occasion-gift entity on the profile, so that chapter is
+    // omitted gracefully rather than fabricated.
+    gifts: [
+      ...(profile?.wishes && profile.wishes.items.length > 0
+        ? [chapter("wishes", <WishesSection name={name} wishes={profile.wishes} />)]
+        : []),
+      ...(profile?.needs && profile.needs.items.length > 0
+        ? [chapter("needs", <NeedsSection name={name} needs={profile.needs} />)]
+        : []),
+    ],
+
+    // ---- أثرك — growth-since-you-began, the collective picture, and the
+    // waiting children (public listing link only — never a payment).
+    impact: [
+      ...(profile?.since_you_began
+        ? [
+            chapter(
+              "impactGrowth",
+              <div className="space-y-4">
+                <SinceYouBeganStrip block={profile.since_you_began} lang={lang} />
+                <ImpactTreeSection block={profile.since_you_began} />
+              </div>,
+            ),
+          ]
+        : []),
+      chapter("collective", <CollectiveStatsSection />),
+      chapter(
+        "waiting",
+        <ChildrenWaitingSection excludeCode={sponsorship.orphan_code ?? null} lang={lang} />,
+      ),
+    ],
+  };
+
+  const activeChapters = chaptersByTab[activeTab as ProfileTabId] ?? [];
+
   return (
     <div className="space-y-6">
       <Link to="/donor/orphans" className="text-sm text-trust-600 underline">
         ← {t("donor.orphanDetail.back")}
       </Link>
 
-      <IdentityHeader name={name} sponsorship={sponsorship} profile={profile} lang={lang} />
-
-      {/* Composed profile blocks — each rendered ONLY when present, ordered
-          for emotional impact (dream first, her world last). */}
-      {profile?.dream && <DreamSection name={name} dream={profile.dream} />}
-
-      {profile?.quran_growth && <QuranGrowthSection growth={profile.quran_growth} lang={lang} />}
-
-      {profile?.multidim_growth && (
-        <MultidimGrowthSection growth={profile.multidim_growth} isRtl={isRtl} />
-      )}
-
-      {/* The dream roadmap sits right after the growth story: the real
-          education stages leading to the child's stated aspiration. */}
-      {profile?.aspiration && (
-        <DreamRoadmapSection
+      {/* Two-region app-shell: persistent identity rail (start side — the
+          right in RTL) + the tabbed main stage. */}
+      <div className="space-y-6 lg:grid lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
+        <IdentityRail
           name={name}
-          aspiration={profile.aspiration}
-          educationStage={profile.education_stage ?? null}
+          sponsorship={sponsorship}
+          profile={profile}
+          lang={lang}
+          onWriteMessage={openMessageComposer}
         />
-      )}
 
-      {profile?.milestones && profile.milestones.items.length > 0 && (
-        <MilestonesSection milestones={profile.milestones} lang={lang} />
-      )}
+        <div className="min-w-0 space-y-4">
+          <TabList
+            tabs={tabs}
+            activeId={activeTab}
+            onSelect={selectTab}
+            label={t("donorShell.tablistLabel", { name })}
+            rtl={isRtl}
+          />
 
-      {profile?.recent_updates && profile.recent_updates.items.length > 0 && (
-        <RecentUpdatesSection updates={profile.recent_updates} lang={lang} />
-      )}
+          <section
+            role="tabpanel"
+            id={tabPanelDomId(activeTab)}
+            aria-labelledby={tabDomId(activeTab)}
+            tabIndex={0}
+            className="space-y-6 focus:outline-none"
+          >
+            <ChapterNav
+              chapters={activeChapters.map(({ id: chId, label }) => ({ id: chId, label }))}
+              label={t("donorShell.chapterNavLabel")}
+            />
 
-      {profile?.supervisor_word && (
-        <SupervisorWordSection word={profile.supervisor_word} lang={lang} />
-      )}
+            {activeChapters.length === 0 ? (
+              <TabEmptyState />
+            ) : (
+              activeChapters.map((c) => (
+                <div key={c.id} id={chapterDomId(c.id)} className="scroll-mt-24">
+                  {c.node}
+                </div>
+              ))
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      {profile?.her_world && <HerWorldSection name={name} world={profile.her_world} />}
+/** True when the media block carries at least one item in any group. */
+function mediaHasAny(media: NonNullable<SponsoredOrphanProfile["media"]>): boolean {
+  return (
+    media.drawings.length > 0 ||
+    media.certificates.length > 0 ||
+    media.album.length > 0 ||
+    media.recitations.length > 0
+  );
+}
 
-      {/* Health — the FIRST health data on any donor surface: a reassuring,
-          non-clinical summary (coded status + last checkup + vaccinations),
-          stripped server-side when hidden or empty. Present ⇒ safe to show. */}
-      {profile?.health && <HealthSection name={name} health={profile.health} lang={lang} />}
-
-      {/* "بيت سارة" — a PII-free glimpse of the child's home: governorate-level
-          region + coded housing status ONLY (never a city, street, address or
-          income), stripped server-side when hidden or empty. Present ⇒ safe. */}
-      {profile?.home && <HomeSection name={name} home={profile.home} />}
-
-      {/* "من يرعاها" — who cares for the child: coded relation + occupation
-          ONLY (never a name or contact detail), stripped server-side when
-          hidden or absent. Present ⇒ safe to show. */}
-      {profile?.guardian && <GuardianSection name={name} guardian={profile.guardian} />}
-
-      {/* "إخوتها" — the child's siblings: first name + age + gender + coded
-          sponsorship standing ONLY (never a family name or any case detail),
-          stripped server-side when hidden or empty. An awaiting sibling links
-          its public sponsorship page via the donor-safe code. */}
-      {profile?.siblings && profile.siblings.items.length > 0 && (
-        <SiblingsSection name={name} siblings={profile.siblings} />
-      )}
-
-      {/* "رحلة الاستقلال" — the child's readiness-for-independence stage. The
-          block carries ONLY the coded stage, stripped server-side when hidden
-          or unset; the journey stepper, the "next step" and the empowerment
-          charter are all derived/localized here from the ordered vocabulary. */}
-      {profile?.independence && (
-        <IndependenceSection name={name} independence={profile.independence} />
-      )}
-
-      {/* "In her words" — curated phrases in the child's own voice. Server
-          strips the block entirely when hidden or empty, so a present array is
-          always non-empty. */}
-      {profile?.in_her_words && profile.in_her_words.length > 0 && (
-        <InHerWordsSection name={name} phrases={profile.in_her_words} lang={lang} />
-      )}
-
-      {/* "ذكرى الأب" — a dignified remembrance of the deceased father. Double-
-          gated server-side (guardian consent AND supervisor visibility); the
-          block is present here only when both gates are satisfied. */}
-      {profile?.father_memory && <FatherMemorySection memory={profile.father_memory} />}
-
-      {/* The "memory box" — donor-cleared artefacts, placed right before the
-          factual timeline/payments so warmth precedes paperwork. Renders
-          NOTHING when media is null or every group is empty. */}
-      {profile?.media && <MemoryBoxSection name={name} media={profile.media} lang={lang} />}
-
-      {/* Existing, profile-independent sections. */}
-      <Timeline name={name} reports={reports} loading={reportsQ.isLoading} lang={lang} />
-
-      {/* "أرشيف رسائلك إليها" — the donor's own moderated messages to this
-          child. Fetched independently (NOT a ProfileElement, NOT gated by
-          profile_visibility): this is the donor's OWN content. */}
-      <MessageArchiveSection orphanId={id} lang={lang} />
-
-      <SponsorshipCard sponsorship={sponsorship} lang={lang} />
-
-      <MoneyTrail
-        sponsorship={sponsorship}
-        payments={paymentsQ.data?.items ?? []}
-        loading={paymentsQ.isLoading}
-        lang={lang}
-      />
-
-      {/* "Expand your impact" closing zone — tree → collective → waiting.
-          Each section is independently conditional and self-guarding: a
-          missing block or a failed/empty public query renders nothing and
-          never breaks the page. */}
-      {profile?.since_you_began && <ImpactTreeSection block={profile.since_you_began} />}
-
-      <CollectiveStatsSection />
-
-      <ChildrenWaitingSection excludeCode={sponsorship.orphan_code ?? null} lang={lang} />
+/** Gentle empty state for a tab with no present section. */
+function TabEmptyState() {
+  const { t } = useTranslation();
+  return (
+    <div className="card text-center">
+      <p className="font-medium text-gray-700 dark:text-gray-200">
+        {t("donorShell.emptyTabTitle")}
+      </p>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {t("donorShell.emptyTabBody")}
+      </p>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* A) Identity header — cover + monogram + facts + "since you began"   */
+/* A) Identity rail — the persistent start-side card (right in RTL):   */
+/*    cover + monogram + facts + rings + counters + dream + actions.   */
 /* ------------------------------------------------------------------ */
 
-function IdentityHeader({
+function IdentityRail({
   name,
   sponsorship,
   profile,
   lang,
+  onWriteMessage,
 }: {
   name: string;
   sponsorship: Sponsorship;
   profile: SponsoredOrphanProfile | undefined;
   lang: string;
+  onWriteMessage: () => void;
 }) {
   const { t } = useTranslation();
 
   const since = humanDuration(sponsorship.start_date);
   const sinceText = since ? formatDuration(since, t) : null;
   const country = profile?.country ? countryName(profile.country, lang) : null;
-  const stage = eduStageLabel(profile?.education_stage, t);
   const isHafiz = !!profile?.is_hafiz;
 
+  // Ring values — derived only from data the profile already carries: a
+  // hafiz has by definition completed all 30 juz'.
+  const juz = isHafiz
+    ? JUZ_TOTAL
+    : (profile?.quran_juz_memorized ?? profile?.her_world?.quran_juz_memorized ?? null);
+  const attendance = profile?.multidim_growth?.attendance_percent?.latest ?? null;
+
+  // Stat counters — sizes of blocks that are already present.
+  const milestonesCount = profile?.milestones?.items.length ?? null;
+  const updatesCount = profile?.recent_updates?.items.length ?? null;
+
+  // "تحلم بأن…" — the aspiration's ONE home on the page (rail only).
+  const dreamText = profile?.dream?.aspiration ?? profile?.aspiration ?? null;
+
   return (
-    <section
-      className="overflow-hidden rounded-2xl border border-sky-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
-      aria-label={t("donorTimeline.storyTitle")}
+    <aside
+      className="overflow-hidden rounded-2xl border border-sky-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 lg:sticky lg:top-4"
+      aria-label={t("donorShell.railLabel", { name })}
     >
       {/* Soft brand cover band. Faceless by design — warmth comes from the
           gradient + monogram, never a photo. */}
       <div
         aria-hidden="true"
-        className="h-24 bg-gradient-to-l from-trust-500 via-trust-400 to-sky-300 dark:from-trust-700 dark:via-trust-600 dark:to-trust-500 sm:h-28"
+        className="h-20 bg-gradient-to-l from-trust-500 via-trust-400 to-sky-300 dark:from-trust-700 dark:via-trust-600 dark:to-trust-500"
       />
 
-      <div className="px-6 pb-6">
-        <div className="-mt-12 flex flex-col items-center gap-3 sm:-mt-14 sm:flex-row sm:items-end sm:gap-5">
+      <div className="space-y-4 px-5 pb-5">
+        <div className="-mt-12 flex flex-col items-center gap-2 text-center">
           <MonogramAvatar name={name} isHafiz={isHafiz} />
-          <div className="min-w-0 flex-1 text-center sm:pb-1 sm:text-start">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-3xl">
-              {name}
-            </h1>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{name}</h1>
             {sponsorship.orphan_code && (
               <p className="font-mono text-xs text-gray-500">{sponsorship.orphan_code}</p>
             )}
@@ -381,39 +581,205 @@ function IdentityHeader({
           )}
         </div>
 
-        {/* Key facts as inline icon chips — not a flat gray table. */}
+        {/* Key facts as inline icon chips — age, nationality, partner org,
+            orphanhood status and languages, all from the identity slice. */}
         {profile && (
-          <ul className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+          <ul className="flex flex-wrap justify-center gap-1.5">
             <FactChip icon={<CakeIcon />}>
               {t("donor.orphanDetail.ageValue", { age: profile.age_years })}
             </FactChip>
-            <FactChip icon={<PersonIcon />}>
-              {profile.gender === "M"
-                ? t("donor.orphanDetail.male")
-                : t("donor.orphanDetail.female")}
-            </FactChip>
             {country && <FactChip icon={<GlobeIcon />}>{country}</FactChip>}
-            {stage && <FactChip icon={<BookIcon />}>{stage}</FactChip>}
             {profile.partner_organization_name && (
               <FactChip icon={<HomeIcon />}>{profile.partner_organization_name}</FactChip>
             )}
+            {profile.orphan_status && (
+              <FactChip icon={<PersonIcon />}>
+                {t(`orphans.profile.orphanStatus.${profile.orphan_status}`, {
+                  defaultValue: profile.orphan_status,
+                })}
+              </FactChip>
+            )}
+            {(profile.languages ?? []).map((language) => (
+              <FactChip key={`lang-${language}`} icon={<BookIcon />}>
+                {language}
+              </FactChip>
+            ))}
           </ul>
         )}
 
-        {/* Relationship line — gentle warmth near the hero. */}
+        {/* Relationship line — "ترعى … منذ …". */}
         {sinceText && (
-          <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-trust-700 dark:text-tranquil-200">
+          <p className="flex items-center justify-center gap-1.5 text-center text-sm font-medium text-trust-700 dark:text-tranquil-200">
             <HeartIcon />
             {t("donorTimeline.sponsoringSince", { name, duration: sinceText })}
           </p>
         )}
 
-        {/* "Since you began" — the donor's own delta strip. */}
-        {profile?.since_you_began && (
-          <SinceYouBeganStrip block={profile.since_you_began} lang={lang} />
+        {/* Two progress rings: Qur'an juz' out of 30 + attendance %. Each
+            renders only when its value actually exists on the profile. */}
+        {(juz != null || attendance != null) && (
+          <div className="flex items-center justify-center gap-6">
+            {juz != null && (
+              <ProgressRing
+                value={juz}
+                max={JUZ_TOTAL}
+                display={t("donorShell.railRingQuranValue", { n: juz })}
+                label={t("donorShell.railRingQuranLabel")}
+                ariaLabel={t("donorShell.railRingQuranAria", { n: juz, total: JUZ_TOTAL })}
+                toneClass="stroke-success-500"
+              />
+            )}
+            {attendance != null && (
+              <ProgressRing
+                value={Math.round(attendance)}
+                max={100}
+                display={t("donorProfile.percentValue", { n: Math.round(attendance) })}
+                label={t("donorShell.railRingAttendanceLabel")}
+                ariaLabel={t("donorShell.railRingAttendanceAria", { n: Math.round(attendance) })}
+                toneClass="stroke-sky-400"
+              />
+            )}
+          </div>
         )}
+
+        {/* Two stat counters: milestones + updates. */}
+        {(milestonesCount != null || updatesCount != null) && (
+          <dl className="grid grid-cols-2 gap-2">
+            {milestonesCount != null && (
+              <RailStat
+                value={milestonesCount}
+                label={t("donorShell.railMilestonesLabel")}
+                icon={<StarIcon />}
+              />
+            )}
+            {updatesCount != null && (
+              <RailStat
+                value={updatesCount}
+                label={t("donorShell.railUpdatesLabel")}
+                icon={<CalendarIcon />}
+              />
+            )}
+          </dl>
+        )}
+
+        {/* "تحلم بأن…" — the aspiration, in its single home. */}
+        {dreamText && (
+          <figure
+            className="rounded-xl border-s-4 border-trust-400 bg-gradient-to-l from-tranquil-100 to-white p-4 dark:border-trust-500/50 dark:from-trust-500/10 dark:to-gray-800"
+            aria-label={t("donorProfile.dreamTitle", { name })}
+          >
+            <figcaption className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-trust-500">
+              <QuoteIcon />
+              {t("donorProfile.dreamLead")}
+            </figcaption>
+            <blockquote className="mt-1.5 text-lg font-bold leading-snug text-trust-800 dark:text-tranquil-100">
+              {dreamText}
+            </blockquote>
+          </figure>
+        )}
+
+        {/* Existing messages flow — jumps to the composer in the media tab. */}
+        <button type="button" onClick={onWriteMessage} className="btn-primary w-full">
+          {t("donorShell.railWriteMessage")}
+        </button>
+
+        {/* Next-payment summary — READ-ONLY (finances deferred): no pay
+            action is rendered anywhere on this page. */}
+        <div className="panel">
+          <p className="text-xs text-gray-500">{t("donor.orphanDetail.nextPayment")}</p>
+          <p className="mt-1 font-semibold text-gray-900 dark:text-gray-100">
+            {sponsorship.next_payment_date
+              ? formatDate(sponsorship.next_payment_date, lang)
+              : t("donor.orphanDetail.notScheduled")}
+          </p>
+          <p className="mt-0.5 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+            {sponsorship.monthly_amount} {sponsorship.currency} ·{" "}
+            {t("donor.orphanDetail.monthlyAmount")}
+          </p>
+        </div>
       </div>
-    </section>
+    </aside>
+  );
+}
+
+/** A small SVG donut with the value in its center — the "at a glance"
+ * rail visual. The value is always voiced (aria-label) and printed, so
+ * color/shape is never the only signal. */
+function ProgressRing({
+  value,
+  max,
+  display,
+  label,
+  ariaLabel,
+  toneClass,
+}: {
+  value: number;
+  max: number;
+  display: string;
+  label: string;
+  ariaLabel: string;
+  toneClass: string;
+}) {
+  const R = 26;
+  const C = 2 * Math.PI * R;
+  const pct = Math.max(0, Math.min(1, max > 0 ? value / max : 0));
+  return (
+    <figure className="flex flex-col items-center gap-1">
+      <span className="relative inline-flex" role="img" aria-label={ariaLabel}>
+        <svg viewBox="0 0 64 64" className="h-16 w-16 -rotate-90">
+          <circle
+            cx="32"
+            cy="32"
+            r={R}
+            fill="none"
+            strokeWidth="6"
+            className="stroke-tranquil-200 dark:stroke-gray-700"
+          />
+          <circle
+            cx="32"
+            cy="32"
+            r={R}
+            fill="none"
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray={`${C * pct} ${C}`}
+            className={toneClass}
+          />
+        </svg>
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 flex items-center justify-center text-xs font-bold tabular-nums text-gray-900 dark:text-gray-100"
+        >
+          {display}
+        </span>
+      </span>
+      <figcaption className="text-xs font-medium text-gray-600 dark:text-gray-300">
+        {label}
+      </figcaption>
+    </figure>
+  );
+}
+
+/** One compact rail counter (milestones / updates). */
+function RailStat({
+  value,
+  label,
+  icon,
+}: {
+  value: number;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-sky-200 bg-tranquil-100/60 p-3 text-center dark:border-gray-700 dark:bg-gray-800/60">
+      <dd className="flex items-center justify-center gap-1.5 text-xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
+        <span aria-hidden="true" className="text-trust-500 dark:text-tranquil-300">
+          {icon}
+        </span>
+        {value}
+      </dd>
+      <dt className="mt-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">{label}</dt>
+    </div>
   );
 }
 
@@ -523,37 +889,8 @@ function SinceYouBeganStrip({
 }
 
 /* ------------------------------------------------------------------ */
-/* B) Dream — the emotional anchor                                     */
-/* ------------------------------------------------------------------ */
-
-function DreamSection({
-  name,
-  dream,
-}: {
-  name: string;
-  dream: NonNullable<SponsoredOrphanProfile["dream"]>;
-}) {
-  const { t } = useTranslation();
-  return (
-    <section
-      className="overflow-hidden rounded-2xl border-s-4 border-trust-400 bg-gradient-to-l from-tranquil-100 to-white p-6 shadow-sm dark:border-trust-500/50 dark:from-trust-500/10 dark:to-gray-800"
-      aria-label={t("donorProfile.dreamTitle", { name })}
-    >
-      <figure>
-        <figcaption className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-trust-500">
-          <QuoteIcon />
-          {t("donorProfile.dreamLead")}
-        </figcaption>
-        <blockquote className="mt-2 text-2xl font-bold leading-snug text-trust-800 dark:text-tranquil-100 sm:text-3xl">
-          {dream.aspiration}
-        </blockquote>
-      </figure>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* B2) Dream roadmap — the real stages leading to the aspiration       */
+/* B) Dream roadmap — the real stages leading to the aspiration        */
+/*    (the aspiration TEXT itself lives in the identity rail only)     */
 /* ------------------------------------------------------------------ */
 
 // The actual education stages, in order, that form the path toward the
@@ -1521,6 +1858,256 @@ function IndependenceSection({
 }
 
 /* ------------------------------------------------------------------ */
+/* H1.4f) Skills — the child's registered skills and talents            */
+/* ------------------------------------------------------------------ */
+
+/** "المهارات" — the gated donor skills element. The backend emits this block
+ * only when visible AND non-empty, and each card carries ONLY the skill name
+ * plus the coded category/level (localized through the staff vocabularies) —
+ * the staff note never reaches this surface. */
+function SkillsSection({
+  name,
+  skills,
+}: {
+  name: string;
+  skills: NonNullable<SponsoredOrphanProfile["skills"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.skillsTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.trust}`}
+        >
+          <PaletteIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.skillsTitle", { name })}
+        </h2>
+      </div>
+
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {skills.items.map((skill, i) => (
+          <li
+            key={`${skill.name}-${i}`}
+            className={`rounded-xl border p-4 ${TONE_TILE.trust}`}
+          >
+            <p className="font-semibold text-gray-900 dark:text-gray-100">{skill.name}</p>
+            {(skill.category || skill.level) && (
+              <p className="mt-2 flex flex-wrap gap-1.5">
+                {skill.category && (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONE_CHIP.sky}`}
+                  >
+                    {t(`orphanSkills.category.${skill.category}`, {
+                      defaultValue: skill.category,
+                    })}
+                  </span>
+                )}
+                {skill.level && (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONE_CHIP.success}`}
+                  >
+                    {t(`orphanSkills.level.${skill.level}`, { defaultValue: skill.level })}
+                  </span>
+                )}
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H1.4g) Wishes + needs — fundable, with DISABLED donation CTAs        */
+/*        (finances are deferred: nothing here initiates a payment).    */
+/* ------------------------------------------------------------------ */
+
+const WISH_STATUS_TONE: Record<string, Tone> = {
+  open: "sky",
+  fulfilled: "success",
+};
+
+const NEED_STATUS_TONE: Record<string, Tone> = {
+  open: "sky",
+  met: "success",
+};
+
+/** Money-trail progress bar shared by wish and need cards. The percentage
+ * is server-derived; the bar is decorative next to the voiced text. */
+function GiftProgress({ progress, raisedLine }: { progress: number; raisedLine: string }) {
+  const pct = Math.max(0, Math.min(100, Math.round(progress)));
+  return (
+    <div className="space-y-1">
+      <div
+        aria-hidden="true"
+        className="h-2 w-full overflow-hidden rounded-full bg-tranquil-200 dark:bg-gray-700"
+      >
+        <span
+          className="block h-full rounded-full bg-trust-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="text-xs text-gray-600 dark:text-gray-300">
+        {raisedLine}
+        <span className="ms-1 font-semibold tabular-nums text-trust-700 dark:text-tranquil-200">
+          ({pct}٪)
+        </span>
+      </p>
+    </div>
+  );
+}
+
+/** DISABLED donation CTA + the "finances coming soon" note. Rendered for
+ * open wishes/needs only, and NEVER wired to an initiate flow. */
+function DeferredGiftCta({ label }: { label: string }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <button type="button" disabled aria-disabled="true" className="btn-primary text-sm">
+        {label}
+      </button>
+      <span className="text-xs text-gray-500 dark:text-gray-400">
+        {t("donorShell.financeSoon")}
+      </span>
+    </div>
+  );
+}
+
+/** "الأمنيات" — the gated donor wishes element. Each card carries ONLY the
+ * donor-safe slice (title, description, money trail, coded status, derived
+ * progress). The "حقّق أمنيتها" CTA renders disabled — finance is deferred. */
+function WishesSection({
+  name,
+  wishes,
+}: {
+  name: string;
+  wishes: NonNullable<SponsoredOrphanProfile["wishes"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.wishesTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.trust}`}
+        >
+          <StarIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.wishesTitle", { name })}
+        </h2>
+      </div>
+
+      <ul className="space-y-3">
+        {wishes.items.map((wish, i) => (
+          <li
+            key={`${wish.title}-${i}`}
+            className="space-y-3 rounded-xl border border-trust-100 bg-tranquil-100/50 p-4 dark:border-trust-500/30 dark:bg-trust-500/10"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-semibold text-gray-900 dark:text-gray-100">{wish.title}</p>
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  TONE_CHIP[WISH_STATUS_TONE[wish.status] ?? "gray"]
+                }`}
+              >
+                {t(`orphanWishes.status.${wish.status}`, { defaultValue: wish.status })}
+              </span>
+            </div>
+            {wish.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-300">{wish.description}</p>
+            )}
+            <GiftProgress
+              progress={wish.progress}
+              raisedLine={t("donorProfile.wishNeedRaised", {
+                raised: wish.raised_amount,
+                target: wish.target_amount,
+                currency: wish.currency,
+              })}
+            />
+            {wish.status === "open" && <DeferredGiftCta label={t("donorProfile.wishCta")} />}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** "الاحتياجات" — the gated donor needs element: like wishes, plus the coded
+ * category chip. The "ادعم" CTA renders disabled — finance is deferred. */
+function NeedsSection({
+  name,
+  needs,
+}: {
+  name: string;
+  needs: NonNullable<SponsoredOrphanProfile["needs"]>;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="card space-y-4" aria-label={t("donorProfile.needsTitle", { name })}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.sky}`}
+        >
+          <HomeIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorProfile.needsTitle", { name })}
+        </h2>
+      </div>
+
+      <ul className="space-y-3">
+        {needs.items.map((need, i) => (
+          <li
+            key={`${need.title}-${i}`}
+            className="space-y-3 rounded-xl border border-sky-200 bg-sky-100/40 p-4 dark:border-sky-400/30 dark:bg-sky-400/10"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-semibold text-gray-900 dark:text-gray-100">{need.title}</p>
+              <span className="flex flex-wrap gap-1.5">
+                {need.category && (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONE_CHIP.trust}`}
+                  >
+                    {t(`orphanNeeds.category.${need.category}`, {
+                      defaultValue: need.category,
+                    })}
+                  </span>
+                )}
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    TONE_CHIP[NEED_STATUS_TONE[need.status] ?? "gray"]
+                  }`}
+                >
+                  {t(`orphanNeeds.status.${need.status}`, { defaultValue: need.status })}
+                </span>
+              </span>
+            </div>
+            {need.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-300">{need.description}</p>
+            )}
+            <GiftProgress
+              progress={need.progress}
+              raisedLine={t("donorProfile.wishNeedRaised", {
+                raised: need.raised_amount,
+                target: need.target_amount,
+                currency: need.currency,
+              })}
+            />
+            {need.status === "open" && <DeferredGiftCta label={t("donorProfile.needCta")} />}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* H1.5) In her words — curated phrases in the child's own voice        */
 /* ------------------------------------------------------------------ */
 
@@ -1652,6 +2239,122 @@ function DoveIcon() {
 
 type MediaBlock = NonNullable<SponsoredOrphanProfile["media"]>;
 type MediaItem = MediaBlock["drawings"][number];
+
+type MediaGroupKey = "drawings" | "certificates" | "album" | "recitations";
+
+const MEDIA_GROUPS: MediaGroupKey[] = ["drawings", "certificates", "album", "recitations"];
+
+/** The media tab's chapter: the existing memory box behind a toggle-style
+ * filter bar. Each non-empty group gets a chip; selecting one narrows the
+ * box to that group, pressing it again clears the filter — deliberately a
+ * TOGGLE, never an "all" chip. The MemoryBoxSection internals are reused
+ * untouched: filtering just hands it a narrowed MediaBlock, and its
+ * own empty-group guards do the rest. */
+function MediaTabSection({
+  name,
+  media,
+  lang,
+}: {
+  name: string;
+  media: MediaBlock;
+  lang: string;
+}) {
+  const { t } = useTranslation();
+  const [filter, setFilter] = useState<MediaGroupKey | null>(null);
+
+  const present = MEDIA_GROUPS.filter((g) => media[g].length > 0);
+  const filtered: MediaBlock =
+    filter == null
+      ? media
+      : {
+          drawings: filter === "drawings" ? media.drawings : [],
+          certificates: filter === "certificates" ? media.certificates : [],
+          album: filter === "album" ? media.album : [],
+          recitations: filter === "recitations" ? media.recitations : [],
+        };
+
+  return (
+    <div className="space-y-3">
+      {present.length > 1 && (
+        <div
+          role="group"
+          aria-label={t("donorShell.mediaFilterLabel")}
+          className="flex flex-wrap gap-1.5"
+        >
+          {present.map((g) => {
+            const active = filter === g;
+            return (
+              <button
+                key={g}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setFilter(active ? null : g)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                  active
+                    ? "bg-trust-500 text-white shadow-sm"
+                    : "bg-tranquil-100 text-gray-600 hover:bg-tranquil-200 hover:text-trust-700 dark:bg-gray-700/60 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                {t(`donorShell.mediaFilters.${g}`)}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      <MemoryBoxSection name={name} media={filtered} lang={lang} />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* H2b) Occasions — derived countdowns, never fabricated child data.    */
+/* ------------------------------------------------------------------ */
+
+/** "المناسبات" — upcoming occasions as countdowns. Only calendar-derived
+ * facts appear: the academic-year start (a fixed civic date). A birthday
+ * countdown would require the child's DOB, which the donor-safe profile
+ * intentionally never exposes — so it is omitted rather than invented. */
+function OccasionsSection({ lang }: { lang: string }) {
+  const { t } = useTranslation();
+
+  // Next academic-year start (September 1st), from today.
+  const now = new Date();
+  const year = now.getMonth() >= 8 ? now.getFullYear() + 1 : now.getFullYear();
+  const academicStart = new Date(year, 8, 1);
+  const days = Math.max(
+    0,
+    Math.ceil((academicStart.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)),
+  );
+
+  return (
+    <section className="card space-y-4" aria-label={t("donorShell.occasionsTitle")}>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${TONE_CHIP.sky}`}
+        >
+          <CalendarIcon />
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("donorShell.occasionsTitle")}
+        </h2>
+      </div>
+      <div className={`rounded-xl border p-4 ${TONE_TILE.sky}`}>
+        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">
+          {t("donorShell.occasionAcademicYear")}
+        </p>
+        <p className="mt-1 text-base font-semibold text-gray-900 dark:text-gray-100">
+          {days === 0
+            ? t("donorShell.occasionToday")
+            : t("donorShell.occasionInDays", { n: days })}
+        </p>
+        <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+          {formatDate(academicStart.toISOString().slice(0, 10), lang)}
+        </p>
+      </div>
+    </section>
+  );
+}
 
 /** Format a duration in whole/partial seconds as m:ss. Returns null for a
  * missing or nonsensical value so the caller can omit it entirely. */
@@ -2095,6 +2798,16 @@ function Timeline({
 }) {
   const { t } = useTranslation();
 
+  // Group the (already newest-first) reports under year headers so long
+  // histories read as chapters of the record.
+  const byYear: { year: number; items: ReportDonorRead[] }[] = [];
+  for (const r of reports) {
+    const year = new Date(r.period_start).getFullYear();
+    const last = byYear[byYear.length - 1];
+    if (last && last.year === year) last.items.push(r);
+    else byYear.push({ year, items: [r] });
+  }
+
   return (
     <section
       id={TIMELINE_ANCHOR}
@@ -2118,13 +2831,27 @@ function Timeline({
         </div>
       )}
 
-      {!loading && reports.length > 0 && (
-        <ol className="space-y-5 border-s-2 border-sky-200 ps-6 dark:border-gray-700">
-          {reports.map((r) => (
-            <TimelineCard key={r.id} report={r} lang={lang} />
-          ))}
-        </ol>
-      )}
+      {!loading &&
+        byYear.map((group) => (
+          <div key={group.year} className="space-y-3">
+            <h3 className="flex items-center gap-2 text-sm font-semibold tabular-nums text-trust-600 dark:text-tranquil-300">
+              <span
+                aria-hidden="true"
+                className="h-px flex-1 bg-sky-200 dark:bg-gray-700"
+              />
+              {group.year}
+              <span
+                aria-hidden="true"
+                className="h-px flex-1 bg-sky-200 dark:bg-gray-700"
+              />
+            </h3>
+            <ol className="space-y-5 border-s-2 border-sky-200 ps-6 dark:border-gray-700">
+              {group.items.map((r) => (
+                <TimelineCard key={r.id} report={r} lang={lang} />
+              ))}
+            </ol>
+          </div>
+        ))}
     </section>
   );
 }
