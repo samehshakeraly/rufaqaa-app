@@ -6191,6 +6191,8 @@ export interface components {
         OrphanageCreate: {
             /** Address Details */
             address_details?: string | null;
+            /** Capacity */
+            capacity?: number | null;
             /** City */
             city?: string | null;
             /** Country Code */
@@ -6252,6 +6254,8 @@ export interface components {
         OrphanageRead: {
             /** Address Details */
             address_details?: string | null;
+            /** Capacity */
+            capacity?: number | null;
             /** City */
             city?: string | null;
             /** Code */
@@ -6358,6 +6362,8 @@ export interface components {
         OrphanageUpdate: {
             /** Address Details */
             address_details?: string | null;
+            /** Capacity */
+            capacity?: number | null;
             /** City */
             city?: string | null;
             /** Country Code */
