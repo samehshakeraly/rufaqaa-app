@@ -89,6 +89,7 @@ import { PaymentSuccessPage } from "./pages/PaymentSuccessPage";
 import { PaymentsPage } from "./pages/PaymentsPage";
 import { PublicOrphanDetailPage } from "./pages/PublicOrphanDetailPage";
 import { PublicOrphansPage } from "./pages/PublicOrphansPage";
+import { OrphanSegmentsReportPage } from "./pages/OrphanSegmentsReportPage";
 import { ReportDetailPage } from "./pages/ReportDetailPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
@@ -258,6 +259,9 @@ export function App() {
           <Route path="partners/:id" element={<PartnerDetailPage />} />
           <Route path="sponsorships" element={<SponsorshipsPage />} />
           <Route path="reports" element={<ReportsPage />} />
+          {/* Static segment wins over the :id param below (route ranking),
+              so "segments" is never parsed as a report id. */}
+          <Route path="reports/segments" element={<OrphanSegmentsReportPage />} />
           <Route path="reports/:id" element={<ReportDetailPage />} />
         </Route>
 

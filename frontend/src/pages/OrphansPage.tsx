@@ -4,26 +4,24 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 
-import {
-  EDUCATION_STAGES,
-  HEALTH_STATUSES,
-  PRIORITY_LEVELS,
-} from "@/components/NewOrphanForm";
+import { OrphanFilterControls } from "@/components/OrphanFilterControls";
 import { Pagination } from "@/components/Pagination";
 import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
 import {
-  type EducationStage,
-  type HealthStatus,
   type Orphan,
   type OrphanSort,
-  type PriorityLevel,
   approveOrphan,
   archiveOrphan,
   exportOrphansCsv,
   listOrphans,
   rejectOrphan,
 } from "@/lib/orphans";
+import {
+  type OrphanSliceFilters,
+  orphanSliceFromSearchParams,
+  orphanSliceParams,
+} from "@/lib/orphanSlice";
 import { toast } from "@/store/toasts";
 
 import "./OrphansPage.css";
@@ -32,20 +30,11 @@ const PAGE_SIZE = 20;
 
 // Every filter dimension that narrows the list. Kept as plain strings (""
 // = unset) so they slot straight into the react-query key; the listOrphans
-// call below maps them to typed params, omitting the empty ones.
-interface OrphanFilters {
+// call below maps them to typed params, omitting the empty ones. The slice
+// dimensions live in the shared OrphanSliceFilters (OrphanFilterControls).
+interface OrphanFilters extends OrphanSliceFilters {
   q: string;
   caseStatus: string;
-  educationStage: string;
-  healthStatus: string;
-  isHafiz: string;
-  minJuz: string;
-  tags: string[];
-  tagsMode: "all" | "any";
-  orphanType: string;
-  priority: string;
-  minWaitingDays: string;
-  minCompletion: string;
   sort: string;
 }
 
@@ -122,24 +111,17 @@ export function OrphansPage() {
   // Hydrate caseStatus from URL ?status=… so navigation links land on
   // the filtered view (e.g. Approvals → ?status=pending_review).
   const urlStatus = searchParams.get("status") ?? "";
-  const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  // The other filters hydrate from the URL once, on mount — deep-links from
+  // the segments report ("view orphans" on a bucket) land pre-filtered.
+  const [searchInput, setSearchInput] = useState(() => searchParams.get("q") ?? "");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchInput);
   const [caseStatus, setCaseStatus] = useState<string>(urlStatus);
-  // Segment filters (staff list only). "" means "all" for the selects; the
-  // tri-state isHafiz maps ""→undefined, "true"→true, "false"→false.
-  const [educationStage, setEducationStage] = useState<EducationStage | "">("");
-  const [healthStatus, setHealthStatus] = useState<HealthStatus | "">("");
-  const [isHafiz, setIsHafiz] = useState<"" | "true" | "false">("");
-  const [minJuz, setMinJuz] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagsMode, setTagsMode] = useState<"all" | "any">("all");
-  const [tagInput, setTagInput] = useState("");
-  // Advanced filters (staff list only). "" means "all" for the selects;
-  // the number inputs send their param only when non-empty.
-  const [orphanType, setOrphanType] = useState<"" | "single" | "double">("");
-  const [priority, setPriority] = useState<PriorityLevel | "">("");
-  const [minWaitingDays, setMinWaitingDays] = useState("");
-  const [minCompletion, setMinCompletion] = useState("");
+  // Segment + advanced filters (staff list only) — the shared slice reused
+  // by the segments report. "" means "all"; the tri-state isHafiz maps
+  // ""→undefined, "true"→true, "false"→false.
+  const [slice, setSlice] = useState<OrphanSliceFilters>(() =>
+    orphanSliceFromSearchParams(searchParams),
+  );
   // "" = unset → no sort param sent (backend auto-picks the order).
   const [sort, setSort] = useState<OrphanSort | "">("");
   const [offset, setOffset] = useState(0);
@@ -162,42 +144,13 @@ export function OrphansPage() {
   // empty page after narrowing the result set.
   useEffect(() => {
     setOffset(0);
-  }, [
-    debouncedSearch,
-    caseStatus,
-    educationStage,
-    healthStatus,
-    isHafiz,
-    minJuz,
-    tags,
-    tagsMode,
-    orphanType,
-    priority,
-    minWaitingDays,
-    minCompletion,
-    sort,
-  ]);
+  }, [debouncedSearch, caseStatus, slice, sort]);
 
   // Clear bulk selection when the filter / page changes — selected IDs
   // would otherwise refer to rows that aren't visible anymore.
   useEffect(() => {
     setSelected(new Set());
-  }, [
-    debouncedSearch,
-    caseStatus,
-    educationStage,
-    healthStatus,
-    isHafiz,
-    minJuz,
-    tags,
-    tagsMode,
-    orphanType,
-    priority,
-    minWaitingDays,
-    minCompletion,
-    sort,
-    offset,
-  ]);
+  }, [debouncedSearch, caseStatus, slice, sort, offset]);
 
   function onCaseStatusChange(next: string) {
     setCaseStatus(next);
@@ -207,35 +160,11 @@ export function OrphansPage() {
     setSearchParams(sp, { replace: true });
   }
 
-  // Tags filter chips — same Enter/comma entry UX as NewOrphanForm.
-  function addTag() {
-    const next = tagInput.trim();
-    if (!next || tags.includes(next)) {
-      setTagInput("");
-      return;
-    }
-    setTags((prev) => [...prev, next]);
-    setTagInput("");
-  }
-
-  function removeTag(tag: string) {
-    setTags((prev) => prev.filter((x) => x !== tag));
-  }
-
   const filters: OrphanFilters = {
     q: debouncedSearch,
     caseStatus,
-    educationStage,
-    healthStatus,
-    isHafiz,
-    minJuz,
-    tags,
-    tagsMode,
-    orphanType,
-    priority,
-    minWaitingDays,
-    minCompletion,
     sort,
+    ...slice,
   };
   const queryKey = orphanQueryKey(filters, offset);
   const { data, isLoading, error } = useQuery({
@@ -246,15 +175,7 @@ export function OrphansPage() {
         offset,
         ...(debouncedSearch ? { q: debouncedSearch } : {}),
         ...(caseStatus ? { case_status: caseStatus } : {}),
-        ...(educationStage ? { education_stage: educationStage } : {}),
-        ...(healthStatus ? { health_status: healthStatus } : {}),
-        ...(isHafiz !== "" ? { is_hafiz: isHafiz === "true" } : {}),
-        ...(minJuz !== "" ? { min_juz: Number(minJuz) } : {}),
-        ...(tags.length > 0 ? { tags, tags_mode: tagsMode } : {}),
-        ...(orphanType ? { orphan_type: orphanType } : {}),
-        ...(priority ? { priority } : {}),
-        ...(minWaitingDays !== "" ? { min_waiting_days: Number(minWaitingDays) } : {}),
-        ...(minCompletion !== "" ? { min_completion: Number(minCompletion) } : {}),
+        ...orphanSliceParams(slice),
         ...(sort ? { sort } : {}),
       }),
   });
@@ -386,150 +307,7 @@ export function OrphansPage() {
           {ICON_SEARCH}
         </div>
 
-        <select
-          className="ps-filter-select"
-          aria-label={t("orphans.filters.educationStage")}
-          value={educationStage}
-          onChange={(e) => setEducationStage(e.target.value as EducationStage | "")}
-        >
-          <option value="">
-            {t("orphans.filters.educationStage")}: {t("orphans.filters.all")}
-          </option>
-          {EDUCATION_STAGES.map((s) => (
-            <option key={s} value={s}>
-              {t(`orphans.profile.educationStageOptions.${s}`)}
-            </option>
-          ))}
-        </select>
-
-        <select
-          className="ps-filter-select"
-          aria-label={t("orphans.filters.healthStatus")}
-          value={healthStatus}
-          onChange={(e) => setHealthStatus(e.target.value as HealthStatus | "")}
-        >
-          <option value="">
-            {t("orphans.filters.healthStatus")}: {t("orphans.filters.all")}
-          </option>
-          {HEALTH_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {t(`orphans.profile.healthStatusOptions.${s}`)}
-            </option>
-          ))}
-        </select>
-
-        <select
-          className="ps-filter-select"
-          aria-label={t("orphans.filters.isHafiz")}
-          value={isHafiz}
-          onChange={(e) => setIsHafiz(e.target.value as "" | "true" | "false")}
-        >
-          <option value="">{t("orphans.filters.isHafizOptions.all")}</option>
-          <option value="true">{t("orphans.filters.isHafizOptions.hafiz")}</option>
-          <option value="false">{t("orphans.filters.isHafizOptions.notHafiz")}</option>
-        </select>
-
-        <input
-          type="number"
-          min={0}
-          max={30}
-          step={1}
-          className="ps-filter-input ps-filter-num"
-          aria-label={t("orphans.filters.minJuz")}
-          placeholder={t("orphans.filters.minJuz")}
-          value={minJuz}
-          onChange={(e) => setMinJuz(e.target.value)}
-        />
-
-        <div className="ps-tags-filter">
-          {tags.map((tag) => (
-            <span key={tag} className="ps-tag-chip">
-              {tag}
-              <button
-                type="button"
-                aria-label={t("orphans.profile.tags.remove", { tag })}
-                onClick={() => removeTag(tag)}
-              >
-                ✕
-              </button>
-            </span>
-          ))}
-          <input
-            aria-label={t("orphans.filters.tags")}
-            placeholder={t("orphans.filters.tags")}
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === ",") {
-                e.preventDefault();
-                addTag();
-              }
-            }}
-            onBlur={addTag}
-          />
-        </div>
-
-        <select
-          className="ps-filter-select"
-          aria-label={t("orphans.filters.tagsMode")}
-          value={tagsMode}
-          onChange={(e) => setTagsMode(e.target.value as "all" | "any")}
-        >
-          <option value="all">{t("orphans.filters.tagsModeOptions.all")}</option>
-          <option value="any">{t("orphans.filters.tagsModeOptions.any")}</option>
-        </select>
-
-        <select
-          className="ps-filter-select"
-          aria-label={t("orphans.filters.orphanType")}
-          value={orphanType}
-          onChange={(e) => setOrphanType(e.target.value as "" | "single" | "double")}
-        >
-          <option value="">
-            {t("orphans.filters.orphanType")}: {t("orphans.filters.all")}
-          </option>
-          <option value="single">{t("orphans.filters.orphanTypeOptions.single")}</option>
-          <option value="double">{t("orphans.filters.orphanTypeOptions.double")}</option>
-        </select>
-
-        <select
-          className="ps-filter-select"
-          aria-label={t("orphans.filters.priority")}
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as PriorityLevel | "")}
-        >
-          <option value="">
-            {t("orphans.filters.priority")}: {t("orphans.filters.all")}
-          </option>
-          {PRIORITY_LEVELS.map((p) => (
-            <option key={p} value={p}>
-              {t(`orphans.profile.priorityLevelOptions.${p}`)}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="number"
-          min={0}
-          step={1}
-          className="ps-filter-input ps-filter-num"
-          aria-label={t("orphans.filters.minWaitingDays")}
-          placeholder={t("orphans.filters.minWaitingDays")}
-          value={minWaitingDays}
-          onChange={(e) => setMinWaitingDays(e.target.value)}
-        />
-
-        <input
-          type="number"
-          min={0}
-          max={100}
-          step={1}
-          className="ps-filter-input ps-filter-num"
-          aria-label={t("orphans.filters.minCompletion")}
-          placeholder={t("orphans.filters.minCompletion")}
-          value={minCompletion}
-          onChange={(e) => setMinCompletion(e.target.value)}
-        />
+        <OrphanFilterControls value={slice} onChange={setSlice} />
 
         <select
           className="ps-filter-select"

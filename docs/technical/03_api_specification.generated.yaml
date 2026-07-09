@@ -5170,6 +5170,25 @@ components:
       - reason
       title: OrphanRejectPayload
       type: object
+    OrphanSegments:
+      properties:
+        buckets:
+          items:
+            $ref: '#/components/schemas/SegmentBucket'
+          title: Buckets
+          type: array
+        dimension:
+          title: Dimension
+          type: string
+        total:
+          title: Total
+          type: integer
+      required:
+      - dimension
+      - total
+      - buckets
+      title: OrphanSegments
+      type: object
     OrphanSponsorView:
       description: 'Minimal, child-safe view of the sponsorship.
 
@@ -8409,6 +8428,25 @@ components:
       - token
       - new_password
       title: ResetPasswordRequest
+      type: object
+    SegmentBucket:
+      properties:
+        count:
+          title: Count
+          type: integer
+        key:
+          title: Key
+          type: string
+        label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Label
+      required:
+      - key
+      - label
+      - count
+      title: SegmentBucket
       type: object
     SiblingCard:
       description: 'One sibling of the sponsored child. SENSITIVE: these are OTHER children
@@ -13775,6 +13813,217 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: List Orphan Name Matches
+      tags:
+      - orphans
+  /api/v1/orphans/segments:
+    get:
+      description: 'Aggregate "orphan segments" report: counts grouped by ``by``.
+
+
+        Accepts the exact same filter query params as :func:`list_orphans` (the
+
+        report is "a filtered slice, grouped by a dimension") and shares its WHERE
+
+        building — scoping included — through :func:`_apply_orphan_filters`, so a
+
+        caller always sees ``total`` equal to the filtered list''s ``total``.
+
+
+        NULL dimension values land in an explicit "unspecified" bucket, never
+
+        dropped. For the sensitive dimensions (governorate, orphanage) buckets
+
+        smaller than :data:`SEGMENT_MIN_BUCKET` collapse into "other" — see the
+
+        k-anonymity note on the constant. Buckets are ordered by count descending
+
+        with a stable tiebreak on key. Registered before ``/{orphan_id}`` so
+
+        "segments" is never parsed as an id.'
+      operationId: orphan_segments_api_v1_orphans_segments_get
+      parameters:
+      - in: query
+        name: by
+        required: true
+        schema:
+          enum:
+          - case_status
+          - education_stage
+          - health_status
+          - gender
+          - priority
+          - lives_with
+          - orphan_type
+          - hafiz
+          - juz_band
+          - age_band
+          - orphanage
+          - partner
+          - channel
+          - governorate
+          title: By
+          type: string
+      - in: query
+        name: case_status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Status
+      - in: query
+        name: channel_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Channel Id
+      - in: query
+        name: assignment_status
+        required: false
+        schema:
+          default: all
+          enum:
+          - active
+          - expired
+          - all
+          title: Assignment Status
+          type: string
+      - in: query
+        name: education_stage
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - pre_kindergarten
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            type: string
+          - type: 'null'
+          title: Education Stage
+      - in: query
+        name: health_status
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
+      - in: query
+        name: is_hafiz
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Hafiz
+      - in: query
+        name: min_juz
+        required: false
+        schema:
+          anyOf:
+          - maximum: 30
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Juz
+      - in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      - in: query
+        name: tags_mode
+        required: false
+        schema:
+          default: all
+          enum:
+          - all
+          - any
+          title: Tags Mode
+          type: string
+      - in: query
+        name: orphan_type
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - single
+            - double
+            type: string
+          - type: 'null'
+          title: Orphan Type
+      - in: query
+        name: priority
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - normal
+            - high
+            - urgent
+            type: string
+          - type: 'null'
+          title: Priority
+      - in: query
+        name: min_waiting_days
+        required: false
+        schema:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Waiting Days
+      - in: query
+        name: min_completion
+        required: false
+        schema:
+          anyOf:
+          - maximum: 100
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Completion
+      - in: query
+        name: q
+        required: false
+        schema:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Q
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanSegments'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Orphan Segments
       tags:
       - orphans
   /api/v1/orphans/{orphan_id}:

@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import case, false, func, or_, select, text
+from sqlalchemy import Select, case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
@@ -22,7 +22,8 @@ from app.core.authz import (
 )
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
-from app.models.partner import MarketingChannel
+from app.models.orphanage import Orphanage
+from app.models.partner import MarketingChannel, PartnerOrganization
 from app.models.payment import Payment
 from app.models.report import OrphanReport
 from app.models.sponsorship import Sponsorship
@@ -64,6 +65,107 @@ from app.services.orphans import (
 )
 
 router = APIRouter()
+
+
+def _apply_orphan_filters[SelectT: Select[Any]](
+    stmt: SelectT,
+    user: User,
+    *,
+    case_status: str | None = None,
+    channel_id: UUID | None = None,
+    assignment_status: Literal["active", "expired", "all"] = "all",
+    education_stage: EducationStage | None = None,
+    health_status: HealthStatus | None = None,
+    is_hafiz: bool | None = None,
+    min_juz: int | None = None,
+    tags: list[str] | None = None,
+    tags_mode: Literal["all", "any"] = "all",
+    orphan_type: Literal["single", "double"] | None = None,
+    priority: PriorityLevel | None = None,
+    min_waiting_days: int | None = None,
+    min_completion: int | None = None,
+    q: str | None = None,
+) -> SelectT:
+    """Apply the staff orphan scoping + every list filter to ``stmt``.
+
+    Single source of truth for the WHERE semantics shared by
+    :func:`list_orphans` and :func:`orphan_segments` — the segments report is
+    "the filtered list, grouped by a dimension", so the filter semantics of
+    the two endpoints must never drift apart. ``stmt`` may select anything
+    (whole rows, GROUP BY aggregates) as long as ``orphans`` is in its FROM
+    clause; this helper only adds WHERE criteria.
+
+    Scoping (explicit, never via RLS — the app's superuser connection
+    bypasses RLS): non-deleted rows in the caller's organization, and for the
+    partner-scoped roles (partner_manager / partner_staff) only the caller's
+    own جهة — a scoped user with no جهة set sees nothing. Applied here so
+    every consumer (list, count, aggregate) is tenant-safe by construction.
+    """
+    stmt = stmt.where(
+        Orphan.deleted_at.is_(None),
+        Orphan.organization_id == user.organization_id,
+    )
+    if user.role in PARTNER_SCOPED_ROLES:
+        if user.partner_organization_id is None:
+            stmt = stmt.where(false())
+        else:
+            stmt = stmt.where(Orphan.partner_organization_id == user.partner_organization_id)
+    if case_status:
+        stmt = stmt.where(Orphan.case_status == case_status)
+    if channel_id:
+        stmt = stmt.where(Orphan.assigned_to_channel_id == channel_id)
+    if assignment_status == "active":
+        stmt = stmt.where(Orphan.assignment_deadline >= datetime.now(UTC))
+    elif assignment_status == "expired":
+        stmt = stmt.where(Orphan.assignment_deadline < datetime.now(UTC))
+    if education_stage:
+        stmt = stmt.where(Orphan.education_stage == education_stage)
+    if health_status:
+        stmt = stmt.where(Orphan.health_status == health_status)
+    if is_hafiz is not None:
+        # is_hafiz is defined as quran_juz_memorized == 30 (mirror schema/public).
+        # IS DISTINCT FROM treats NULL as "not a hafiz" for the negative case.
+        stmt = stmt.where(
+            Orphan.quran_juz_memorized == 30
+            if is_hafiz
+            else Orphan.quran_juz_memorized.is_distinct_from(30)
+        )
+    if min_juz is not None:
+        stmt = stmt.where(Orphan.quran_juz_memorized >= min_juz)
+    if tags:
+        # tags is ARRAY(Text): @> ("all" — every tag present) vs && ("any" — overlap).
+        stmt = stmt.where(
+            Orphan.tags.contains(tags) if tags_mode == "all" else Orphan.tags.overlap(tags)
+        )
+    if orphan_type == "single":
+        # Father lost, mother alive. "unknown" mother_status has no explicit
+        # value and surfaces only when orphan_type is omitted.
+        stmt = stmt.where(Orphan.mother_status == "alive")
+    elif orphan_type == "double":
+        stmt = stmt.where(Orphan.mother_status == "deceased")
+    if priority:
+        stmt = stmt.where(Orphan.priority_level == priority)
+    if min_waiting_days is not None:
+        # Minimum days in the available pool. Rows that never entered it
+        # (available_since NULL) can't satisfy a waiting bound, so exclude them.
+        cutoff = datetime.now(UTC) - timedelta(days=min_waiting_days)
+        stmt = stmt.where(Orphan.available_since.is_not(None), Orphan.available_since <= cutoff)
+    if min_completion is not None:
+        stmt = stmt.where(Orphan.profile_completion_percentage >= min_completion)
+    if q:
+        # plainto_tsquery treats input as raw text and handles tokenisation,
+        # which is safer than letting users craft tsquery operators. This WHERE
+        # clause always applies; only the ORDER BY reacts to `sort`.
+        like = f"%{q}%"
+        stmt = stmt.where(
+            or_(
+                text("search_vector @@ plainto_tsquery('simple', :q)").bindparams(q=q),
+                Orphan.code.ilike(like),
+                Orphan.first_name.ilike(like),
+                Orphan.family_name.ilike(like),
+            )
+        )
+    return stmt
 
 
 def _resolve_order_by(sort: OrphanSort | None, q: str | None) -> list[Any]:
@@ -167,75 +269,27 @@ async def list_orphans(
     when `q` is supplied (the `q` text-match WHERE clause still applies). See
     :func:`_resolve_order_by` for each option's ORDER BY.
     """
-    # Explicit org scope (defense-in-depth alongside RLS).
-    stmt = select(Orphan).where(
-        Orphan.deleted_at.is_(None),
-        Orphan.organization_id == user.organization_id,
+    # Org + partner scoping and every filter live in _apply_orphan_filters,
+    # shared verbatim with GET /orphans/segments. Applied before the count so
+    # pagination matches.
+    stmt = _apply_orphan_filters(
+        select(Orphan),
+        user,
+        case_status=case_status,
+        channel_id=channel_id,
+        assignment_status=assignment_status,
+        education_stage=education_stage,
+        health_status=health_status,
+        is_hafiz=is_hafiz,
+        min_juz=min_juz,
+        tags=tags,
+        tags_mode=tags_mode,
+        orphan_type=orphan_type,
+        priority=priority,
+        min_waiting_days=min_waiting_days,
+        min_completion=min_completion,
+        q=q,
     )
-    # Partner-scoped roles (partner_manager / partner_staff) see only their own
-    # جهة's orphans — layered on the org filter, never via RLS. A scoped user
-    # with no جهة set sees nothing. Applied before the count so pagination matches.
-    if user.role in PARTNER_SCOPED_ROLES:
-        if user.partner_organization_id is None:
-            stmt = stmt.where(false())
-        else:
-            stmt = stmt.where(Orphan.partner_organization_id == user.partner_organization_id)
-    if case_status:
-        stmt = stmt.where(Orphan.case_status == case_status)
-    if channel_id:
-        stmt = stmt.where(Orphan.assigned_to_channel_id == channel_id)
-    if assignment_status == "active":
-        stmt = stmt.where(Orphan.assignment_deadline >= datetime.now(UTC))
-    elif assignment_status == "expired":
-        stmt = stmt.where(Orphan.assignment_deadline < datetime.now(UTC))
-    if education_stage:
-        stmt = stmt.where(Orphan.education_stage == education_stage)
-    if health_status:
-        stmt = stmt.where(Orphan.health_status == health_status)
-    if is_hafiz is not None:
-        # is_hafiz is defined as quran_juz_memorized == 30 (mirror schema/public).
-        # IS DISTINCT FROM treats NULL as "not a hafiz" for the negative case.
-        stmt = stmt.where(
-            Orphan.quran_juz_memorized == 30
-            if is_hafiz
-            else Orphan.quran_juz_memorized.is_distinct_from(30)
-        )
-    if min_juz is not None:
-        stmt = stmt.where(Orphan.quran_juz_memorized >= min_juz)
-    if tags:
-        # tags is ARRAY(Text): @> ("all" — every tag present) vs && ("any" — overlap).
-        stmt = stmt.where(
-            Orphan.tags.contains(tags) if tags_mode == "all" else Orphan.tags.overlap(tags)
-        )
-    if orphan_type == "single":
-        # Father lost, mother alive. "unknown" mother_status has no explicit
-        # value and surfaces only when orphan_type is omitted.
-        stmt = stmt.where(Orphan.mother_status == "alive")
-    elif orphan_type == "double":
-        stmt = stmt.where(Orphan.mother_status == "deceased")
-    if priority:
-        stmt = stmt.where(Orphan.priority_level == priority)
-    if min_waiting_days is not None:
-        # Minimum days in the available pool. Rows that never entered it
-        # (available_since NULL) can't satisfy a waiting bound, so exclude them.
-        cutoff = datetime.now(UTC) - timedelta(days=min_waiting_days)
-        stmt = stmt.where(Orphan.available_since.is_not(None), Orphan.available_since <= cutoff)
-    if min_completion is not None:
-        stmt = stmt.where(Orphan.profile_completion_percentage >= min_completion)
-    if q:
-        # plainto_tsquery treats input as raw text and handles tokenisation,
-        # which is safer than letting users craft tsquery operators. This WHERE
-        # clause always applies; only the ORDER BY (below) reacts to `sort`.
-        like = f"%{q}%"
-        stmt = stmt.where(
-            or_(
-                text("search_vector @@ plainto_tsquery('simple', :q)").bindparams(q=q),
-                Orphan.code.ilike(like),
-                Orphan.first_name.ilike(like),
-                Orphan.family_name.ilike(like),
-            )
-        )
-
     stmt = stmt.order_by(*_resolve_order_by(sort, q))
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
@@ -247,6 +301,239 @@ async def list_orphans(
         limit=limit,
         offset=offset,
     )
+
+
+# ── Segments report (GET /orphans/segments) ─────────────────────────────
+#
+# Read-only aggregate over the SAME filtered slice as list_orphans: orphan
+# counts grouped by one dimension. Output is counts only — it never returns
+# an individual orphan row, zero PII. Staff surface only: health_status and
+# any geographic dimension must never appear on donor/public surfaces.
+
+# Dimensions the report can group by. Coded dimensions group directly on an
+# orphans column; derived dimensions on a SQL CASE over one; joined dimensions
+# on a foreign key (bucket key = the id) with a display name from the joined
+# table. "governorate" is the HOUSE (dar) governorate — deliberately
+# governorate-level only, never city/district, per the child-data rule.
+SegmentDimension = Literal[
+    "case_status",
+    "education_stage",
+    "health_status",
+    "gender",
+    "priority",
+    "lives_with",
+    "orphan_type",
+    "hafiz",
+    "juz_band",
+    "age_band",
+    "orphanage",
+    "partner",
+    "channel",
+    "governorate",
+]
+
+# k-anonymity floor, applied to the SENSITIVE high-cardinality dimensions ONLY
+# (governorate, orphanage): any bucket with fewer than SEGMENT_MIN_BUCKET
+# orphans is collapsed into a single "other" bucket, so a rare location can
+# never single out a child. The low-cardinality coded dimensions are exempt —
+# their vocabularies are small, fixed and carry no location. Setting the
+# constant to 1 (or emptying the dimension set) disables the collapse.
+SEGMENT_MIN_BUCKET = 3
+_SENSITIVE_SEGMENT_DIMENSIONS: frozenset[str] = frozenset({"governorate", "orphanage"})
+
+
+class SegmentBucket(BaseModel):
+    key: str  # coded value, or the id for joined dims
+    label: str | None  # display name for joined dims; None for coded (frontend i18n-maps)
+    count: int
+
+
+class OrphanSegments(BaseModel):
+    dimension: str
+    total: int
+    buckets: list[SegmentBucket]
+
+
+def _segment_grouping(by: SegmentDimension) -> tuple[Any, Any, tuple[Any, Any] | None]:
+    """The pieces of the GROUP BY for one dimension: ``(key_expr, label_expr,
+    join)``.
+
+    ``key_expr`` becomes the bucket key (NULL ⇒ the "unspecified" bucket),
+    ``label_expr`` the display label for joined dimensions (None for coded
+    ones — the frontend i18n-maps those keys), and ``join`` an optional
+    ``(target, onclause)`` pair OUTER-joined so orphans without the related
+    row are never dropped from the report."""
+    if by == "case_status":
+        return Orphan.case_status, None, None
+    if by == "education_stage":
+        return Orphan.education_stage, None, None
+    if by == "health_status":
+        return Orphan.health_status, None, None
+    if by == "gender":
+        return Orphan.gender, None, None
+    if by == "priority":
+        return Orphan.priority_level, None, None
+    if by == "lives_with":
+        return Orphan.lives_with, None, None
+    if by == "orphan_type":
+        # Derived from mother_status (the father is always deceased): mother
+        # alive ⇒ paternal ("single") orphan, deceased ⇒ "double" orphan.
+        # Mirrors the orphan_type filter, which has no "unknown" value.
+        key = case(
+            (Orphan.mother_status == "alive", "single"),
+            (Orphan.mother_status == "deceased", "double"),
+            else_="unknown",
+        )
+        return key, None, None
+    if by == "hafiz":
+        # Same definition as the is_hafiz filter: all 30 juz' memorised.
+        # NULL falls into the CASE else ⇒ "no", matching IS DISTINCT FROM 30.
+        return case((Orphan.quran_juz_memorized == 30, "yes"), else_="no"), None, None
+    if by == "juz_band":
+        # NULL is banded with 0: "nothing recorded" and "none memorised" are
+        # the same band for reporting purposes.
+        key = case(
+            (func.coalesce(Orphan.quran_juz_memorized, 0) == 0, "0"),
+            (Orphan.quran_juz_memorized <= 9, "1-9"),
+            (Orphan.quran_juz_memorized <= 19, "10-19"),
+            (Orphan.quran_juz_memorized <= 29, "20-29"),
+            else_="30",
+        )
+        return key, None, None
+    if by == "age_band":
+        # Whole years as of today, computed in-query (date_of_birth is NOT
+        # NULL, so every orphan lands in exactly one band).
+        age_years = func.date_part("year", func.age(Orphan.date_of_birth))
+        key = case(
+            (age_years <= 5, "0-5"),
+            (age_years <= 11, "6-11"),
+            (age_years <= 14, "12-14"),
+            (age_years <= 17, "15-17"),
+            else_="18+",
+        )
+        return key, None, None
+    if by == "orphanage":
+        return (
+            Orphan.orphanage_id,
+            Orphanage.name_ar,
+            (Orphanage, Orphan.orphanage_id == Orphanage.id),
+        )
+    if by == "partner":
+        return (
+            Orphan.partner_organization_id,
+            PartnerOrganization.name_ar,
+            (PartnerOrganization, Orphan.partner_organization_id == PartnerOrganization.id),
+        )
+    if by == "channel":
+        return (
+            Orphan.assigned_to_channel_id,
+            MarketingChannel.name_ar,
+            (MarketingChannel, Orphan.assigned_to_channel_id == MarketingChannel.id),
+        )
+    # by == "governorate" — the HOUSE governorate via the dar (never the
+    # family address, and never city/district). The name is both the key and
+    # its own display label.
+    return (
+        Orphanage.governorate,
+        Orphanage.governorate,
+        (Orphanage, Orphan.orphanage_id == Orphanage.id),
+    )
+
+
+def _collapse_small_buckets(buckets: list[SegmentBucket]) -> list[SegmentBucket]:
+    """Fold every bucket below the k-anonymity floor into one "other" bucket.
+
+    Counts move, they never disappear — the report total stays equal to the
+    filtered orphan count."""
+    kept = [b for b in buckets if b.count >= SEGMENT_MIN_BUCKET]
+    small_total = sum(b.count for b in buckets if b.count < SEGMENT_MIN_BUCKET)
+    if small_total:
+        kept.append(SegmentBucket(key="other", label=None, count=small_total))
+    return kept
+
+
+@router.get("/segments", response_model=OrphanSegments)
+async def orphan_segments(
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+    by: SegmentDimension,
+    case_status: str | None = None,
+    channel_id: UUID | None = None,
+    assignment_status: Literal["active", "expired", "all"] = "all",
+    education_stage: EducationStage | None = None,
+    health_status: HealthStatus | None = None,
+    is_hafiz: bool | None = None,
+    min_juz: Annotated[int | None, Query(ge=0, le=30)] = None,
+    tags: Annotated[list[str] | None, Query()] = None,
+    tags_mode: Literal["all", "any"] = "all",
+    orphan_type: Literal["single", "double"] | None = None,
+    priority: PriorityLevel | None = None,
+    min_waiting_days: Annotated[int | None, Query(ge=0)] = None,
+    min_completion: Annotated[int | None, Query(ge=0, le=100)] = None,
+    q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
+) -> OrphanSegments:
+    """Aggregate "orphan segments" report: counts grouped by ``by``.
+
+    Accepts the exact same filter query params as :func:`list_orphans` (the
+    report is "a filtered slice, grouped by a dimension") and shares its WHERE
+    building — scoping included — through :func:`_apply_orphan_filters`, so a
+    caller always sees ``total`` equal to the filtered list's ``total``.
+
+    NULL dimension values land in an explicit "unspecified" bucket, never
+    dropped. For the sensitive dimensions (governorate, orphanage) buckets
+    smaller than :data:`SEGMENT_MIN_BUCKET` collapse into "other" — see the
+    k-anonymity note on the constant. Buckets are ordered by count descending
+    with a stable tiebreak on key. Registered before ``/{orphan_id}`` so
+    "segments" is never parsed as an id.
+    """
+    key_expr, label_expr, join = _segment_grouping(by)
+    columns: list[Any] = [key_expr.label("key")]
+    if label_expr is not None:
+        columns.append(label_expr.label("label"))
+    columns.append(func.count().label("count"))
+
+    stmt = select(*columns).select_from(Orphan)
+    if join is not None:
+        target, onclause = join
+        stmt = stmt.outerjoin(target, onclause)
+    stmt = _apply_orphan_filters(
+        stmt,
+        user,
+        case_status=case_status,
+        channel_id=channel_id,
+        assignment_status=assignment_status,
+        education_stage=education_stage,
+        health_status=health_status,
+        is_hafiz=is_hafiz,
+        min_juz=min_juz,
+        tags=tags,
+        tags_mode=tags_mode,
+        orphan_type=orphan_type,
+        priority=priority,
+        min_waiting_days=min_waiting_days,
+        min_completion=min_completion,
+        q=q,
+    )
+    stmt = stmt.group_by(key_expr) if label_expr is None else stmt.group_by(key_expr, label_expr)
+    rows = (await db.execute(stmt)).all()
+
+    buckets: list[SegmentBucket] = []
+    for row in rows:
+        raw_key = row[0]
+        label = row[1] if label_expr is not None and raw_key is not None else None
+        buckets.append(
+            SegmentBucket(
+                key="unspecified" if raw_key is None else str(raw_key),
+                label=str(label) if label is not None else None,
+                count=int(row[-1]),
+            )
+        )
+
+    if by in _SENSITIVE_SEGMENT_DIMENSIONS:
+        buckets = _collapse_small_buckets(buckets)
+
+    buckets.sort(key=lambda b: (-b.count, b.key))
+    return OrphanSegments(dimension=by, total=sum(b.count for b in buckets), buckets=buckets)
 
 
 # Roles that may register an orphan via this staff endpoint: the partner-scoped
