@@ -221,6 +221,65 @@ export async function listOrphans(params?: {
   return data;
 }
 
+// Grouping dimensions for the staff segments report — mirrors the backend
+// `SegmentDimension` Literal / schema.gen.ts exactly. Coded dimensions group
+// on an orphans column, derived ones on an in-query CASE, joined ones on a
+// foreign key (bucket key = the id, label = the display name). `governorate`
+// is the HOUSE (dar) governorate — governorate-level only, never city.
+export type SegmentDimension =
+  | "case_status"
+  | "education_stage"
+  | "health_status"
+  | "gender"
+  | "priority"
+  | "lives_with"
+  | "orphan_type"
+  | "hafiz"
+  | "juz_band"
+  | "age_band"
+  | "orphanage"
+  | "partner"
+  | "channel"
+  | "governorate";
+
+/** One report bucket. `key` is the coded value (or the id for joined
+ * dimensions, or the special "unspecified" / "other" buckets); `label` is the
+ * display name for joined dimensions and null for coded ones (the frontend
+ * i18n-maps those). Mirrors schema.gen.ts SegmentBucket. */
+export interface SegmentBucket {
+  key: string;
+  label: string | null;
+  count: number;
+}
+
+/** Mirrors schema.gen.ts OrphanSegments. Counts only — never orphan rows. */
+export interface OrphanSegments {
+  dimension: string;
+  total: number;
+  buckets: SegmentBucket[];
+}
+
+/** Aggregate "orphan segments" report (staff surface): orphan counts grouped
+ * by `by`, over the exact same filter params as {@link listOrphans} — the
+ * report is "a filtered slice, grouped by a dimension". */
+export async function getOrphanSegments(
+  params: { by: SegmentDimension } & Omit<
+    NonNullable<Parameters<typeof listOrphans>[0]>,
+    "limit" | "offset" | "sort"
+  >,
+): Promise<OrphanSegments> {
+  // Same hand-built query string as listOrphans so `tags` goes out as
+  // repeated entries (?tags=a&tags=b) — FastAPI binds those to list[str].
+  const search = new URLSearchParams();
+  const { tags, ...rest } = params;
+  for (const [key, value] of Object.entries(rest)) {
+    if (value !== undefined) search.append(key, String(value));
+  }
+  for (const tag of tags ?? []) search.append("tags", tag);
+  const { data } = await api.get<OrphanSegments>("/orphans/segments", { params: search });
+  return data;
+}
+
 export async function createOrphan(payload: OrphanCreateInput): Promise<Orphan> {
   const { data } = await api.post<Orphan>("/orphans", payload);
   return data;

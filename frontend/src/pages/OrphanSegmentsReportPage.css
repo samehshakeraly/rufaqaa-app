@@ -1,0 +1,117 @@
+/* ═══════════════════════════════════════════════════════════════
+   Orphan Segments Report — scoped styles.
+   Rides on the PS-02 token scope (.ps-orphans, OrphansPage.css) so the
+   shared filter bar / table render identically; only the report-specific
+   pieces (summary cards, bar list, privacy note) are defined here,
+   prefixed `osr-`. Logical properties only (RTL-first).
+   ═══════════════════════════════════════════════════════════════ */
+
+.osr-by-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+.osr-privacy-note {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  background: var(--info-50);
+  border: 1px solid var(--info-100);
+  border-radius: var(--radius-md);
+  color: var(--info-700);
+  font-size: 13px;
+}
+
+/* ───────────── Summary cards ───────────── */
+.osr-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.osr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 14px 16px;
+}
+.osr-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+.osr-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.osr-card-sub {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* ───────────── Horizontal bar chart ───────────── */
+.osr-chart {
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.osr-chart h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+.osr-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.osr-bar-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.osr-bar-label {
+  color: var(--gray-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.osr-bar-value {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+.osr-bar-track {
+  block-size: 8px;
+  inline-size: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+}
+.osr-bar-fill {
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  background: var(--trust-400);
+  transition: inline-size var(--transition);
+}
+
+/* ───────────── Detail table extras ───────────── */
+.osr-view-link {
+  color: var(--trust-500);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+}
+.osr-view-link:hover {
+  color: var(--trust-700);
+  text-decoration: underline;
+}

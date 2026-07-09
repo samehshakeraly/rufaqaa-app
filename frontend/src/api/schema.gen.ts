@@ -1935,6 +1935,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/segments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Orphan Segments
+         * @description Aggregate "orphan segments" report: counts grouped by ``by``.
+         *
+         *     Accepts the exact same filter query params as :func:`list_orphans` (the
+         *     report is "a filtered slice, grouped by a dimension") and shares its WHERE
+         *     building — scoping included — through :func:`_apply_orphan_filters`, so a
+         *     caller always sees ``total`` equal to the filtered list's ``total``.
+         *
+         *     NULL dimension values land in an explicit "unspecified" bucket, never
+         *     dropped. For the sensitive dimensions (governorate, orphanage) buckets
+         *     smaller than :data:`SEGMENT_MIN_BUCKET` collapse into "other" — see the
+         *     k-anonymity note on the constant. Buckets are ordered by count descending
+         *     with a stable tiebreak on key. Registered before ``/{orphan_id}`` so
+         *     "segments" is never parsed as an id.
+         */
+        get: operations["orphan_segments_api_v1_orphans_segments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/{orphan_id}": {
         parameters: {
             query?: never;
@@ -6061,6 +6093,15 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** OrphanSegments */
+        OrphanSegments: {
+            /** Buckets */
+            buckets: components["schemas"]["SegmentBucket"][];
+            /** Dimension */
+            dimension: string;
+            /** Total */
+            total: number;
+        };
         /**
          * OrphanSponsorView
          * @description Minimal, child-safe view of the sponsorship.
@@ -7705,6 +7746,15 @@ export interface components {
             new_password: string;
             /** Token */
             token: string;
+        };
+        /** SegmentBucket */
+        SegmentBucket: {
+            /** Count */
+            count: number;
+            /** Key */
+            key: string;
+            /** Label */
+            label: string | null;
         };
         /**
          * SiblingCard
@@ -11765,6 +11815,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrphanNameMatch"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    orphan_segments_api_v1_orphans_segments_get: {
+        parameters: {
+            query: {
+                by: "case_status" | "education_stage" | "health_status" | "gender" | "priority" | "lives_with" | "orphan_type" | "hafiz" | "juz_band" | "age_band" | "orphanage" | "partner" | "channel" | "governorate";
+                case_status?: string | null;
+                channel_id?: string | null;
+                assignment_status?: "active" | "expired" | "all";
+                education_stage?: ("pre_kindergarten" | "kindergarten" | "primary" | "preparatory" | "secondary") | null;
+                health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+                is_hafiz?: boolean | null;
+                min_juz?: number | null;
+                tags?: string[] | null;
+                tags_mode?: "all" | "any";
+                orphan_type?: ("single" | "double") | null;
+                priority?: ("normal" | "high" | "urgent") | null;
+                min_waiting_days?: number | null;
+                min_completion?: number | null;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanSegments"];
                 };
             };
             /** @description Validation Error */
