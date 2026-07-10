@@ -22,6 +22,7 @@ class OrganizationRead(BaseModel):
     status: str
     subscription_plan: str | None
     subscription_expires_at: datetime | None
+    report_cadence_days: int | None = Field(default=None, ge=1, le=366)
     created_at: datetime
     updated_at: datetime
 
@@ -39,3 +40,5 @@ class OrganizationUpdate(BaseModel):
     default_currency: str | None = Field(default=None, min_length=3, max_length=3)
     logo_url: str | None = Field(default=None, max_length=500)
     primary_color: str | None = Field(default=None, pattern=r"^#[0-9A-Fa-f]{6}$")
+    # None (or omitted) means "use the platform default cadence".
+    report_cadence_days: int | None = Field(default=None, ge=1, le=366)

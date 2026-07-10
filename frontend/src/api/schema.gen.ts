@@ -5747,6 +5747,8 @@ export interface components {
             org_type: string;
             /** Primary Color */
             primary_color: string;
+            /** Report Cadence Days */
+            report_cadence_days?: number | null;
             /** Status */
             status: string;
             /** Subscription Expires At */
@@ -5782,6 +5784,8 @@ export interface components {
             name_en?: string | null;
             /** Primary Color */
             primary_color?: string | null;
+            /** Report Cadence Days */
+            report_cadence_days?: number | null;
             /** Timezone */
             timezone?: string | null;
         };

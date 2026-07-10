@@ -34,6 +34,7 @@ export function OrganizationSettingsCard() {
         default_language: data.default_language,
         default_currency: data.default_currency,
         primary_color: data.primary_color,
+        report_cadence_days: data.report_cadence_days,
       });
     }
   }, [data]);
@@ -137,6 +138,27 @@ export function OrganizationSettingsCard() {
               setForm({ ...form, default_currency: e.target.value.toUpperCase() })
             }
           />
+        </Field>
+        <Field label={t("settings.reportCadence")}>
+          <input
+            type="number"
+            className="input"
+            min={1}
+            max={366}
+            placeholder="90"
+            value={form.report_cadence_days ?? ""}
+            disabled={disabled}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                report_cadence_days:
+                  e.target.value === "" ? null : Number(e.target.value),
+              })
+            }
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            {t("settings.reportCadenceHelp")}
+          </p>
         </Field>
         <Field label={t("settings.primaryColor")}>
           <div className="flex items-center gap-2">

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import CheckConstraint, String, func
+from sqlalchemy import CheckConstraint, Integer, String, func
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -32,6 +32,12 @@ class Organization(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     subscription_plan: Mapped[str | None] = mapped_column(String(20), default="free")
     subscription_expires_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
+
+    # Days between successive per-child reports. NULL means "use the
+    # platform default" (DEFAULT_REPORT_CADENCE_DAYS). The DB CHECK
+    # (organizations_report_cadence_days_check) mirrors the schema-level
+    # 1..366 bounds.
+    report_cadence_days: Mapped[int | None] = mapped_column(Integer)
 
     settings: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
 
