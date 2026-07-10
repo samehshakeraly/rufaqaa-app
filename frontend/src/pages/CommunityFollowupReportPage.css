@@ -1,0 +1,244 @@
+/* ═══════════════════════════════════════════════════════════════
+   Community Follow-up Report — scoped styles.
+   Rides on the PS-02 token scope (.ps-orphans, OrphansPage.css) like the
+   segments and house reports, so the shared page shell renders
+   identically; only the report-specific pieces (KPI cards, the
+   geography × follow-up rows, tier badges, breakdown bars, alerts) are
+   defined here, prefixed `cfr-`. Logical properties only (RTL-first).
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ───────────── Alerts ───────────── */
+.cfr-alert {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+}
+.cfr-alert-danger {
+  background: var(--danger-50);
+  border: 1px solid var(--danger-100);
+  color: var(--danger-700);
+}
+.cfr-alert-warn {
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  color: var(--warning-700);
+}
+
+/* ───────────── KPI cards ───────────── */
+.cfr-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.cfr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 14px 16px;
+}
+.cfr-card-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+.cfr-card-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.cfr-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.cfr-card-sub {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* ───────────── Geography × follow-up panel ───────────── */
+.cfr-geo {
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.cfr-geo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.cfr-geo-head h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+.cfr-sort {
+  display: inline-flex;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.cfr-sort-btn {
+  border: none;
+  background: white;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.cfr-sort-btn-active {
+  background: var(--trust-500);
+  color: white;
+}
+.cfr-gov-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cfr-gov-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.cfr-gov-name {
+  color: var(--gray-700);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cfr-gov-figures {
+  margin-inline-start: auto;
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+.cfr-tier {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.cfr-tier-good {
+  background: var(--success-50);
+  border: 1px solid var(--success-100);
+  color: var(--success-700);
+}
+.cfr-tier-ok {
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  color: var(--warning-700);
+}
+.cfr-tier-low {
+  background: var(--danger-50);
+  border: 1px solid var(--danger-100);
+  color: var(--danger-700);
+}
+/* Bar anatomy: the light track is the whole panel width, the tinted
+   segment the governorate's headcount relative to the largest one, and
+   the solid inner segment its reported share of that headcount. */
+.cfr-gov-track {
+  block-size: 10px;
+  inline-size: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+}
+.cfr-gov-count {
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--trust-300);
+  transition: inline-size var(--transition);
+}
+.cfr-gov-reported {
+  block-size: 100%;
+  background: var(--trust-600);
+  transition: inline-size var(--transition);
+}
+
+/* ───────────── Breakdown panels ───────────── */
+.cfr-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.cfr-panel {
+  padding: 16px;
+}
+.cfr-panel h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+.cfr-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cfr-bar-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.cfr-bar-label {
+  color: var(--gray-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cfr-bar-value {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+.cfr-bar-track {
+  block-size: 8px;
+  inline-size: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+}
+.cfr-bar-fill {
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  background: var(--trust-400);
+  transition: inline-size var(--transition);
+}
+
+/* ───────────── Privacy note ───────────── */
+.cfr-privacy {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--gray-500);
+}

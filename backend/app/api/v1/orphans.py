@@ -1,7 +1,8 @@
 import csv
 import io
-from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any, Literal
+from collections.abc import Callable
+from datetime import UTC, date, datetime, timedelta
+from typing import Annotated, Any, Literal, Protocol
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -20,7 +21,9 @@ from app.core.authz import (
     partner_scope_hides,
     require_roles,
 )
+from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_WINDOW_DAYS
 from app.core.exceptions import NotFound
+from app.models.family import Family
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.partner import MarketingChannel, PartnerOrganization
@@ -440,16 +443,50 @@ def _segment_grouping(by: SegmentDimension) -> tuple[Any, Any, tuple[Any, Any] |
     )
 
 
-def _collapse_small_buckets(buckets: list[SegmentBucket]) -> list[SegmentBucket]:
+class _CountedBucket(Protocol):
+    count: int
+
+
+def _collapse_small_buckets[BucketT: _CountedBucket](
+    buckets: list[BucketT],
+    make_other: Callable[[list[BucketT]], BucketT],
+    *,
+    exempt: Callable[[BucketT], bool] | None = None,
+) -> list[BucketT]:
     """Fold every bucket below the k-anonymity floor into one "other" bucket.
 
     Counts move, they never disappear — the report total stays equal to the
-    filtered orphan count."""
-    kept = [b for b in buckets if b.count >= SEGMENT_MIN_BUCKET]
-    small_total = sum(b.count for b in buckets if b.count < SEGMENT_MIN_BUCKET)
-    if small_total:
-        kept.append(SegmentBucket(key="other", label=None, count=small_total))
+    filtered orphan count. Generic over the bucket model so a report can carry
+    extra tallies through the collapse: ``make_other`` builds the merged
+    bucket from the small ones (summing whatever fields the model has), and
+    ``exempt`` marks buckets that must never merge regardless of size (the
+    community report keeps "unspecified" apart from "other" — "no governorate
+    recorded" and "governorates too small to show" mean different things)."""
+
+    def is_small(b: BucketT) -> bool:
+        return b.count < SEGMENT_MIN_BUCKET and (exempt is None or not exempt(b))
+
+    kept = [b for b in buckets if not is_small(b)]
+    small = [b for b in buckets if is_small(b)]
+    if small:
+        kept.append(make_other(small))
     return kept
+
+
+def _breakdown_buckets(rows: list[Any]) -> list[SegmentBucket]:
+    """(key, count) GROUP BY rows → SegmentBuckets, NULL keyed 'unspecified',
+    ordered by count descending with a stable tiebreak on key (the exact
+    /orphans/segments contract, so the frontend renders both the same way)."""
+    buckets = [
+        SegmentBucket(
+            key="unspecified" if row[0] is None else str(row[0]),
+            label=None,
+            count=int(row[1]),
+        )
+        for row in rows
+    ]
+    buckets.sort(key=lambda b: (-b.count, b.key))
+    return buckets
 
 
 @router.get("/segments", response_model=OrphanSegments)
@@ -530,10 +567,242 @@ async def orphan_segments(
         )
 
     if by in _SENSITIVE_SEGMENT_DIMENSIONS:
-        buckets = _collapse_small_buckets(buckets)
+        buckets = _collapse_small_buckets(
+            buckets,
+            lambda small: SegmentBucket(key="other", label=None, count=sum(b.count for b in small)),
+        )
 
     buckets.sort(key=lambda b: (-b.count, b.key))
     return OrphanSegments(dimension=by, total=sum(b.count for b in buckets), buckets=buckets)
+
+
+# ── Community follow-up report (GET /orphans/community-report) ──────────
+#
+# Read-only aggregate over the OUT-OF-HOME orphans — children living with
+# family (``orphanage_id IS NULL``, the exact complement of a dar's
+# residents per the orphanage_self definition). Counts and averages only,
+# zero PII, staff surface only. Mirrors the /orphans/segments posture:
+# response models colocated here, the same filter params, the same
+# k-anonymity floor on the geographic dimension. Unlike /segments the
+# geographic grouping is the FAMILY governorate (via Orphan.family_id →
+# Family), never the dar's — these children have no dar.
+
+
+class GovernorateFollowup(BaseModel):
+    # The family governorate name; "unspecified" for children with no family
+    # or no recorded governorate, "other" for the k-anonymity collapse of
+    # sub-threshold governorates (see SEGMENT_MIN_BUCKET).
+    governorate: str
+    count: int
+    reported: int  # of count, how many reported within the current window
+
+
+class CommunityReportsWindow(BaseModel):
+    window_days: int
+    reported: int
+    not_reported: int
+
+
+class CommunitySponsorshipCoverage(BaseModel):
+    sponsored: int
+    unsponsored: int
+    sponsored_pct: int | None  # None when the slice is empty
+
+
+class CommunityFileCompletion(BaseModel):
+    avg_completion: int | None  # None when the slice is empty
+    incomplete_count: int  # children below FILE_INCOMPLETE_THRESHOLD
+
+
+class CommunityFollowupReport(BaseModel):
+    total: int
+    governorates: list[GovernorateFollowup]
+    reports_window: CommunityReportsWindow
+    lives_with: list[SegmentBucket]
+    health: list[SegmentBucket]
+    sponsorship: CommunitySponsorshipCoverage
+    files: CommunityFileCompletion
+
+
+@router.get("/community-report", response_model=CommunityFollowupReport)
+async def community_followup_report(
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*STAFF_ROLES))],
+    case_status: str | None = None,
+    channel_id: UUID | None = None,
+    assignment_status: Literal["active", "expired", "all"] = "all",
+    education_stage: EducationStage | None = None,
+    health_status: HealthStatus | None = None,
+    is_hafiz: bool | None = None,
+    min_juz: Annotated[int | None, Query(ge=0, le=30)] = None,
+    tags: Annotated[list[str] | None, Query()] = None,
+    tags_mode: Literal["all", "any"] = "all",
+    orphan_type: Literal["single", "double"] | None = None,
+    priority: PriorityLevel | None = None,
+    min_waiting_days: Annotated[int | None, Query(ge=0)] = None,
+    min_completion: Annotated[int | None, Query(ge=0, le=100)] = None,
+    q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
+) -> CommunityFollowupReport:
+    """Aggregate "community follow-up" report over the out-of-home orphans.
+
+    A community orphan lives with family, not in a dar: ``orphanage_id IS
+    NULL`` (the ``orphanage_self`` definition of a family placement) — the
+    exact complement of the house report's residents. Accepts the same
+    optional filter params as :func:`list_orphans` and shares its WHERE
+    building — org + جهة scoping included — through
+    :func:`_apply_orphan_filters`, then restricts to the out-of-home slice.
+
+    The geographic breakdown groups by the FAMILY governorate (outer join on
+    ``family_id``, so children with no family land in "unspecified" rather
+    than dropping out) and reports, per governorate, the headcount AND how
+    many of those children have reported within the current window (the
+    house-report definition verbatim: at least one non-draft report with
+    ``period_end`` inside the last :data:`REPORT_WINDOW_DAYS` days).
+    Governorate is a sensitive child-data dimension, so sub-threshold
+    buckets collapse into "other" — both tallies carried, never lost — while
+    "unspecified" stays its own bucket whatever its size. Buckets are
+    ordered by count descending with a stable tiebreak on key. Registered
+    before ``/{orphan_id}`` so "community-report" is never parsed as an id.
+    """
+
+    def community_slice[SelectT: Select[Any]](stmt: SelectT) -> SelectT:
+        """The report's slice: the shared scoping + list filters, restricted
+        to family placements. Every aggregate below runs through this one
+        builder so the figures can never drift apart."""
+        return _apply_orphan_filters(
+            stmt,
+            user,
+            case_status=case_status,
+            channel_id=channel_id,
+            assignment_status=assignment_status,
+            education_stage=education_stage,
+            health_status=health_status,
+            is_hafiz=is_hafiz,
+            min_juz=min_juz,
+            tags=tags,
+            tags_mode=tags_mode,
+            orphan_type=orphan_type,
+            priority=priority,
+            min_waiting_days=min_waiting_days,
+            min_completion=min_completion,
+            q=q,
+        ).where(Orphan.orphanage_id.is_(None))
+
+    # One pass over the slice for every scalar aggregate: headcount,
+    # sponsorship coverage and the two file-completion figures.
+    totals = (
+        await db.execute(
+            community_slice(
+                select(
+                    func.count(),
+                    func.count().filter(Orphan.case_status == "sponsored"),
+                    func.avg(Orphan.profile_completion_percentage),
+                    func.count().filter(
+                        Orphan.profile_completion_percentage < FILE_INCOMPLETE_THRESHOLD
+                    ),
+                ).select_from(Orphan)
+            )
+        )
+    ).one()
+    total = int(totals[0])
+    sponsored = int(totals[1])
+    avg_completion = int(round(totals[2])) if totals[2] is not None else None
+    incomplete_count = int(totals[3])
+
+    # A child has "reported" when at least one non-draft report ends within
+    # the window (the house-report definition). EXISTS rather than a joined
+    # DISTINCT count so the same correlated predicate can also feed the
+    # per-governorate FILTER below — several reports still count the child
+    # once either way.
+    window_start = date.today() - timedelta(days=REPORT_WINDOW_DAYS)
+    reported_in_window = (
+        select(OrphanReport.id)
+        .where(
+            OrphanReport.orphan_id == Orphan.id,
+            OrphanReport.status != "draft",
+            OrphanReport.period_end >= window_start,
+        )
+        .exists()
+    )
+    reported = int(
+        await db.scalar(
+            community_slice(select(func.count()).select_from(Orphan).where(reported_in_window))
+        )
+        or 0
+    )
+
+    gov_rows = (
+        await db.execute(
+            community_slice(
+                select(
+                    Family.governorate,
+                    func.count(),
+                    func.count().filter(reported_in_window),
+                )
+                .select_from(Orphan)
+                .outerjoin(Family, Orphan.family_id == Family.id)
+                .group_by(Family.governorate)
+            )
+        )
+    ).all()
+    governorates = [
+        GovernorateFollowup(
+            governorate="unspecified" if row[0] is None else str(row[0]),
+            count=int(row[1]),
+            reported=int(row[2]),
+        )
+        for row in gov_rows
+    ]
+    governorates = _collapse_small_buckets(
+        governorates,
+        lambda small: GovernorateFollowup(
+            governorate="other",
+            count=sum(b.count for b in small),
+            reported=sum(b.reported for b in small),
+        ),
+        exempt=lambda b: b.governorate == "unspecified",
+    )
+    governorates.sort(key=lambda b: (-b.count, b.governorate))
+
+    lives_with_rows = (
+        await db.execute(
+            community_slice(
+                select(Orphan.lives_with, func.count())
+                .select_from(Orphan)
+                .group_by(Orphan.lives_with)
+            )
+        )
+    ).all()
+    health_rows = (
+        await db.execute(
+            community_slice(
+                select(Orphan.health_status, func.count())
+                .select_from(Orphan)
+                .group_by(Orphan.health_status)
+            )
+        )
+    ).all()
+
+    return CommunityFollowupReport(
+        total=total,
+        governorates=governorates,
+        reports_window=CommunityReportsWindow(
+            window_days=REPORT_WINDOW_DAYS,
+            reported=reported,
+            not_reported=total - reported,
+        ),
+        lives_with=_breakdown_buckets(list(lives_with_rows)),
+        health=_breakdown_buckets(list(health_rows)),
+        sponsorship=CommunitySponsorshipCoverage(
+            sponsored=sponsored,
+            unsponsored=total - sponsored,
+            sponsored_pct=round(sponsored * 100 / total) if total else None,
+        ),
+        files=CommunityFileCompletion(
+            avg_completion=avg_completion,
+            incomplete_count=incomplete_count,
+        ),
+    )
 
 
 # Roles that may register an orphan via this staff endpoint: the partner-scoped

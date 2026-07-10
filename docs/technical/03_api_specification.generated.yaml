@@ -556,6 +556,93 @@ components:
       - monthly_achieved_amount
       title: ChannelProgress
       type: object
+    CommunityFileCompletion:
+      properties:
+        avg_completion:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Avg Completion
+        incomplete_count:
+          title: Incomplete Count
+          type: integer
+      required:
+      - avg_completion
+      - incomplete_count
+      title: CommunityFileCompletion
+      type: object
+    CommunityFollowupReport:
+      properties:
+        files:
+          $ref: '#/components/schemas/CommunityFileCompletion'
+        governorates:
+          items:
+            $ref: '#/components/schemas/GovernorateFollowup'
+          title: Governorates
+          type: array
+        health:
+          items:
+            $ref: '#/components/schemas/SegmentBucket'
+          title: Health
+          type: array
+        lives_with:
+          items:
+            $ref: '#/components/schemas/SegmentBucket'
+          title: Lives With
+          type: array
+        reports_window:
+          $ref: '#/components/schemas/CommunityReportsWindow'
+        sponsorship:
+          $ref: '#/components/schemas/CommunitySponsorshipCoverage'
+        total:
+          title: Total
+          type: integer
+      required:
+      - total
+      - governorates
+      - reports_window
+      - lives_with
+      - health
+      - sponsorship
+      - files
+      title: CommunityFollowupReport
+      type: object
+    CommunityReportsWindow:
+      properties:
+        not_reported:
+          title: Not Reported
+          type: integer
+        reported:
+          title: Reported
+          type: integer
+        window_days:
+          title: Window Days
+          type: integer
+      required:
+      - window_days
+      - reported
+      - not_reported
+      title: CommunityReportsWindow
+      type: object
+    CommunitySponsorshipCoverage:
+      properties:
+        sponsored:
+          title: Sponsored
+          type: integer
+        sponsored_pct:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sponsored Pct
+        unsponsored:
+          title: Unsponsored
+          type: integer
+      required:
+      - sponsored
+      - unsponsored
+      - sponsored_pct
+      title: CommunitySponsorshipCoverage
+      type: object
     CountryFieldFlags:
       description: Which intake sections/fields a country's profile turns on.
       properties:
@@ -1978,6 +2065,23 @@ components:
           title: Sent
           type: boolean
       title: ForgotPasswordResponse
+      type: object
+    GovernorateFollowup:
+      properties:
+        count:
+          title: Count
+          type: integer
+        governorate:
+          title: Governorate
+          type: string
+        reported:
+          title: Reported
+          type: integer
+      required:
+      - governorate
+      - count
+      - reported
+      title: GovernorateFollowup
       type: object
     GuardianBlock:
       description: '``guardian`` — who cares for the child, without identifying them.
@@ -13888,6 +13992,210 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Create Orphan
+      tags:
+      - orphans
+  /api/v1/orphans/community-report:
+    get:
+      description: 'Aggregate "community follow-up" report over the out-of-home orphans.
+
+
+        A community orphan lives with family, not in a dar: ``orphanage_id IS
+
+        NULL`` (the ``orphanage_self`` definition of a family placement) — the
+
+        exact complement of the house report''s residents. Accepts the same
+
+        optional filter params as :func:`list_orphans` and shares its WHERE
+
+        building — org + جهة scoping included — through
+
+        :func:`_apply_orphan_filters`, then restricts to the out-of-home slice.
+
+
+        The geographic breakdown groups by the FAMILY governorate (outer join on
+
+        ``family_id``, so children with no family land in "unspecified" rather
+
+        than dropping out) and reports, per governorate, the headcount AND how
+
+        many of those children have reported within the current window (the
+
+        house-report definition verbatim: at least one non-draft report with
+
+        ``period_end`` inside the last :data:`REPORT_WINDOW_DAYS` days).
+
+        Governorate is a sensitive child-data dimension, so sub-threshold
+
+        buckets collapse into "other" — both tallies carried, never lost — while
+
+        "unspecified" stays its own bucket whatever its size. Buckets are
+
+        ordered by count descending with a stable tiebreak on key. Registered
+
+        before ``/{orphan_id}`` so "community-report" is never parsed as an id.'
+      operationId: community_followup_report_api_v1_orphans_community_report_get
+      parameters:
+      - in: query
+        name: case_status
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Status
+      - in: query
+        name: channel_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Channel Id
+      - in: query
+        name: assignment_status
+        required: false
+        schema:
+          default: all
+          enum:
+          - active
+          - expired
+          - all
+          title: Assignment Status
+          type: string
+      - in: query
+        name: education_stage
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - pre_kindergarten
+            - kindergarten
+            - primary
+            - preparatory
+            - secondary
+            type: string
+          - type: 'null'
+          title: Education Stage
+      - in: query
+        name: health_status
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - good
+            - chronic_condition
+            - disability
+            - under_treatment
+            type: string
+          - type: 'null'
+          title: Health Status
+      - in: query
+        name: is_hafiz
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Hafiz
+      - in: query
+        name: min_juz
+        required: false
+        schema:
+          anyOf:
+          - maximum: 30
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Juz
+      - in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      - in: query
+        name: tags_mode
+        required: false
+        schema:
+          default: all
+          enum:
+          - all
+          - any
+          title: Tags Mode
+          type: string
+      - in: query
+        name: orphan_type
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - single
+            - double
+            type: string
+          - type: 'null'
+          title: Orphan Type
+      - in: query
+        name: priority
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - normal
+            - high
+            - urgent
+            type: string
+          - type: 'null'
+          title: Priority
+      - in: query
+        name: min_waiting_days
+        required: false
+        schema:
+          anyOf:
+          - minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Waiting Days
+      - in: query
+        name: min_completion
+        required: false
+        schema:
+          anyOf:
+          - maximum: 100
+            minimum: 0
+            type: integer
+          - type: 'null'
+          title: Min Completion
+      - in: query
+        name: q
+        required: false
+        schema:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Q
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityFollowupReport'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Community Followup Report
       tags:
       - orphans
   /api/v1/orphans/export.csv:

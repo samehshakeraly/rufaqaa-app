@@ -175,6 +175,7 @@ const TITLE_MAP: ReadonlyArray<readonly [string, string]> = [
   ["/admin/sponsorships", "nav.sponsorships"],
   ["/admin/reports/segments", "nav.orphanSegments"],
   ["/admin/reports/house", "nav.orphanageReport"],
+  ["/admin/reports/community", "nav.communityFollowup"],
   ["/admin/reports", "nav.fullReports"],
   ["/admin/media-review", "nav.mediaReview"],
   ["/admin/marketing-channels", "nav.marketingChannels"],
@@ -336,6 +337,10 @@ export function AppLayout() {
               <NavLink to="/admin/reports/house" className={navItemClass}>
                 <NavIco>{ICONS.home}</NavIco>
                 {t("nav.orphanageReport")}
+              </NavLink>
+              <NavLink to="/admin/reports/community" className={navItemClass}>
+                <NavIco>{ICONS.users}</NavIco>
+                {t("nav.communityFollowup")}
               </NavLink>
               <NavLink to={TRANSPARENCY_PATH} className={navItemClass}>
                 <NavIco>{ICONS.globe}</NavIco>

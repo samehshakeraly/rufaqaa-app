@@ -1906,6 +1906,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orphans/community-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Community Followup Report
+         * @description Aggregate "community follow-up" report over the out-of-home orphans.
+         *
+         *     A community orphan lives with family, not in a dar: ``orphanage_id IS
+         *     NULL`` (the ``orphanage_self`` definition of a family placement) — the
+         *     exact complement of the house report's residents. Accepts the same
+         *     optional filter params as :func:`list_orphans` and shares its WHERE
+         *     building — org + جهة scoping included — through
+         *     :func:`_apply_orphan_filters`, then restricts to the out-of-home slice.
+         *
+         *     The geographic breakdown groups by the FAMILY governorate (outer join on
+         *     ``family_id``, so children with no family land in "unspecified" rather
+         *     than dropping out) and reports, per governorate, the headcount AND how
+         *     many of those children have reported within the current window (the
+         *     house-report definition verbatim: at least one non-draft report with
+         *     ``period_end`` inside the last :data:`REPORT_WINDOW_DAYS` days).
+         *     Governorate is a sensitive child-data dimension, so sub-threshold
+         *     buckets collapse into "other" — both tallies carried, never lost — while
+         *     "unspecified" stays its own bucket whatever its size. Buckets are
+         *     ordered by count descending with a stable tiebreak on key. Registered
+         *     before ``/{orphan_id}`` so "community-report" is never parsed as an id.
+         */
+        get: operations["community_followup_report_api_v1_orphans_community_report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans/export.csv": {
         parameters: {
             query?: never;
@@ -3777,6 +3816,45 @@ export interface components {
             /** Monthly Goal Count */
             monthly_goal_count?: number | null;
         };
+        /** CommunityFileCompletion */
+        CommunityFileCompletion: {
+            /** Avg Completion */
+            avg_completion: number | null;
+            /** Incomplete Count */
+            incomplete_count: number;
+        };
+        /** CommunityFollowupReport */
+        CommunityFollowupReport: {
+            files: components["schemas"]["CommunityFileCompletion"];
+            /** Governorates */
+            governorates: components["schemas"]["GovernorateFollowup"][];
+            /** Health */
+            health: components["schemas"]["SegmentBucket"][];
+            /** Lives With */
+            lives_with: components["schemas"]["SegmentBucket"][];
+            reports_window: components["schemas"]["CommunityReportsWindow"];
+            sponsorship: components["schemas"]["CommunitySponsorshipCoverage"];
+            /** Total */
+            total: number;
+        };
+        /** CommunityReportsWindow */
+        CommunityReportsWindow: {
+            /** Not Reported */
+            not_reported: number;
+            /** Reported */
+            reported: number;
+            /** Window Days */
+            window_days: number;
+        };
+        /** CommunitySponsorshipCoverage */
+        CommunitySponsorshipCoverage: {
+            /** Sponsored */
+            sponsored: number;
+            /** Sponsored Pct */
+            sponsored_pct: number | null;
+            /** Unsponsored */
+            unsponsored: number;
+        };
         /**
          * CountryFieldFlags
          * @description Which intake sections/fields a country's profile turns on.
@@ -4466,6 +4544,15 @@ export interface components {
              * @default true
              */
             sent: boolean;
+        };
+        /** GovernorateFollowup */
+        GovernorateFollowup: {
+            /** Count */
+            count: number;
+            /** Governorate */
+            governorate: string;
+            /** Reported */
+            reported: number;
         };
         /**
          * GuardianBlock
@@ -11871,6 +11958,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrphanRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    community_followup_report_api_v1_orphans_community_report_get: {
+        parameters: {
+            query?: {
+                case_status?: string | null;
+                channel_id?: string | null;
+                assignment_status?: "active" | "expired" | "all";
+                education_stage?: ("pre_kindergarten" | "kindergarten" | "primary" | "preparatory" | "secondary") | null;
+                health_status?: ("good" | "chronic_condition" | "disability" | "under_treatment") | null;
+                is_hafiz?: boolean | null;
+                min_juz?: number | null;
+                tags?: string[] | null;
+                tags_mode?: "all" | "any";
+                orphan_type?: ("single" | "double") | null;
+                priority?: ("normal" | "high" | "urgent") | null;
+                min_waiting_days?: number | null;
+                min_completion?: number | null;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityFollowupReport"];
                 };
             };
             /** @description Validation Error */
