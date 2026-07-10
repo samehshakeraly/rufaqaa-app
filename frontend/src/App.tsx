@@ -36,6 +36,7 @@ import { BankTransfersPage } from "./pages/BankTransfersPage";
 import { BankStatementImportPage } from "./pages/BankStatementImportPage";
 import { ChannelDashboardPage } from "./pages/ChannelDashboardPage";
 import { ChannelOrphansPage } from "./pages/ChannelOrphansPage";
+import { CommunityFollowupReportPage } from "./pages/CommunityFollowupReportPage";
 import { DashboardHome } from "./pages/PartnerStaffDashboardPage";
 import { DonorDashboardPage } from "./pages/DonorDashboardPage";
 import { DonorMessagesPage } from "./pages/DonorMessagesPage";
@@ -267,9 +268,10 @@ export function App() {
           <Route path="sponsorships" element={<SponsorshipsPage />} />
           <Route path="reports" element={<ReportsPage />} />
           {/* Static segments win over the :id param below (route ranking),
-              so "segments"/"house" are never parsed as report ids. */}
+              so "segments"/"house"/"community" are never parsed as report ids. */}
           <Route path="reports/segments" element={<OrphanSegmentsReportPage />} />
           <Route path="reports/house" element={<OrphanageReportPage />} />
+          <Route path="reports/community" element={<CommunityFollowupReportPage />} />
           <Route path="reports/:id" element={<ReportDetailPage />} />
         </Route>
 

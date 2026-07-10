@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -8,13 +8,14 @@ from sqlalchemy import false, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
-from app.api.v1.orphans import SegmentBucket
+from app.api.v1.orphans import SegmentBucket, _breakdown_buckets
 from app.core.authz import (
     PARTNER_SCOPED_ROLES,
     STAFF_ROLES,
     partner_scope_hides,
     require_roles,
 )
+from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_WINDOW_DAYS
 from app.core.exceptions import NotFound
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
@@ -161,15 +162,9 @@ async def create_orphanage(
 # posture: response models colocated here, breakdown buckets reuse
 # SegmentBucket ordered by count descending with a stable key tiebreak.
 
-# A resident file below this completion percentage counts as "incomplete".
-FILE_INCOMPLETE_THRESHOLD = 80
-
-# The current reporting window, in days: a resident has "reported" when at
-# least one non-draft OrphanReport has period_end within this window. There
-# is deliberately NO "late"/"overdue" figure — that needs a scheduling model
-# (deferred); window_days is exposed so the frontend labels the window
-# honestly instead of implying lateness.
-REPORT_WINDOW_DAYS = 90
+# FILE_INCOMPLETE_THRESHOLD and REPORT_WINDOW_DAYS moved to
+# app.core.constants (imported above) once the community follow-up report
+# started sharing them — the definitions themselves are unchanged.
 
 # Who may read a dar's report: the staff roles plus the dar's own manager.
 # orphanage_manager is not a STAFF_ROLES member (require_roles would 403 it),
@@ -235,22 +230,6 @@ async def _load_orphanage_for_report(db: AsyncSession, user: User, orphanage_id:
     if partner_scope_hides(user, orphanage.partner_organization_id):
         raise NotFound("Orphanage")
     return orphanage
-
-
-def _breakdown_buckets(rows: list[Any]) -> list[SegmentBucket]:
-    """(key, count) GROUP BY rows → SegmentBuckets, NULL keyed 'unspecified',
-    ordered by count descending with a stable tiebreak on key (the exact
-    /orphans/segments contract, so the frontend renders both the same way)."""
-    buckets = [
-        SegmentBucket(
-            key="unspecified" if row[0] is None else str(row[0]),
-            label=None,
-            count=int(row[1]),
-        )
-        for row in rows
-    ]
-    buckets.sort(key=lambda b: (-b.count, b.key))
-    return buckets
 
 
 @router.get("/{orphanage_id}/report", response_model=OrphanageReport)

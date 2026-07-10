@@ -1073,6 +1073,7 @@
     "fullReports": "Comprehensive reports",
     "orphanSegments": "Orphan segments",
     "orphanageReport": "House report",
+    "communityFollowup": "Community follow-up",
     "transparency": "Transparency screen",
     "approvalsCenter": "Approvals center",
     "notifications": "Notifications",
@@ -1423,6 +1424,35 @@
       "overCapacity": "Over capacity: {{residents}} residents for {{capacity}} places",
       "incompleteFiles": "{{n}} resident files are below {{threshold}}% completion"
     }
+  },
+  "communityFollowup": {
+    "title": "Community follow-up report",
+    "subtitle": "A read-only snapshot of the children living with their families outside the houses — where they are, how regularly they are followed up, and their collective status. Counts only, no individual records",
+    "cards": {
+      "total": "Out-of-home children",
+      "governorates": "Governorates"
+    },
+    "geo": {
+      "title": "Geographic spread × follow-up regularity",
+      "sortLabel": "Order governorates by",
+      "sortMost": "Most children",
+      "sortWeakest": "Weakest follow-up",
+      "followedUp": "{{reported}}/{{count}} reported ({{pct}}%)",
+      "tier": {
+        "good": "Good",
+        "ok": "Fair",
+        "low": "Needs follow-up"
+      }
+    },
+    "panels": {
+      "livesWith": "Who the children live with",
+      "health": "Collective health status"
+    },
+    "alerts": {
+      "notReported": "{{n}} children have no report in the last {{days}} days",
+      "lowGovernorates": "Follow-up below {{pct}}% in: {{names}}"
+    },
+    "privacyNote": "Geography is shown at governorate level only — never city or district. Governorates with fewer than {{min}} children are merged into \"Other\" so no child can be singled out."
   },
   "orphans": {
     "title": "Orphans",
