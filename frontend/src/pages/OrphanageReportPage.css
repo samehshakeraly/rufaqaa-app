@@ -1,0 +1,202 @@
+/* ═══════════════════════════════════════════════════════════════
+   Orphanage House Report — scoped styles.
+   Rides on the PS-02 token scope (.ps-orphans, OrphansPage.css) like the
+   segments report, so the shared filter bar / cards render identically;
+   only the report-specific pieces (occupancy gauge, KPI cards, alerts,
+   breakdown bars) are defined here, prefixed `ohr-`. Logical properties
+   only (RTL-first).
+   ═══════════════════════════════════════════════════════════════ */
+
+.ohr-picker-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+.ohr-pinned {
+  padding: 8px 14px;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+
+/* ───────────── Alerts ───────────── */
+.ohr-alert {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+}
+.ohr-alert-danger {
+  background: var(--danger-50);
+  border: 1px solid var(--danger-100);
+  color: var(--danger-700);
+}
+.ohr-alert-warn {
+  background: var(--warning-50);
+  border: 1px solid var(--warning-100);
+  color: var(--warning-700);
+}
+
+/* ───────────── Occupancy gauge ───────────── */
+.ohr-gauge-card {
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.ohr-gauge-card h2 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+.ohr-gauge-card-over {
+  border-color: var(--danger-600);
+}
+.ohr-gauge-figures {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ohr-gauge-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.ohr-gauge-capacity {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+.ohr-gauge-sub {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.ohr-gauge-track {
+  block-size: 10px;
+  inline-size: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+}
+.ohr-gauge-fill {
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  background: var(--trust-400);
+  transition: inline-size var(--transition);
+}
+.ohr-gauge-fill-over {
+  background: var(--danger-600);
+}
+.ohr-gauge-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--gray-600);
+}
+.ohr-gauge-note-over {
+  color: var(--danger-700);
+  font-weight: 700;
+}
+
+/* ───────────── KPI cards ───────────── */
+.ohr-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ohr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 14px 16px;
+}
+.ohr-card-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+.ohr-card-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.ohr-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.ohr-card-sub {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* ───────────── Breakdown panels ───────────── */
+.ohr-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.ohr-panel {
+  padding: 16px;
+}
+.ohr-panel h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+.ohr-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ohr-bar-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.ohr-bar-label {
+  color: var(--gray-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ohr-bar-value {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+.ohr-bar-track {
+  block-size: 8px;
+  inline-size: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+}
+.ohr-bar-fill {
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  background: var(--trust-400);
+  transition: inline-size var(--transition);
+}

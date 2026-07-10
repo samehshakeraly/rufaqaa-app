@@ -8,6 +8,7 @@ export type Orphanage = components["schemas"]["OrphanageRead"];
 export type OrphanageCreateInput = components["schemas"]["OrphanageCreate"];
 export type OrphanageUpdateInput = components["schemas"]["OrphanageUpdate"];
 export type OrphanageStatus = Orphanage["status"];
+export type OrphanageReport = components["schemas"]["OrphanageReport"];
 
 export const ORPHANAGE_STATUSES = ["active", "inactive", "archived"] as const;
 
@@ -34,5 +35,13 @@ export async function updateOrphanage(
   payload: OrphanageUpdateInput,
 ): Promise<Orphanage> {
   const { data } = await api.patch<Orphanage>(`/orphanages/${id}`, payload);
+  return data;
+}
+
+/** Aggregate "house report" for one dar — counts only, zero PII. The
+ * backend scopes visibility (org / جهة / the dar's own manager) and 404s
+ * anything outside the caller's reach. */
+export async function getOrphanageReport(id: string): Promise<OrphanageReport> {
+  const { data } = await api.get<OrphanageReport>(`/orphanages/${id}/report`);
   return data;
 }

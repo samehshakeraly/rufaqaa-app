@@ -52,6 +52,17 @@ export function OrphanageManagerLayout() {
               </span>
               {t("orphanageManager.nav.home")}
             </NavLink>
+            <NavLink
+              to="/orphanage-manager/house-report"
+              className={({ isActive }) =>
+                `glay-nav-item${isActive ? " glay-nav-item--active" : ""}`
+              }
+            >
+              <span aria-hidden="true" className="glay-nav-icon">
+                <ChartIcon />
+              </span>
+              {t("orphanageManager.nav.houseReport")}
+            </NavLink>
           </nav>
 
           <div className="glay-actions">
@@ -91,6 +102,16 @@ function HomeIcon() {
     <svg {...iconProps}>
       <path d="M3 9.5 12 3l9 6.5" />
       <path d="M5 10v10h14V10" />
+    </svg>
+  );
+}
+
+function ChartIcon() {
+  return (
+    <svg {...iconProps}>
+      <line x1="6" y1="20" x2="6" y2="12" />
+      <line x1="12" y1="20" x2="12" y2="6" />
+      <line x1="18" y1="20" x2="18" y2="10" />
     </svg>
   );
 }
