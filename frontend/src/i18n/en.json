@@ -1072,6 +1072,7 @@
     "executiveDashboard": "Executive dashboard",
     "fullReports": "Comprehensive reports",
     "orphanSegments": "Orphan segments",
+    "orphanageReport": "House report",
     "transparency": "Transparency screen",
     "approvalsCenter": "Approvals center",
     "notifications": "Notifications",
@@ -1381,6 +1382,47 @@
       "view": "View orphans"
     },
     "privacyNote": "To protect children's privacy, locations with fewer than 3 orphans are combined into “Other”."
+  },
+  "orphanageReport": {
+    "title": "House report",
+    "subtitle": "A read-only snapshot of one orphanage — occupancy, residents' health and education, sponsorship coverage and reporting. Counts only, no individual records",
+    "picker": "Orphanage",
+    "noHouses": "No orphanages yet",
+    "occupancy": {
+      "title": "Occupancy",
+      "capacityNotRecorded": "Capacity not recorded",
+      "capacityZero": "Capacity recorded as zero",
+      "pctOfCapacity": "{{pct}}% of capacity",
+      "freePlaces": "{{n}} free places",
+      "overBy": "Over capacity by {{n}}"
+    },
+    "cards": {
+      "residents": "Residents",
+      "sponsored": "Sponsored",
+      "sponsoredPct": "{{pct}}% of residents",
+      "avgCompletion": "Avg. file completion",
+      "incompleteFiles": "{{n}} files below {{threshold}}%",
+      "reported": "Reported this window",
+      "notReported": "{{n}} not yet submitted"
+    },
+    "panels": {
+      "health": "Collective health status",
+      "education": "Education stages",
+      "sponsorship": "Sponsorship coverage",
+      "reporting": "Reporting status"
+    },
+    "reporting": {
+      "windowLabel": "Last {{days}} days",
+      "reported": "Reported",
+      "notReported": "Not yet submitted"
+    },
+    "sponsorshipLabels": {
+      "unsponsored": "Not sponsored"
+    },
+    "alerts": {
+      "overCapacity": "Over capacity: {{residents}} residents for {{capacity}} places",
+      "incompleteFiles": "{{n}} resident files are below {{threshold}}% completion"
+    }
   },
   "orphans": {
     "title": "Orphans",
@@ -3519,7 +3561,8 @@
       "fallbackName": "Manager"
     },
     "nav": {
-      "home": "Home"
+      "home": "Home",
+      "houseReport": "House report"
     },
     "gender": {
       "M": "Male",

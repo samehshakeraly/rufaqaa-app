@@ -5524,6 +5524,52 @@ components:
       - name_en
       title: OrphanageCreate
       type: object
+    OrphanageFileCompletion:
+      properties:
+        avg_completion:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Avg Completion
+        incomplete_count:
+          title: Incomplete Count
+          type: integer
+      required:
+      - avg_completion
+      - incomplete_count
+      title: OrphanageFileCompletion
+      type: object
+    OrphanageOccupancy:
+      properties:
+        capacity:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Capacity
+        free:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Free
+        occupancy_pct:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Occupancy Pct
+        over:
+          title: Over
+          type: boolean
+        residents:
+          title: Residents
+          type: integer
+      required:
+      - capacity
+      - residents
+      - occupancy_pct
+      - free
+      - over
+      title: OrphanageOccupancy
+      type: object
     OrphanageOrphanRead:
       description: 'Manager-safe projection of a resident orphan.
 
@@ -5675,6 +5721,40 @@ components:
       - updated_at
       title: OrphanageRead
       type: object
+    OrphanageReport:
+      properties:
+        education:
+          items:
+            $ref: '#/components/schemas/SegmentBucket'
+          title: Education
+          type: array
+        files:
+          $ref: '#/components/schemas/OrphanageFileCompletion'
+        health:
+          items:
+            $ref: '#/components/schemas/SegmentBucket'
+          title: Health
+          type: array
+        occupancy:
+          $ref: '#/components/schemas/OrphanageOccupancy'
+        orphanage_id:
+          format: uuid
+          title: Orphanage Id
+          type: string
+        reports_window:
+          $ref: '#/components/schemas/OrphanageReportsWindow'
+        sponsorship:
+          $ref: '#/components/schemas/OrphanageSponsorshipCoverage'
+      required:
+      - orphanage_id
+      - occupancy
+      - health
+      - education
+      - sponsorship
+      - files
+      - reports_window
+      title: OrphanageReport
+      type: object
     OrphanageReportCreate:
       description: 'Body for a manager-submitted report.
 
@@ -5766,6 +5846,42 @@ components:
       - period_start
       - period_end
       title: OrphanageReportCreate
+      type: object
+    OrphanageReportsWindow:
+      properties:
+        not_reported:
+          title: Not Reported
+          type: integer
+        reported:
+          title: Reported
+          type: integer
+        window_days:
+          title: Window Days
+          type: integer
+      required:
+      - window_days
+      - reported
+      - not_reported
+      title: OrphanageReportsWindow
+      type: object
+    OrphanageSponsorshipCoverage:
+      properties:
+        sponsored:
+          title: Sponsored
+          type: integer
+        sponsored_pct:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sponsored Pct
+        unsponsored:
+          title: Unsponsored
+          type: integer
+      required:
+      - sponsored
+      - unsponsored
+      - sponsored_pct
+      title: OrphanageSponsorshipCoverage
       type: object
     OrphanageUpdate:
       properties:
@@ -13429,6 +13545,51 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Update Orphanage
+      tags:
+      - orphanages
+  /api/v1/orphanages/{orphanage_id}/report:
+    get:
+      description: 'Aggregate "house report" for one dar, built entirely from its
+
+        residents and their reports.
+
+
+        A resident is an orphan with ``orphanage_id == {orphanage_id}`` in the
+
+        caller''s org and not soft-deleted — ``orphanage_id IS NULL`` means a
+
+        family placement, never a resident (the ``orphanage_self`` definition).
+
+        Occupancy handles an unrecorded capacity gracefully: the percentage and
+
+        free-bed figures are null and ``over`` is false, so the frontend can say
+
+        "capacity not recorded" instead of inventing a denominator.'
+      operationId: orphanage_report_api_v1_orphanages__orphanage_id__report_get
+      parameters:
+      - in: path
+        name: orphanage_id
+        required: true
+        schema:
+          format: uuid
+          title: Orphanage Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrphanageReport'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Orphanage Report
       tags:
       - orphanages
   /api/v1/orphans:

@@ -1815,6 +1815,34 @@ export interface paths {
         patch: operations["update_orphanage_api_v1_orphanages__orphanage_id__patch"];
         trace?: never;
     };
+    "/api/v1/orphanages/{orphanage_id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Orphanage Report
+         * @description Aggregate "house report" for one dar, built entirely from its
+         *     residents and their reports.
+         *
+         *     A resident is an orphan with ``orphanage_id == {orphanage_id}`` in the
+         *     caller's org and not soft-deleted — ``orphanage_id IS NULL`` means a
+         *     family placement, never a resident (the ``orphanage_self`` definition).
+         *     Occupancy handles an unrecorded capacity gracefully: the percentage and
+         *     free-bed figures are null and ``over`` is false, so the frontend can say
+         *     "capacity not recorded" instead of inventing a denominator.
+         */
+        get: operations["orphanage_report_api_v1_orphanages__orphanage_id__report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orphans": {
         parameters: {
             query?: never;
@@ -6218,6 +6246,26 @@ export interface components {
              */
             status: "active" | "inactive" | "archived";
         };
+        /** OrphanageFileCompletion */
+        OrphanageFileCompletion: {
+            /** Avg Completion */
+            avg_completion: number | null;
+            /** Incomplete Count */
+            incomplete_count: number;
+        };
+        /** OrphanageOccupancy */
+        OrphanageOccupancy: {
+            /** Capacity */
+            capacity: number | null;
+            /** Free */
+            free: number | null;
+            /** Occupancy Pct */
+            occupancy_pct: number | null;
+            /** Over */
+            over: boolean;
+            /** Residents */
+            residents: number;
+        };
         /**
          * OrphanageOrphanRead
          * @description Manager-safe projection of a resident orphan.
@@ -6303,6 +6351,22 @@ export interface components {
              */
             updated_at: string;
         };
+        /** OrphanageReport */
+        OrphanageReport: {
+            /** Education */
+            education: components["schemas"]["SegmentBucket"][];
+            files: components["schemas"]["OrphanageFileCompletion"];
+            /** Health */
+            health: components["schemas"]["SegmentBucket"][];
+            occupancy: components["schemas"]["OrphanageOccupancy"];
+            /**
+             * Orphanage Id
+             * Format: uuid
+             */
+            orphanage_id: string;
+            reports_window: components["schemas"]["OrphanageReportsWindow"];
+            sponsorship: components["schemas"]["OrphanageSponsorshipCoverage"];
+        };
         /**
          * OrphanageReportCreate
          * @description Body for a manager-submitted report.
@@ -6357,6 +6421,24 @@ export interface components {
             } | null;
             /** Summary */
             summary?: string | null;
+        };
+        /** OrphanageReportsWindow */
+        OrphanageReportsWindow: {
+            /** Not Reported */
+            not_reported: number;
+            /** Reported */
+            reported: number;
+            /** Window Days */
+            window_days: number;
+        };
+        /** OrphanageSponsorshipCoverage */
+        OrphanageSponsorshipCoverage: {
+            /** Sponsored */
+            sponsored: number;
+            /** Sponsored Pct */
+            sponsored_pct: number | null;
+            /** Unsponsored */
+            unsponsored: number;
         };
         /** OrphanageUpdate */
         OrphanageUpdate: {
@@ -11678,6 +11760,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrphanageRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    orphanage_report_api_v1_orphanages__orphanage_id__report_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orphanage_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrphanageReport"];
                 };
             };
             /** @description Validation Error */

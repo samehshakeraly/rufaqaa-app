@@ -1,11 +1,14 @@
-from typing import Annotated
+from datetime import date, timedelta
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
 from sqlalchemy import false, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
+from app.api.v1.orphans import SegmentBucket
 from app.core.authz import (
     PARTNER_SCOPED_ROLES,
     STAFF_ROLES,
@@ -13,7 +16,9 @@ from app.core.authz import (
     require_roles,
 )
 from app.core.exceptions import NotFound
+from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
+from app.models.report import OrphanReport
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.orphanage import (
@@ -145,6 +150,212 @@ async def create_orphanage(
     await db.commit()
     await db.refresh(orphanage)
     return OrphanageRead.model_validate(orphanage)
+
+
+# ── House report (GET /orphanages/{orphanage_id}/report) ────────────────
+#
+# Read-only aggregate over ONE dar: occupancy against capacity, collective
+# health / education breakdowns, sponsorship coverage, file completion and
+# the current reporting window. Counts and averages only — it never returns
+# an individual resident row, zero PII. Mirrors the /orphans/segments
+# posture: response models colocated here, breakdown buckets reuse
+# SegmentBucket ordered by count descending with a stable key tiebreak.
+
+# A resident file below this completion percentage counts as "incomplete".
+FILE_INCOMPLETE_THRESHOLD = 80
+
+# The current reporting window, in days: a resident has "reported" when at
+# least one non-draft OrphanReport has period_end within this window. There
+# is deliberately NO "late"/"overdue" figure — that needs a scheduling model
+# (deferred); window_days is exposed so the frontend labels the window
+# honestly instead of implying lateness.
+REPORT_WINDOW_DAYS = 90
+
+# Who may read a dar's report: the staff roles plus the dar's own manager.
+# orphanage_manager is not a STAFF_ROLES member (require_roles would 403 it),
+# but this report IS the manager's surface — _load_orphanage_for_report pins
+# them to the single dar they run, so the wider gate leaks nothing.
+REPORT_VIEWER_ROLES: tuple[str, ...] = (*STAFF_ROLES, "orphanage_manager")
+
+
+class OrphanageOccupancy(BaseModel):
+    capacity: int | None  # NULL = capacity not recorded on the dar
+    residents: int
+    occupancy_pct: int | None  # only when capacity is recorded and > 0
+    free: int | None  # capacity - residents; negative when over-capacity
+    over: bool  # residents > capacity; always False without a capacity
+
+
+class OrphanageSponsorshipCoverage(BaseModel):
+    sponsored: int
+    unsponsored: int
+    sponsored_pct: int | None  # None when the dar has no residents
+
+
+class OrphanageFileCompletion(BaseModel):
+    avg_completion: int | None  # None when the dar has no residents
+    incomplete_count: int  # residents below FILE_INCOMPLETE_THRESHOLD
+
+
+class OrphanageReportsWindow(BaseModel):
+    window_days: int
+    reported: int
+    not_reported: int
+
+
+class OrphanageReport(BaseModel):
+    orphanage_id: UUID
+    occupancy: OrphanageOccupancy
+    health: list[SegmentBucket]
+    education: list[SegmentBucket]
+    sponsorship: OrphanageSponsorshipCoverage
+    files: OrphanageFileCompletion
+    reports_window: OrphanageReportsWindow
+
+
+async def _load_orphanage_for_report(db: AsyncSession, user: User, orphanage_id: UUID) -> Orphanage:
+    """Resolve ``orphanage_id`` under the caller's visibility, or 404.
+
+    Same shape as ``orphanage_self._load_orphanage_or_404``: every failure is
+    a 404 so the endpoint never confirms that a dar outside the caller's
+    reach exists. Org scope is explicit (a superuser DB connection bypasses
+    RLS); an orphanage_manager is pinned to the single dar they run; a
+    partner-scoped caller only sees dars of their own جهة.
+    """
+    orphanage = await db.scalar(
+        select(Orphanage).where(
+            Orphanage.id == orphanage_id,
+            Orphanage.organization_id == user.organization_id,
+        )
+    )
+    if orphanage is None:
+        raise NotFound("Orphanage")
+    if user.role == "orphanage_manager" and orphanage.manager_user_id != user.id:
+        raise NotFound("Orphanage")
+    if partner_scope_hides(user, orphanage.partner_organization_id):
+        raise NotFound("Orphanage")
+    return orphanage
+
+
+def _breakdown_buckets(rows: list[Any]) -> list[SegmentBucket]:
+    """(key, count) GROUP BY rows → SegmentBuckets, NULL keyed 'unspecified',
+    ordered by count descending with a stable tiebreak on key (the exact
+    /orphans/segments contract, so the frontend renders both the same way)."""
+    buckets = [
+        SegmentBucket(
+            key="unspecified" if row[0] is None else str(row[0]),
+            label=None,
+            count=int(row[1]),
+        )
+        for row in rows
+    ]
+    buckets.sort(key=lambda b: (-b.count, b.key))
+    return buckets
+
+
+@router.get("/{orphanage_id}/report", response_model=OrphanageReport)
+async def orphanage_report(
+    orphanage_id: UUID,
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*REPORT_VIEWER_ROLES))],
+) -> OrphanageReport:
+    """Aggregate "house report" for one dar, built entirely from its
+    residents and their reports.
+
+    A resident is an orphan with ``orphanage_id == {orphanage_id}`` in the
+    caller's org and not soft-deleted — ``orphanage_id IS NULL`` means a
+    family placement, never a resident (the ``orphanage_self`` definition).
+    Occupancy handles an unrecorded capacity gracefully: the percentage and
+    free-bed figures are null and ``over`` is false, so the frontend can say
+    "capacity not recorded" instead of inventing a denominator.
+    """
+    orphanage = await _load_orphanage_for_report(db, user, orphanage_id)
+
+    resident_where = (
+        Orphan.orphanage_id == orphanage.id,
+        Orphan.organization_id == user.organization_id,
+        Orphan.deleted_at.is_(None),
+    )
+
+    # One pass over the residents for every scalar aggregate: headcount,
+    # sponsorship coverage and the two file-completion figures.
+    totals = (
+        await db.execute(
+            select(
+                func.count(),
+                func.count().filter(Orphan.case_status == "sponsored"),
+                func.avg(Orphan.profile_completion_percentage),
+                func.count().filter(
+                    Orphan.profile_completion_percentage < FILE_INCOMPLETE_THRESHOLD
+                ),
+            ).where(*resident_where)
+        )
+    ).one()
+    residents = int(totals[0])
+    sponsored = int(totals[1])
+    avg_completion = int(round(totals[2])) if totals[2] is not None else None
+    incomplete_count = int(totals[3])
+
+    health_rows = (
+        await db.execute(
+            select(Orphan.health_status, func.count())
+            .where(*resident_where)
+            .group_by(Orphan.health_status)
+        )
+    ).all()
+    education_rows = (
+        await db.execute(
+            select(Orphan.education_stage, func.count())
+            .where(*resident_where)
+            .group_by(Orphan.education_stage)
+        )
+    ).all()
+
+    # A resident has "reported" when at least one non-draft report ends
+    # within the window — DISTINCT so several reports count the child once.
+    window_start = date.today() - timedelta(days=REPORT_WINDOW_DAYS)
+    reported = int(
+        await db.scalar(
+            select(func.count(OrphanReport.orphan_id.distinct()))
+            .join(Orphan, OrphanReport.orphan_id == Orphan.id)
+            .where(
+                *resident_where,
+                OrphanReport.status != "draft",
+                OrphanReport.period_end >= window_start,
+            )
+        )
+        or 0
+    )
+
+    capacity = orphanage.capacity
+    return OrphanageReport(
+        orphanage_id=orphanage.id,
+        occupancy=OrphanageOccupancy(
+            capacity=capacity,
+            residents=residents,
+            occupancy_pct=(
+                round(residents * 100 / capacity) if capacity is not None and capacity > 0 else None
+            ),
+            free=capacity - residents if capacity is not None else None,
+            over=capacity is not None and residents > capacity,
+        ),
+        health=_breakdown_buckets(list(health_rows)),
+        education=_breakdown_buckets(list(education_rows)),
+        sponsorship=OrphanageSponsorshipCoverage(
+            sponsored=sponsored,
+            unsponsored=residents - sponsored,
+            sponsored_pct=round(sponsored * 100 / residents) if residents else None,
+        ),
+        files=OrphanageFileCompletion(
+            avg_completion=avg_completion,
+            incomplete_count=incomplete_count,
+        ),
+        reports_window=OrphanageReportsWindow(
+            window_days=REPORT_WINDOW_DAYS,
+            reported=reported,
+            not_reported=residents - reported,
+        ),
+    )
 
 
 @router.get("/{orphanage_id}", response_model=OrphanageRead)

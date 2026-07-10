@@ -68,6 +68,7 @@ import { OrphanMessagesPage } from "./pages/OrphanMessagesPage";
 import { OrphanageManagerHomePage } from "./pages/OrphanageManagerHomePage";
 import { OrphanageManagerOrphanDetailPage } from "./pages/OrphanageManagerOrphanDetailPage";
 import { OrphanageManagerReportPage } from "./pages/OrphanageManagerReportPage";
+import { OrphanageReportPage } from "./pages/OrphanageReportPage";
 import { OrphanagesPage } from "./pages/OrphanagesPage";
 import { OrphansPage } from "./pages/OrphansPage";
 import { OverdueDonorsPage } from "./pages/OverdueDonorsPage";
@@ -214,6 +215,12 @@ export function App() {
         }
       >
         <Route path="/orphanage-manager" element={<OrphanageManagerHomePage />} />
+        {/* The same staff house-report page, mounted in the manager portal —
+            the page pins a manager to the single dar they run (no picker). */}
+        <Route
+          path="/orphanage-manager/house-report"
+          element={<OrphanageReportPage />}
+        />
         <Route
           path="/orphanage-manager/orphans/:id"
           element={<OrphanageManagerOrphanDetailPage />}
@@ -259,9 +266,10 @@ export function App() {
           <Route path="partners/:id" element={<PartnerDetailPage />} />
           <Route path="sponsorships" element={<SponsorshipsPage />} />
           <Route path="reports" element={<ReportsPage />} />
-          {/* Static segment wins over the :id param below (route ranking),
-              so "segments" is never parsed as a report id. */}
+          {/* Static segments win over the :id param below (route ranking),
+              so "segments"/"house" are never parsed as report ids. */}
           <Route path="reports/segments" element={<OrphanSegmentsReportPage />} />
+          <Route path="reports/house" element={<OrphanageReportPage />} />
           <Route path="reports/:id" element={<ReportDetailPage />} />
         </Route>
 

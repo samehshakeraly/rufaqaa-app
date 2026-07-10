@@ -1072,6 +1072,7 @@
     "executiveDashboard": "اللوحة التنفيذيّة",
     "fullReports": "التقارير الشاملة",
     "orphanSegments": "شرائح الأيتام",
+    "orphanageReport": "تقرير الدار",
     "transparency": "شاشة الشفافيّة",
     "approvalsCenter": "مركز الاعتمادات",
     "notifications": "الإشعارات",
@@ -1381,6 +1382,47 @@
       "view": "عرض الأيتام"
     },
     "privacyNote": "حمايةً لخصوصية الأطفال، تُدمج المواقع التي تضم أقل من 3 أيتام في فئة «أخرى»."
+  },
+  "orphanageReport": {
+    "title": "تقرير الدار",
+    "subtitle": "لمحة قراءة فقط عن دار واحدة — الإشغال والحالة الصحية والتعليمية للمقيمين وتغطية الكفالة والتقارير. أعداد فقط، دون أي سجلات فردية",
+    "picker": "دار الأيتام",
+    "noHouses": "لا توجد دور أيتام بعد",
+    "occupancy": {
+      "title": "الإشغال",
+      "capacityNotRecorded": "السعة غير مسجّلة",
+      "capacityZero": "السعة المسجّلة صفر",
+      "pctOfCapacity": "{{pct}}٪ من السعة",
+      "freePlaces": "الأماكن المتاحة: {{n}}",
+      "overBy": "تجاوز للسعة بمقدار {{n}}"
+    },
+    "cards": {
+      "residents": "المقيمون",
+      "sponsored": "المكفولون",
+      "sponsoredPct": "{{pct}}٪ من المقيمين",
+      "avgCompletion": "متوسط اكتمال الملفات",
+      "incompleteFiles": "ملفات دون {{threshold}}٪: {{n}}",
+      "reported": "تقارير النافذة الحالية",
+      "notReported": "لم يُقدَّم بعد: {{n}}"
+    },
+    "panels": {
+      "health": "الحالة الصحية للمقيمين",
+      "education": "المراحل الدراسية",
+      "sponsorship": "تغطية الكفالة",
+      "reporting": "حالة التقارير"
+    },
+    "reporting": {
+      "windowLabel": "آخر {{days}} يومًا",
+      "reported": "قُدِّم تقرير",
+      "notReported": "لم يُقدَّم بعد"
+    },
+    "sponsorshipLabels": {
+      "unsponsored": "غير مكفول"
+    },
+    "alerts": {
+      "overCapacity": "تجاوز للسعة: {{residents}} مقيمًا في {{capacity}} مكانًا",
+      "incompleteFiles": "{{n}} من ملفات المقيمين دون {{threshold}}٪ من الاكتمال"
+    }
   },
   "orphans": {
     "title": "الأيتام",
@@ -3519,7 +3561,8 @@
       "fallbackName": "المشرف"
     },
     "nav": {
-      "home": "الرئيسية"
+      "home": "الرئيسية",
+      "houseReport": "تقرير الدار"
     },
     "gender": {
       "M": "ذكر",
