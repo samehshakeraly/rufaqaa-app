@@ -2099,6 +2099,8 @@
     "timezone": "Timezone",
     "language": "Default language",
     "primaryColor": "Primary colour",
+    "reportCadence": "Reporting cadence (days)",
+    "reportCadenceHelp": "Days between reports for each child (1–366). Leave empty to use the default of 90 days.",
     "adminOnly": "Admins only",
     "notifications": "Notification preferences",
     "notificationsDescription": "Choose how we reach you. Changes save automatically.",

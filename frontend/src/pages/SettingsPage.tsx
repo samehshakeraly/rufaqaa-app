@@ -622,6 +622,7 @@ function RegionalCard() {
         default_language: data.default_language,
         default_currency: data.default_currency,
         timezone: data.timezone,
+        report_cadence_days: data.report_cadence_days,
       });
     }
   }, [data]);
@@ -759,6 +760,32 @@ function RegionalCard() {
               <option value="AED">درهم إماراتي (AED)</option>
               <option value="USD">دولار أمريكي (USD)</option>
             </select>
+          </div>
+
+          {/* Reporting cadence — wired to /organization report_cadence_days */}
+          <label className="oa-s-label" htmlFor="reg-report-cadence">
+            {t("settings.reportCadence")}
+          </label>
+          <div className="oa-s-field">
+            <input
+              id="reg-report-cadence"
+              type="number"
+              className="oa-s-input latin num"
+              dir="ltr"
+              min={1}
+              max={366}
+              placeholder="90"
+              value={form.report_cadence_days ?? ""}
+              disabled={disabled}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  report_cadence_days:
+                    e.target.value === "" ? null : Number(e.target.value),
+                })
+              }
+            />
+            <div className="oa-s-hint">{t("settings.reportCadenceHelp")}</div>
           </div>
 
           {/* Number format — TODO(backend): number_format not in type */}

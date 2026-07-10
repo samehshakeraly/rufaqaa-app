@@ -4302,6 +4302,13 @@ components:
         primary_color:
           title: Primary Color
           type: string
+        report_cadence_days:
+          anyOf:
+          - maximum: 366.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Report Cadence Days
         status:
           title: Status
           type: string
@@ -4397,6 +4404,13 @@ components:
             type: string
           - type: 'null'
           title: Primary Color
+        report_cadence_days:
+          anyOf:
+          - maximum: 366.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Report Cadence Days
         timezone:
           anyOf:
           - maxLength: 50
