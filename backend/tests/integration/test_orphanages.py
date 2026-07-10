@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import uuid
 
+import pytest
 from httpx import AsyncClient, Response
-from sqlalchemy import select
+from sqlalchemy import select, text
+from sqlalchemy.exc import IntegrityError
 
 from app.core.database import make_session
 from app.core.security import hash_password
@@ -309,3 +311,98 @@ async def test_assign_manager_already_managing_rejected(
     )
     assert r.status_code == 200, r.text
     assert r.json()["manager_user_id"] == mgr
+
+
+# ── Capacity (orphanages.capacity, 0032) ─────────────────────────────────
+
+
+async def test_capacity_create_read_update_clear(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """capacity set at creation is read back, independently updatable via
+    PATCH, preserved by unrelated PATCHes, and cleared by an explicit null
+    (the manager_user_id present-and-null contract)."""
+    r = await _create_dar(api, auth_headers, capacity=40)
+    assert r.status_code == 201, r.text
+    did = r.json()["id"]
+    assert r.json()["capacity"] == 40
+
+    # GET returns it
+    r = await api.get(f"/api/v1/orphanages/{did}", headers=auth_headers)
+    assert r.status_code == 200
+    assert r.json()["capacity"] == 40
+
+    # PATCH capacity alone — updated, nothing else touched
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"capacity": 55},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["capacity"] == 55
+
+    # PATCH an unrelated field — capacity untouched (exclude_unset semantics)
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"city": "Hawalli"},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["capacity"] == 55
+
+    # PATCH explicit null — cleared back to NULL
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"capacity": None},
+        headers=auth_headers,
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["capacity"] is None
+
+
+async def test_capacity_omitted_defaults_to_null(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    r = await _create_dar(api, auth_headers)
+    assert r.status_code == 201, r.text
+    assert r.json()["capacity"] is None
+
+
+async def test_capacity_zero_is_valid(api: AsyncClient, auth_headers: dict[str, str]) -> None:
+    """0 is a legal capacity (a dar with no beds) — only negatives are out."""
+    r = await _create_dar(api, auth_headers, capacity=0)
+    assert r.status_code == 201, r.text
+    assert r.json()["capacity"] == 0
+
+
+async def test_negative_capacity_rejected_by_pydantic(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """The boundary rejects negatives with a 422 (Field ge=0) on create AND
+    PATCH — requests never reach the DB CHECK."""
+    r = await _create_dar(api, auth_headers, capacity=-1)
+    assert r.status_code == 422, r.text
+
+    did = (await _create_dar(api, auth_headers)).json()["id"]
+    r = await api.patch(
+        f"/api/v1/orphanages/{did}",
+        json={"capacity": -5},
+        headers=auth_headers,
+    )
+    assert r.status_code == 422, r.text
+
+
+async def test_negative_capacity_rejected_by_db_check(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Writing a negative capacity straight to the DB (bypassing Pydantic)
+    trips the orphanages_capacity_check constraint."""
+    did = (await _create_dar(api, auth_headers)).json()["id"]
+
+    with pytest.raises(IntegrityError, match="orphanages_capacity_check"):
+        async with make_session() as db:
+            await db.execute(
+                text("UPDATE orphanages SET capacity = -1 WHERE id = :id"),
+                {"id": did},
+            )
+            await db.commit()

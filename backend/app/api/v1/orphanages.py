@@ -126,6 +126,7 @@ async def create_orphanage(
         district=payload.district,
         address_details=payload.address_details,
         status=payload.status,
+        capacity=payload.capacity,
         notes=payload.notes,
         manager_user_id=payload.manager_user_id,
         created_by=user.id,

@@ -81,7 +81,7 @@ export function OrphanagesPage() {
         </div>
       </div>
 
-      {isLoading && <TableSkeleton columns={7} />}
+      {isLoading && <TableSkeleton columns={8} />}
       {error && <p className="adm-error">{t("common.loadError")}</p>}
       {data && data.items.length === 0 && <div className="adm-empty">{t("common.empty")}</div>}
 
@@ -94,6 +94,7 @@ export function OrphanagesPage() {
                   <th>{t("orphanages.cols.code")}</th>
                   <th>{t("orphanages.cols.name")}</th>
                   <th>{t("orphanages.cols.country")}</th>
+                  <th>{t("orphanages.cols.capacity")}</th>
                   <th>{t("orphanages.cols.manager")}</th>
                   <th>{t("orphanages.cols.status")}</th>
                   <th>{t("orphanages.cols.createdAt")}</th>
@@ -113,6 +114,13 @@ export function OrphanagesPage() {
                           <span aria-hidden="true">{flagEmoji(o.country_code)} </span>
                           <span className="latin">{o.country_code}</span>
                         </>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      {o.capacity != null ? (
+                        <span className="latin">{o.capacity.toLocaleString()}</span>
                       ) : (
                         "—"
                       )}
@@ -188,6 +196,7 @@ interface FormState {
   district: string;
   address_details: string;
   status: OrphanageStatus;
+  capacity: string; // "" = not recorded (null)
   notes: string;
   manager_user_id: string; // "" = no manager
 }
@@ -201,6 +210,7 @@ const EMPTY_FORM: FormState = {
   district: "",
   address_details: "",
   status: "active",
+  capacity: "",
   notes: "",
   manager_user_id: "",
 };
@@ -220,6 +230,8 @@ function toPayload(v: FormState) {
     district: opt(v.district),
     address_details: opt(v.address_details),
     status: v.status,
+    // Empty → null so "not recorded" round-trips as NULL, never 0.
+    capacity: v.capacity.trim() === "" ? null : Number(v.capacity),
     notes: opt(v.notes),
   };
 }
@@ -344,6 +356,18 @@ function OrphanageFields({
         <span>{t("orphanages.create.district")}</span>
         <input value={v.district} onChange={(e) => setV({ ...v, district: e.target.value })} />
       </label>
+      <label className="adm-field">
+        <span>{t("orphanages.create.capacity")}</span>
+        <input
+          type="number"
+          min={0}
+          step={1}
+          inputMode="numeric"
+          placeholder={t("orphanages.create.capacityPlaceholder")}
+          value={v.capacity}
+          onChange={(e) => setV({ ...v, capacity: e.target.value })}
+        />
+      </label>
       <label className="adm-field full">
         <span>{t("orphanages.create.address")}</span>
         <input
@@ -436,6 +460,7 @@ function EditOrphanageModal({
     district: orphanage.district ?? "",
     address_details: orphanage.address_details ?? "",
     status: orphanage.status,
+    capacity: orphanage.capacity != null ? String(orphanage.capacity) : "",
     notes: orphanage.notes ?? "",
     manager_user_id: orphanage.manager_user_id ?? "",
   });

@@ -16,6 +16,9 @@ class OrphanageBase(BaseModel):
     district: str | None = Field(default=None, max_length=100)
     address_details: str | None = None
     status: OrphanageStatus = "active"
+    # How many residents the dar can house; None = not recorded. ge=0 mirrors
+    # the DB CHECK (orphanages_capacity_check).
+    capacity: int | None = Field(default=None, ge=0)
     notes: str | None = None
 
 
@@ -33,6 +36,8 @@ class OrphanageUpdate(BaseModel):
     district: str | None = Field(default=None, max_length=100)
     address_details: str | None = None
     status: OrphanageStatus | None = None
+    # Present-and-null clears the recorded capacity; omitted leaves it untouched.
+    capacity: int | None = Field(default=None, ge=0)
     notes: str | None = None
     # Present-and-null clears the assignment; omitted leaves it untouched.
     manager_user_id: UUID | None = None

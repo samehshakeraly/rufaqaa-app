@@ -5453,6 +5453,12 @@ components:
           - type: string
           - type: 'null'
           title: Address Details
+        capacity:
+          anyOf:
+          - minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Capacity
         city:
           anyOf:
           - maxLength: 100
@@ -5572,6 +5578,12 @@ components:
           - type: string
           - type: 'null'
           title: Address Details
+        capacity:
+          anyOf:
+          - minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Capacity
         city:
           anyOf:
           - maxLength: 100
@@ -5762,6 +5774,12 @@ components:
           - type: string
           - type: 'null'
           title: Address Details
+        capacity:
+          anyOf:
+          - minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Capacity
         city:
           anyOf:
           - maxLength: 100

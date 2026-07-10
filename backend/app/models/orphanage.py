@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, String, Text, func
+from sqlalchemy import ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -33,6 +33,10 @@ class Orphanage(Base):
     # omits the geo column rather than inventing a PostGIS ORM mapping.
 
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
+
+    # How many residents the dar can house; NULL = not recorded. The DB CHECK
+    # (orphanages_capacity_check) mirrors the schema-level ge=0 bound.
+    capacity: Mapped[int | None] = mapped_column(Integer)
 
     notes: Mapped[str | None] = mapped_column(Text)
 
