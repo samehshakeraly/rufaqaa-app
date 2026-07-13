@@ -10,7 +10,7 @@ import {
 const EMPTY_REPORT: CommunityFollowupReport = {
   total: 0,
   governorates: [],
-  reports_window: { window_days: 90, reported: 0, not_reported: 0 },
+  reporting: { cadence_days: 90, grace_days: 7, on_track: 0, due_soon: 0, overdue: 0 },
   lives_with: [],
   health: [],
   sponsorship: { sponsored: 0, unsponsored: 0, sponsored_pct: null },

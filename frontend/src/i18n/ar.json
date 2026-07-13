@@ -1403,8 +1403,8 @@
       "sponsoredPct": "{{pct}}٪ من المقيمين",
       "avgCompletion": "متوسط اكتمال الملفات",
       "incompleteFiles": "ملفات دون {{threshold}}٪: {{n}}",
-      "reported": "تقارير النافذة الحالية",
-      "notReported": "لم يُقدَّم بعد: {{n}}"
+      "onTrack": "التقارير المنتظمة",
+      "dueSoonOverdue": "حان موعده: {{dueSoon}} · متأخر: {{overdue}}"
     },
     "panels": {
       "health": "الحالة الصحية للمقيمين",
@@ -1413,9 +1413,11 @@
       "reporting": "حالة التقارير"
     },
     "reporting": {
-      "windowLabel": "آخر {{days}} يومًا",
-      "reported": "قُدِّم تقرير",
-      "notReported": "لم يُقدَّم بعد"
+      "cadenceLabel": "كل {{days}} يومًا",
+      "cadenceWithGrace": "كل {{days}} يومًا (+{{grace}} أيام سماح)",
+      "onTrack": "منتظم",
+      "dueSoon": "حان موعده",
+      "overdue": "متأخر"
     },
     "sponsorshipLabels": {
       "unsponsored": "غير مكفول"
@@ -1437,7 +1439,7 @@
       "sortLabel": "ترتيب المحافظات حسب",
       "sortMost": "الأكثر أطفالًا",
       "sortWeakest": "الأضعف متابعة",
-      "followedUp": "{{reported}}/{{count}} قُدِّم تقرير ({{pct}}٪)",
+      "tallies": "{{onTrack}}/{{count}} منتظم ({{pct}}٪) · حان موعده {{dueSoon}} · متأخر {{overdue}}",
       "tier": {
         "good": "جيدة",
         "ok": "مقبولة",
@@ -1449,7 +1451,7 @@
       "health": "الحالة الصحية العامة"
     },
     "alerts": {
-      "notReported": "{{n}} من الأطفال دون أي تقرير خلال آخر {{days}} يومًا",
+      "overdue": "{{n}} من الأطفال تأخر تقريرهم عن موعده (كل {{days}} يومًا + {{grace}} أيام سماح)",
       "lowGovernorates": "متابعة دون {{pct}}٪ في: {{names}}"
     },
     "privacyNote": "تُعرض الجغرافيا على مستوى المحافظة فقط — دون المدينة أو الحي. وتُدمج المحافظات التي تضم أقل من {{min}} أطفال في «أخرى» حتى لا يمكن تمييز أي طفل."

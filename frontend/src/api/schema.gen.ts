@@ -1926,15 +1926,16 @@ export interface paths {
          *
          *     The geographic breakdown groups by the FAMILY governorate (outer join on
          *     ``family_id``, so children with no family land in "unspecified" rather
-         *     than dropping out) and reports, per governorate, the headcount AND how
-         *     many of those children have reported within the current window (the
-         *     house-report definition verbatim: at least one non-draft report with
-         *     ``period_end`` inside the last :data:`REPORT_WINDOW_DAYS` days).
-         *     Governorate is a sensitive child-data dimension, so sub-threshold
-         *     buckets collapse into "other" — both tallies carried, never lost — while
-         *     "unspecified" stays its own bucket whatever its size. Buckets are
-         *     ordered by count descending with a stable tiebreak on key. Registered
-         *     before ``/{orphan_id}`` so "community-report" is never parsed as an id.
+         *     than dropping out) and reports, per governorate, the headcount AND its
+         *     cadence partition (the house-report definition verbatim: each child's
+         *     latest non-draft ``period_end`` classified as on_track / due_soon /
+         *     overdue against :func:`due_status_cutoffs` for the org's
+         *     :func:`effective_cadence`). Governorate is a sensitive child-data
+         *     dimension, so sub-threshold buckets collapse into "other" — every tally
+         *     carried, never lost — while "unspecified" stays its own bucket whatever
+         *     its size. Buckets are ordered by count descending with a stable tiebreak
+         *     on key. Registered before ``/{orphan_id}`` so "community-report" is
+         *     never parsed as an id.
          */
         get: operations["community_followup_report_api_v1_orphans_community_report_get"];
         put?: never;
@@ -3832,19 +3833,10 @@ export interface components {
             health: components["schemas"]["SegmentBucket"][];
             /** Lives With */
             lives_with: components["schemas"]["SegmentBucket"][];
-            reports_window: components["schemas"]["CommunityReportsWindow"];
+            reporting: components["schemas"]["ReportsCadence"];
             sponsorship: components["schemas"]["CommunitySponsorshipCoverage"];
             /** Total */
             total: number;
-        };
-        /** CommunityReportsWindow */
-        CommunityReportsWindow: {
-            /** Not Reported */
-            not_reported: number;
-            /** Reported */
-            reported: number;
-            /** Window Days */
-            window_days: number;
         };
         /** CommunitySponsorshipCoverage */
         CommunitySponsorshipCoverage: {
@@ -4549,10 +4541,14 @@ export interface components {
         GovernorateFollowup: {
             /** Count */
             count: number;
+            /** Due Soon */
+            due_soon: number;
             /** Governorate */
             governorate: string;
-            /** Reported */
-            reported: number;
+            /** On Track */
+            on_track: number;
+            /** Overdue */
+            overdue: number;
         };
         /**
          * GuardianBlock
@@ -6455,7 +6451,7 @@ export interface components {
              * Format: uuid
              */
             orphanage_id: string;
-            reports_window: components["schemas"]["OrphanageReportsWindow"];
+            reporting: components["schemas"]["ReportsCadence"];
             sponsorship: components["schemas"]["OrphanageSponsorshipCoverage"];
         };
         /**
@@ -6512,15 +6508,6 @@ export interface components {
             } | null;
             /** Summary */
             summary?: string | null;
-        };
-        /** OrphanageReportsWindow */
-        OrphanageReportsWindow: {
-            /** Not Reported */
-            not_reported: number;
-            /** Reported */
-            reported: number;
-            /** Window Days */
-            window_days: number;
         };
         /** OrphanageSponsorshipCoverage */
         OrphanageSponsorshipCoverage: {
@@ -7910,6 +7897,26 @@ export interface components {
             } | null;
             /** Summary */
             summary?: string | null;
+        };
+        /**
+         * ReportsCadence
+         * @description Top-line reporting-cadence tallies, shared verbatim by this report and
+         *     the house report (``orphanages.py`` imports it — the same one-way
+         *     direction as ``SegmentBucket``) so the two can never drift apart.
+         *     Each child in the slice lands in exactly one state, classified from its
+         *     latest non-draft ``period_end`` against :func:`due_status_cutoffs`.
+         */
+        ReportsCadence: {
+            /** Cadence Days */
+            cadence_days: number;
+            /** Due Soon */
+            due_soon: number;
+            /** Grace Days */
+            grace_days: number;
+            /** On Track */
+            on_track: number;
+            /** Overdue */
+            overdue: number;
         };
         /** ResendVerificationRequest */
         ResendVerificationRequest: {

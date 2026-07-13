@@ -1,9 +1,9 @@
 """Pure reporting-cadence rules — no DB, no session, fully unit-testable.
 
-``report_due_status`` is the single source of truth for classifying a
-child's reporting state against an organization's cadence. The house and
-community reports will consume it when they migrate off the fixed
-``REPORT_WINDOW_DAYS`` window.
+``due_status_cutoffs`` is the single boundary definition for classifying a
+child's reporting state against an organization's cadence: the row-level
+``report_due_status`` and the reports' set-based SQL filters (the house and
+community reports) both derive from it, so the two can never drift.
 """
 
 from __future__ import annotations
@@ -22,6 +22,28 @@ class _HasReportCadence(Protocol):
     report_cadence_days: int | None
 
 
+def due_status_cutoffs(
+    cadence_days: int,
+    today: date,
+    *,
+    grace_days: int = REPORT_OVERDUE_GRACE_DAYS,
+) -> tuple[date, date]:
+    """Return ``(on_track_floor, due_soon_floor)`` for a child's last
+    non-draft ``period_end`` ``e``:
+
+    - ``e >= on_track_floor`` -> "on_track"
+    - ``due_soon_floor <= e < on_track_floor`` -> "due_soon"
+    - ``e < due_soon_floor`` or ``e is None`` -> "overdue"
+
+    Consistent BY CONSTRUCTION with :func:`report_due_status` (which derives
+    from these floors) — the reports' SQL filters compare against the same
+    two dates, so the row-level and set-based classifications never drift.
+    """
+    on_track_floor = today - timedelta(days=cadence_days)
+    due_soon_floor = on_track_floor - timedelta(days=grace_days)
+    return on_track_floor, due_soon_floor
+
+
 def report_due_status(
     last_period_end: date | None,
     cadence_days: int,
@@ -38,10 +60,10 @@ def report_due_status(
     """
     if last_period_end is None:
         return "overdue"
-    due = last_period_end + timedelta(days=cadence_days)
-    if today <= due:
+    on_track_floor, due_soon_floor = due_status_cutoffs(cadence_days, today, grace_days=grace_days)
+    if last_period_end >= on_track_floor:
         return "on_track"
-    if today <= due + timedelta(days=grace_days):
+    if last_period_end >= due_soon_floor:
         return "due_soon"
     return "overdue"
 

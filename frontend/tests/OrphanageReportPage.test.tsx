@@ -64,7 +64,7 @@ const REPORT: OrphanageReport = {
   ],
   sponsorship: { sponsored: 3, unsponsored: 9, sponsored_pct: 25 },
   files: { avg_completion: 74, incomplete_count: 5 },
-  reports_window: { window_days: 90, reported: 7, not_reported: 5 },
+  reporting: { cadence_days: 90, grace_days: 7, on_track: 7, due_soon: 2, overdue: 3 },
 };
 
 function renderPage(initialEntry = "/admin/reports/house") {
@@ -115,15 +115,19 @@ describe("OrphanageReportPage", () => {
     expect(screen.getByText("Primary")).toBeInTheDocument();
     expect(screen.getByText("Unspecified")).toBeInTheDocument();
 
-    // Over-capacity surfaces as an alert AND on the gauge; the reporting
-    // panel is labelled with the honest window (no "late" bucket).
+    // Over-capacity surfaces as an alert AND on the gauge.
     const alerts = screen.getAllByRole("alert");
     expect(alerts.some((a) => a.textContent?.includes("Over capacity"))).toBe(true);
     expect(alerts.some((a) => a.textContent?.includes("below 80%"))).toBe(true);
     expect(screen.getByText("Over capacity by 2")).toBeInTheDocument();
-    // The window is labelled honestly on the KPI card AND the panel title.
-    expect(screen.getAllByText(/Last 90 days/).length).toBeGreaterThan(0);
-    expect(screen.queryByText(/late/i)).not.toBeInTheDocument();
+    // The cadence (and its grace period) is labelled honestly on the KPI
+    // card and the panel title, and the reporting panel carries the three
+    // cadence states.
+    expect(screen.getAllByText(/Every 90 days/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/\+7-day grace/)).toBeInTheDocument();
+    expect(screen.getByText("On track")).toBeInTheDocument();
+    expect(screen.getByText("Due soon")).toBeInTheDocument();
+    expect(screen.getByText("Overdue")).toBeInTheDocument();
   });
 
   it("manager: pinned to their own house — no picker, report fetched for it", async () => {

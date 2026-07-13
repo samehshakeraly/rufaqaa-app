@@ -7,6 +7,12 @@
    defined here, prefixed `cfr-`. Logical properties only (RTL-first).
    ═══════════════════════════════════════════════════════════════ */
 
+/* The PS-02 scope stops at --warning-700; the due-soon bar segment needs
+   the solid mid tone, declared here so the page stays self-contained. */
+.cfr-page {
+  --warning-500: #f59e0b;
+}
+
 /* ───────────── Alerts ───────────── */
 .cfr-alert {
   margin: 0 0 14px;
@@ -160,7 +166,8 @@
 }
 /* Bar anatomy: the light track is the whole panel width, the tinted
    segment the governorate's headcount relative to the largest one, and
-   the solid inner segment its reported share of that headcount. */
+   inside it the solid segment is the on-track share, the amber segment
+   the due-soon share — whatever tint remains is the overdue share. */
 .cfr-gov-track {
   block-size: 10px;
   inline-size: 100%;
@@ -169,15 +176,21 @@
   background: var(--gray-100);
 }
 .cfr-gov-count {
+  display: flex;
   block-size: 100%;
   border-radius: var(--radius-full);
   overflow: hidden;
   background: var(--trust-300);
   transition: inline-size var(--transition);
 }
-.cfr-gov-reported {
+.cfr-gov-on-track {
   block-size: 100%;
   background: var(--trust-600);
+  transition: inline-size var(--transition);
+}
+.cfr-gov-due-soon {
+  block-size: 100%;
+  background: var(--warning-500);
   transition: inline-size var(--transition);
 }
 
