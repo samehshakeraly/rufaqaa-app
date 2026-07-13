@@ -33,8 +33,13 @@ from app.schemas.payment import (
     PaymentStatusUpdate,
     PaymentType,
 )
-from app.services import myfatoorah
 from app.services.audit import record_audit
+from app.services.payment_gateway import (
+    PaymentGatewayError,
+    UnknownGatewayError,
+    get_gateway,
+    select_gateway,
+)
 from app.utils.codes import generate_code
 
 router = APIRouter()
@@ -235,6 +240,7 @@ async def admin_initiate_on_behalf(
     donor_phone = donor.phone
     admin_user_id = user.id
 
+    gateway_name = select_gateway(currency=payload.currency)
     payment = Payment(
         organization_id=donor_org_id,
         code=generate_code("PAY"),
@@ -244,7 +250,7 @@ async def admin_initiate_on_behalf(
         amount=payload.amount,
         currency=payload.currency,
         payment_method="credit_card",
-        payment_gateway="myfatoorah",
+        payment_gateway=gateway_name,
         status="pending",
         initiated_by_user_id=admin_user_id,
     )
@@ -252,8 +258,9 @@ async def admin_initiate_on_behalf(
     await db.flush()
     customer_ref = sponsorship.code if sponsorship is not None else str(payment.id)
     callback_base = settings.APP_BASE_URL.rstrip("/")
+    gateway = get_gateway(gateway_name)
     try:
-        result = await myfatoorah.send_payment(
+        result = await gateway.send_payment(
             amount=payload.amount,
             currency=payload.currency,
             customer_name=donor_name,
@@ -264,7 +271,7 @@ async def admin_initiate_on_behalf(
             error_url=f"{callback_base}/payment/failure?payment_id={payment.id}",
             language=payload.language,
         )
-    except myfatoorah.MyFatoorahError as exc:
+    except PaymentGatewayError as exc:
         await db.rollback()
         record_audit(
             db,
@@ -360,6 +367,7 @@ async def initiate_payment(
     donor_phone = donor.phone
     acting_user_id = user.id
 
+    gateway_name = select_gateway(currency=payload.currency)
     payment = Payment(
         organization_id=donor_org_id,
         code=generate_code("PAY"),
@@ -369,7 +377,7 @@ async def initiate_payment(
         amount=payload.amount,
         currency=payload.currency,
         payment_method="credit_card",
-        payment_gateway="myfatoorah",
+        payment_gateway=gateway_name,
         status="pending",
     )
     db.add(payment)
@@ -379,8 +387,9 @@ async def initiate_payment(
     # looks up by either.
     customer_ref = sponsorship.code if sponsorship is not None else str(payment.id)
     callback_base = settings.APP_BASE_URL.rstrip("/")
+    gateway = get_gateway(gateway_name)
     try:
-        result = await myfatoorah.send_payment(
+        result = await gateway.send_payment(
             amount=payload.amount,
             currency=payload.currency,
             customer_name=donor_name,
@@ -391,7 +400,7 @@ async def initiate_payment(
             error_url=f"{callback_base}/payment/failure?payment_id={payment.id}",
             language=payload.language,
         )
-    except myfatoorah.MyFatoorahError as exc:
+    except PaymentGatewayError as exc:
         # Roll the pending row back so we don't leave orphaned rows on
         # every failed initiate; an audit entry still captures it.
         await db.rollback()
@@ -448,11 +457,13 @@ async def refund_payment(
     moves to ``refunded`` (full) or ``partially_refunded`` (partial) —
     the difference is the requested amount vs the original."""
     payment = await get_in_org_or_404(db, Payment, payment_id, user)
-    if payment.payment_gateway != "myfatoorah":
+    try:
+        gateway = get_gateway(payment.payment_gateway or "")
+    except UnknownGatewayError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only MyFatoorah payments can be refunded through this endpoint",
-        )
+        ) from exc
     if payment.status != "completed":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -470,12 +481,12 @@ async def refund_payment(
         )
 
     try:
-        result = await myfatoorah.make_refund(
+        result = await gateway.make_refund(
             invoice_id=payment.gateway_transaction_id,
             amount=payload.amount,
             reason=payload.reason,
         )
-    except myfatoorah.MyFatoorahError as exc:
+    except PaymentGatewayError as exc:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Gateway error: {exc.message}",
