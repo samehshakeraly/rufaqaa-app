@@ -1,22 +1,24 @@
-from datetime import date, timedelta
+from datetime import date
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import false, func, select
+from sqlalchemy import and_, false, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
-from app.api.v1.orphans import SegmentBucket, _breakdown_buckets
+from app.api.v1.orphans import ReportsCadence, SegmentBucket, _breakdown_buckets
 from app.core.authz import (
     PARTNER_SCOPED_ROLES,
     STAFF_ROLES,
     partner_scope_hides,
     require_roles,
 )
-from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_WINDOW_DAYS
+from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_OVERDUE_GRACE_DAYS
 from app.core.exceptions import NotFound
+from app.core.reporting import due_status_cutoffs, effective_cadence
+from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.report import OrphanReport
@@ -157,14 +159,13 @@ async def create_orphanage(
 #
 # Read-only aggregate over ONE dar: occupancy against capacity, collective
 # health / education breakdowns, sponsorship coverage, file completion and
-# the current reporting window. Counts and averages only — it never returns
+# the reporting-cadence tallies. Counts and averages only — it never returns
 # an individual resident row, zero PII. Mirrors the /orphans/segments
 # posture: response models colocated here, breakdown buckets reuse
-# SegmentBucket ordered by count descending with a stable key tiebreak.
-
-# FILE_INCOMPLETE_THRESHOLD and REPORT_WINDOW_DAYS moved to
-# app.core.constants (imported above) once the community follow-up report
-# started sharing them — the definitions themselves are unchanged.
+# SegmentBucket ordered by count descending with a stable key tiebreak, and
+# the top-line reporting model is the shared ReportsCadence (imported from
+# orphans.py, same one-way direction) so this report and the community
+# follow-up report can never drift apart on the cadence definitions.
 
 # Who may read a dar's report: the staff roles plus the dar's own manager.
 # orphanage_manager is not a STAFF_ROLES member (require_roles would 403 it),
@@ -192,12 +193,6 @@ class OrphanageFileCompletion(BaseModel):
     incomplete_count: int  # residents below FILE_INCOMPLETE_THRESHOLD
 
 
-class OrphanageReportsWindow(BaseModel):
-    window_days: int
-    reported: int
-    not_reported: int
-
-
 class OrphanageReport(BaseModel):
     orphanage_id: UUID
     occupancy: OrphanageOccupancy
@@ -205,7 +200,7 @@ class OrphanageReport(BaseModel):
     education: list[SegmentBucket]
     sponsorship: OrphanageSponsorshipCoverage
     files: OrphanageFileCompletion
-    reports_window: OrphanageReportsWindow
+    reporting: ReportsCadence
 
 
 async def _load_orphanage_for_report(db: AsyncSession, user: User, orphanage_id: UUID) -> Orphanage:
@@ -290,21 +285,53 @@ async def orphanage_report(
         )
     ).all()
 
-    # A resident has "reported" when at least one non-draft report ends
-    # within the window — DISTINCT so several reports count the child once.
-    window_start = date.today() - timedelta(days=REPORT_WINDOW_DAYS)
-    reported = int(
-        await db.scalar(
-            select(func.count(OrphanReport.orphan_id.distinct()))
-            .join(Orphan, OrphanReport.orphan_id == Orphan.id)
-            .where(
-                *resident_where,
-                OrphanReport.status != "draft",
-                OrphanReport.period_end >= window_start,
-            )
+    # The caller's org sets the cadence the residents classify against.
+    # Queried explicitly (the relationship is lazy="raise") and org-scoped
+    # like everything else here.
+    org = await db.scalar(select(Organization).where(Organization.id == user.organization_id))
+    if org is None:
+        raise NotFound("Organization")
+    cadence = effective_cadence(org)
+    on_track_floor, due_soon_floor = due_status_cutoffs(cadence, date.today())
+
+    # Each resident's latest non-draft period_end, built once and LEFT-JOINed
+    # so residents with no non-draft report carry NULL. Server-side only —
+    # never returned per child. The three filters PARTITION the residents
+    # exactly: NULL never matches the first two and overdue catches it
+    # explicitly, so the tallies always sum to the headcount.
+    latest_report = (
+        select(
+            OrphanReport.orphan_id.label("orphan_id"),
+            func.max(OrphanReport.period_end).label("last_period_end"),
         )
-        or 0
+        .where(
+            OrphanReport.organization_id == user.organization_id,
+            OrphanReport.status != "draft",
+        )
+        .group_by(OrphanReport.orphan_id)
+        .subquery()
     )
+    last_period_end = latest_report.c.last_period_end
+    cadence_row = (
+        await db.execute(
+            select(
+                func.count().filter(last_period_end >= on_track_floor),
+                func.count().filter(
+                    and_(
+                        last_period_end < on_track_floor,
+                        last_period_end >= due_soon_floor,
+                    )
+                ),
+                func.count().filter(
+                    or_(last_period_end.is_(None), last_period_end < due_soon_floor)
+                ),
+            )
+            .select_from(Orphan)
+            .outerjoin(latest_report, latest_report.c.orphan_id == Orphan.id)
+            .where(*resident_where)
+        )
+    ).one()
+    on_track, due_soon, overdue = (int(n) for n in cadence_row)
 
     capacity = orphanage.capacity
     return OrphanageReport(
@@ -329,10 +356,12 @@ async def orphanage_report(
             avg_completion=avg_completion,
             incomplete_count=incomplete_count,
         ),
-        reports_window=OrphanageReportsWindow(
-            window_days=REPORT_WINDOW_DAYS,
-            reported=reported,
-            not_reported=residents - reported,
+        reporting=ReportsCadence(
+            cadence_days=cadence,
+            grace_days=REPORT_OVERDUE_GRACE_DAYS,
+            on_track=on_track,
+            due_soon=due_soon,
+            overdue=overdue,
         ),
     )
 

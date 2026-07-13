@@ -23,7 +23,8 @@ const FILE_INCOMPLETE_THRESHOLD = 80;
 /**
  * Read-only "house report" for one dar: occupancy against capacity,
  * collective health / education breakdowns, sponsorship coverage and the
- * current reporting window. Counts only — no individual resident records.
+ * reporting-cadence tallies (on track / due soon / overdue against the
+ * org's cadence). Counts only — no individual resident records.
  *
  * The orphanage_manager is pinned to the single dar they run (no picker);
  * admins and partner managers pick from the dars their scope returns. The
@@ -138,7 +139,7 @@ function darName(
 
 function ReportBody({ report }: { report: OrphanageReport }) {
   const { t, i18n } = useTranslation();
-  const { occupancy, sponsorship, files, reports_window: window } = report;
+  const { occupancy, sponsorship, files, reporting } = report;
   const fmt = (n: number) => n.toLocaleString(i18n.language);
 
   /** i18n label for a coded bucket; NULLs arrive as the "unspecified" key
@@ -150,8 +151,15 @@ function ReportBody({ report }: { report: OrphanageReport }) {
 
   const overBy =
     occupancy.capacity != null ? occupancy.residents - occupancy.capacity : 0;
-  const windowLabel = t("orphanageReport.reporting.windowLabel", {
-    days: window.window_days,
+  // The cadence the backend classified against, labelled honestly — the
+  // KPI tag also names the grace period that separates due-soon from
+  // overdue.
+  const cadenceLabel = t("orphanageReport.reporting.cadenceLabel", {
+    days: reporting.cadence_days,
+  });
+  const cadenceWithGrace = t("orphanageReport.reporting.cadenceWithGrace", {
+    days: reporting.cadence_days,
+    grace: reporting.grace_days,
   });
 
   return (
@@ -247,15 +255,18 @@ function ReportBody({ report }: { report: OrphanageReport }) {
         </div>
         <div className="ohr-card">
           <span className="ohr-card-label">
-            {t("orphanageReport.cards.reported")}
-            <span className="ohr-card-tag">{windowLabel}</span>
+            {t("orphanageReport.cards.onTrack")}
+            <span className="ohr-card-tag">{cadenceWithGrace}</span>
           </span>
           <span className="ohr-card-value latin">
-            {fmt(window.reported)}
+            {fmt(reporting.on_track)}
             <span className="ohr-gauge-capacity"> / {fmt(occupancy.residents)}</span>
           </span>
           <span className="ohr-card-sub latin">
-            {t("orphanageReport.cards.notReported", { n: fmt(window.not_reported) })}
+            {t("orphanageReport.cards.dueSoonOverdue", {
+              dueSoon: fmt(reporting.due_soon),
+              overdue: fmt(reporting.overdue),
+            })}
           </span>
         </div>
       </div>
@@ -295,17 +306,22 @@ function ReportBody({ report }: { report: OrphanageReport }) {
           hideWhenAllZero
         />
         <BreakdownPanel
-          title={`${t("orphanageReport.panels.reporting")} — ${windowLabel}`}
+          title={`${t("orphanageReport.panels.reporting")} — ${cadenceLabel}`}
           items={[
             {
-              key: "reported",
-              label: t("orphanageReport.reporting.reported"),
-              count: window.reported,
+              key: "on_track",
+              label: t("orphanageReport.reporting.onTrack"),
+              count: reporting.on_track,
             },
             {
-              key: "not_reported",
-              label: t("orphanageReport.reporting.notReported"),
-              count: window.not_reported,
+              key: "due_soon",
+              label: t("orphanageReport.reporting.dueSoon"),
+              count: reporting.due_soon,
+            },
+            {
+              key: "overdue",
+              label: t("orphanageReport.reporting.overdue"),
+              count: reporting.overdue,
             },
           ]}
           hideWhenAllZero

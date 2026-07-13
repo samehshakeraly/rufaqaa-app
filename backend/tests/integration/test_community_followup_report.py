@@ -3,13 +3,14 @@
 Counts-only aggregate over the OUT-OF-HOME orphans — children living with
 family, not in a dar (``orphanage_id IS NULL``, the exact complement of the
 house report's residents): the family-governorate breakdown with per-bucket
-follow-up tallies and the k-anonymity collapse (both ``count`` AND
-``reported`` survive the merge, "unspecified" never merges into "other"),
-the reporting window (the house-report definition verbatim — non-draft
-reports whose period_end falls inside the last REPORT_WINDOW_DAYS, no "late"
-figure), lives_with / health breakdowns with the explicit "unspecified"
-bucket, sponsorship coverage and the file-completion aggregates (threshold
-boundary at 80).
+cadence tallies and the k-anonymity collapse (``count`` AND all three of
+``on_track`` / ``due_soon`` / ``overdue`` survive the merge, "unspecified"
+never merges into "other"), the reporting-cadence tallies (the house-report
+definition verbatim — each child's latest non-draft period_end classified
+against the org's effective cadence plus the grace period, never reported
+counts as overdue), lives_with / health breakdowns with the explicit
+"unspecified" bucket, sponsorship coverage and the file-completion
+aggregates (threshold boundary at 80).
 
 Isolation mirrors test_orphan_segments_report.py: org A never sees org B's
 counts, a partner-scoped user only their own جهة, a scoped user with no جهة
@@ -32,7 +33,11 @@ from httpx import AsyncClient
 from sqlalchemy import select, text
 
 from app.api.v1.orphans import SEGMENT_MIN_BUCKET
-from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_WINDOW_DAYS
+from app.core.constants import (
+    DEFAULT_REPORT_CADENCE_DAYS,
+    FILE_INCOMPLETE_THRESHOLD,
+    REPORT_OVERDUE_GRACE_DAYS,
+)
 from app.core.database import make_session
 from app.core.security import hash_password
 from app.models.family import Family
@@ -221,9 +226,13 @@ def _bucket_counts(buckets: list[dict[str, Any]]) -> dict[str, int]:
     return {b["key"]: b["count"] for b in buckets}
 
 
-def _gov_tallies(body: dict[str, Any]) -> dict[str, tuple[int, int]]:
-    """governorate → (count, reported) for exact whole-breakdown asserts."""
-    return {g["governorate"]: (g["count"], g["reported"]) for g in body["governorates"]}
+def _gov_tallies(body: dict[str, Any]) -> dict[str, tuple[int, int, int, int]]:
+    """governorate → (count, on_track, due_soon, overdue) for exact
+    whole-breakdown asserts."""
+    return {
+        g["governorate"]: (g["count"], g["on_track"], g["due_soon"], g["overdue"])
+        for g in body["governorates"]
+    }
 
 
 # ── The out-of-home slice ────────────────────────────────────────────────
@@ -271,17 +280,19 @@ async def test_governorate_grouping_and_unspecified(
 
     body = await _report(api, auth_headers, tags=marker)
     assert body["total"] == 5
-    assert _gov_tallies(body) == {gov: (3, 0), "unspecified": (2, 0)}
+    # None of the five has any report → every tally lands in overdue.
+    assert _gov_tallies(body) == {gov: (3, 0, 0, 3), "unspecified": (2, 0, 0, 2)}
     # Ordered by count desc with a stable tiebreak on the governorate key.
     assert [g["governorate"] for g in body["governorates"]] == [gov, "unspecified"]
 
 
-async def test_governorate_k_anonymity_preserves_reported(
+async def test_governorate_k_anonymity_preserves_tallies(
     api: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
-    """Sub-threshold governorates collapse into 'other' carrying BOTH tallies
-    (count and reported), while 'unspecified' stays its own bucket however
-    small — 'not recorded' and 'too small to show' must never blur."""
+    """Sub-threshold governorates collapse into 'other' carrying EVERY tally
+    (count and the three cadence states), while 'unspecified' stays its own
+    bucket however small — 'not recorded' and 'too small to show' must never
+    blur."""
     assert SEGMENT_MIN_BUCKET == 3
     org_id = await _seed_org_id()
     partner_id = await _seed_partner_id()
@@ -308,50 +319,65 @@ async def test_governorate_k_anonymity_preserves_reported(
     body = await _report(api, auth_headers, tags=marker)
     assert body["total"] == 6
     # The two rare governorates (1 child each) merge into 'other' — their
-    # reported tally (1) moves with them, never lost; the sub-threshold
+    # on_track tally (1) moves with them, never lost; the sub-threshold
     # 'unspecified' (1 child) survives as its own bucket.
     assert _gov_tallies(body) == {
-        f"محافظة-كبرى-{marker}": (3, 1),
-        "other": (2, 1),
-        "unspecified": (1, 0),
+        f"محافظة-كبرى-{marker}": (3, 1, 0, 2),
+        "other": (2, 1, 0, 1),
+        "unspecified": (1, 0, 0, 1),
     }
     rare_names = {g["governorate"] for g in body["governorates"]}
     assert not any("نادرة" in name for name in rare_names)
 
 
-# ── Reporting window ─────────────────────────────────────────────────────
+# ── Reporting cadence ────────────────────────────────────────────────────
 
 
-async def test_reports_window(api: AsyncClient, auth_headers: dict[str, str]) -> None:
-    """A child counts as reported only for a NON-draft report whose
-    period_end is inside the window; several qualifying reports still count
-    the child once; drafts and out-of-window reports don't count."""
+async def test_reporting_cadence_classification(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Each child is classified from their LATEST non-draft period_end:
+    recent is on_track, within the grace period past the due date is
+    due_soon, past the grace period is overdue, and a draft-only or
+    never-reported child is overdue. Several qualifying reports still count
+    the child once (only the latest matters)."""
+    cadence = DEFAULT_REPORT_CADENCE_DAYS  # the seed org has no cadence of its own
     partner_id = await _seed_partner_id()
     marker = f"cfr-rw-{uuid.uuid4().hex[:8]}"
-    in_window = date.today() - timedelta(days=10)
-    out_of_window = date.today() - timedelta(days=REPORT_WINDOW_DAYS + 1)
+    recent = date.today() - timedelta(days=10)
 
-    reported = await _create(api, auth_headers, partner_id, tags=[marker])
-    await _add_report(reported, status="published_to_donor", period_end=in_window)
-    await _add_report(reported, status="org_approved", period_end=in_window)  # counted once
+    on_track = await _create(api, auth_headers, partner_id, tags=[marker])
+    await _add_report(on_track, status="published_to_donor", period_end=recent)
+    await _add_report(on_track, status="org_approved", period_end=recent)  # counted once
+
+    in_grace = await _create(api, auth_headers, partner_id, tags=[marker])
+    await _add_report(
+        in_grace, status="org_approved", period_end=date.today() - timedelta(days=cadence + 1)
+    )
 
     draft_only = await _create(api, auth_headers, partner_id, tags=[marker])
-    await _add_report(draft_only, status="draft", period_end=in_window)
+    await _add_report(draft_only, status="draft", period_end=recent)
 
     stale = await _create(api, auth_headers, partner_id, tags=[marker])
-    await _add_report(stale, status="published_to_donor", period_end=out_of_window)
+    await _add_report(
+        stale,
+        status="published_to_donor",
+        period_end=date.today() - timedelta(days=cadence + REPORT_OVERDUE_GRACE_DAYS + 1),
+    )
 
     await _create(api, auth_headers, partner_id, tags=[marker])  # never reported
 
     body = await _report(api, auth_headers, tags=marker)
-    assert body["reports_window"] == {
-        "window_days": REPORT_WINDOW_DAYS,
-        "reported": 1,
-        "not_reported": 3,
+    assert body["reporting"] == {
+        "cadence_days": cadence,
+        "grace_days": REPORT_OVERDUE_GRACE_DAYS,
+        "on_track": 1,
+        "due_soon": 1,
+        "overdue": 3,
     }
-    # The whole slice has no family → one 'unspecified' bucket whose
-    # reported tally matches the window figure.
-    assert _gov_tallies(body) == {"unspecified": (4, 1)}
+    # The whole slice has no family → one 'unspecified' bucket whose cadence
+    # tallies match the top line.
+    assert _gov_tallies(body) == {"unspecified": (5, 1, 1, 3)}
 
 
 # ── lives_with / health breakdowns ───────────────────────────────────────
@@ -427,8 +453,8 @@ async def test_file_aggregates_threshold_boundary(
 
 async def test_breakdown_sums_equal_total(api: AsyncClient, auth_headers: dict[str, str]) -> None:
     """Every breakdown partitions the same slice: sum(governorates) ==
-    sum(lives_with) == sum(health) == total, sponsorship and the window
-    partition it too."""
+    sum(lives_with) == sum(health) == total, sponsorship and the cadence
+    tallies partition it too — top-line AND per governorate."""
     org_id = await _seed_org_id()
     partner_id = await _seed_partner_id()
     marker = f"cfr-in-{uuid.uuid4().hex[:8]}"
@@ -447,9 +473,12 @@ async def test_breakdown_sums_equal_total(api: AsyncClient, auth_headers: dict[s
     assert sum(b["count"] for b in body["lives_with"]) == total
     assert sum(b["count"] for b in body["health"]) == total
     assert body["sponsorship"]["sponsored"] + body["sponsorship"]["unsponsored"] == total
-    window = body["reports_window"]
-    assert window["reported"] + window["not_reported"] == total
-    assert sum(g["reported"] for g in body["governorates"]) == window["reported"]
+    reporting = body["reporting"]
+    assert reporting["on_track"] + reporting["due_soon"] + reporting["overdue"] == total
+    for state in ("on_track", "due_soon", "overdue"):
+        assert sum(g[state] for g in body["governorates"]) == reporting[state]
+    for g in body["governorates"]:
+        assert g["on_track"] + g["due_soon"] + g["overdue"] == g["count"]
 
 
 # ── Tenant + جهة scoping ─────────────────────────────────────────────────
@@ -473,12 +502,17 @@ async def test_org_isolation(api: AsyncClient, auth_headers: dict[str, str]) -> 
     assert dev_view["health"] == []
     assert dev_view["sponsorship"] == {"sponsored": 0, "unsponsored": 0, "sponsored_pct": None}
     assert dev_view["files"] == {"avg_completion": None, "incomplete_count": 0}
-    assert dev_view["reports_window"]["reported"] == 0
-    assert dev_view["reports_window"]["not_reported"] == 0
+    assert dev_view["reporting"] == {
+        "cadence_days": DEFAULT_REPORT_CADENCE_DAYS,
+        "grace_days": REPORT_OVERDUE_GRACE_DAYS,
+        "on_track": 0,
+        "due_soon": 0,
+        "overdue": 0,
+    }
 
     foreign_view = await _report(api, foreign_admin, tags=marker)
     assert foreign_view["total"] == 3
-    assert _gov_tallies(foreign_view) == {f"محافظة-{marker}": (3, 0)}
+    assert _gov_tallies(foreign_view) == {f"محافظة-{marker}": (3, 0, 0, 3)}
 
 
 async def test_partner_scoped_user(api: AsyncClient, auth_headers: dict[str, str]) -> None:

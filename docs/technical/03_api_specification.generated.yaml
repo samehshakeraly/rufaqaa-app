@@ -590,8 +590,8 @@ components:
             $ref: '#/components/schemas/SegmentBucket'
           title: Lives With
           type: array
-        reports_window:
-          $ref: '#/components/schemas/CommunityReportsWindow'
+        reporting:
+          $ref: '#/components/schemas/ReportsCadence'
         sponsorship:
           $ref: '#/components/schemas/CommunitySponsorshipCoverage'
         total:
@@ -600,29 +600,12 @@ components:
       required:
       - total
       - governorates
-      - reports_window
+      - reporting
       - lives_with
       - health
       - sponsorship
       - files
       title: CommunityFollowupReport
-      type: object
-    CommunityReportsWindow:
-      properties:
-        not_reported:
-          title: Not Reported
-          type: integer
-        reported:
-          title: Reported
-          type: integer
-        window_days:
-          title: Window Days
-          type: integer
-      required:
-      - window_days
-      - reported
-      - not_reported
-      title: CommunityReportsWindow
       type: object
     CommunitySponsorshipCoverage:
       properties:
@@ -2071,16 +2054,24 @@ components:
         count:
           title: Count
           type: integer
+        due_soon:
+          title: Due Soon
+          type: integer
         governorate:
           title: Governorate
           type: string
-        reported:
-          title: Reported
+        on_track:
+          title: On Track
+          type: integer
+        overdue:
+          title: Overdue
           type: integer
       required:
       - governorate
       - count
-      - reported
+      - on_track
+      - due_soon
+      - overdue
       title: GovernorateFollowup
       type: object
     GuardianBlock:
@@ -5859,8 +5850,8 @@ components:
           format: uuid
           title: Orphanage Id
           type: string
-        reports_window:
-          $ref: '#/components/schemas/OrphanageReportsWindow'
+        reporting:
+          $ref: '#/components/schemas/ReportsCadence'
         sponsorship:
           $ref: '#/components/schemas/OrphanageSponsorshipCoverage'
       required:
@@ -5870,7 +5861,7 @@ components:
       - education
       - sponsorship
       - files
-      - reports_window
+      - reporting
       title: OrphanageReport
       type: object
     OrphanageReportCreate:
@@ -5964,23 +5955,6 @@ components:
       - period_start
       - period_end
       title: OrphanageReportCreate
-      type: object
-    OrphanageReportsWindow:
-      properties:
-        not_reported:
-          title: Not Reported
-          type: integer
-        reported:
-          title: Reported
-          type: integer
-        window_days:
-          title: Window Days
-          type: integer
-      required:
-      - window_days
-      - reported
-      - not_reported
-      title: OrphanageReportsWindow
       type: object
     OrphanageSponsorshipCoverage:
       properties:
@@ -8655,6 +8629,40 @@ components:
           - type: 'null'
           title: Summary
       title: ReportUpdate
+      type: object
+    ReportsCadence:
+      description: 'Top-line reporting-cadence tallies, shared verbatim by this report and
+
+        the house report (``orphanages.py`` imports it — the same one-way
+
+        direction as ``SegmentBucket``) so the two can never drift apart.
+
+        Each child in the slice lands in exactly one state, classified from its
+
+        latest non-draft ``period_end`` against :func:`due_status_cutoffs`.'
+      properties:
+        cadence_days:
+          title: Cadence Days
+          type: integer
+        due_soon:
+          title: Due Soon
+          type: integer
+        grace_days:
+          title: Grace Days
+          type: integer
+        on_track:
+          title: On Track
+          type: integer
+        overdue:
+          title: Overdue
+          type: integer
+      required:
+      - cadence_days
+      - grace_days
+      - on_track
+      - due_soon
+      - overdue
+      title: ReportsCadence
       type: object
     ResendVerificationRequest:
       properties:
@@ -14030,23 +14038,25 @@ paths:
 
         ``family_id``, so children with no family land in "unspecified" rather
 
-        than dropping out) and reports, per governorate, the headcount AND how
+        than dropping out) and reports, per governorate, the headcount AND its
 
-        many of those children have reported within the current window (the
+        cadence partition (the house-report definition verbatim: each child''s
 
-        house-report definition verbatim: at least one non-draft report with
+        latest non-draft ``period_end`` classified as on_track / due_soon /
 
-        ``period_end`` inside the last :data:`REPORT_WINDOW_DAYS` days).
+        overdue against :func:`due_status_cutoffs` for the org''s
 
-        Governorate is a sensitive child-data dimension, so sub-threshold
+        :func:`effective_cadence`). Governorate is a sensitive child-data
 
-        buckets collapse into "other" — both tallies carried, never lost — while
+        dimension, so sub-threshold buckets collapse into "other" — every tally
 
-        "unspecified" stays its own bucket whatever its size. Buckets are
+        carried, never lost — while "unspecified" stays its own bucket whatever
 
-        ordered by count descending with a stable tiebreak on key. Registered
+        its size. Buckets are ordered by count descending with a stable tiebreak
 
-        before ``/{orphan_id}`` so "community-report" is never parsed as an id.'
+        on key. Registered before ``/{orphan_id}`` so "community-report" is
+
+        never parsed as an id.'
       operationId: community_followup_report_api_v1_orphans_community_report_get
       parameters:
       - in: query

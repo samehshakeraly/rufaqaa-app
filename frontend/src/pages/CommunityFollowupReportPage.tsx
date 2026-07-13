@@ -20,16 +20,17 @@ type SegmentBucket = components["schemas"]["SegmentBucket"];
 const FILE_INCOMPLETE_THRESHOLD = 80;
 const SEGMENT_MIN_BUCKET = 3;
 
-// Follow-up tier boundaries for the per-governorate badge: ≥80% good,
-// 60–79% fair, below 60% needs follow-up (also the alert threshold).
+// Follow-up tier boundaries for the per-governorate badge, computed over
+// the ON-TRACK share: ≥80% good, 60–79% fair, below 60% needs follow-up
+// (also the alert threshold).
 const TIER_GOOD_PCT = 80;
 const TIER_OK_PCT = 60;
 
 type GovSort = "most" | "weakest";
 type Tier = "good" | "ok" | "low";
 
-function followUpPct(g: GovernorateFollowup): number {
-  return g.count > 0 ? Math.round((g.reported / g.count) * 100) : 0;
+function onTrackPct(g: GovernorateFollowup): number {
+  return g.count > 0 ? Math.round((g.on_track / g.count) * 100) : 0;
 }
 
 function tierOf(pct: number): Tier {
@@ -72,7 +73,7 @@ export function CommunityFollowupReportPage() {
 
 function ReportBody({ report }: { report: CommunityFollowupReport }) {
   const { t, i18n } = useTranslation();
-  const { reports_window: window, sponsorship, files } = report;
+  const { reporting, sponsorship, files } = report;
   const fmt = (n: number) => n.toLocaleString(i18n.language);
 
   /** i18n label for a coded bucket; NULLs arrive as the "unspecified" key
@@ -90,29 +91,35 @@ function ReportBody({ report }: { report: CommunityFollowupReport }) {
         ? t("orphanSegments.buckets.other")
         : key;
 
-  const windowLabel = t("orphanageReport.reporting.windowLabel", {
-    days: window.window_days,
+  // The cadence the backend classified against, labelled honestly — the
+  // KPI tag also names the grace period that separates due-soon from
+  // overdue.
+  const cadenceWithGrace = t("orphanageReport.reporting.cadenceWithGrace", {
+    days: reporting.cadence_days,
+    grace: reporting.grace_days,
   });
   // Named governorates only — "unspecified" is no governorate and "other"
   // is the merge of several small ones, so neither inflates the KPI.
   const namedGovernorates = report.governorates.filter(
     (g) => g.governorate !== "unspecified" && g.governorate !== "other",
   ).length;
-  const reportedPct = report.total > 0 ? Math.round((window.reported * 100) / report.total) : null;
+  const onTrackShare =
+    report.total > 0 ? Math.round((reporting.on_track * 100) / report.total) : null;
   // Every real governorate row (named + the merged "other") with weak
   // follow-up — "unspecified" is excluded: it is not a place to visit.
   const lowGovernorates = report.governorates.filter(
-    (g) => g.governorate !== "unspecified" && followUpPct(g) < TIER_OK_PCT,
+    (g) => g.governorate !== "unspecified" && onTrackPct(g) < TIER_OK_PCT,
   );
 
   return (
     <>
-      {/* ── Alerts — children without a report, weak governorates ───── */}
-      {window.not_reported > 0 && (
+      {/* ── Alerts — overdue children, weak governorates ─────────────── */}
+      {reporting.overdue > 0 && (
         <div role="alert" className="cfr-alert cfr-alert-warn">
-          {t("communityFollowup.alerts.notReported", {
-            n: fmt(window.not_reported),
-            days: window.window_days,
+          {t("communityFollowup.alerts.overdue", {
+            n: fmt(reporting.overdue),
+            days: reporting.cadence_days,
+            grace: reporting.grace_days,
           })}
         </div>
       )}
@@ -141,14 +148,17 @@ function ReportBody({ report }: { report: CommunityFollowupReport }) {
         </div>
         <div className="cfr-card">
           <span className="cfr-card-label">
-            {t("orphanageReport.cards.reported")}
-            <span className="cfr-card-tag">{windowLabel}</span>
+            {t("orphanageReport.cards.onTrack")}
+            <span className="cfr-card-tag">{cadenceWithGrace}</span>
           </span>
-          <span className="cfr-card-value latin" data-testid="cfr-kpi-reported">
-            {reportedPct != null ? `${fmt(reportedPct)}%` : "—"}
+          <span className="cfr-card-value latin" data-testid="cfr-kpi-on-track">
+            {onTrackShare != null ? `${fmt(onTrackShare)}%` : "—"}
           </span>
           <span className="cfr-card-sub latin">
-            {t("orphanageReport.cards.notReported", { n: fmt(window.not_reported) })}
+            {t("orphanageReport.cards.dueSoonOverdue", {
+              dueSoon: fmt(reporting.due_soon),
+              overdue: fmt(reporting.overdue),
+            })}
           </span>
         </div>
         <div className="cfr-card">
@@ -211,8 +221,9 @@ function ReportBody({ report }: { report: CommunityFollowupReport }) {
 }
 
 /** The signature panel: one row per governorate — bar length is the
- * headcount, the darker segment its reported share, the badge the
- * follow-up tier. Sortable by size or by weakest follow-up first. */
+ * headcount, the solid segment its on-track share, the amber segment the
+ * due-soon share (the remaining tint is overdue), the badge the follow-up
+ * tier. Sortable by size or by weakest follow-up first. */
 function GeoFollowupPanel({
   governorates,
   govLabel,
@@ -225,12 +236,12 @@ function GeoFollowupPanel({
   const fmt = (n: number) => n.toLocaleString(i18n.language);
 
   // The backend already orders by count desc with a stable key tiebreak
-  // (the "most" order); "weakest" re-sorts by follow-up share ascending.
+  // (the "most" order); "weakest" re-sorts by on-track share ascending.
   const rows = useMemo(() => {
     if (sort === "most") return governorates;
     return [...governorates].sort(
       (a, b) =>
-        followUpPct(a) - followUpPct(b) ||
+        onTrackPct(a) - onTrackPct(b) ||
         b.count - a.count ||
         a.governorate.localeCompare(b.governorate),
     );
@@ -265,8 +276,9 @@ function GeoFollowupPanel({
       ) : (
         <ul className="cfr-gov-rows">
           {rows.map((g) => {
-            const pct = followUpPct(g);
+            const pct = onTrackPct(g);
             const tier = tierOf(pct);
+            const dueSoonShare = g.count > 0 ? Math.round((g.due_soon / g.count) * 100) : 0;
             return (
               <li key={g.governorate} className="cfr-gov-row" data-testid="cfr-gov-row">
                 <div className="cfr-gov-meta">
@@ -275,10 +287,12 @@ function GeoFollowupPanel({
                     {t(`communityFollowup.geo.tier.${tier}`)}
                   </span>
                   <span className="cfr-gov-figures latin">
-                    {t("communityFollowup.geo.followedUp", {
-                      reported: fmt(g.reported),
+                    {t("communityFollowup.geo.tallies", {
+                      onTrack: fmt(g.on_track),
                       count: fmt(g.count),
                       pct: fmt(pct),
+                      dueSoon: fmt(g.due_soon),
+                      overdue: fmt(g.overdue),
                     })}
                   </span>
                 </div>
@@ -287,7 +301,8 @@ function GeoFollowupPanel({
                     className="cfr-gov-count"
                     style={{ inlineSize: `${((g.count / maxCount) * 100).toFixed(1)}%` }}
                   >
-                    <div className="cfr-gov-reported" style={{ inlineSize: `${pct}%` }} />
+                    <div className="cfr-gov-on-track" style={{ inlineSize: `${pct}%` }} />
+                    <div className="cfr-gov-due-soon" style={{ inlineSize: `${dueSoonShare}%` }} />
                   </div>
                 </div>
               </li>

@@ -4,9 +4,10 @@ Counts-only aggregate over ONE dar's residents: occupancy against capacity
 (including the exactly-full / over-capacity / capacity-not-recorded edges),
 health + education breakdowns with the explicit "unspecified" bucket,
 sponsorship coverage, file-completion aggregates (threshold boundary at 80),
-and the current reporting window (non-draft reports whose period_end falls
-inside the last REPORT_WINDOW_DAYS — no "late" figure, that needs a
-scheduling model).
+and the reporting-cadence tallies (each resident's latest NON-draft
+period_end classified as on_track / due_soon / overdue against the org's
+effective cadence plus the grace period — never reported counts as
+overdue).
 
 Isolation mirrors test_orphan_segments_report.py + test_orphanages.py: the
 dar's own manager reads ONLY their house (any other dar → 404, same shape as
@@ -28,7 +29,8 @@ from uuid import UUID, uuid4
 from httpx import AsyncClient
 from sqlalchemy import select, text
 
-from app.api.v1.orphanages import FILE_INCOMPLETE_THRESHOLD, REPORT_WINDOW_DAYS
+from app.api.v1.orphanages import FILE_INCOMPLETE_THRESHOLD
+from app.core.constants import DEFAULT_REPORT_CADENCE_DAYS, REPORT_OVERDUE_GRACE_DAYS
 from app.core.database import make_session
 from app.core.security import hash_password
 from app.models.organization import Organization
@@ -60,8 +62,9 @@ async def _seed_org_id() -> UUID:
         return admin.organization_id
 
 
-async def _make_org() -> UUID:
-    """A separate (foreign) organization for cross-org isolation tests."""
+async def _make_org(report_cadence_days: int | None = None) -> UUID:
+    """A separate (foreign) organization for cross-org isolation tests,
+    optionally with its own reporting cadence."""
     suffix = uuid4().hex[:6]
     async with make_session() as db:
         org = Organization(
@@ -70,6 +73,7 @@ async def _make_org() -> UUID:
             name_en=f"Org {suffix}",
             org_type="standalone",
             country_code="KW",
+            report_cadence_days=report_cadence_days,
         )
         db.add(org)
         await db.commit()
@@ -334,10 +338,12 @@ async def test_empty_dar_report(api: AsyncClient, auth_headers: dict[str, str]) 
     assert body["education"] == []
     assert body["sponsorship"] == {"sponsored": 0, "unsponsored": 0, "sponsored_pct": None}
     assert body["files"] == {"avg_completion": None, "incomplete_count": 0}
-    assert body["reports_window"] == {
-        "window_days": REPORT_WINDOW_DAYS,
-        "reported": 0,
-        "not_reported": 0,
+    assert body["reporting"] == {
+        "cadence_days": DEFAULT_REPORT_CADENCE_DAYS,
+        "grace_days": REPORT_OVERDUE_GRACE_DAYS,
+        "on_track": 0,
+        "due_soon": 0,
+        "overdue": 0,
     }
 
 
@@ -404,8 +410,8 @@ async def test_totals_invariant_and_resident_definition(
     assert sum(b["count"] for b in body["health"]) == residents
     assert sum(b["count"] for b in body["education"]) == residents
     assert body["sponsorship"]["sponsored"] + body["sponsorship"]["unsponsored"] == residents
-    window = body["reports_window"]
-    assert window["reported"] + window["not_reported"] == residents
+    reporting = body["reporting"]
+    assert reporting["on_track"] + reporting["due_soon"] + reporting["overdue"] == residents
 
 
 # ── Sponsorship + file aggregates ────────────────────────────────────────
@@ -440,35 +446,96 @@ async def test_file_aggregates_threshold_boundary(
     assert body["files"] == {"avg_completion": 80, "incomplete_count": 2}
 
 
-# ── Reporting window ─────────────────────────────────────────────────────
+# ── Reporting cadence ────────────────────────────────────────────────────
 
 
-async def test_reports_window(api: AsyncClient, auth_headers: dict[str, str]) -> None:
-    """A resident counts as reported only for a NON-draft report whose
-    period_end is inside the window; several qualifying reports still count
-    the child once; drafts and out-of-window reports don't count."""
+async def test_reporting_cadence_classification(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Each resident is classified from their LATEST non-draft period_end:
+    on the due day itself is still on_track, within the grace period is
+    due_soon (boundary inclusive), past the grace period is overdue, and a
+    draft-only or never-reported resident is overdue. Several qualifying
+    reports still count the child once (only the latest matters)."""
+    cadence = DEFAULT_REPORT_CADENCE_DAYS  # the seed org has no cadence of its own
     partner_id = await _seed_partner_id()
     dar = await _make_dar(api, auth_headers)
-    in_window = date.today() - timedelta(days=10)
-    out_of_window = date.today() - timedelta(days=REPORT_WINDOW_DAYS + 1)
 
-    reported = await _make_resident(api, auth_headers, partner_id, dar["id"])
-    await _add_report(reported, status="published_to_donor", period_end=in_window)
-    await _add_report(reported, status="org_approved", period_end=in_window)  # counted once
+    on_track = await _make_resident(api, auth_headers, partner_id, dar["id"])
+    await _add_report(
+        on_track, status="published_to_donor", period_end=date.today() - timedelta(days=10)
+    )
+    # An older report must not demote the child — only the latest counts.
+    await _add_report(
+        on_track, status="org_approved", period_end=date.today() - timedelta(days=cadence + 100)
+    )
+
+    on_due_day = await _make_resident(api, auth_headers, partner_id, dar["id"])
+    await _add_report(
+        on_due_day, status="org_approved", period_end=date.today() - timedelta(days=cadence)
+    )
+
+    due_soon = await _make_resident(api, auth_headers, partner_id, dar["id"])
+    await _add_report(
+        due_soon, status="org_approved", period_end=date.today() - timedelta(days=cadence + 1)
+    )
+
+    last_grace_day = await _make_resident(api, auth_headers, partner_id, dar["id"])
+    await _add_report(
+        last_grace_day,
+        status="published_to_donor",
+        period_end=date.today() - timedelta(days=cadence + REPORT_OVERDUE_GRACE_DAYS),
+    )
+
+    past_grace = await _make_resident(api, auth_headers, partner_id, dar["id"])
+    await _add_report(
+        past_grace,
+        status="published_to_donor",
+        period_end=date.today() - timedelta(days=cadence + REPORT_OVERDUE_GRACE_DAYS + 1),
+    )
 
     draft_only = await _make_resident(api, auth_headers, partner_id, dar["id"])
-    await _add_report(draft_only, status="draft", period_end=in_window)
-
-    stale = await _make_resident(api, auth_headers, partner_id, dar["id"])
-    await _add_report(stale, status="published_to_donor", period_end=out_of_window)
+    await _add_report(draft_only, status="draft", period_end=date.today() - timedelta(days=10))
 
     await _make_resident(api, auth_headers, partner_id, dar["id"])  # never reported
 
     body = await _report(api, auth_headers, dar["id"])
-    assert body["reports_window"] == {
-        "window_days": REPORT_WINDOW_DAYS,
-        "reported": 1,
-        "not_reported": 3,
+    assert body["reporting"] == {
+        "cadence_days": cadence,
+        "grace_days": REPORT_OVERDUE_GRACE_DAYS,
+        "on_track": 2,
+        "due_soon": 2,
+        "overdue": 3,
+    }
+
+
+async def test_reporting_cadence_uses_org_cadence(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """An org with its own report_cadence_days classifies against IT, not the
+    platform default: with a 30-day cadence a 40-day-old report is already
+    overdue and a 31-day-old one is due_soon."""
+    org_id = await _make_org(report_cadence_days=30)
+    jiha = await _make_partner_org(org_id)
+    admin = await _login_user(api, org_id, None, role="org_admin")
+    dar = await _make_dar(api, admin, partner_organization_id=jiha)
+
+    fresh = await _make_resident(api, admin, jiha, dar["id"])
+    await _add_report(fresh, status="org_approved", period_end=date.today() - timedelta(days=10))
+
+    just_due = await _make_resident(api, admin, jiha, dar["id"])
+    await _add_report(just_due, status="org_approved", period_end=date.today() - timedelta(days=31))
+
+    stale = await _make_resident(api, admin, jiha, dar["id"])
+    await _add_report(stale, status="org_approved", period_end=date.today() - timedelta(days=40))
+
+    body = await _report(api, admin, dar["id"])
+    assert body["reporting"] == {
+        "cadence_days": 30,
+        "grace_days": REPORT_OVERDUE_GRACE_DAYS,
+        "on_track": 1,
+        "due_soon": 1,
+        "overdue": 1,
     }
 
 

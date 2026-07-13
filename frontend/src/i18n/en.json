@@ -1403,8 +1403,8 @@
       "sponsoredPct": "{{pct}}% of residents",
       "avgCompletion": "Avg. file completion",
       "incompleteFiles": "{{n}} files below {{threshold}}%",
-      "reported": "Reported this window",
-      "notReported": "{{n}} not yet submitted"
+      "onTrack": "Reports on track",
+      "dueSoonOverdue": "Due soon: {{dueSoon}} · Overdue: {{overdue}}"
     },
     "panels": {
       "health": "Collective health status",
@@ -1413,9 +1413,11 @@
       "reporting": "Reporting status"
     },
     "reporting": {
-      "windowLabel": "Last {{days}} days",
-      "reported": "Reported",
-      "notReported": "Not yet submitted"
+      "cadenceLabel": "Every {{days}} days",
+      "cadenceWithGrace": "Every {{days}} days (+{{grace}}-day grace)",
+      "onTrack": "On track",
+      "dueSoon": "Due soon",
+      "overdue": "Overdue"
     },
     "sponsorshipLabels": {
       "unsponsored": "Not sponsored"
@@ -1437,7 +1439,7 @@
       "sortLabel": "Order governorates by",
       "sortMost": "Most children",
       "sortWeakest": "Weakest follow-up",
-      "followedUp": "{{reported}}/{{count}} reported ({{pct}}%)",
+      "tallies": "{{onTrack}}/{{count}} on track ({{pct}}%) · due soon {{dueSoon}} · overdue {{overdue}}",
       "tier": {
         "good": "Good",
         "ok": "Fair",
@@ -1449,7 +1451,7 @@
       "health": "Collective health status"
     },
     "alerts": {
-      "notReported": "{{n}} children have no report in the last {{days}} days",
+      "overdue": "{{n}} children are overdue for a report (every {{days}} days + {{grace}}-day grace)",
       "lowGovernorates": "Follow-up below {{pct}}% in: {{names}}"
     },
     "privacyNote": "Geography is shown at governorate level only — never city or district. Governorates with fewer than {{min}} children are merged into \"Other\" so no child can be singled out."

@@ -8,7 +8,7 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import Select, case, false, func, or_, select, text
+from sqlalchemy import Select, and_, case, false, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DbSession
@@ -21,9 +21,11 @@ from app.core.authz import (
     partner_scope_hides,
     require_roles,
 )
-from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_WINDOW_DAYS
+from app.core.constants import FILE_INCOMPLETE_THRESHOLD, REPORT_OVERDUE_GRACE_DAYS
 from app.core.exceptions import NotFound
+from app.core.reporting import due_status_cutoffs, effective_cadence
 from app.models.family import Family
+from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.orphanage import Orphanage
 from app.models.partner import MarketingChannel, PartnerOrganization
@@ -588,19 +590,31 @@ async def orphan_segments(
 # Family), never the dar's — these children have no dar.
 
 
+class ReportsCadence(BaseModel):
+    """Top-line reporting-cadence tallies, shared verbatim by this report and
+    the house report (``orphanages.py`` imports it — the same one-way
+    direction as ``SegmentBucket``) so the two can never drift apart.
+    Each child in the slice lands in exactly one state, classified from its
+    latest non-draft ``period_end`` against :func:`due_status_cutoffs`."""
+
+    cadence_days: int  # effective_cadence(org)
+    grace_days: int  # REPORT_OVERDUE_GRACE_DAYS, exposed for honest labels
+    on_track: int
+    due_soon: int
+    overdue: int  # includes children who never reported
+
+
 class GovernorateFollowup(BaseModel):
     # The family governorate name; "unspecified" for children with no family
     # or no recorded governorate, "other" for the k-anonymity collapse of
     # sub-threshold governorates (see SEGMENT_MIN_BUCKET).
     governorate: str
     count: int
-    reported: int  # of count, how many reported within the current window
-
-
-class CommunityReportsWindow(BaseModel):
-    window_days: int
-    reported: int
-    not_reported: int
+    # The cadence partition of count (same cutoffs as the top line):
+    # on_track + due_soon + overdue == count, always.
+    on_track: int
+    due_soon: int
+    overdue: int
 
 
 class CommunitySponsorshipCoverage(BaseModel):
@@ -617,7 +631,7 @@ class CommunityFileCompletion(BaseModel):
 class CommunityFollowupReport(BaseModel):
     total: int
     governorates: list[GovernorateFollowup]
-    reports_window: CommunityReportsWindow
+    reporting: ReportsCadence
     lives_with: list[SegmentBucket]
     health: list[SegmentBucket]
     sponsorship: CommunitySponsorshipCoverage
@@ -654,15 +668,16 @@ async def community_followup_report(
 
     The geographic breakdown groups by the FAMILY governorate (outer join on
     ``family_id``, so children with no family land in "unspecified" rather
-    than dropping out) and reports, per governorate, the headcount AND how
-    many of those children have reported within the current window (the
-    house-report definition verbatim: at least one non-draft report with
-    ``period_end`` inside the last :data:`REPORT_WINDOW_DAYS` days).
-    Governorate is a sensitive child-data dimension, so sub-threshold
-    buckets collapse into "other" — both tallies carried, never lost — while
-    "unspecified" stays its own bucket whatever its size. Buckets are
-    ordered by count descending with a stable tiebreak on key. Registered
-    before ``/{orphan_id}`` so "community-report" is never parsed as an id.
+    than dropping out) and reports, per governorate, the headcount AND its
+    cadence partition (the house-report definition verbatim: each child's
+    latest non-draft ``period_end`` classified as on_track / due_soon /
+    overdue against :func:`due_status_cutoffs` for the org's
+    :func:`effective_cadence`). Governorate is a sensitive child-data
+    dimension, so sub-threshold buckets collapse into "other" — every tally
+    carried, never lost — while "unspecified" stays its own bucket whatever
+    its size. Buckets are ordered by count descending with a stable tiebreak
+    on key. Registered before ``/{orphan_id}`` so "community-report" is
+    never parsed as an id.
     """
 
     def community_slice[SelectT: Select[Any]](stmt: SelectT) -> SelectT:
@@ -688,8 +703,40 @@ async def community_followup_report(
             q=q,
         ).where(Orphan.orphanage_id.is_(None))
 
+    # The caller's org sets the cadence the whole report classifies against.
+    # Queried explicitly (the relationship is lazy="raise") and org-scoped
+    # like everything else here.
+    org = await db.scalar(select(Organization).where(Organization.id == user.organization_id))
+    if org is None:
+        raise NotFound("Organization")
+    cadence = effective_cadence(org)
+    on_track_floor, due_soon_floor = due_status_cutoffs(cadence, date.today())
+
+    # Each child's latest non-draft period_end (the house-report definition),
+    # built once and LEFT-JOINed so children with no non-draft report carry
+    # NULL. Server-side only — never returned per child. The three predicates
+    # PARTITION the slice exactly: NULL never matches the first two and
+    # overdue catches it explicitly, so the tallies always sum to total.
+    latest_report = (
+        select(
+            OrphanReport.orphan_id.label("orphan_id"),
+            func.max(OrphanReport.period_end).label("last_period_end"),
+        )
+        .where(
+            OrphanReport.organization_id == user.organization_id,
+            OrphanReport.status != "draft",
+        )
+        .group_by(OrphanReport.orphan_id)
+        .subquery()
+    )
+    last_period_end = latest_report.c.last_period_end
+    is_on_track = last_period_end >= on_track_floor
+    is_due_soon = and_(last_period_end < on_track_floor, last_period_end >= due_soon_floor)
+    is_overdue = or_(last_period_end.is_(None), last_period_end < due_soon_floor)
+
     # One pass over the slice for every scalar aggregate: headcount,
-    # sponsorship coverage and the two file-completion figures.
+    # sponsorship coverage, the two file-completion figures and the
+    # three cadence tallies.
     totals = (
         await db.execute(
             community_slice(
@@ -700,7 +747,12 @@ async def community_followup_report(
                     func.count().filter(
                         Orphan.profile_completion_percentage < FILE_INCOMPLETE_THRESHOLD
                     ),
-                ).select_from(Orphan)
+                    func.count().filter(is_on_track),
+                    func.count().filter(is_due_soon),
+                    func.count().filter(is_overdue),
+                )
+                .select_from(Orphan)
+                .outerjoin(latest_report, latest_report.c.orphan_id == Orphan.id)
             )
         )
     ).one()
@@ -708,28 +760,7 @@ async def community_followup_report(
     sponsored = int(totals[1])
     avg_completion = int(round(totals[2])) if totals[2] is not None else None
     incomplete_count = int(totals[3])
-
-    # A child has "reported" when at least one non-draft report ends within
-    # the window (the house-report definition). EXISTS rather than a joined
-    # DISTINCT count so the same correlated predicate can also feed the
-    # per-governorate FILTER below — several reports still count the child
-    # once either way.
-    window_start = date.today() - timedelta(days=REPORT_WINDOW_DAYS)
-    reported_in_window = (
-        select(OrphanReport.id)
-        .where(
-            OrphanReport.orphan_id == Orphan.id,
-            OrphanReport.status != "draft",
-            OrphanReport.period_end >= window_start,
-        )
-        .exists()
-    )
-    reported = int(
-        await db.scalar(
-            community_slice(select(func.count()).select_from(Orphan).where(reported_in_window))
-        )
-        or 0
-    )
+    on_track, due_soon, overdue = int(totals[4]), int(totals[5]), int(totals[6])
 
     gov_rows = (
         await db.execute(
@@ -737,10 +768,13 @@ async def community_followup_report(
                 select(
                     Family.governorate,
                     func.count(),
-                    func.count().filter(reported_in_window),
+                    func.count().filter(is_on_track),
+                    func.count().filter(is_due_soon),
+                    func.count().filter(is_overdue),
                 )
                 .select_from(Orphan)
                 .outerjoin(Family, Orphan.family_id == Family.id)
+                .outerjoin(latest_report, latest_report.c.orphan_id == Orphan.id)
                 .group_by(Family.governorate)
             )
         )
@@ -749,7 +783,9 @@ async def community_followup_report(
         GovernorateFollowup(
             governorate="unspecified" if row[0] is None else str(row[0]),
             count=int(row[1]),
-            reported=int(row[2]),
+            on_track=int(row[2]),
+            due_soon=int(row[3]),
+            overdue=int(row[4]),
         )
         for row in gov_rows
     ]
@@ -758,7 +794,9 @@ async def community_followup_report(
         lambda small: GovernorateFollowup(
             governorate="other",
             count=sum(b.count for b in small),
-            reported=sum(b.reported for b in small),
+            on_track=sum(b.on_track for b in small),
+            due_soon=sum(b.due_soon for b in small),
+            overdue=sum(b.overdue for b in small),
         ),
         exempt=lambda b: b.governorate == "unspecified",
     )
@@ -786,10 +824,12 @@ async def community_followup_report(
     return CommunityFollowupReport(
         total=total,
         governorates=governorates,
-        reports_window=CommunityReportsWindow(
-            window_days=REPORT_WINDOW_DAYS,
-            reported=reported,
-            not_reported=total - reported,
+        reporting=ReportsCadence(
+            cadence_days=cadence,
+            grace_days=REPORT_OVERDUE_GRACE_DAYS,
+            on_track=on_track,
+            due_soon=due_soon,
+            overdue=overdue,
         ),
         lives_with=_breakdown_buckets(list(lives_with_rows)),
         health=_breakdown_buckets(list(health_rows)),
