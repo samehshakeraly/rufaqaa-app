@@ -1693,6 +1693,96 @@ components:
       - token
       title: EmailVerifyRequest
       type: object
+    ExchangeRateCreate:
+      description: 'Record a new rate: ``1 base_currency = rate quote_currency``.
+
+
+        Rates are append-only — each write lands a NEW ``effective_at`` row so
+
+        the history stays intact; lookups pick the most recent row at or before
+
+        the payment instant. ``rate`` bounds and ``base != quote`` are checked
+
+        in the endpoint so violations return a clear 400 (not a bare 422).'
+      properties:
+        base_currency:
+          maxLength: 3
+          minLength: 3
+          title: Base Currency
+          type: string
+        effective_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Effective At
+        quote_currency:
+          maxLength: 3
+          minLength: 3
+          title: Quote Currency
+          type: string
+        rate:
+          anyOf:
+          - type: number
+          - pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,10}|(?=[\d.]{1,19}0*$)\d{0,10}\.\d{0,8}0*$)
+            type: string
+          title: Rate
+      required:
+      - base_currency
+      - quote_currency
+      - rate
+      title: ExchangeRateCreate
+      type: object
+    ExchangeRateRead:
+      properties:
+        base_currency:
+          title: Base Currency
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        created_by:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Created By
+        effective_at:
+          format: date-time
+          title: Effective At
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        organization_id:
+          format: uuid
+          title: Organization Id
+          type: string
+        quote_currency:
+          title: Quote Currency
+          type: string
+        rate:
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Rate
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - organization_id
+      - base_currency
+      - quote_currency
+      - rate
+      - effective_at
+      - created_by
+      - created_at
+      - updated_at
+      title: ExchangeRateRead
+      type: object
     FamilyCreate:
       properties:
         address_details:
@@ -6915,6 +7005,12 @@ components:
           pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
           title: Amount
           type: string
+        amount_in_default_currency:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Amount In Default Currency
         code:
           title: Code
           type: string
@@ -6940,6 +7036,12 @@ components:
           - type: string
           - type: 'null'
           title: Donor Reference
+        exchange_rate:
+          anyOf:
+          - pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+            type: string
+          - type: 'null'
+          title: Exchange Rate
         gateway_transaction_id:
           anyOf:
           - type: string
@@ -7025,6 +7127,8 @@ components:
       - orphan_id
       - amount
       - currency
+      - amount_in_default_currency
+      - exchange_rate
       - payment_method
       - payment_gateway
       - gateway_transaction_id
@@ -9132,12 +9236,21 @@ components:
       title: SponsorshipCancel
       type: object
     SponsorshipCreate:
+      description: 'The org''s ``default_currency`` is authoritative for sponsorships
+
+        (R8-A2): ``currency`` is optional here and only accepted as an echo of
+
+        that value — anything else is rejected with 400, never silently
+
+        overridden.'
       properties:
         currency:
-          maxLength: 3
-          minLength: 3
+          anyOf:
+          - maxLength: 3
+            minLength: 3
+            type: string
+          - type: 'null'
           title: Currency
-          type: string
         donor_id:
           format: uuid
           title: Donor Id
@@ -9188,7 +9301,6 @@ components:
       - donor_id
       - orphan_id
       - monthly_amount
-      - currency
       - start_date
       title: SponsorshipCreate
       type: object
@@ -9339,8 +9451,8 @@ components:
       - donor_id
       - orphan_id
       - monthly_amount
-      - currency
       - start_date
+      - currency
       - id
       - code
       - organization_id
@@ -11301,6 +11413,66 @@ paths:
       summary: Restore Donor
       tags:
       - donors
+  /api/v1/exchange-rates:
+    get:
+      description: 'Full rate history for the caller''s org, newest first per pair.
+
+
+        Explicit org scope (never RLS). The table stays small — a handful of
+
+        pairs × occasional updates — so no pagination; capped defensively.'
+      operationId: list_exchange_rates_api_v1_exchange_rates_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExchangeRateRead'
+                title: Response List Exchange Rates Api V1 Exchange Rates Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List Exchange Rates
+      tags:
+      - exchange-rates
+    post:
+      description: 'Record a new rate row for the caller''s org (append-only upsert).
+
+
+        ``base == quote`` is rejected — that conversion is identity by
+
+        definition (:func:`app.services.fx.get_rate` returns 1 without a
+
+        lookup), so a stored row could only ever contradict it. ``rate`` must
+
+        be strictly positive; both violations are a clear 400.'
+      operationId: create_exchange_rate_api_v1_exchange_rates_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExchangeRateCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangeRateRead'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create Exchange Rate
+      tags:
+      - exchange-rates
   /api/v1/families:
     get:
       operationId: list_families_api_v1_families_get
@@ -15752,7 +15924,15 @@ paths:
 
         For gateway-initiated payments use the webhook endpoint instead — this
 
-        handler is for staff entering offline payments by hand.'
+        handler is for staff entering offline payments by hand. A missing FX
+
+        rate does NOT block recording a real received payment: the row lands
+
+        with NULL ``exchange_rate`` / ``amount_in_default_currency`` (stats
+
+        already tolerate FX gaps) instead of storing an unconverted amount as
+
+        if it were converted.'
       operationId: create_payment_api_v1_payments_post
       requestBody:
         content:

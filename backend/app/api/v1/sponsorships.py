@@ -12,7 +12,9 @@ from sqlalchemy import func, select
 from app.api.deps import DbSession
 from app.api.scoping import get_in_org_or_404
 from app.core.authz import FINANCE_ROLES, require_roles
+from app.core.exceptions import NotFound
 from app.models.donor import Donor
+from app.models.organization import Organization
 from app.models.orphan import Orphan
 from app.models.sponsorship import Sponsorship
 from app.models.user import User
@@ -120,6 +122,22 @@ async def create_sponsorship(
     await get_in_org_or_404(db, Donor, payload.donor_id, user)
     await get_in_org_or_404(db, Orphan, payload.orphan_id, user, Orphan.deleted_at.is_(None))
 
+    # Sponsorships are ALWAYS denominated in the org's default currency
+    # (R8-A2). User.organization is lazy="raise", so load the org with an
+    # explicit org-scoped query. A payload currency that differs is a caller
+    # error — reject loudly rather than silently override.
+    org = await db.scalar(select(Organization).where(Organization.id == user.organization_id))
+    if org is None:
+        raise NotFound("Organization")
+    if payload.currency is not None and payload.currency.upper() != org.default_currency:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Sponsorships must be denominated in the organization's "
+                f"default currency ({org.default_currency})"
+            ),
+        )
+
     existing = await db.scalar(
         select(Sponsorship).where(
             Sponsorship.donor_id == payload.donor_id,
@@ -139,7 +157,7 @@ async def create_sponsorship(
         donor_id=payload.donor_id,
         orphan_id=payload.orphan_id,
         monthly_amount=payload.monthly_amount,
-        currency=payload.currency,
+        currency=org.default_currency,
         start_date=payload.start_date,
         end_date=payload.end_date,
         payment_frequency=payload.payment_frequency,

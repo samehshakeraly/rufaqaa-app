@@ -767,6 +767,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/exchange-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Exchange Rates
+         * @description Full rate history for the caller's org, newest first per pair.
+         *
+         *     Explicit org scope (never RLS). The table stays small — a handful of
+         *     pairs × occasional updates — so no pagination; capped defensively.
+         */
+        get: operations["list_exchange_rates_api_v1_exchange_rates_get"];
+        put?: never;
+        /**
+         * Create Exchange Rate
+         * @description Record a new rate row for the caller's org (append-only upsert).
+         *
+         *     ``base == quote`` is rejected — that conversion is identity by
+         *     definition (:func:`app.services.fx.get_rate` returns 1 without a
+         *     lookup), so a stored row could only ever contradict it. ``rate`` must
+         *     be strictly positive; both violations are a clear 400.
+         */
+        post: operations["create_exchange_rate_api_v1_exchange_rates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/families": {
         parameters: {
             query?: never;
@@ -2474,7 +2506,11 @@ export interface paths {
          * @description Record a manual / cash / cheque payment.
          *
          *     For gateway-initiated payments use the webhook endpoint instead — this
-         *     handler is for staff entering offline payments by hand.
+         *     handler is for staff entering offline payments by hand. A missing FX
+         *     rate does NOT block recording a real received payment: the row lands
+         *     with NULL ``exchange_rate`` / ``amount_in_default_currency`` (stats
+         *     already tolerate FX gaps) instead of storing an unconverted amount as
+         *     if it were converted.
          */
         post: operations["create_payment_api_v1_payments_post"];
         delete?: never;
@@ -4373,6 +4409,61 @@ export interface components {
         EmailVerifyRequest: {
             /** Token */
             token: string;
+        };
+        /**
+         * ExchangeRateCreate
+         * @description Record a new rate: ``1 base_currency = rate quote_currency``.
+         *
+         *     Rates are append-only — each write lands a NEW ``effective_at`` row so
+         *     the history stays intact; lookups pick the most recent row at or before
+         *     the payment instant. ``rate`` bounds and ``base != quote`` are checked
+         *     in the endpoint so violations return a clear 400 (not a bare 422).
+         */
+        ExchangeRateCreate: {
+            /** Base Currency */
+            base_currency: string;
+            /** Effective At */
+            effective_at?: string | null;
+            /** Quote Currency */
+            quote_currency: string;
+            /** Rate */
+            rate: number | string;
+        };
+        /** ExchangeRateRead */
+        ExchangeRateRead: {
+            /** Base Currency */
+            base_currency: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string | null;
+            /**
+             * Effective At
+             * Format: date-time
+             */
+            effective_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Organization Id
+             * Format: uuid
+             */
+            organization_id: string;
+            /** Quote Currency */
+            quote_currency: string;
+            /** Rate */
+            rate: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** FamilyCreate */
         FamilyCreate: {
@@ -6968,6 +7059,8 @@ export interface components {
         PaymentRead: {
             /** Amount */
             amount: string;
+            /** Amount In Default Currency */
+            amount_in_default_currency: string | null;
             /** Code */
             code: string;
             /** Completed At */
@@ -6986,6 +7079,8 @@ export interface components {
             donor_id: string;
             /** Donor Reference */
             donor_reference?: string | null;
+            /** Exchange Rate */
+            exchange_rate: string | null;
             /** Gateway Transaction Id */
             gateway_transaction_id: string | null;
             /**
@@ -8152,10 +8247,16 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
-        /** SponsorshipCreate */
+        /**
+         * SponsorshipCreate
+         * @description The org's ``default_currency`` is authoritative for sponsorships
+         *     (R8-A2): ``currency`` is optional here and only accepted as an echo of
+         *     that value — anything else is rejected with 400, never silently
+         *     overridden.
+         */
         SponsorshipCreate: {
             /** Currency */
-            currency: string;
+            currency?: string | null;
             /**
              * Donor Id
              * Format: uuid
@@ -9925,6 +10026,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DonorRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_exchange_rates_api_v1_exchange_rates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExchangeRateRead"][];
+                };
+            };
+        };
+    };
+    create_exchange_rate_api_v1_exchange_rates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExchangeRateCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExchangeRateRead"];
                 };
             };
             /** @description Validation Error */

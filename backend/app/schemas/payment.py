@@ -68,6 +68,10 @@ class PaymentRead(BaseModel):
     orphan_id: UUID | None
     amount: Decimal
     currency: str
+    # R8-A2 FX snapshot: NULL on rows recorded before a rate existed (manual
+    # recording tolerates the gap); gateway-initiated rows always carry both.
+    amount_in_default_currency: Decimal | None
+    exchange_rate: Decimal | None
     payment_method: PaymentMethod
     payment_gateway: str | None
     gateway_transaction_id: str | None

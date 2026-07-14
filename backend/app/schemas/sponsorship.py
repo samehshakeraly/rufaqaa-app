@@ -19,10 +19,11 @@ PaymentFrequency = Literal["monthly", "quarterly", "semi_annual", "annual", "one
 
 
 class SponsorshipBase(BaseModel):
+    # `currency` lives on the subclasses, not here: it is REQUIRED on reads
+    # but only an optional echo on creates (R8-A2 pins it to the org).
     donor_id: UUID
     orphan_id: UUID
     monthly_amount: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
-    currency: str = Field(min_length=3, max_length=3)
     start_date: date
     end_date: date | None = None
     payment_frequency: PaymentFrequency = "monthly"
@@ -31,12 +32,18 @@ class SponsorshipBase(BaseModel):
 
 
 class SponsorshipCreate(SponsorshipBase):
-    pass
+    """The org's ``default_currency`` is authoritative for sponsorships
+    (R8-A2): ``currency`` is optional here and only accepted as an echo of
+    that value — anything else is rejected with 400, never silently
+    overridden."""
+
+    currency: str | None = Field(default=None, min_length=3, max_length=3)
 
 
 class SponsorshipRead(SponsorshipBase):
     model_config = ConfigDict(from_attributes=True)
 
+    currency: str = Field(min_length=3, max_length=3)
     id: UUID
     code: str
     organization_id: UUID

@@ -9,6 +9,7 @@ from app.api.v1 import (
     donor_portal,
     donor_self,
     donors,
+    exchange_rates,
     families,
     guardian_self,
     health,
@@ -47,6 +48,7 @@ api_router.include_router(
 )
 api_router.include_router(sponsorships.router, prefix="/sponsorships", tags=["sponsorships"])
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
+api_router.include_router(exchange_rates.router, prefix="/exchange-rates", tags=["exchange-rates"])
 api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
 api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 api_router.include_router(audit.router, prefix="/audit", tags=["audit"])

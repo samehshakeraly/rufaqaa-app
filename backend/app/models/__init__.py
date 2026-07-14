@@ -1,5 +1,6 @@
 from app.models.audit import AuditLogEntry
 from app.models.donor import Donor
+from app.models.exchange_rate import ExchangeRate
 from app.models.family import Family, Guardian
 from app.models.media import Media
 from app.models.need import OrphanNeed
@@ -19,6 +20,7 @@ from app.models.wish import OrphanWish
 __all__ = [
     "AuditLogEntry",
     "Donor",
+    "ExchangeRate",
     "Family",
     "Guardian",
     "MarketingChannel",

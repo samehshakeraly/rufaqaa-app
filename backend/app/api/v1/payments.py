@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.api.scoping import get_in_org_or_404
@@ -33,6 +34,7 @@ from app.schemas.payment import (
     PaymentStatusUpdate,
     PaymentType,
 )
+from app.services import fx
 from app.services.audit import record_audit
 from app.services.payment_gateway import (
     PaymentGatewayError,
@@ -43,6 +45,38 @@ from app.services.payment_gateway import (
 from app.utils.codes import generate_code
 
 router = APIRouter()
+
+
+async def _resolve_fx(
+    db: AsyncSession, organization_id: UUID, payment_currency: str
+) -> tuple[Organization, Decimal | None]:
+    """Load the payment's org and the admin-maintained FX rate for
+    ``payment_currency -> org.default_currency``.
+
+    The org load filters by the id EXPLICITLY (never RLS — superuser
+    connection). The rate comes from :func:`app.services.fx.get_rate`, the
+    ONLY rate source: ``Decimal(1)`` when the currencies match (no DB hit),
+    ``None`` when no rate row is configured — each payment write decides
+    whether ``None`` fails closed (gateway paths) or is tolerated as an FX
+    gap (manual recording).
+    """
+    org = await db.scalar(select(Organization).where(Organization.id == organization_id))
+    if org is None:
+        raise NotFound("Organization")
+    rate = await fx.get_rate(
+        db,
+        organization_id=organization_id,
+        base_currency=payment_currency,
+        quote_currency=org.default_currency,
+    )
+    return org, rate
+
+
+def _no_rate_configured(payment_currency: str, default_currency: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=(f"No exchange rate configured for {payment_currency.upper()}->{default_currency}"),
+    )
 
 
 @router.get("", response_model=Page[PaymentRead])
@@ -153,13 +187,19 @@ async def create_payment(
     """Record a manual / cash / cheque payment.
 
     For gateway-initiated payments use the webhook endpoint instead — this
-    handler is for staff entering offline payments by hand.
+    handler is for staff entering offline payments by hand. A missing FX
+    rate does NOT block recording a real received payment: the row lands
+    with NULL ``exchange_rate`` / ``amount_in_default_currency`` (stats
+    already tolerate FX gaps) instead of storing an unconverted amount as
+    if it were converted.
     """
     await get_in_org_or_404(db, Donor, payload.donor_id, user)
 
     sponsorship: Sponsorship | None = None
     if payload.sponsorship_id is not None:
         sponsorship = await get_in_org_or_404(db, Sponsorship, payload.sponsorship_id, user)
+
+    _org, rate = await _resolve_fx(db, user.organization_id, payload.currency)
 
     now = datetime.now(UTC)
     payment = Payment(
@@ -170,6 +210,8 @@ async def create_payment(
         orphan_id=payload.orphan_id or (sponsorship.orphan_id if sponsorship is not None else None),
         amount=payload.amount,
         currency=payload.currency,
+        exchange_rate=rate,
+        amount_in_default_currency=(fx.convert(payload.amount, rate) if rate is not None else None),
         payment_method=payload.payment_method,
         payment_gateway=payload.payment_gateway,
         gateway_transaction_id=payload.gateway_transaction_id,
@@ -240,6 +282,14 @@ async def admin_initiate_on_behalf(
     donor_phone = donor.phone
     admin_user_id = user.id
 
+    # FAIL-CLOSED (R8-A2): the gateway path never creates a payment we
+    # can't denominate in the org currency. Checked BEFORE the row is
+    # built, so no dangling pending row is left behind. Same org as the
+    # donor — donor was loaded org-scoped above.
+    org, rate = await _resolve_fx(db, donor_org_id, payload.currency)
+    if rate is None:
+        raise _no_rate_configured(payload.currency, org.default_currency)
+
     gateway_name = select_gateway(currency=payload.currency)
     payment = Payment(
         organization_id=donor_org_id,
@@ -249,6 +299,8 @@ async def admin_initiate_on_behalf(
         orphan_id=(sponsorship.orphan_id if sponsorship is not None else payload.orphan_id),
         amount=payload.amount,
         currency=payload.currency,
+        exchange_rate=rate,
+        amount_in_default_currency=fx.convert(payload.amount, rate),
         payment_method="credit_card",
         payment_gateway=gateway_name,
         status="pending",
@@ -367,6 +419,13 @@ async def initiate_payment(
     donor_phone = donor.phone
     acting_user_id = user.id
 
+    # FAIL-CLOSED (R8-A2): the gateway path never creates a payment we
+    # can't denominate in the org currency. Checked BEFORE the row is
+    # built, so no dangling pending row is left behind.
+    org, rate = await _resolve_fx(db, donor_org_id, payload.currency)
+    if rate is None:
+        raise _no_rate_configured(payload.currency, org.default_currency)
+
     gateway_name = select_gateway(currency=payload.currency)
     payment = Payment(
         organization_id=donor_org_id,
@@ -376,6 +435,8 @@ async def initiate_payment(
         orphan_id=(sponsorship.orphan_id if sponsorship is not None else payload.orphan_id),
         amount=payload.amount,
         currency=payload.currency,
+        exchange_rate=rate,
+        amount_in_default_currency=fx.convert(payload.amount, rate),
         payment_method="credit_card",
         payment_gateway=gateway_name,
         status="pending",
