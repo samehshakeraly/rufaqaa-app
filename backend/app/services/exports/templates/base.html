@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    /* Font URLs resolve against WeasyPrint's base_url (the exports package
+       dir), landing on the vendored TTFs in app/assets/fonts/. */
+    @font-face {
+      font-family: "IBM Plex Sans Arabic";
+      src: url("../../assets/fonts/IBMPlexSansArabic-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "IBM Plex Sans Arabic";
+      src: url("../../assets/fonts/IBMPlexSansArabic-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "IBM Plex Sans Arabic";
+      src: url("../../assets/fonts/IBMPlexSansArabic-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    :root {
+      --color-safaa: #F7FBFC;  /* صفاء — page background */
+      --color-sakina: #D6E6F2; /* سكينة — card background */
+      --color-samaa: #B9D7EA;  /* سماء — borders */
+      --color-thiqa: #769FCD;  /* ثقة — header / accents */
+      --color-ink: #1F2A37;
+    }
+
+    @page {
+      size: A4;
+      margin: 18mm 14mm;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      /* Digits stay Western-Arabic (123) to match the UI's .latin convention;
+         nothing here remaps them to Eastern-Arabic forms. */
+      font-family: "IBM Plex Sans Arabic", sans-serif;
+      font-size: 10.5pt;
+      color: var(--color-ink);
+      background-color: var(--color-safaa);
+    }
+
+    header.report-header {
+      display: flow-root;
+      background-color: var(--color-thiqa);
+      color: #FFFFFF;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+
+    header.report-header h1 {
+      font-size: 16pt;
+      font-weight: 700;
+    }
+
+    header.report-header .generated-at {
+      margin-top: 4px;
+      font-size: 9pt;
+      opacity: 0.9;
+    }
+
+    .card {
+      background-color: var(--color-sakina);
+      border: 1px solid var(--color-samaa);
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    table.report-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #FFFFFF;
+    }
+
+    table.report-table th,
+    table.report-table td {
+      border: 1px solid var(--color-samaa);
+      padding: 6px 10px;
+      text-align: right;
+    }
+
+    table.report-table thead th {
+      background-color: var(--color-thiqa);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    table.report-table tbody tr:nth-child(even) td {
+      background-color: var(--color-safaa);
+    }
+
+    footer.report-footer {
+      margin-top: 16px;
+      padding-top: 8px;
+      border-top: 1px solid var(--color-samaa);
+      font-size: 8.5pt;
+      color: var(--color-thiqa);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  {% block header %}
+  <header class="report-header">
+    <h1>{{ title }}</h1>
+    {% if generated_at %}
+    <div class="generated-at">{{ generated_at_label | default("تاريخ الإنشاء:") }} {{ generated_at }}</div>
+    {% endif %}
+  </header>
+  {% endblock %}
+
+  {% block content %}
+  {% if headers %}
+  <div class="card">
+    <table class="report-table">
+      <thead>
+        <tr>
+          {% for header in headers %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% endblock %}
+
+  {% block footer %}
+  <footer class="report-footer">
+    {{ footer_text | default("منصة رفقاء") }}
+  </footer>
+  {% endblock %}
+</body>
+</html>

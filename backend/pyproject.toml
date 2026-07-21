@@ -30,6 +30,9 @@ dependencies = [
     "PyYAML>=6.0.2",
     "boto3>=1.35.0",
     "sentry-sdk[fastapi,sqlalchemy,celery]>=2.18.0",
+    "weasyprint>=63.0",
+    "openpyxl>=3.1.0",
+    "jinja2>=3.1.0",
 ]
 
 [project.optional-dependencies]
@@ -84,6 +87,10 @@ module = [
     "passlib.*",
     "yaml",
 ]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["weasyprint", "weasyprint.*", "openpyxl", "openpyxl.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
