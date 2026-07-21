@@ -22,6 +22,7 @@ import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
 import { PartnerReportsReviewPage } from "./PartnerReportsReviewPage";
 import {
+  downloadLatePayersReport,
   listReports,
   transitionReport,
   type ReportAction,
@@ -194,6 +195,24 @@ function ReportsCenterPage() {
   const { isAdmin, isPartnerApprover, isPartnerStaff } = useRole();
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("");
   const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [lateExport, setLateExport] = useState<"pdf" | "xlsx" | null>(null);
+
+  async function onLateExport(format: "pdf" | "xlsx") {
+    setLateExport(format);
+    try {
+      const blob = await downloadLatePayersReport(format);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `late-payers-report-${new Date().toISOString().slice(0, 10)}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(t("reports.exportError"));
+    } finally {
+      setLateExport(null);
+    }
+  }
 
   const NEXT_ACTION = useMemo<Partial<Record<ReportStatus, ReportAction>>>(() => {
     if (isAdmin) return ADMIN_NEXT_ACTION;
@@ -403,8 +422,10 @@ function ReportsCenterPage() {
         <span className="desc">{t("reports.readyTemplatesDesc")}</span>
       </div>
 
-      {/* TODO(backend): all 6 ready-templates are inert (no backend source).
-          PDF/Excel buttons disabled. Last-run times are mockup data. */}
+      {/* TODO(backend): 5 of the 6 ready-templates are inert (no backend
+          source) — their PDF/Excel buttons stay disabled and last-run times
+          are mockup data. The late-payers card is live
+          (GET /reports/late-payers?format=pdf|xlsx). */}
       <div className="oa-reports-tmpl-grid">
         {/* Donors annual */}
         <article className="oa-reports-tmpl-card donor">
@@ -577,7 +598,7 @@ function ReportsCenterPage() {
           </div>
         </article>
 
-        {/* Late payers */}
+        {/* Late payers — live export via GET /reports/late-payers */}
         <article className="oa-reports-tmpl-card donor">
           <span className="oa-reports-tmpl-accent" aria-hidden="true" />
           <div className="oa-reports-tmpl-head">
@@ -604,8 +625,26 @@ function ReportsCenterPage() {
               </span>
             </div>
             <div className="btns">
-              <button type="button" className="oa-reports-pdf-btn" disabled>PDF</button>
-              <button type="button" className="oa-reports-xls-btn" disabled>Excel</button>
+              <button
+                type="button"
+                className="oa-reports-pdf-btn"
+                onClick={() => void onLateExport("pdf")}
+                disabled={lateExport !== null}
+                aria-busy={lateExport === "pdf"}
+                aria-label={t("reports.exportPdf")}
+              >
+                {lateExport === "pdf" ? t("reports.exporting") : "PDF"}
+              </button>
+              <button
+                type="button"
+                className="oa-reports-xls-btn"
+                onClick={() => void onLateExport("xlsx")}
+                disabled={lateExport !== null}
+                aria-busy={lateExport === "xlsx"}
+                aria-label={t("reports.exportExcel")}
+              >
+                {lateExport === "xlsx" ? t("reports.exporting") : "Excel"}
+              </button>
             </div>
           </div>
         </article>

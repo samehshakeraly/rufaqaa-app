@@ -2828,6 +2828,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports/late-payers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Late Payers Report
+         * @description المتأخرون في السداد — first data-backed Reports Center template.
+         *
+         *     Selection reuses the worker-maintained overdue state through
+         *     ``core/collections`` (status active/overdue + months_overdue >= 1) —
+         *     it does not re-derive lateness from raw payment history. Registered
+         *     before ``/{report_id}`` so FastAPI doesn't try to parse
+         *     'late-payers' as a UUID.
+         *
+         *     Privacy: the sponsored orphan appears only as its non-identifying
+         *     code — no orphan name, location, health or family data leaves this
+         *     endpoint.
+         */
+        get: operations["late_payers_report_api_v1_reports_late_payers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports/{report_id}": {
         parameters: {
             query?: never;
@@ -13719,6 +13749,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReportRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    late_payers_report_api_v1_reports_late_payers_get: {
+        parameters: {
+            query?: {
+                format?: "pdf" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

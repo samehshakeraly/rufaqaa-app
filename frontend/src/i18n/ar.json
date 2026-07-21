@@ -1956,6 +1956,8 @@
     "colLastRun": "آخر تشغيل",
     "exportPdf": "تصدير PDF",
     "exportExcel": "تصدير Excel",
+    "exporting": "جارٍ التصدير…",
+    "exportError": "تعذّر إنشاء التقرير — حاول مرة أخرى",
     "download": "تحميل",
     "shareFile": "مشاركة",
     "fileSize": "حجم الملف",

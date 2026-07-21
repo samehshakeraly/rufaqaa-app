@@ -1956,6 +1956,8 @@
     "colLastRun": "Last Run",
     "exportPdf": "Export PDF",
     "exportExcel": "Export Excel",
+    "exporting": "Exporting…",
+    "exportError": "Failed to generate the report — try again",
     "download": "Download",
     "shareFile": "Share",
     "fileSize": "File size",

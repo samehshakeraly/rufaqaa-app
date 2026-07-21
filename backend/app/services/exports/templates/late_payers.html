@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 14px;">
+  <table class="report-table">
+    <tbody>
+      <tr>
+        <th style="width: 50%;">إجمالي الكفالات المتأخرة</th>
+        <td>{{ total_late }}</td>
+      </tr>
+      <tr>
+        <th>إجمالي المبالغ المستحقة ({{ default_currency }})</th>
+        <td>{{ total_outstanding }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{{ super() }}
+{% endblock %}

@@ -67,6 +67,18 @@ export async function listMyReports(params?: {
   return data;
 }
 
+/** Reports Center — المتأخرون في السداد export (finance/admin roles).
+ * Returns the raw file bytes; the caller triggers the browser download. */
+export async function downloadLatePayersReport(
+  format: "pdf" | "xlsx",
+): Promise<Blob> {
+  const r = await api.get("/reports/late-payers", {
+    params: { format },
+    responseType: "blob",
+  });
+  return r.data as Blob;
+}
+
 export async function transitionReport(
   id: string,
   action: ReportAction,
