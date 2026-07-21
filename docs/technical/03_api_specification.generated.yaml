@@ -16543,6 +16543,56 @@ paths:
       summary: Create Report
       tags:
       - reports
+  /api/v1/reports/late-payers:
+    get:
+      description: 'المتأخرون في السداد — first data-backed Reports Center template.
+
+
+        Selection reuses the worker-maintained overdue state through
+
+        ``core/collections`` (status active/overdue + months_overdue >= 1) —
+
+        it does not re-derive lateness from raw payment history. Registered
+
+        before ``/{report_id}`` so FastAPI doesn''t try to parse
+
+        ''late-payers'' as a UUID.
+
+
+        Privacy: the sponsored orphan appears only as its non-identifying
+
+        code — no orphan name, location, health or family data leaves this
+
+        endpoint.'
+      operationId: late_payers_report_api_v1_reports_late_payers_get
+      parameters:
+      - in: query
+        name: format
+        required: false
+        schema:
+          default: pdf
+          enum:
+          - pdf
+          - xlsx
+          title: Format
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Late Payers Report
+      tags:
+      - reports
   /api/v1/reports/{report_id}:
     get:
       operationId: get_report_api_v1_reports__report_id__get
