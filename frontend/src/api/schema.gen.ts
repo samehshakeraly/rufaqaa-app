@@ -2828,6 +2828,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports/late-payers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Late Payers Report
+         * @description Stream the late-payers collections report as PDF or XLSX.
+         *
+         *     "Late" reuses the sponsorship model's authoritative next-due field:
+         *     ``next_payment_date`` past the :func:`late_payment_cutoff` grace window
+         *     on an active/overdue sponsorship (the same fields the daily
+         *     ``mark_overdue_sponsorships`` worker and the finance list filters key
+         *     off). The SQL predicate below and the row-level helpers in
+         *     ``app.core.collections`` share the one cutoff definition, so they
+         *     cannot drift.
+         *
+         *     Privacy: rows never carry orphan fields — the sponsorship is
+         *     identified by its own code and the donor by name (or donor id when the
+         *     donor row is gone). Capped at 10 000 rows like the other exports.
+         */
+        get: operations["export_late_payers_report_api_v1_reports_late_payers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports/{report_id}": {
         parameters: {
             query?: never;
@@ -13719,6 +13751,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReportRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_late_payers_report_api_v1_reports_late_payers_get: {
+        parameters: {
+            query?: {
+                format?: "pdf" | "xlsx";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

@@ -22,8 +22,10 @@ import { TableSkeleton } from "@/components/Skeleton";
 import { useRole } from "@/hooks/useRole";
 import { PartnerReportsReviewPage } from "./PartnerReportsReviewPage";
 import {
+  exportLatePayersReport,
   listReports,
   transitionReport,
+  type LatePayersFormat,
   type ReportAction,
   type ReportStatus,
 } from "@/lib/reports";
@@ -194,6 +196,24 @@ function ReportsCenterPage() {
   const { isAdmin, isPartnerApprover, isPartnerStaff } = useRole();
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("");
   const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [lateExporting, setLateExporting] = useState<LatePayersFormat | null>(null);
+
+  async function onExportLatePayers(format: LatePayersFormat) {
+    setLateExporting(format);
+    try {
+      const blob = await exportLatePayersReport(format);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rufaqaa-late-payers-${new Date().toISOString().slice(0, 10)}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(t("reports.exportError"));
+    } finally {
+      setLateExporting(null);
+    }
+  }
 
   const NEXT_ACTION = useMemo<Partial<Record<ReportStatus, ReportAction>>>(() => {
     if (isAdmin) return ADMIN_NEXT_ACTION;
@@ -403,8 +423,9 @@ function ReportsCenterPage() {
         <span className="desc">{t("reports.readyTemplatesDesc")}</span>
       </div>
 
-      {/* TODO(backend): all 6 ready-templates are inert (no backend source).
-          PDF/Excel buttons disabled. Last-run times are mockup data. */}
+      {/* TODO(backend): 5 of the 6 ready-templates are inert (no backend
+          source) — PDF/Excel buttons disabled, last-run times are mockup
+          data. The Late-payers card below is live (GET /reports/late-payers). */}
       <div className="oa-reports-tmpl-grid">
         {/* Donors annual */}
         <article className="oa-reports-tmpl-card donor">
@@ -604,8 +625,30 @@ function ReportsCenterPage() {
               </span>
             </div>
             <div className="btns">
-              <button type="button" className="oa-reports-pdf-btn" disabled>PDF</button>
-              <button type="button" className="oa-reports-xls-btn" disabled>Excel</button>
+              <button
+                type="button"
+                className="oa-reports-pdf-btn"
+                onClick={() => onExportLatePayers("pdf")}
+                disabled={lateExporting !== null}
+                aria-busy={lateExporting === "pdf"}
+                aria-label={
+                  lateExporting === "pdf" ? t("reports.generating") : t("reports.exportPdf")
+                }
+              >
+                {lateExporting === "pdf" ? "…" : "PDF"}
+              </button>
+              <button
+                type="button"
+                className="oa-reports-xls-btn"
+                onClick={() => onExportLatePayers("xlsx")}
+                disabled={lateExporting !== null}
+                aria-busy={lateExporting === "xlsx"}
+                aria-label={
+                  lateExporting === "xlsx" ? t("reports.generating") : t("reports.exportExcel")
+                }
+              >
+                {lateExporting === "xlsx" ? "…" : "Excel"}
+              </button>
             </div>
           </div>
         </article>

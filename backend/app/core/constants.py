@@ -23,3 +23,9 @@ DEFAULT_REPORT_CADENCE_DAYS = 90
 
 # Days past the due date before "due_soon" hardens into "overdue".
 REPORT_OVERDUE_GRACE_DAYS = 7
+
+# Days past a sponsorship's next_payment_date before the sponsor counts as
+# "late" for collections (the late-payers report). Distinct from
+# REPORT_OVERDUE_GRACE_DAYS above, which governs *orphan periodic reports*,
+# not payments. See app.core.collections for the derivation.
+LATE_PAYMENT_GRACE_DAYS = 7
