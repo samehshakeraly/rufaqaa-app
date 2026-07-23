@@ -67,6 +67,20 @@ export async function listMyReports(params?: {
   return data;
 }
 
+export type LatePayersFormat = "pdf" | "xlsx";
+
+/** Reports Center — "المتأخرون في السداد" export. Finance/admin only;
+ * streams a ready-to-save PDF or XLSX file. */
+export async function exportLatePayersReport(
+  format: LatePayersFormat,
+): Promise<Blob> {
+  const r = await api.get("/reports/late-payers", {
+    params: { format },
+    responseType: "blob",
+  });
+  return r.data as Blob;
+}
+
 export async function transitionReport(
   id: string,
   action: ReportAction,

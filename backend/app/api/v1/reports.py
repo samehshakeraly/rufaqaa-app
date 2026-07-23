@@ -15,20 +15,34 @@ Per-report endpoints enforce two separate access checks:
 """
 
 from datetime import UTC, datetime
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import CurrentUser, DbSession
 from app.api.scoping import get_in_org_or_404
-from app.core.authz import ADMIN_ROLES, STAFF_ROLES, require_roles
+from app.core.authz import ADMIN_ROLES, FINANCE_ROLES, STAFF_ROLES, require_roles
+from app.core.collections import (
+    LATE_ELIGIBLE_STATUSES,
+    amount_outstanding,
+    installments_due,
+    late_payment_cutoff,
+    months_behind,
+    months_elapsed,
+)
 from app.core.exceptions import NotFound
+from app.models.donor import Donor
 from app.models.family import Guardian
+from app.models.organization import Organization
 from app.models.orphan import Orphan
+from app.models.payment import Payment
 from app.models.report import OrphanReport
+from app.models.sponsorship import Sponsorship
 from app.models.user import User
 from app.schemas.common import Page
 from app.schemas.report import (
@@ -38,6 +52,7 @@ from app.schemas.report import (
     ReportTransition,
     ReportUpdate,
 )
+from app.services.exports import build_report_xlsx, render_report_pdf
 
 router = APIRouter()
 
@@ -147,6 +162,166 @@ async def create_report(
     await db.commit()
     await db.refresh(report)
     return ReportRead.model_validate(report)
+
+
+# ────────────────────────────────────────────────────────────────────
+# Late-payers report export (PR-R2) — the first data-backed template of
+# the Reports Center. Registered before /{report_id} so FastAPI doesn't
+# try to parse "late-payers" as a UUID.
+# ────────────────────────────────────────────────────────────────────
+
+LATE_PAYERS_TITLE = "تقرير المتأخرين في السداد"
+
+_XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+
+def _late_payers_headers(currency: str) -> list[str]:
+    return [
+        "رمز الكفالة",
+        "الكفيل",
+        "الأشهر المنقضية",
+        "الأقساط المستحقة",
+        "الأقساط المسددة",
+        "أشهر التأخر",
+        f"المبلغ المتأخر ({currency})",
+        "آخر دفعة",
+    ]
+
+
+@router.get("/late-payers")
+async def export_late_payers_report(
+    db: DbSession,
+    user: Annotated[User, Depends(require_roles(*FINANCE_ROLES))],
+    format: Annotated[Literal["pdf", "xlsx"], Query()] = "pdf",
+) -> StreamingResponse:
+    """Stream the late-payers collections report as PDF or XLSX.
+
+    "Late" reuses the sponsorship model's authoritative next-due field:
+    ``next_payment_date`` past the :func:`late_payment_cutoff` grace window
+    on an active/overdue sponsorship (the same fields the daily
+    ``mark_overdue_sponsorships`` worker and the finance list filters key
+    off). The SQL predicate below and the row-level helpers in
+    ``app.core.collections`` share the one cutoff definition, so they
+    cannot drift.
+
+    Privacy: rows never carry orphan fields — the sponsorship is
+    identified by its own code and the donor by name (or donor id when the
+    donor row is gone). Capped at 10 000 rows like the other exports.
+    """
+    org = await db.scalar(select(Organization).where(Organization.id == user.organization_id))
+    if org is None:
+        raise NotFound("Organization")
+    default_currency = org.default_currency
+
+    now = datetime.now(UTC)
+    today = now.date()
+    cutoff = late_payment_cutoff(today)
+
+    # Explicit org scope — the app's superuser DB connection bypasses RLS,
+    # so without this filter another org's arrears would leak into the file.
+    result = await db.execute(
+        select(Sponsorship, Donor.full_name)
+        .join(Donor, Donor.id == Sponsorship.donor_id, isouter=True)
+        .where(
+            Sponsorship.organization_id == user.organization_id,
+            Sponsorship.status.in_(LATE_ELIGIBLE_STATUSES),
+            Sponsorship.next_payment_date.is_not(None),
+            Sponsorship.next_payment_date < cutoff,
+        )
+        .order_by(Sponsorship.next_payment_date.asc())
+        .limit(10_000)
+    )
+    late_rows = result.all()
+
+    # FX to the org default currency: same-currency arrears convert 1:1;
+    # anything else uses the sponsorship's most recent completed payment's
+    # recorded exchange_rate. With no rate on file the amount stays in its
+    # own currency (labelled) and out of the converted total — never a
+    # silently wrong figure.
+    foreign_ids = [sp.id for sp, _ in late_rows if sp.currency != default_currency]
+    rates: dict[UUID, Decimal] = {}
+    if foreign_ids:
+        rate_rows = await db.execute(
+            select(Payment.sponsorship_id, Payment.exchange_rate)
+            .where(
+                Payment.organization_id == user.organization_id,
+                Payment.sponsorship_id.in_(foreign_ids),
+                Payment.status == "completed",
+                Payment.exchange_rate.is_not(None),
+            )
+            .distinct(Payment.sponsorship_id)
+            .order_by(Payment.sponsorship_id, Payment.completed_at.desc())
+        )
+        rates = {sid: rate for sid, rate in rate_rows.all() if sid is not None}
+
+    rows: list[list[object]] = []
+    total_outstanding = Decimal("0.00")
+    for sp, donor_name in late_rows:
+        if sp.next_payment_date is None:  # excluded by the WHERE; narrows the type
+            continue
+        behind = months_behind(sp.next_payment_date, today)
+        outstanding = amount_outstanding(sp.monthly_amount, behind)
+        converted: Decimal | None
+        if sp.currency == default_currency:
+            converted = outstanding
+        elif (rate := rates.get(sp.id)) is not None:
+            converted = (outstanding * rate).quantize(Decimal("0.01"))
+        else:
+            converted = None
+        amount_cell: object = converted if converted is not None else f"{outstanding} {sp.currency}"
+        if converted is not None:
+            total_outstanding += converted
+        rows.append(
+            [
+                sp.code,
+                donor_name or str(sp.donor_id),
+                months_elapsed(sp.start_date, today),
+                installments_due(sp.start_date, sp.end_date, today),
+                sp.payments_count or 0,
+                behind,
+                amount_cell,
+                sp.last_payment_date.isoformat() if sp.last_payment_date else "—",
+            ]
+        )
+
+    # Summary block: total late sponsorships + total outstanding, as a
+    # closing table row in both formats.
+    rows.append(
+        [
+            f"الإجمالي — {len(late_rows)} كفالة متأخرة",
+            "",
+            "",
+            "",
+            "",
+            "",
+            total_outstanding,
+            "",
+        ]
+    )
+
+    headers = _late_payers_headers(default_currency)
+    generated_at = now.strftime("%Y-%m-%d %H:%M")
+    if format == "pdf":
+        data = render_report_pdf(
+            "base.html",
+            {
+                "title": LATE_PAYERS_TITLE,
+                "generated_at": generated_at,
+                "headers": headers,
+                "rows": rows,
+            },
+        )
+        media_type = "application/pdf"
+    else:
+        data = build_report_xlsx(LATE_PAYERS_TITLE, [("المتأخرون في السداد", headers, rows)])
+        media_type = _XLSX_MIME
+
+    filename = f"rufaqaa-late-payers-{today.isoformat()}.{format}"
+    return StreamingResponse(
+        iter([data]),
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.get("/{report_id}", response_model=ReportDetailRead)
