@@ -880,7 +880,8 @@
     "browseMore": "تصفّح المزيد",
     "profile": "الملف الشخصي",
     "myOrphans": "أيتامي",
-    "messages": "الرسائل"
+    "messages": "الرسائل",
+    "ariaLabel": "تنقّل المتبرع"
   },
   "donor": {
     "dashboard": {
@@ -938,16 +939,66 @@
     "orphans": {
       "title": "أيتامي",
       "subtitle": "الأطفال الذين تكفلهم حالياً.",
-      "empty": "لم تكفل طفلًا بعد — ابدأ رعاية يتيم اليوم.",
-      "browse": "تصفّح الأيتام المتاحين",
-      "viewDetail": "عرض التفاصيل",
-      "monthlyAmount": "شهرياً",
-      "totalPaid": "إجمالي المدفوع",
       "since": "ترعى {{name}} منذ {{duration}}",
-      "contribution": "ساهمتَ بـ {{amount}} {{currency}} من أجل {{name}}",
-      "monthlyDetail": "{{amount}} {{currency}} شهريًا",
+      "contribution": "ساهمت بـ {{amount}} من أجل {{name}}",
+      "monthlyDetail": "{{amount}} شهريًا",
       "nextPayment": "دفعتك القادمة: {{date}}",
-      "overdueReminder": "حان موعد تجديد كفالتك لتستمرّ رعاية {{name}}."
+      "overdueReminder": "حان موعد تجديد كفالتك لتستمرّ رعاية {{name}}.",
+      "pausedNote": "موقوفة بطلبك",
+      "noResults": "لا نتائج تطابق بحثك أو تصفيتك.",
+      "clearFilters": "امسح البحث والتصفية",
+      "signal": {
+        "newBadge": "جديد",
+        "newMessage": "رسالة جديدة من {{name}}",
+        "reportArrived": "وصل {{label}}",
+        "periodReport": "تقرير الفترة"
+      },
+      "actions": {
+        "renew": "جدّد الكفالة الآن",
+        "resume": "استأنف الكفالة",
+        "readMessage": "اقرأ الرسالة الجديدة",
+        "viewDetail": "عرض التفاصيل",
+        "message": "راسل {{name}}",
+        "messageUnread": "راسل {{name}} — {{n}} رسالة غير مقروءة",
+        "profile": "ملف {{name}} وتقاريره"
+      },
+      "impact": {
+        "ariaLabel": "خلاصة أثرك",
+        "opener": "ترعى {{n}} من الأطفال منذ {{duration}}",
+        "openerNoDuration": "ترعى {{n}} من الأطفال",
+        "totalGiven": "إجمالي ما قدّمته",
+        "otherCurrencies": "+ {{n}} بعملات أخرى",
+        "justStarted": "كفالتك بدأت للتو",
+        "paymentsCount": "عبر {{n}} دفعة",
+        "monthlyCommitment": "التزامك الشهري",
+        "nextPayment": "دفعتك القادمة",
+        "nextPaymentValue": "{{date}} — لأجل {{name}}",
+        "noScheduledPayments": "لا دفعات مجدولة"
+      },
+      "toolbar": {
+        "searchLabel": "ابحث في أيتامك",
+        "searchPlaceholder": "ابحث بالاسم أو الرمز…",
+        "sortLabel": "الترتيب",
+        "sort": {
+          "priority": "الأولوية",
+          "name": "الاسم",
+          "newest": "الأحدث كفالة"
+        },
+        "filtersLabel": "تصفية الأيتام",
+        "filters": {
+          "all": "الكل",
+          "attention": "تحتاج انتباهك",
+          "active": "نشطة",
+          "paused": "موقوفة"
+        }
+      },
+      "emptyState": {
+        "title": "صفحتك تنتظر أول طفل",
+        "body": "حين تبدأ كفالتك الأولى، ستجد هنا بطاقة لكل طفل ترعاه: رسائله وتقاريره، وما قدّمته له، وموعد دفعتك القادمة.",
+        "browse": "تصفّح الأطفال المنتظرين",
+        "howItWorks": "كيف تعمل الكفالة؟",
+        "reassurance": "يمكنك إيقاف الكفالة متى شئت."
+      }
     },
     "orphanDetail": {
       "back": "العودة إلى أيتامي",
