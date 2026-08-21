@@ -194,7 +194,9 @@ test("donor walks My Orphans: impact bar, priority, filter, open card, back", as
   await expect(names).toHaveText(["مريم", "عائشة", "آدم"]);
 
   // --- Open a card through its named link, then come back. ----------
-  await page.getByRole("link", { name: "مريم" }).click();
+  // exact: the icon actions ("راسل مريم", "ملف مريم وتقاريره") also
+  // contain the name, so a substring match would be ambiguous.
+  await page.getByRole("link", { name: "مريم", exact: true }).click();
   await page.waitForURL(new RegExp(`/donor/orphans/${OVERDUE_ID}$`));
 
   await page.goBack();
