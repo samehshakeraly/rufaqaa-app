@@ -876,7 +876,7 @@
   },
   "donorNav": {
     "dashboard": "Dashboard",
-    "sponsorships": "My sponsorships",
+    "payments": "My Payments",
     "browseMore": "Browse more",
     "profile": "Profile",
     "myOrphans": "My orphans",
@@ -900,14 +900,78 @@
       "saved": "Profile saved"
     },
     "sponsorships": {
-      "title": "My sponsorships",
-      "none": "You haven't started any sponsorships yet.",
-      "code": "Code",
-      "orphan": "Orphan",
-      "amount": "Monthly",
-      "totalPaid": "Total paid",
-      "status": "Status",
-      "pay": "Pay"
+      "status": "Status"
+    },
+    "payments": {
+      "title": "My Payments",
+      "subtitle": "Everything you've given, its receipts, and what still needs completing.",
+      "year": {
+        "ariaLabel": "Year summary",
+        "totalIn": "Your total giving in {{year}}",
+        "totalAll": "Your total giving across all years",
+        "completedCount": "across {{n}} successful payments",
+        "otherCurrencies": "+ {{n}} in other currencies",
+        "none": "No successful payments in this period yet.",
+        "selectLabel": "Choose year",
+        "allYears": "All years",
+        "export": "Export year statement"
+      },
+      "attention": {
+        "title": "Needs completing",
+        "pendingTitle": "The sponsorship of {{name}} isn't complete",
+        "pendingMeta": "Created but not paid yet ·",
+        "failedTitle": "Your payment for {{name}}'s sponsorship didn't go through",
+        "failedGeneralTitle": "Your payment didn't go through",
+        "completePay": "Complete the payment",
+        "retry": "Try again"
+      },
+      "toolbar": {
+        "searchLabel": "Search your payments",
+        "searchPlaceholder": "Search by payment code or child's name…",
+        "filtersLabel": "Filter by status"
+      },
+      "statuses": {
+        "all": "All",
+        "completed": "Completed",
+        "inProgress": "Processing",
+        "notCompleted": "Didn't go through",
+        "refunded": "Returned",
+        "underReview": "Under review"
+      },
+      "table": {
+        "date": "Date",
+        "about": "For",
+        "amount": "Amount",
+        "method": "Method",
+        "status": "Status",
+        "action": "Action",
+        "sponsorshipOf": "Sponsorship of {{name}}",
+        "generalDonation": "General donation",
+        "receipt": "Receipt",
+        "receiptAria": "Download the receipt for payment {{code}}",
+        "waiting": "Awaiting bank confirmation",
+        "refundDetails": "Return details",
+        "contactUs": "Contact us"
+      },
+      "csv": {
+        "date": "Date",
+        "code": "Payment code",
+        "about": "For",
+        "amount": "Amount",
+        "currency": "Currency",
+        "method": "Method",
+        "status": "Status",
+        "receiptNumber": "Receipt number"
+      },
+      "showingRange": "{{from}}–{{to}} of {{total}} payments",
+      "showingFiltered": "{{n}} matching payments on this page",
+      "noResults": "No payments match your search or filter.",
+      "clearFilters": "Clear search and filters",
+      "empty": {
+        "title": "No payments recorded yet",
+        "body": "Once your first sponsorship begins, everything you give will appear here — dated, with its receipt — and you can export a yearly statement anytime.",
+        "browse": "Browse waiting children"
+      }
     },
     "wizard": {
       "title": "New sponsorship",

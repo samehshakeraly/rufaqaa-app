@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseCsv } from "@/lib/csv";
+import { buildCsv, parseCsv } from "@/lib/csv";
 
 describe("parseCsv", () => {
   it("parses a basic CSV with a header", () => {
@@ -42,5 +42,29 @@ describe("parseCsv", () => {
       ["a", "b"],
       ["1", "2"],
     ]);
+  });
+});
+
+describe("buildCsv", () => {
+  it("opens with a BOM and joins cells/rows with , and \\r\\n", () => {
+    const csv = buildCsv([
+      ["a", "b"],
+      [1, null],
+    ]);
+    expect(csv).toBe("\uFEFFa,b\r\n1,\r\n");
+  });
+
+  it("quotes only cells that need it and doubles inner quotes", () => {
+    const csv = buildCsv([["plain", "with,comma", 'with "quote"', "with\nnewline"]]);
+    expect(csv).toBe('\uFEFFplain,"with,comma","with ""quote""","with\nnewline"\r\n');
+  });
+
+  it("round-trips through parseCsv", () => {
+    const rows = [
+      ["name", "note"],
+      ["Smith, J.", 'said "hi"'],
+      ["multi\nline", ""],
+    ];
+    expect(parseCsv(buildCsv(rows))).toEqual(rows);
   });
 });

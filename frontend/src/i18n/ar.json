@@ -876,7 +876,7 @@
   },
   "donorNav": {
     "dashboard": "الرئيسية",
-    "sponsorships": "كفالاتي",
+    "payments": "مدفوعاتي",
     "browseMore": "تصفّح المزيد",
     "profile": "الملف الشخصي",
     "myOrphans": "أيتامي",
@@ -900,14 +900,78 @@
       "saved": "تم حفظ الملف"
     },
     "sponsorships": {
-      "title": "كفالاتي",
-      "none": "لم تبدأ أي كفالة بعد.",
-      "code": "الرمز",
-      "orphan": "اليتيم",
-      "amount": "شهرياً",
-      "totalPaid": "إجمالي المدفوع",
-      "status": "الحالة",
-      "pay": "دفع"
+      "status": "الحالة"
+    },
+    "payments": {
+      "title": "مدفوعاتي",
+      "subtitle": "كل ما تبرّعت به، وإيصالاته، وما يحتاج إتمامه.",
+      "year": {
+        "ariaLabel": "ملخّص السنة",
+        "totalIn": "إجمالي تبرّعاتك في {{year}}",
+        "totalAll": "إجمالي تبرّعاتك في كل السنوات",
+        "completedCount": "عبر {{n}} عملية ناجحة",
+        "otherCurrencies": "+ {{n}} بعملات أخرى",
+        "none": "لا عمليات ناجحة في هذه الفترة بعد.",
+        "selectLabel": "اختر السنة",
+        "allYears": "كل السنوات",
+        "export": "تصدير كشف السنة"
+      },
+      "attention": {
+        "title": "يحتاج إتمامه",
+        "pendingTitle": "كفالة {{name}} لم تكتمل",
+        "pendingMeta": "أنشأتها ولم تُدفع بعد ·",
+        "failedTitle": "لم تتم دفعتك عن كفالة {{name}}",
+        "failedGeneralTitle": "لم تتم دفعتك",
+        "completePay": "أتمّ الدفع",
+        "retry": "أعد المحاولة"
+      },
+      "toolbar": {
+        "searchLabel": "ابحث في مدفوعاتك",
+        "searchPlaceholder": "ابحث برقم العملية أو اسم الطفل…",
+        "filtersLabel": "تصفية حسب الحالة"
+      },
+      "statuses": {
+        "all": "الكل",
+        "completed": "تمّت",
+        "inProgress": "قيد المعالجة",
+        "notCompleted": "لم تتم",
+        "refunded": "مستردّة",
+        "underReview": "قيد المراجعة"
+      },
+      "table": {
+        "date": "التاريخ",
+        "about": "عن",
+        "amount": "المبلغ",
+        "method": "الطريقة",
+        "status": "الحالة",
+        "action": "الفعل",
+        "sponsorshipOf": "كفالة {{name}}",
+        "generalDonation": "تبرّع عام",
+        "receipt": "الإيصال",
+        "receiptAria": "تنزيل إيصال العملية {{code}}",
+        "waiting": "بانتظار تأكيد البنك",
+        "refundDetails": "تفاصيل الاسترداد",
+        "contactUs": "تواصل معنا"
+      },
+      "csv": {
+        "date": "التاريخ",
+        "code": "رقم العملية",
+        "about": "عن",
+        "amount": "المبلغ",
+        "currency": "العملة",
+        "method": "الطريقة",
+        "status": "الحالة",
+        "receiptNumber": "رقم الإيصال"
+      },
+      "showingRange": "{{from}}–{{to}} من {{total}} عملية",
+      "showingFiltered": "{{n}} عملية مطابقة في هذه الصفحة",
+      "noResults": "لا نتائج تطابق بحثك أو تصفيتك.",
+      "clearFilters": "امسح البحث والتصفية",
+      "empty": {
+        "title": "لم تسجَّل أي عملية بعد",
+        "body": "حين تبدأ أول كفالة، سيظهر هنا كل ما قدّمته — بتاريخه وإيصاله — وتستطيع تصدير كشف سنوي متى شئت.",
+        "browse": "تصفّح الأطفال المنتظرين"
+      }
     },
     "wizard": {
       "title": "كفالة جديدة",

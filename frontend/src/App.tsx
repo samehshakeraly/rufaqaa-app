@@ -42,8 +42,8 @@ import { DonorDashboardPage } from "./pages/DonorDashboardPage";
 import { DonorMessagesPage } from "./pages/DonorMessagesPage";
 import { DonorOrphanDetailPage } from "./pages/DonorOrphanDetailPage";
 import { DonorOrphansPage } from "./pages/DonorOrphansPage";
+import { DonorPaymentsPage } from "./pages/DonorPaymentsPage";
 import { DonorProfilePage } from "./pages/DonorProfilePage";
-import { DonorSponsorshipsPage } from "./pages/DonorSponsorshipsPage";
 import { DonorSponsorshipWizardPage } from "./pages/DonorSponsorshipWizardPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { FamiliesPage } from "./pages/FamiliesPage";
@@ -146,7 +146,13 @@ export function App() {
       >
         <Route path="/donor/dashboard" element={<DonorDashboardPage />} />
         <Route path="/donor/profile" element={<DonorProfilePage />} />
-        <Route path="/donor/sponsorships" element={<DonorSponsorshipsPage />} />
+        <Route path="/donor/payments" element={<DonorPaymentsPage />} />
+        {/* PR-D08: /donor/sponsorships became "My Payments". Permanent
+            redirect so saved links and old emails keep landing. */}
+        <Route
+          path="/donor/sponsorships"
+          element={<Navigate to="/donor/payments" replace />}
+        />
         <Route path="/donor/orphans" element={<DonorOrphansPage />} />
         <Route path="/donor/orphans/:id" element={<DonorOrphanDetailPage />} />
         <Route path="/donor/messages" element={<DonorMessagesPage />} />

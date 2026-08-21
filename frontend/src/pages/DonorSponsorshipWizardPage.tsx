@@ -82,7 +82,9 @@ export function DonorSponsorshipWizardPage() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["donor", "me"] });
       toast.success(t("donor.wizard.success"));
-      navigate("/donor/sponsorships", { replace: true });
+      // My Payments carries the "complete the payment" CTA for the
+      // pending sponsorship this wizard just created (PR-D08).
+      navigate("/donor/payments", { replace: true });
     },
     onError: (err) => {
       if (err instanceof AxiosError && err.response?.status === 409) {
