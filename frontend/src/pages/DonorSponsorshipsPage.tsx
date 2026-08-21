@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+
+import { formatMoney } from "@/lib/money";
 import { Link } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
@@ -7,7 +9,8 @@ import { useRole } from "@/hooks/useRole";
 import { listMyDonorSponsorships } from "@/lib/donorAuth";
 
 export function DonorSponsorshipsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   // Donor-only endpoint — gate on role (defence-in-depth alongside
   // DonorRoute) so it can never 403 for a non-donor.
   const { isDonor } = useRole();
@@ -70,9 +73,9 @@ export function DonorSponsorshipsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    {s.monthly_amount} {s.currency}
+                    {formatMoney(s.monthly_amount, s.currency, lang)}
                   </td>
-                  <td className="px-4 py-3">{s.total_paid}</td>
+                  <td className="px-4 py-3">{formatMoney(s.total_paid, s.currency, lang)}</td>
                   <td className="px-4 py-3">
                     {t(`sponsorships.statuses.${s.status}`, s.status)}
                   </td>

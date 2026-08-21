@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+
+import { formatMoney } from "@/lib/money";
 import { Link } from "react-router-dom";
 
 import { Skeleton } from "@/components/Skeleton";
@@ -12,7 +14,8 @@ import {
 } from "@/lib/donorAuth";
 
 export function DonorDashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const { data: me } = useCurrentUser();
   // Donor self-service endpoints 403 for any non-donor role. DonorRoute
   // already redirects staff away, but gate the queries on role too so a
@@ -54,7 +57,15 @@ export function DonorDashboardPage() {
           />
           <Stat
             label={t("donor.dashboard.totalDonated")}
-            value={`${profile.data.total_donated} ${profile.data.preferred_currency ?? ""}`}
+            value={
+              profile.data.preferred_currency
+                ? formatMoney(
+                    profile.data.total_donated,
+                    profile.data.preferred_currency,
+                    lang,
+                  )
+                : profile.data.total_donated
+            }
           />
         </div>
       )}
@@ -87,7 +98,7 @@ export function DonorDashboardPage() {
                   · {s.orphan_first_name ?? "—"}
                 </span>
                 <span className="text-xs">
-                  {s.monthly_amount} {s.currency} · {s.status}
+                  {formatMoney(s.monthly_amount, s.currency, lang)} · {s.status}
                 </span>
               </li>
             ))}
@@ -108,7 +119,7 @@ export function DonorDashboardPage() {
               <li key={p.id} className="flex items-center justify-between py-2">
                 <span className="font-mono text-xs text-slate-500">{p.code}</span>
                 <span>
-                  {p.amount} {p.currency}
+                  {formatMoney(p.amount, p.currency, lang)}
                 </span>
                 <span className="text-xs text-slate-500">{p.status}</span>
               </li>

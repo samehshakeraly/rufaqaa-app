@@ -336,5 +336,71 @@
       "pendingNote": "Après l'envoi, le dossier est examiné par l'organisation avant approbation. Il apparaîtra dans votre liste avec la mention « En cours d'examen ».",
       "success": "Les informations de {{name}} ont été envoyées — le dossier est maintenant en cours d'examen"
     }
+  },
+  "donor": {
+    "orphans": {
+      "title": "Mes orphelins",
+      "subtitle": "Les enfants que vous parrainez actuellement.",
+      "since": "Vous prenez soin de {{name}} depuis {{duration}}",
+      "contribution": "Vous avez donné {{amount}} pour {{name}}",
+      "monthlyDetail": "{{amount}} par mois",
+      "nextPayment": "Votre prochain paiement : {{date}}",
+      "overdueReminder": "Il est temps de renouveler votre parrainage pour que {{name}} reste pris en charge.",
+      "pausedNote": "Suspendu à votre demande",
+      "noResults": "Aucun résultat ne correspond à votre recherche ou à vos filtres.",
+      "clearFilters": "Effacer la recherche et les filtres",
+      "signal": {
+        "newBadge": "Nouveau",
+        "newMessage": "Un nouveau message de {{name}}",
+        "reportArrived": "{{label}} est arrivé",
+        "periodReport": "Un rapport de suivi"
+      },
+      "actions": {
+        "renew": "Renouveler le parrainage",
+        "resume": "Reprendre le parrainage",
+        "readMessage": "Lire le nouveau message",
+        "viewDetail": "Voir les détails",
+        "message": "Écrire à {{name}}",
+        "messageUnread": "Écrire à {{name}} — {{n}} non lus",
+        "profile": "Profil et rapports de {{name}}"
+      },
+      "impact": {
+        "ariaLabel": "Votre impact en un coup d'œil",
+        "opener": "Vous prenez soin de {{n}} enfants depuis {{duration}}",
+        "openerNoDuration": "Vous prenez soin de {{n}} enfants",
+        "totalGiven": "Total donné",
+        "otherCurrencies": "+ {{n}} dans d'autres devises",
+        "justStarted": "Votre parrainage vient de commencer",
+        "paymentsCount": "en {{n}} paiements",
+        "monthlyCommitment": "Votre engagement mensuel",
+        "nextPayment": "Votre prochain paiement",
+        "nextPaymentValue": "{{date}} — pour {{name}}",
+        "noScheduledPayments": "Aucun paiement prévu"
+      },
+      "toolbar": {
+        "searchLabel": "Rechercher vos orphelins",
+        "searchPlaceholder": "Rechercher par nom ou code…",
+        "sortLabel": "Trier",
+        "sort": {
+          "priority": "Priorité",
+          "name": "Nom",
+          "newest": "Parrainage le plus récent"
+        },
+        "filtersLabel": "Filtrer les orphelins",
+        "filters": {
+          "all": "Tous",
+          "attention": "Nécessite votre attention",
+          "active": "Actifs",
+          "paused": "Suspendus"
+        }
+      },
+      "emptyState": {
+        "title": "Votre page attend son premier enfant",
+        "body": "Dès votre premier parrainage, vous trouverez ici une carte pour chaque enfant : ses messages et rapports, ce que vous avez donné et votre prochain paiement.",
+        "browse": "Parcourir les enfants en attente",
+        "howItWorks": "Comment fonctionne le parrainage ?",
+        "reassurance": "Vous pouvez suspendre un parrainage à tout moment."
+      }
+    }
   }
 }

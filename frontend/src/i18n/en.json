@@ -880,7 +880,8 @@
     "browseMore": "Browse more",
     "profile": "Profile",
     "myOrphans": "My orphans",
-    "messages": "Messages"
+    "messages": "Messages",
+    "ariaLabel": "Donor navigation"
   },
   "donor": {
     "dashboard": {
@@ -938,16 +939,66 @@
     "orphans": {
       "title": "My orphans",
       "subtitle": "The children you currently sponsor.",
-      "empty": "You haven't sponsored a child yet — start caring for an orphan today.",
-      "browse": "Browse available orphans",
-      "viewDetail": "View details",
-      "monthlyAmount": "Monthly",
-      "totalPaid": "Total paid",
       "since": "You've been caring for {{name}} for {{duration}}",
-      "contribution": "You've given {{amount}} {{currency}} for {{name}}",
-      "monthlyDetail": "{{amount}} {{currency}} monthly",
+      "contribution": "You've given {{amount}} for {{name}}",
+      "monthlyDetail": "{{amount}} monthly",
       "nextPayment": "Your next payment: {{date}}",
-      "overdueReminder": "It's time to renew your sponsorship so {{name}}'s care continues."
+      "overdueReminder": "It's time to renew your sponsorship so {{name}}'s care continues.",
+      "pausedNote": "Paused at your request",
+      "noResults": "No results match your search or filters.",
+      "clearFilters": "Clear search and filters",
+      "signal": {
+        "newBadge": "New",
+        "newMessage": "A new message from {{name}}",
+        "reportArrived": "{{label}} has arrived",
+        "periodReport": "A progress report"
+      },
+      "actions": {
+        "renew": "Renew sponsorship now",
+        "resume": "Resume sponsorship",
+        "readMessage": "Read the new message",
+        "viewDetail": "View details",
+        "message": "Message {{name}}",
+        "messageUnread": "Message {{name}} — {{n}} unread",
+        "profile": "{{name}}'s profile and reports"
+      },
+      "impact": {
+        "ariaLabel": "Your impact at a glance",
+        "opener": "You've been caring for {{n}} children for {{duration}}",
+        "openerNoDuration": "You're caring for {{n}} children",
+        "totalGiven": "Total given",
+        "otherCurrencies": "+ {{n}} in other currencies",
+        "justStarted": "Your sponsorship has just begun",
+        "paymentsCount": "across {{n}} payments",
+        "monthlyCommitment": "Your monthly commitment",
+        "nextPayment": "Your next payment",
+        "nextPaymentValue": "{{date}} — for {{name}}",
+        "noScheduledPayments": "No scheduled payments"
+      },
+      "toolbar": {
+        "searchLabel": "Search your orphans",
+        "searchPlaceholder": "Search by name or code…",
+        "sortLabel": "Sort",
+        "sort": {
+          "priority": "Priority",
+          "name": "Name",
+          "newest": "Newest sponsorship"
+        },
+        "filtersLabel": "Filter orphans",
+        "filters": {
+          "all": "All",
+          "attention": "Needs your attention",
+          "active": "Active",
+          "paused": "Paused"
+        }
+      },
+      "emptyState": {
+        "title": "Your page is waiting for its first child",
+        "body": "Once your first sponsorship begins, you'll find a card here for every child you care for: their messages and reports, what you've given, and your next payment.",
+        "browse": "Browse waiting children",
+        "howItWorks": "How does sponsorship work?",
+        "reassurance": "You can pause a sponsorship at any time."
+      }
     },
     "orphanDetail": {
       "back": "Back to my orphans",

@@ -11,6 +11,7 @@ import { chapterDomId, scrollToChapter, tabDomId, tabPanelDomId } from "@/lib/pr
 import { countryName } from "@/lib/countries";
 import { formatDate, formatDuration, humanDuration } from "@/lib/format";
 import type { MessageRead } from "@/lib/messages";
+import { formatMoney } from "@/lib/money";
 import {
   listSponsorshipMessages,
   sendSponsorshipMessage,
@@ -693,7 +694,7 @@ function IdentityRail({
               : t("donor.orphanDetail.notScheduled")}
           </p>
           <p className="mt-0.5 text-xs tabular-nums text-gray-500 dark:text-gray-400">
-            {sponsorship.monthly_amount} {sponsorship.currency} ·{" "}
+            {formatMoney(sponsorship.monthly_amount, sponsorship.currency, lang)} ·{" "}
             {t("donor.orphanDetail.monthlyAmount")}
           </p>
         </div>
@@ -3174,7 +3175,7 @@ function SponsorshipCard({ sponsorship, lang }: { sponsorship: Sponsorship; lang
         </Stat>
         <Stat label={t("donor.orphanDetail.monthlyAmount")}>
           <span className="tabular-nums">
-            {sponsorship.monthly_amount} {sponsorship.currency}
+            {formatMoney(sponsorship.monthly_amount, sponsorship.currency, lang)}
           </span>
         </Stat>
         <Stat label={t("donor.orphanDetail.nextPayment")}>
@@ -3184,7 +3185,7 @@ function SponsorshipCard({ sponsorship, lang }: { sponsorship: Sponsorship; lang
         </Stat>
         <Stat label={t("donor.orphanDetail.totalPaid")}>
           <span className="tabular-nums">
-            {sponsorship.total_paid} {sponsorship.currency}
+            {formatMoney(sponsorship.total_paid, sponsorship.currency, lang)}
           </span>
         </Stat>
         <Stat label={t("donorTimeline.startDateLabel")}>
@@ -3221,7 +3222,7 @@ function MoneyTrail({
       <div className="panel">
         <dt className="text-xs text-gray-500">{t("donor.orphanDetail.totalContributed")}</dt>
         <dd className="mt-1 font-semibold tabular-nums text-gray-900 dark:text-gray-100">
-          {sponsorship.total_paid} {sponsorship.currency}
+          {formatMoney(sponsorship.total_paid, sponsorship.currency, lang)}
         </dd>
       </div>
 
@@ -3264,7 +3265,7 @@ function PaymentRow({ payment, lang }: { payment: PaymentDonorRead; lang: string
     <li className="panel flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-3">
         <span className="tabular-nums font-semibold text-gray-900 dark:text-gray-100">
-          {payment.amount} {payment.currency}
+          {formatMoney(payment.amount, payment.currency, lang)}
         </span>
         <span className="text-xs text-gray-500 dark:text-gray-400">
           {formatDate(displayDate, lang)}
