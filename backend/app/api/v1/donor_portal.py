@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import CurrentUser, DbSession
 from app.api.v1.messages import MESSAGE_MAX_LEN, MessageRead, _project
 from app.api.v1.public import _age_years, to_public_detail
+from app.api.v1.sponsorships import _enrich
 from app.core.exceptions import NotFound
 from app.models.donor import Donor
 from app.models.family import Family, Guardian
@@ -243,8 +244,23 @@ async def my_sponsorships(
     rows = (
         await db.scalars(stmt.order_by(Sponsorship.created_at.desc()).limit(limit).offset(offset))
     ).all()
+
+    # Graft the donor-approved orphan slice — name + code ONLY — onto each
+    # row via one batch query for the whole page (same pattern as the staff
+    # list in sponsorships.py; never a per-row lookup). Every orphan fetched
+    # here belongs to one of the donor's own sponsorships, so no foreign
+    # child is ever touched. Donor identity fields stay null: the caller IS
+    # the donor.
+    orphan_ids = {r.orphan_id for r in rows}
+    orphans: Sequence[Orphan] = (
+        (await db.scalars(select(Orphan).where(Orphan.id.in_(orphan_ids)))).all()
+        if orphan_ids
+        else []
+    )
+    orphan_by_id = {o.id: o for o in orphans}
+
     return Page(
-        items=[SponsorshipRead.model_validate(r) for r in rows],
+        items=[_enrich(r, None, orphan_by_id.get(r.orphan_id)) for r in rows],
         total=total,
         limit=limit,
         offset=offset,
