@@ -14,6 +14,20 @@ export function formatDate(value: string, lang: string): string {
   });
 }
 
+/** Coarse relative-time label ("قبل ٣ أيام"). Moved verbatim from
+ * OrphanCard (PR-D01) with `now` made an optional parameter so callers
+ * that hold a per-snapshot "now" keep their output deterministic. */
+export function relativeFromNow(iso: string, lang: string, now?: Date): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const ref = (now ?? new Date()).getTime();
+  const days = Math.max(0, Math.round((ref - then) / 86_400_000));
+  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+  if (days < 7) return rtf.format(-days, "day");
+  if (days < 35) return rtf.format(-Math.round(days / 7), "week");
+  return rtf.format(-Math.round(days / 30), "month");
+}
+
 export interface Duration {
   years: number;
   months: number;

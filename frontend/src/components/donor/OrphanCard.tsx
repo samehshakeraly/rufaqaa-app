@@ -1,9 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
+import { OrphanAvatar } from "@/components/donor/OrphanAvatar";
 import type { OrphanCardData } from "@/lib/donorOrphans";
-import { avatarPaletteIndex, relationshipSignal } from "@/lib/donorOrphans";
-import { formatDate, formatDuration, humanDuration } from "@/lib/format";
+import { relationshipSignal } from "@/lib/donorOrphans";
+import {
+  formatDate,
+  formatDuration,
+  humanDuration,
+  relativeFromNow,
+} from "@/lib/format";
 import { formatMoney } from "@/lib/money";
 
 /** PR-D06 — one sponsored child, as a relationship, not an invoice.
@@ -13,41 +19,6 @@ import { formatMoney } from "@/lib/money";
  * controls (no stretched-link overlay). The primary action changes with
  * the state of the relationship; the two secondary icon actions (message
  * / profile & reports) are always present and always labelled. */
-
-/** Deterministic avatar palette — bg/text utility pairs hand-picked from
- * the design-system ramps for ≥ 4.5:1 contrast in BOTH light and dark
- * mode. Index = stable hash of orphan_id, so a child keeps their color
- * across visits. Never random HSL, never a real child photo. */
-const AVATAR_PALETTE = [
-  "bg-trust-100 text-trust-700 dark:bg-trust-800 dark:text-trust-100",
-  "bg-tranquil-200 text-trust-700 dark:bg-gray-700 dark:text-tranquil-200",
-  "bg-success-100 text-success-700 dark:bg-success-700 dark:text-success-50",
-  "bg-warning-100 text-warning-700 dark:bg-warning-700 dark:text-warning-50",
-  "bg-info-100 text-info-700 dark:bg-info-700 dark:text-info-50",
-  "bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-100",
-] as const;
-
-/** Two-character monogram: initials of the first two words, or the first
- * two letters of a single-word name. */
-function monogram(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  const first = words[0];
-  if (!first) return "•";
-  const second = words[1];
-  if (!second) return first.slice(0, 2);
-  return `${first.charAt(0)}${second.charAt(0)}`;
-}
-
-/** Coarse relative-time label for the relationship box. */
-function relativeFromNow(iso: string, lang: string): string {
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
-  const days = Math.max(0, Math.round((Date.now() - then) / 86_400_000));
-  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
-  if (days < 7) return rtf.format(-days, "day");
-  if (days < 35) return rtf.format(-Math.round(days / 7), "week");
-  return rtf.format(-Math.round(days / 30), "month");
-}
 
 const STATUS_PILL: Record<string, string> = {
   active:
@@ -115,12 +86,7 @@ export function OrphanCard({ card, now }: { card: OrphanCardData; now?: Date }) 
   return (
     <article className="card flex h-full flex-col gap-3 p-5">
       <div className="flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className={`flex h-[52px] w-[52px] shrink-0 select-none items-center justify-center rounded-full text-lg font-bold ${AVATAR_PALETTE[avatarPaletteIndex(s.orphan_id, AVATAR_PALETTE.length)]}`}
-        >
-          {monogram(name)}
-        </span>
+        <OrphanAvatar orphanId={s.orphan_id} name={name} size="lg" />
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold">
             <Link
@@ -163,7 +129,7 @@ export function OrphanCard({ card, now }: { card: OrphanCardData; now?: Date }) 
                   signal.milestoneLabel ?? t("donor.orphans.signal.periodReport"),
               })}{" "}
               <span className="text-gray-500 dark:text-gray-400">
-                {relativeFromNow(signal.at, lang)}
+                {relativeFromNow(signal.at, lang, now)}
               </span>
             </span>
           )}
