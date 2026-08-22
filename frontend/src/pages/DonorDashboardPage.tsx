@@ -75,7 +75,7 @@ export function DonorDashboardPage() {
           <h2 className="text-lg font-semibold">
             {t("donor.dashboard.sponsorshipsHeader")}
           </h2>
-          <Link to="/donor/sponsorships" className="text-sm text-trust underline">
+          <Link to="/donor/orphans" className="text-sm text-trust underline">
             {t("donor.dashboard.viewAll")}
           </Link>
         </div>

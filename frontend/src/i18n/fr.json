@@ -401,6 +401,80 @@
         "howItWorks": "Comment fonctionne le parrainage ?",
         "reassurance": "Vous pouvez suspendre un parrainage à tout moment."
       }
+    },
+    "payments": {
+      "title": "Mes paiements",
+      "subtitle": "Tout ce que vous avez donné, ses reçus, et ce qui reste à finaliser.",
+      "year": {
+        "ariaLabel": "Résumé de l'année",
+        "totalIn": "Total de vos dons en {{year}}",
+        "totalAll": "Total de vos dons, toutes années confondues",
+        "completedCount": "en {{n}} paiements réussis",
+        "otherCurrencies": "+ {{n}} en d'autres devises",
+        "none": "Aucun paiement réussi sur cette période pour l'instant.",
+        "selectLabel": "Choisir l'année",
+        "allYears": "Toutes les années",
+        "export": "Exporter le relevé de l'année"
+      },
+      "attention": {
+        "title": "À finaliser",
+        "pendingTitle": "Le parrainage de {{name}} n'est pas finalisé",
+        "pendingMeta": "Créé mais pas encore payé ·",
+        "failedTitle": "Votre paiement pour le parrainage de {{name}} n'a pas abouti",
+        "failedGeneralTitle": "Votre paiement n'a pas abouti",
+        "completePay": "Finaliser le paiement",
+        "retry": "Réessayer"
+      },
+      "toolbar": {
+        "searchLabel": "Rechercher dans vos paiements",
+        "searchPlaceholder": "Recherchez par code ou nom de l'enfant…",
+        "filtersLabel": "Filtrer par statut"
+      },
+      "statuses": {
+        "all": "Tous",
+        "completed": "Effectué",
+        "inProgress": "En traitement",
+        "notCompleted": "Non abouti",
+        "refunded": "Restitué",
+        "underReview": "En cours d'examen"
+      },
+      "table": {
+        "date": "Date",
+        "about": "Pour",
+        "amount": "Montant",
+        "method": "Moyen",
+        "status": "Statut",
+        "action": "Action",
+        "sponsorshipOf": "Parrainage de {{name}}",
+        "generalDonation": "Don général",
+        "receipt": "Reçu",
+        "receiptAria": "Télécharger le reçu du paiement {{code}}",
+        "waiting": "En attente de confirmation bancaire",
+        "refundDetails": "Détails de la restitution",
+        "contactUs": "Contactez-nous"
+      },
+      "csv": {
+        "date": "Date",
+        "code": "Code du paiement",
+        "about": "Pour",
+        "amount": "Montant",
+        "currency": "Devise",
+        "method": "Moyen",
+        "status": "Statut",
+        "receiptNumber": "Numéro du reçu"
+      },
+      "showingRange": "{{from}}–{{to}} sur {{total}} paiements",
+      "showingFiltered": "{{n}} paiements correspondants sur cette page",
+      "noResults": "Aucun paiement ne correspond à votre recherche ou filtre.",
+      "clearFilters": "Effacer la recherche et les filtres",
+      "empty": {
+        "title": "Aucun paiement enregistré pour l'instant",
+        "body": "Dès votre premier parrainage, tout ce que vous donnerez apparaîtra ici — daté, avec son reçu — et vous pourrez exporter un relevé annuel à tout moment.",
+        "browse": "Parcourir les enfants en attente"
+      }
     }
+  },
+  "donorNav": {
+    "payments": "Mes paiements"
   }
 }
