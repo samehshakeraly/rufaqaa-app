@@ -6915,12 +6915,16 @@ export interface components {
             amount: string;
             /** Amount In Default Currency */
             amount_in_default_currency: string | null;
+            /** Bank Reference */
+            bank_reference: string | null;
             /** Code */
             code: string;
             /** Completed At */
             completed_at: string | null;
             /** Currency */
             currency: string;
+            /** Gateway Transaction Id */
+            gateway_transaction_id: string | null;
             /**
              * Id
              * Format: uuid
@@ -6931,8 +6935,12 @@ export interface components {
              * Format: date-time
              */
             initiated_at: string;
+            /** Orphan Code */
+            orphan_code?: string | null;
             /** Orphan Id */
             orphan_id: string | null;
+            /** Orphan Name */
+            orphan_name?: string | null;
             /** Payment Method */
             payment_method: string;
             /** Receipt Issued At */

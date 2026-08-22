@@ -946,7 +946,12 @@
         "status": "الحالة",
         "action": "الفعل",
         "sponsorshipOf": "كفالة {{name}}",
+        "donationFor": "تبرّع لـ {{name}}",
         "generalDonation": "تبرّع عام",
+        "receiptNumber": "إيصال رقم {{n}}",
+        "bankReference": "مرجع البنك {{n}}",
+        "copyAria": "انسخ مرجع البنك",
+        "copied": "تم النسخ",
         "receipt": "الإيصال",
         "receiptAria": "تنزيل إيصال العملية {{code}}",
         "waiting": "بانتظار تأكيد البنك",
@@ -961,7 +966,9 @@
         "currency": "العملة",
         "method": "الطريقة",
         "status": "الحالة",
-        "receiptNumber": "رقم الإيصال"
+        "receiptNumber": "رقم الإيصال",
+        "bankReference": "مرجع البنك",
+        "gatewayTransactionId": "مرجع بوابة الدفع"
       },
       "showingRange": "{{from}}–{{to}} من {{total}} عملية",
       "showingFiltered": "{{n}} عملية مطابقة في هذه الصفحة",

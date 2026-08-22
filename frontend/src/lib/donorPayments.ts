@@ -44,10 +44,62 @@ export function effectiveDate(payment: PaymentDonorRead): string {
   return payment.completed_at ?? payment.initiated_at;
 }
 
+/** What the payment was for, by the three-step precedence (PR-D09):
+ * a matched sponsorship wins; otherwise the payment's own child (the
+ * server now sends orphan_name/orphan_code on the payment itself); only
+ * a payment with no child at all reads as a general donation. */
+export type PaymentAbout =
+  | { kind: "sponsorship"; name: string; code: string }
+  | { kind: "orphan"; name: string; code: string | null }
+  | { kind: "general" };
+
+export function paymentAbout(row: PaymentRow): PaymentAbout {
+  if (row.sponsorship?.orphan_name) {
+    return {
+      kind: "sponsorship",
+      name: row.sponsorship.orphan_name,
+      code: row.sponsorship.code,
+    };
+  }
+  if (row.payment.orphan_name) {
+    return {
+      kind: "orphan",
+      name: row.payment.orphan_name,
+      code: row.payment.orphan_code ?? null,
+    };
+  }
+  return { kind: "general" };
+}
+
+/** The number a donor takes to their bank about a payment that went
+ * wrong. bank_reference wins when both exist (it's the one the bank
+ * recognises); the gateway transaction id is the fallback. */
+export function bankReferenceOf(payment: PaymentDonorRead): string | null {
+  return payment.bank_reference ?? payment.gateway_transaction_id ?? null;
+}
+
+/** Each number appears only where it is used: the bank reference only on
+ * rows whose donor might need to call their bank. */
+const BANK_REFERENCE_STATUSES: ReadonlySet<DonorPaymentStatus> = new Set([
+  "notCompleted",
+  "underReview",
+  "refunded",
+]);
+
+export function showsBankReference(row: PaymentRow): boolean {
+  return BANK_REFERENCE_STATUSES.has(row.status) && bankReferenceOf(row.payment) !== null;
+}
+
+/** …and the receipt number only on a completed row that actually has one. */
+export function showsReceiptNumber(row: PaymentRow): boolean {
+  return row.status === "completed" && !!row.payment.receipt_number;
+}
+
 export type StatusChip = "all" | DonorPaymentStatus;
 
 /** Client-side narrowing: one status chip + a text query over the
- * payment code and the child's name. */
+ * payment code and the child's name (from the matched sponsorship or
+ * from the payment itself). */
 export function filterPaymentRows(
   rows: PaymentRow[],
   chip: StatusChip,
@@ -58,7 +110,7 @@ export function filterPaymentRows(
     if (chip !== "all" && row.status !== chip) return false;
     if (!q) return true;
     const code = row.payment.code.toLowerCase();
-    const name = (row.sponsorship?.orphan_name ?? "").toLowerCase();
+    const name = (row.sponsorship?.orphan_name ?? row.payment.orphan_name ?? "").toLowerCase();
     return code.includes(q) || name.includes(q);
   });
 }
@@ -152,13 +204,43 @@ export function summarizeYear(
  * stays free of i18n imports and pure. */
 export interface StatementLabels {
   /** Column headers, in order: date, code, about, amount, currency,
-   * method, status, receipt number. */
-  headers: [string, string, string, string, string, string, string, string];
+   * method, status, receipt number, bank reference, gateway
+   * transaction id. */
+  headers: [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
   generalDonation: string;
   /** "كفالة {name}" — receives the child's name. */
   sponsorshipOf: (name: string) => string;
+  /** "تبرّع لـ {name}" — a child-directed donation outside a sponsorship. */
+  donationFor: (name: string) => string;
   methodLabel: (method: string) => string;
   statusLabel: (status: DonorPaymentStatus) => string;
+}
+
+/** The "about" cell of one statement row — same three-step precedence
+ * as the page's AboutCell. */
+function statementAbout(row: PaymentRow, labels: StatementLabels): string {
+  const about = paymentAbout(row);
+  switch (about.kind) {
+    case "sponsorship":
+      return `${labels.sponsorshipOf(about.name)} (${about.code})`;
+    case "orphan":
+      return about.code
+        ? `${labels.donationFor(about.name)} (${about.code})`
+        : labels.donationFor(about.name);
+    case "general":
+      return labels.generalDonation;
+  }
 }
 
 /** The year statement as CSV (client-built from the loaded rows). Dates
@@ -170,18 +252,17 @@ export function buildStatementCsv(
 ): string {
   const matrix: (string | number | null)[][] = [labels.headers.slice()];
   for (const row of rows) {
-    const about = row.sponsorship?.orphan_name
-      ? `${labels.sponsorshipOf(row.sponsorship.orphan_name)} (${row.sponsorship.code})`
-      : labels.generalDonation;
     matrix.push([
       effectiveDate(row.payment).slice(0, 10),
       row.payment.code,
-      about,
+      statementAbout(row, labels),
       row.payment.amount,
       row.payment.currency,
       labels.methodLabel(row.payment.payment_method),
       labels.statusLabel(row.status),
       row.payment.receipt_number ?? "",
+      row.payment.bank_reference ?? "",
+      row.payment.gateway_transaction_id ?? "",
     ]);
   }
   return buildCsv(matrix);

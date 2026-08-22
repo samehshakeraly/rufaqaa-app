@@ -140,6 +140,17 @@ class PaymentDonorRead(BaseModel):
     sponsorship_id: UUID | None
     orphan_id: UUID | None
 
+    # References the donor takes to their bank when a payment goes wrong.
+    # NOT internal ops data: the gateway hands both to the donor's own bank
+    # statement anyway. ``payment_gateway`` and the rest stay excluded.
+    gateway_transaction_id: str | None
+    bank_reference: str | None
+
+    # Child privacy: name + code only, enriched via a batch join on the list
+    # endpoint (default None so model_validate() of a bare row stays valid).
+    orphan_name: str | None = None
+    orphan_code: str | None = None
+
 
 class PaymentReceipt(BaseModel):
     """Self-contained snapshot of a payment for printing. Bundles the

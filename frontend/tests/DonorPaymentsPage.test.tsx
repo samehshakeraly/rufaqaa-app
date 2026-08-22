@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
@@ -55,6 +55,10 @@ function payment(over: Partial<PaymentDonorRead>): PaymentDonorRead {
     receipt_url: null,
     sponsorship_id: null,
     orphan_id: null,
+    gateway_transaction_id: null,
+    bank_reference: null,
+    orphan_name: null,
+    orphan_code: null,
     ...over,
   };
 }
@@ -264,6 +268,129 @@ describe("DonorPaymentsPage — the record", () => {
     await screen.findAllByText("PAY-P2", { exact: false });
     expect(paymentsMock).toHaveBeenCalledWith({ limit: 25, offset: 25 });
     await screen.findByText(/26–26 من 30/);
+  });
+});
+
+describe("DonorPaymentsPage — about precedence (PR-D09)", () => {
+  it("a payment matched to a sponsorship shows كفالة {name} + the SPN code", async () => {
+    const s = sponsorship({ id: "s-a", code: "SPN-9", orphan_name: "أحمد" });
+    paymentsMock.mockResolvedValue(
+      page([payment({ sponsorship_id: "s-a", orphan_name: "أحمد", orphan_code: "ORF-9" })]),
+    );
+    sponsorshipsMock.mockResolvedValue(page([s]));
+    renderPage();
+
+    // Table + mobile card each render the cell once.
+    expect(await screen.findAllByText("كفالة أحمد")).toHaveLength(2);
+    expect(screen.getAllByText("SPN-9")).toHaveLength(2);
+    expect(screen.queryByText("تبرّع عام")).not.toBeInTheDocument();
+  });
+
+  it("a payment with orphan_name but NO matched sponsorship shows تبرّع لـ {name} + the ORF code (used to render تبرّع عام)", async () => {
+    paymentsMock.mockResolvedValue(
+      page([payment({ orphan_id: "o-1", orphan_name: "سارة", orphan_code: "ORF-55" })]),
+    );
+    renderPage();
+
+    expect(await screen.findAllByText("تبرّع لـ سارة")).toHaveLength(2);
+    expect(screen.getAllByText("ORF-55")).toHaveLength(2);
+    expect(screen.queryByText("تبرّع عام")).not.toBeInTheDocument();
+  });
+
+  it("a payment without orphan_id stays a تبرّع عام", async () => {
+    paymentsMock.mockResolvedValue(page([payment({})]));
+    renderPage();
+
+    expect(await screen.findAllByText("تبرّع عام")).toHaveLength(2);
+  });
+});
+
+describe("DonorPaymentsPage — reference numbers (PR-D09)", () => {
+  it("a completed row with receipt_number shows it; a completed row without shows no line", async () => {
+    paymentsMock.mockResolvedValue(
+      page([
+        payment({ code: "PAY-RC", receipt_number: "RC-2026-9" }),
+        payment({ code: "PAY-NORC" }),
+      ]),
+    );
+    renderPage();
+    await screen.findAllByText("PAY-RC", { exact: false });
+
+    expect(screen.getAllByText("إيصال رقم RC-2026-9")).toHaveLength(2);
+    expect(screen.queryByText(/إيصال رقم$/)).not.toBeInTheDocument();
+  });
+
+  it("a completed row does NOT show the bank reference even when one exists", async () => {
+    paymentsMock.mockResolvedValue(
+      page([payment({ bank_reference: "BNK-1", gateway_transaction_id: "GW-1" })]),
+    );
+    renderPage();
+    await screen.findAllByText("PAY-1001", { exact: false });
+
+    expect(screen.queryByText(/مرجع البنك/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "انسخ مرجع البنك" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("a failed row with bank_reference shows the reference and its copy button", async () => {
+    paymentsMock.mockResolvedValue(
+      page([payment({ status: "failed", bank_reference: "BNK-42" })]),
+    );
+    renderPage();
+    await screen.findAllByText("PAY-1001", { exact: false });
+
+    expect(screen.getAllByText("مرجع البنك BNK-42")).toHaveLength(2);
+    expect(
+      screen.getAllByRole("button", { name: "انسخ مرجع البنك" }),
+    ).toHaveLength(2);
+  });
+
+  it("when both references exist, bank_reference is the one rendered", async () => {
+    paymentsMock.mockResolvedValue(
+      page([
+        payment({
+          status: "failed",
+          bank_reference: "BNK-WIN",
+          gateway_transaction_id: "GW-LOSE",
+        }),
+      ]),
+    );
+    renderPage();
+    await screen.findAllByText("PAY-1001", { exact: false });
+
+    expect(screen.getAllByText("مرجع البنك BNK-WIN")).toHaveLength(2);
+    expect(screen.queryByText(/GW-LOSE/)).not.toBeInTheDocument();
+  });
+
+  it("falls back to gateway_transaction_id when bank_reference is absent", async () => {
+    paymentsMock.mockResolvedValue(
+      page([payment({ status: "failed", gateway_transaction_id: "GW-ONLY" })]),
+    );
+    renderPage();
+    await screen.findAllByText("PAY-1001", { exact: false });
+
+    expect(screen.getAllByText("مرجع البنك GW-ONLY")).toHaveLength(2);
+  });
+
+  it("the copy button has an accessible name, calls the clipboard, and confirms visually", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText },
+      configurable: true,
+    });
+    paymentsMock.mockResolvedValue(
+      page([payment({ status: "failed", bank_reference: "BNK-COPY" })]),
+    );
+    renderPage();
+    await screen.findAllByText("PAY-1001", { exact: false });
+
+    const [button] = screen.getAllByRole("button", { name: "انسخ مرجع البنك" });
+    // fireEvent (not userEvent) so user-event's own clipboard stub never
+    // replaces the spy this test installs.
+    fireEvent.click(button!);
+    expect(writeText).toHaveBeenCalledWith("BNK-COPY");
+    expect(await screen.findByText("تم النسخ")).toBeInTheDocument();
   });
 });
 

@@ -1031,9 +1031,14 @@ async def my_reports(
     )
 
 
-def _donor_payment_view(p: Payment) -> PaymentDonorRead:
+def _donor_payment_view(p: Payment, orphan: Orphan | None) -> PaymentDonorRead:
     # from_attributes reads only the declared donor-safe fields; nothing else leaves the server
-    return PaymentDonorRead.model_validate(p)
+    out = PaymentDonorRead.model_validate(p)
+    if orphan is not None:
+        # Child privacy: name + code only — same vetted slice as sponsorships.
+        out.orphan_name = f"{orphan.first_name} {orphan.family_name}"
+        out.orphan_code = orphan.code
+    return out
 
 
 @router.get("/payments", response_model=Page[PaymentDonorRead])
@@ -1056,8 +1061,24 @@ async def my_payments(
     total = await db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     order = func.coalesce(Payment.completed_at, Payment.failed_at, Payment.initiated_at).desc()
     rows = (await db.scalars(stmt.order_by(order).limit(limit).offset(offset))).all()
+
+    # Batch-fetch the orphan rows for the page (one query, never per row) so
+    # a payment made for a specific child can carry the child's name + code.
+    orphan_ids = {r.orphan_id for r in rows if r.orphan_id is not None}
+    orphans: Sequence[Orphan] = (
+        (await db.scalars(select(Orphan).where(Orphan.id.in_(orphan_ids)))).all()
+        if orphan_ids
+        else []
+    )
+    orphan_by_id = {o.id: o for o in orphans}
+
     return Page(
-        items=[_donor_payment_view(r) for r in rows],
+        items=[
+            _donor_payment_view(
+                r, orphan_by_id.get(r.orphan_id) if r.orphan_id is not None else None
+            )
+            for r in rows
+        ],
         total=total,
         limit=limit,
         offset=offset,
