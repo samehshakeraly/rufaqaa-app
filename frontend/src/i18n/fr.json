@@ -446,7 +446,12 @@
         "status": "Statut",
         "action": "Action",
         "sponsorshipOf": "Parrainage de {{name}}",
+        "donationFor": "Don pour {{name}}",
         "generalDonation": "Don général",
+        "receiptNumber": "Reçu n° {{n}}",
+        "bankReference": "Référence bancaire {{n}}",
+        "copyAria": "Copier la référence bancaire",
+        "copied": "Copié",
         "receipt": "Reçu",
         "receiptAria": "Télécharger le reçu du paiement {{code}}",
         "waiting": "En attente de confirmation bancaire",
@@ -461,7 +466,9 @@
         "currency": "Devise",
         "method": "Moyen",
         "status": "Statut",
-        "receiptNumber": "Numéro du reçu"
+        "receiptNumber": "Numéro du reçu",
+        "bankReference": "Référence bancaire",
+        "gatewayTransactionId": "Référence de la passerelle de paiement"
       },
       "showingRange": "{{from}}–{{to}} sur {{total}} paiements",
       "showingFiltered": "{{n}} paiements correspondants sur cette page",

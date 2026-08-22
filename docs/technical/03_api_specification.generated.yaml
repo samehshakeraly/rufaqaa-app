@@ -6755,6 +6755,11 @@ components:
             type: string
           - type: 'null'
           title: Amount In Default Currency
+        bank_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bank Reference
         code:
           title: Code
           type: string
@@ -6767,6 +6772,11 @@ components:
         currency:
           title: Currency
           type: string
+        gateway_transaction_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gateway Transaction Id
         id:
           format: uuid
           title: Id
@@ -6775,12 +6785,22 @@ components:
           format: date-time
           title: Initiated At
           type: string
+        orphan_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Code
         orphan_id:
           anyOf:
           - format: uuid
             type: string
           - type: 'null'
           title: Orphan Id
+        orphan_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Orphan Name
         payment_method:
           title: Payment Method
           type: string
@@ -6824,6 +6844,8 @@ components:
       - receipt_url
       - sponsorship_id
       - orphan_id
+      - gateway_transaction_id
+      - bank_reference
       title: PaymentDonorRead
       type: object
     PaymentInitiate:

@@ -6,15 +6,19 @@ import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/Skeleton";
 import type { PaymentRow, StatusChip } from "@/lib/donorPayments";
 import {
+  bankReferenceOf,
   buildPaymentRows,
   buildStatementCsv,
   countByStatus,
   effectiveDate,
   failedPaymentRows,
   filterPaymentRows,
+  paymentAbout,
   paymentYears,
   pendingSponsorships,
   rowsInYear,
+  showsBankReference,
+  showsReceiptNumber,
   summarizeYear,
 } from "@/lib/donorPayments";
 import { formatDate } from "@/lib/format";
@@ -134,9 +138,12 @@ export function DonorPaymentsPage() {
         t("donor.payments.csv.method"),
         t("donor.payments.csv.status"),
         t("donor.payments.csv.receiptNumber"),
+        t("donor.payments.csv.bankReference"),
+        t("donor.payments.csv.gatewayTransactionId"),
       ],
       generalDonation: t("donor.payments.table.generalDonation"),
       sponsorshipOf: (name) => t("donor.payments.table.sponsorshipOf", { name }),
+      donationFor: (name) => t("donor.payments.table.donationFor", { name }),
       methodLabel: (m) => t(`payments.methods.${m}`, m),
       statusLabel: (s) => t(`donor.payments.statuses.${s}`),
     });
@@ -599,28 +606,136 @@ function RowAction({ row }: { row: PaymentRow }) {
   }
 }
 
-/** What the payment was for. Child privacy: name + codes only. */
+/** What the payment was for. Child privacy: name + codes only.
+ * Three-step precedence (PR-D09): matched sponsorship → the payment's
+ * own child (orphan_name comes on the payment itself now) → general. */
 function AboutCell({ row }: { row: PaymentRow }) {
   const { t } = useTranslation();
-  if (row.sponsorship?.orphan_name) {
+  const about = paymentAbout(row);
+  if (about.kind === "general") {
     return (
-      <>
-        <div className="font-medium text-gray-900 dark:text-gray-100">
-          {t("donor.payments.table.sponsorshipOf", {
-            name: row.sponsorship.orphan_name,
-          })}
-        </div>
-        <div className="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">
-          {row.sponsorship.code}
-        </div>
-      </>
+      <div className="font-medium text-gray-900 dark:text-gray-100">
+        {t("donor.payments.table.generalDonation")}
+      </div>
     );
   }
   return (
-    <div className="font-medium text-gray-900 dark:text-gray-100">
-      {t("donor.payments.table.generalDonation")}
-    </div>
+    <>
+      <div className="font-medium text-gray-900 dark:text-gray-100">
+        {about.kind === "sponsorship"
+          ? t("donor.payments.table.sponsorshipOf", { name: about.name })
+          : t("donor.payments.table.donationFor", { name: about.name })}
+      </div>
+      {about.code && (
+        <div className="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">
+          {about.code}
+        </div>
+      )}
+    </>
   );
+}
+
+function CopyIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m5 12.5 5 5 9-11" />
+    </svg>
+  );
+}
+
+/** The bank reference is long and gets copied, not read — a one-tap
+ * copy with a visible "copied" confirmation. */
+function CopyButton({ value }: { value: string }) {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable — the number stays visible on screen.
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      aria-label={t("donor.payments.table.copyAria")}
+      title={t("donor.payments.table.copyAria")}
+      className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-1 rounded-lg px-1.5 text-gray-500 transition hover:bg-tranquil-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+    >
+      {copied ? <CheckIcon /> : <CopyIcon />}
+      <span role="status" className="text-xs font-medium">
+        {copied ? t("donor.payments.table.copied") : null}
+      </span>
+    </button>
+  );
+}
+
+/** Each number where it is used (PR-D09): the receipt number beside the
+ * receipt link on a completed row; the bank reference — with a copy
+ * button — on a row the donor may need to call their bank about. */
+function ReferenceLine({ row, align = "start" }: { row: PaymentRow; align?: "start" | "end" }) {
+  const { t } = useTranslation();
+  if (showsReceiptNumber(row)) {
+    return (
+      <div
+        className={`mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400 ${
+          align === "end" ? "text-end" : ""
+        }`}
+      >
+        {t("donor.payments.table.receiptNumber", {
+          n: row.payment.receipt_number,
+        })}
+      </div>
+    );
+  }
+  const ref = bankReferenceOf(row.payment);
+  if (showsBankReference(row) && ref) {
+    return (
+      <div
+        className={`mt-0.5 flex items-center gap-0.5 ${
+          align === "end" ? "justify-end" : ""
+        }`}
+      >
+        <span className="break-all font-mono text-xs text-gray-500 dark:text-gray-400">
+          {t("donor.payments.table.bankReference", { n: ref })}
+        </span>
+        <CopyButton value={ref} />
+      </div>
+    );
+  }
+  return null;
 }
 
 /** The record itself: a table from 760px up, stacked cards below —
@@ -703,6 +818,7 @@ function PaymentsRecord({
                 </td>
                 <td className="px-4 py-3.5 text-end align-middle">
                   <RowAction row={row} />
+                  <ReferenceLine row={row} align="end" />
                 </td>
               </tr>
             ))}
@@ -732,6 +848,7 @@ function PaymentsRecord({
               })}{" "}
               · <span className="font-mono">{row.payment.code}</span>
             </p>
+            <ReferenceLine row={row} />
             <div className="mt-2 border-t border-dashed border-sky-200/70 pt-1 dark:border-gray-700">
               <RowAction row={row} />
             </div>

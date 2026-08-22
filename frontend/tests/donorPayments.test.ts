@@ -2,15 +2,19 @@ import { describe, expect, it } from "vitest";
 
 import { parseCsv } from "@/lib/csv";
 import {
+  bankReferenceOf,
   buildPaymentRows,
   buildStatementCsv,
   countByStatus,
   effectiveDate,
   failedPaymentRows,
   filterPaymentRows,
+  paymentAbout,
   paymentYears,
   pendingSponsorships,
   rowsInYear,
+  showsBankReference,
+  showsReceiptNumber,
   summarizeYear,
   type StatementLabels,
 } from "@/lib/donorPayments";
@@ -36,6 +40,10 @@ function payment(over: Partial<PaymentDonorRead>): PaymentDonorRead {
     receipt_url: null,
     sponsorship_id: null,
     orphan_id: null,
+    gateway_transaction_id: null,
+    bank_reference: null,
+    orphan_name: null,
+    orphan_code: null,
     ...over,
   };
 }
@@ -118,6 +126,14 @@ describe("filterPaymentRows + countByStatus", () => {
     expect(filterPaymentRows(rows, "all", "pay-222")).toHaveLength(1);
     expect(filterPaymentRows(rows, "all", "لُجين")).toHaveLength(1);
     expect(filterPaymentRows(rows, "all", "غير موجود")).toHaveLength(0);
+  });
+
+  it("searches the child's name from the payment itself (no sponsorship)", () => {
+    const unmatched = buildPaymentRows(
+      [payment({ code: "PAY-444", orphan_id: "o-x", orphan_name: "سارة" })],
+      [],
+    );
+    expect(filterPaymentRows(unmatched, "all", "سارة")).toHaveLength(1);
   });
 
   it("counts rows per chip (zero-count chips get hidden by the toolbar)", () => {
@@ -208,9 +224,12 @@ const LABELS: StatementLabels = {
     "الطريقة",
     "الحالة",
     "رقم الإيصال",
+    "مرجع البنك",
+    "مرجع بوابة الدفع",
   ],
   generalDonation: "تبرّع عام",
   sponsorshipOf: (name) => `كفالة ${name}`,
+  donationFor: (name) => `تبرّع لـ ${name}`,
   methodLabel: (m) => (m === "credit_card" ? "بطاقة ائتمان" : m),
   statusLabel: (s) => (s === "completed" ? "تمّت" : s),
 };
@@ -244,9 +263,49 @@ describe("buildStatementCsv", () => {
       "بطاقة ائتمان",
       "تمّت",
       "RC-1",
+      "",
+      "",
     ]);
     expect(rows[2]?.[2]).toBe("تبرّع عام");
     expect(rows[2]?.[7]).toBe(""); // no receipt number
+  });
+
+  it("the about column follows the three-step precedence", () => {
+    const s = sponsorship({ id: "s-a", code: "SPN-9", orphan_name: "أحمد" });
+    const csv = buildStatementCsv(
+      buildPaymentRows(
+        [
+          payment({ sponsorship_id: "s-a", orphan_name: "أحمد", orphan_code: "ORF-1" }),
+          payment({ orphan_id: "o-2", orphan_name: "سارة", orphan_code: "ORF-2" }),
+          payment({}),
+        ],
+        [s],
+      ),
+      LABELS,
+    );
+    const rows = parseCsv(csv);
+    expect(rows[1]?.[2]).toBe("كفالة أحمد (SPN-9)");
+    expect(rows[2]?.[2]).toBe("تبرّع لـ سارة (ORF-2)");
+    expect(rows[3]?.[2]).toBe("تبرّع عام");
+  });
+
+  it("carries bank_reference and gateway_transaction_id columns", () => {
+    const csv = buildStatementCsv(
+      buildPaymentRows(
+        [
+          payment({
+            status: "failed",
+            bank_reference: "BNK-REF-9",
+            gateway_transaction_id: "GW-TXN-9",
+          }),
+        ],
+        [],
+      ),
+      LABELS,
+    );
+    const rows = parseCsv(csv);
+    expect(rows[1]?.[8]).toBe("BNK-REF-9");
+    expect(rows[1]?.[9]).toBe("GW-TXN-9");
   });
 
   it("escapes commas and quotes inside values (round-trips through parseCsv)", () => {
@@ -264,6 +323,69 @@ describe("buildStatementCsv", () => {
     // …and parses back to the exact original value.
     const rows = parseCsv(csv);
     expect(rows[1]?.[2]).toBe('كفالة أحمد، "الصغير", وقف (SPN-9)');
+  });
+});
+
+describe("paymentAbout — three-step naming precedence", () => {
+  it("a matched sponsorship wins", () => {
+    const s = sponsorship({ id: "s-a", code: "SPN-9", orphan_name: "أحمد" });
+    const [row] = buildPaymentRows(
+      [payment({ sponsorship_id: "s-a", orphan_name: "غيره", orphan_code: "ORF-1" })],
+      [s],
+    );
+    expect(paymentAbout(row!)).toEqual({
+      kind: "sponsorship",
+      name: "أحمد",
+      code: "SPN-9",
+    });
+  });
+
+  it("falls back to the payment's own child when no sponsorship matches", () => {
+    const [row] = buildPaymentRows(
+      [payment({ orphan_id: "o-1", orphan_name: "سارة", orphan_code: "ORF-2" })],
+      [],
+    );
+    expect(paymentAbout(row!)).toEqual({ kind: "orphan", name: "سارة", code: "ORF-2" });
+  });
+
+  it("a payment with no child at all is a general donation", () => {
+    const [row] = buildPaymentRows([payment({})], []);
+    expect(paymentAbout(row!)).toEqual({ kind: "general" });
+  });
+});
+
+describe("reference-number rules", () => {
+  it("bankReferenceOf prefers bank_reference and falls back to the gateway id", () => {
+    expect(
+      bankReferenceOf(payment({ bank_reference: "B-1", gateway_transaction_id: "G-1" })),
+    ).toBe("B-1");
+    expect(bankReferenceOf(payment({ gateway_transaction_id: "G-1" }))).toBe("G-1");
+    expect(bankReferenceOf(payment({}))).toBeNull();
+  });
+
+  it("the bank reference shows only on failed / under-review / refunded rows", () => {
+    const make = (status: string) =>
+      buildPaymentRows([payment({ status, bank_reference: "B-1" })], [])[0]!;
+    expect(showsBankReference(make("failed"))).toBe(true);
+    expect(showsBankReference(make("disputed"))).toBe(true);
+    expect(showsBankReference(make("refunded"))).toBe(true);
+    expect(showsBankReference(make("completed"))).toBe(false);
+    expect(showsBankReference(make("processing"))).toBe(false);
+  });
+
+  it("…and never without a value to show", () => {
+    const [row] = buildPaymentRows([payment({ status: "failed" })], []);
+    expect(showsBankReference(row!)).toBe(false);
+  });
+
+  it("the receipt number shows only on a completed row that has one", () => {
+    const make = (over: Partial<PaymentDonorRead>) =>
+      buildPaymentRows([payment(over)], [])[0]!;
+    expect(showsReceiptNumber(make({ receipt_number: "RC-1" }))).toBe(true);
+    expect(showsReceiptNumber(make({}))).toBe(false);
+    expect(
+      showsReceiptNumber(make({ status: "failed", receipt_number: "RC-1" })),
+    ).toBe(false);
   });
 });
 

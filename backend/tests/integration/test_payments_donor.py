@@ -6,9 +6,12 @@ Two things are exercised:
   never appear; orphan_id filter restricts correctly; an orphan the donor
   does NOT sponsor → empty page.
 * Content safety: the response payload never carries internal fields
-  (gateway_transaction_id, bank_reference, payment_gateway, metadata,
-  notes, donor_id, organization_id, created_by, initiated_by_user_id,
-  failure_reason).
+  (payment_gateway, metadata, notes, donor_id, organization_id,
+  created_by, initiated_by_user_id, failure_reason). The donor's OWN
+  references (gateway_transaction_id, bank_reference) and the child's
+  name + code ARE part of the payload since PR-D09.
+* Enrichment: orphan_name/orphan_code populated from the payment's
+  orphan_id; null when the payment has no orphan.
 * Access control: staff/admin without donor_id → 400; donor passing a
   different donor_id → 403.
 * Pagination: total / limit / offset reported correctly.
@@ -26,8 +29,6 @@ from app.core.database import make_session
 
 # Fields that must NEVER appear in a donor-facing payment response.
 _FORBIDDEN_FIELDS = {
-    "gateway_transaction_id",
-    "bank_reference",
     "payment_gateway",
     "metadata",
     "payment_metadata",
@@ -37,6 +38,28 @@ _FORBIDDEN_FIELDS = {
     "created_by",
     "initiated_by_user_id",
     "failure_reason",
+}
+
+# The COMPLETE donor-facing payload — anything beyond this set is a leak.
+_EXPECTED_FIELDS = {
+    "id",
+    "code",
+    "amount",
+    "currency",
+    "amount_in_default_currency",
+    "payment_method",
+    "status",
+    "initiated_at",
+    "completed_at",
+    "receipt_number",
+    "receipt_issued_at",
+    "receipt_url",
+    "sponsorship_id",
+    "orphan_id",
+    "gateway_transaction_id",
+    "bank_reference",
+    "orphan_name",
+    "orphan_code",
 }
 
 
@@ -109,6 +132,14 @@ async def _signup_donor(
 
 
 async def _make_orphan(api: AsyncClient, admin_headers: dict[str, str], partner_id: str) -> str:
+    orphan_id, _, _ = await _make_orphan_full(api, admin_headers, partner_id)
+    return orphan_id
+
+
+async def _make_orphan_full(
+    api: AsyncClient, admin_headers: dict[str, str], partner_id: str
+) -> tuple[str, str, str]:
+    """Create an orphan; return (id, full_name, code)."""
     suffix = uuid.uuid4().hex[:6]
     r = await api.post(
         "/api/v1/orphans",
@@ -124,7 +155,8 @@ async def _make_orphan(api: AsyncClient, admin_headers: dict[str, str], partner_
         headers=admin_headers,
     )
     assert r.status_code == 201, r.text
-    return str(r.json()["id"])
+    body = r.json()
+    return str(body["id"]), f"pay-{suffix} Test", str(body["code"])
 
 
 async def _activate_sponsorship(
@@ -153,9 +185,11 @@ async def _activate_sponsorship(
 async def _insert_payment(
     org_id: str,
     donor_id: str,
-    sponsorship_id: str,
-    orphan_id: str,
+    sponsorship_id: str | None,
+    orphan_id: str | None,
     status: str = "completed",
+    gateway_transaction_id: str | None = "gw-txn-1",
+    bank_reference: str | None = "bank-ref-1",
 ) -> str:
     """Insert a payment row directly via SQL and return its id."""
     pay_id = str(uuid.uuid4())
@@ -176,7 +210,7 @@ async def _insert_payment(
                 "VALUES (:id, :org, :code, :donor, :sp, :orphan, "
                 " 10.00, 'KWD', 'knet', :status, :initiated_at, "
                 " :completed_at, :failed_at, :failure_reason, "
-                " 'gw-txn-SECRET', 'bank-ref-SECRET', 'myfatoorah', "
+                " :gw_txn, :bank_ref, 'myfatoorah', "
                 " 'internal note SECRET', NULL)"
             ),
             {
@@ -191,6 +225,8 @@ async def _insert_payment(
                 "completed_at": completed_at,
                 "failed_at": failed_at,
                 "failure_reason": failure_reason,
+                "gw_txn": gateway_transaction_id,
+                "bank_ref": bank_reference,
             },
         )
         await db.commit()
@@ -302,24 +338,115 @@ async def test_safe_fields_present_in_payload(
     page = (await api.get("/api/v1/me/payments", headers=headers)).json()
     item = next(it for it in page["items"] if it.get("orphan_id") == orphan)
 
-    expected_fields = {
-        "id",
-        "code",
-        "amount",
-        "currency",
-        "payment_method",
-        "status",
-        "initiated_at",
-        "completed_at",
-        "receipt_number",
-        "receipt_issued_at",
-        "receipt_url",
-        "sponsorship_id",
-        "orphan_id",
-        "amount_in_default_currency",
-    }
-    for field in expected_fields:
-        assert field in item, f"Expected field '{field}' missing from donor payload"
+    # Exact-set equality: a field beyond the declared donor-safe payload
+    # (e.g. payment_gateway) failing this test is the point.
+    assert set(item.keys()) == _EXPECTED_FIELDS
+
+
+# ── Enrichment (PR-D09): orphan name/code + payment references ────────────────
+
+
+async def test_orphan_name_and_code_populated(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A payment carrying an orphan_id surfaces the child's name + code."""
+    org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
+    donor_id, headers = await _signup_donor(api, auth_headers)
+    orphan_id, orphan_name, orphan_code = await _make_orphan_full(api, auth_headers, partner_id)
+    sp = await _activate_sponsorship(api, auth_headers, donor_id, orphan_id)
+    pay = await _insert_payment(org_id, donor_id, sp, orphan_id)
+
+    page = (await api.get("/api/v1/me/payments", headers=headers)).json()
+    item = next(it for it in page["items"] if it["id"] == pay)
+    assert item["orphan_name"] == orphan_name
+    assert item["orphan_code"] == orphan_code
+
+
+async def test_payment_without_orphan_has_null_name_and_code(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """A general donation (no orphan_id) → both null, no exception."""
+    org_id, _ = await _seed_org_and_partner(api, auth_headers)
+    donor_id, headers = await _signup_donor(api, auth_headers)
+    pay = await _insert_payment(org_id, donor_id, None, None)
+
+    r = await api.get("/api/v1/me/payments", headers=headers)
+    assert r.status_code == 200
+    item = next(it for it in r.json()["items"] if it["id"] == pay)
+    assert item["orphan_id"] is None
+    assert item["orphan_name"] is None
+    assert item["orphan_code"] is None
+
+
+async def test_references_present_when_set_null_otherwise(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """gateway_transaction_id / bank_reference pass through when stored,
+    stay null when the row has none."""
+    org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
+    donor_id, headers = await _signup_donor(api, auth_headers)
+    orphan = await _make_orphan(api, auth_headers, partner_id)
+    sp = await _activate_sponsorship(api, auth_headers, donor_id, orphan)
+    pay_with = await _insert_payment(
+        org_id,
+        donor_id,
+        sp,
+        orphan,
+        status="failed",
+        gateway_transaction_id="gw-txn-42",
+        bank_reference="bank-ref-42",
+    )
+    pay_without = await _insert_payment(
+        org_id,
+        donor_id,
+        sp,
+        orphan,
+        gateway_transaction_id=None,
+        bank_reference=None,
+    )
+
+    page = (await api.get("/api/v1/me/payments", headers=headers)).json()
+    by_id = {it["id"]: it for it in page["items"]}
+    assert by_id[pay_with]["gateway_transaction_id"] == "gw-txn-42"
+    assert by_id[pay_with]["bank_reference"] == "bank-ref-42"
+    assert by_id[pay_without]["gateway_transaction_id"] is None
+    assert by_id[pay_without]["bank_reference"] is None
+
+
+async def test_enrichment_never_leaks_across_donors(
+    api: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Donor A's payload never carries donor B's orphan name/code or
+    payment references — anywhere in the response body."""
+    org_id, partner_id = await _seed_org_and_partner(api, auth_headers)
+    donor_a_id, headers_a = await _signup_donor(api, auth_headers)
+    donor_b_id, _ = await _signup_donor(api, auth_headers)
+
+    orphan_a = await _make_orphan(api, auth_headers, partner_id)
+    orphan_b_id, orphan_b_name, orphan_b_code = await _make_orphan_full(
+        api, auth_headers, partner_id
+    )
+    sp_a = await _activate_sponsorship(api, auth_headers, donor_a_id, orphan_a)
+    sp_b = await _activate_sponsorship(api, auth_headers, donor_b_id, orphan_b_id)
+
+    await _insert_payment(org_id, donor_a_id, sp_a, orphan_a)
+    await _insert_payment(
+        org_id,
+        donor_b_id,
+        sp_b,
+        orphan_b_id,
+        status="failed",
+        gateway_transaction_id="gw-txn-OTHER-DONOR",
+        bank_reference="bank-ref-OTHER-DONOR",
+    )
+
+    r = await api.get("/api/v1/me/payments", headers=headers_a)
+    assert r.status_code == 200
+    body = r.text
+    assert orphan_b_name not in body
+    assert orphan_b_code not in body
+    assert "gw-txn-OTHER-DONOR" not in body
+    assert "bank-ref-OTHER-DONOR" not in body
 
 
 # ── Access control ────────────────────────────────────────────────────────────

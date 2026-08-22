@@ -946,7 +946,12 @@
         "status": "Status",
         "action": "Action",
         "sponsorshipOf": "Sponsorship of {{name}}",
+        "donationFor": "Donation for {{name}}",
         "generalDonation": "General donation",
+        "receiptNumber": "Receipt no. {{n}}",
+        "bankReference": "Bank reference {{n}}",
+        "copyAria": "Copy the bank reference",
+        "copied": "Copied",
         "receipt": "Receipt",
         "receiptAria": "Download the receipt for payment {{code}}",
         "waiting": "Awaiting bank confirmation",
@@ -961,7 +966,9 @@
         "currency": "Currency",
         "method": "Method",
         "status": "Status",
-        "receiptNumber": "Receipt number"
+        "receiptNumber": "Receipt number",
+        "bankReference": "Bank reference",
+        "gatewayTransactionId": "Gateway transaction ID"
       },
       "showingRange": "{{from}}–{{to}} of {{total}} payments",
       "showingFiltered": "{{n}} matching payments on this page",
