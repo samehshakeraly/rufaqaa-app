@@ -87,6 +87,8 @@ class DonorPaymentMini(BaseModel):
     payment_method: str
     completed_at: datetime | None
     created_at: datetime
+    # Which general pool the donation went into ("waqf"), None otherwise.
+    target_type: str | None = None
 
 
 class DonorSponsorshipCreate(BaseModel):

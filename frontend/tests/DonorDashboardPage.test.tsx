@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
@@ -134,6 +134,41 @@ describe("DonorDashboardPage — the duplicated lists are gone", () => {
     expect(screen.queryByText("آخر المدفوعات")).not.toBeInTheDocument();
     expect(screen.queryByText("SPN-1")).not.toBeInTheDocument();
     expect(document.body.textContent).not.toContain("PAY-");
+  });
+});
+
+describe("DonorDashboardPage — portal gates (PR-W01)", () => {
+  it("the header carries both the zakat and the waqf gate", async () => {
+    sponsorshipsMock.mockResolvedValue(page([sponsorship({})]));
+    renderPage();
+    await screen.findByText("دفعتك القادمة");
+
+    const gates = screen.getByRole("navigation", { name: "بوّابات التبرّع" });
+    expect(
+      within(gates).getByRole("link", { name: /احسب زكاتك/ }),
+    ).toHaveAttribute("href", "/donor/zakat");
+    expect(
+      within(gates).getByRole("link", { name: /وقف الأيتام/ }),
+    ).toHaveAttribute("href", "/donor/waqf");
+  });
+
+  it("the gates live in the header, so they survive every page state", async () => {
+    // Zero sponsorships → the welcome card replaces the whole content
+    // column; the gates are still there because they are not in it.
+    sponsorshipsMock.mockResolvedValue(page([]));
+    const { unmount } = renderPage();
+    expect(
+      await screen.findByRole("link", { name: /وقف الأيتام/ }),
+    ).toHaveAttribute("href", "/donor/waqf");
+    unmount();
+
+    // …and again when the blocking fetch fails outright.
+    sponsorshipsMock.mockRejectedValue(new Error("boom"));
+    renderPage();
+    await screen.findByRole("alert");
+    expect(
+      screen.getByRole("link", { name: /وقف الأيتام/ }),
+    ).toHaveAttribute("href", "/donor/waqf");
   });
 });
 

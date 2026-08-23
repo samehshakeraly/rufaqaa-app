@@ -9,6 +9,7 @@ import { DashboardImpact } from "@/components/donor/DashboardImpact";
 import { DashboardSkeleton } from "@/components/donor/DashboardSkeleton";
 import { DashboardWelcome } from "@/components/donor/DashboardWelcome";
 import { NextPaymentCard } from "@/components/donor/NextPaymentCard";
+import { PortalGates } from "@/components/donor/PortalGates";
 import { QuickActions } from "@/components/donor/QuickActions";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useRole } from "@/hooks/useRole";
@@ -136,15 +137,21 @@ export function DonorDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {me?.first_name
-            ? t("donor.dashboard.greeting.named", { name: me.first_name })
-            : t("donor.dashboard.greeting.plain")}
-        </h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-          {t("donor.dashboard.greeting.subtitle")}
-        </p>
+      {/* PR-W01 — the greeting and the two portal gates share the header
+          row. The gates live HERE, not in the content, so they render in
+          every page state: loading, error, and zero sponsorships. */}
+      <header className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {me?.first_name
+              ? t("donor.dashboard.greeting.named", { name: me.first_name })
+              : t("donor.dashboard.greeting.plain")}
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+            {t("donor.dashboard.greeting.subtitle")}
+          </p>
+        </div>
+        <PortalGates />
       </header>
 
       {sponsorshipsQ.isLoading && <DashboardSkeleton />}

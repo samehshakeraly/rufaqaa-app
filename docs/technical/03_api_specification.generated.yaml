@@ -1283,6 +1283,11 @@ components:
         status:
           title: Status
           type: string
+        target_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target Type
       required:
       - id
       - code
@@ -6829,6 +6834,11 @@ components:
         status:
           title: Status
           type: string
+        target_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target Type
       required:
       - id
       - code
@@ -6851,7 +6861,9 @@ components:
     PaymentInitiate:
       description: 'Start a hosted-checkout flow with MyFatoorah for either a
 
-        one-off donation or an existing sponsorship.'
+        one-off donation, an existing sponsorship, or a general pool
+
+        (``target_type``).'
       properties:
         amount:
           anyOf:
@@ -6888,6 +6900,14 @@ components:
             type: string
           - type: 'null'
           title: Sponsorship Id
+        target_type:
+          anyOf:
+          - enum:
+            - waqf
+            - zakat
+            type: string
+          - type: 'null'
+          title: Target Type
       required:
       - donor_id
       - amount

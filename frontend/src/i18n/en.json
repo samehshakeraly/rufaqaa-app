@@ -1014,6 +1014,13 @@
         "browse": "Browse the waiting children",
         "howItWorks": "How does sponsorship work?",
         "hadith": "The Prophet ﷺ said: “I and the one who cares for an orphan will be in Paradise like this” — Sahih al-Bukhari"
+      },
+      "gates": {
+        "label": "Giving tracks",
+        "zakat": "Calculate your zakat",
+        "zakatSub": "Work it out and pay it",
+        "waqf": "The orphans waqf",
+        "waqfSub": "Giving that never stops"
       }
     },
     "profile": {
@@ -1077,7 +1084,8 @@
         "receiptAria": "Download the receipt for payment {{code}}",
         "waiting": "Awaiting bank confirmation",
         "refundDetails": "Return details",
-        "contactUs": "Contact us"
+        "contactUs": "Contact us",
+        "waqfDonation": "Waqf donation"
       },
       "csv": {
         "date": "Date",
@@ -1265,6 +1273,34 @@
       "statusRead": "Read",
       "statusRejected": "Not approved",
       "rejectedNoteLabel": "Review note"
+    },
+    "waqf": {
+      "title": "An ongoing charity",
+      "lead": "The orphans waqf: a held asset whose yield alone is spent on orphans.",
+      "hadith": "“When a person dies their deeds end, except three: an ongoing charity, knowledge others benefit from, or a righteous child who prays for them.”",
+      "body": "A waqf holds the asset itself — it is never sold, gifted or inherited — and only its yield is spent on its purpose. Your contribution here joins the orphans waqf as one pool: it is not assigned to a particular child and is not tied to a sponsorship.",
+      "mineTitle": "Your waqf so far",
+      "mineTotal": "{{amount}}",
+      "mineCount_zero": "No completed contributions",
+      "mineCount_one": "One completed contribution",
+      "mineCount_two": "{{count}} completed contributions",
+      "mineCount_few": "{{count}} completed contributions",
+      "mineCount_many": "{{count}} completed contributions",
+      "mineCount_other": "{{count}} completed contributions",
+      "otherCurrencies_zero": "no other currencies",
+      "otherCurrencies_one": "and one other currency",
+      "otherCurrencies_two": "and {{count}} other currencies",
+      "otherCurrencies_few": "and {{count}} other currencies",
+      "otherCurrencies_many": "and {{count}} other currencies",
+      "otherCurrencies_other": "and {{count}} other currencies",
+      "amount": "Amount",
+      "customAmount": "Another amount",
+      "currency": "Currency",
+      "submit": "Endow now — {{amount}}",
+      "notZakat": "A waqf holds the asset and never transfers ownership to the recipient, whereas zakat is a transfer of ownership — so zakat is not paid here.",
+      "error": "We couldn't start the payment just now.",
+      "retry": "Try again",
+      "payingAs": "As {{name}} · {{email}}"
     }
   },
   "checkout": {

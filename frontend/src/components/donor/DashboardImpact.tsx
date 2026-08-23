@@ -64,6 +64,7 @@ export function DashboardImpact({
         t("donor.payments.csv.gatewayTransactionId"),
       ],
       generalDonation: t("donor.payments.table.generalDonation"),
+      waqfDonation: t("donor.payments.table.waqfDonation"),
       sponsorshipOf: (name) => t("donor.payments.table.sponsorshipOf", { name }),
       donationFor: (name) => t("donor.payments.table.donationFor", { name }),
       methodLabel: (m) => t(`payments.methods.${m}`, m),

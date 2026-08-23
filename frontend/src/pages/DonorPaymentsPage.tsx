@@ -142,6 +142,7 @@ export function DonorPaymentsPage() {
         t("donor.payments.csv.gatewayTransactionId"),
       ],
       generalDonation: t("donor.payments.table.generalDonation"),
+      waqfDonation: t("donor.payments.table.waqfDonation"),
       sponsorshipOf: (name) => t("donor.payments.table.sponsorshipOf", { name }),
       donationFor: (name) => t("donor.payments.table.donationFor", { name }),
       methodLabel: (m) => t(`payments.methods.${m}`, m),
@@ -612,10 +613,13 @@ function RowAction({ row }: { row: PaymentRow }) {
 function AboutCell({ row }: { row: PaymentRow }) {
   const { t } = useTranslation();
   const about = paymentAbout(row);
-  if (about.kind === "general") {
+  // The two child-less kinds carry no name and no code — one line each.
+  if (about.kind === "general" || about.kind === "waqf") {
     return (
       <div className="font-medium text-gray-900 dark:text-gray-100">
-        {t("donor.payments.table.generalDonation")}
+        {about.kind === "waqf"
+          ? t("donor.payments.table.waqfDonation")
+          : t("donor.payments.table.generalDonation")}
       </div>
     );
   }

@@ -4207,6 +4207,8 @@ export interface components {
             payment_method: string;
             /** Status */
             status: string;
+            /** Target Type */
+            target_type?: string | null;
         };
         /** DonorRead */
         DonorRead: {
@@ -6953,11 +6955,14 @@ export interface components {
             sponsorship_id: string | null;
             /** Status */
             status: string;
+            /** Target Type */
+            target_type?: string | null;
         };
         /**
          * PaymentInitiate
          * @description Start a hosted-checkout flow with MyFatoorah for either a
-         *     one-off donation or an existing sponsorship.
+         *     one-off donation, an existing sponsorship, or a general pool
+         *     (``target_type``).
          */
         PaymentInitiate: {
             /** Amount */
@@ -6979,6 +6984,8 @@ export interface components {
             orphan_id?: string | null;
             /** Sponsorship Id */
             sponsorship_id?: string | null;
+            /** Target Type */
+            target_type?: ("waqf" | "zakat") | null;
         };
         /**
          * PaymentInitiateResponse
