@@ -378,6 +378,10 @@ async def initiate_payment(
         currency=payload.currency,
         payment_method="credit_card",
         payment_gateway=gateway_name,
+        # A general pool donation (e.g. the orphans waqf). Validated by
+        # PaymentInitiate to be mutually exclusive with the child fields
+        # above, so it never contradicts sponsorship_id / orphan_id.
+        target_type=payload.target_type,
         status="pending",
     )
     db.add(payment)
@@ -431,6 +435,7 @@ async def initiate_payment(
             "invoice_id": result.invoice_id,
             "amount": str(payload.amount),
             "currency": payload.currency,
+            "target_type": payload.target_type,
         },
     )
     await db.commit()

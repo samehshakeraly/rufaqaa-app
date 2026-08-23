@@ -56,6 +56,10 @@ _EXPECTED_FIELDS = {
     "receipt_url",
     "sponsorship_id",
     "orphan_id",
+    # PR-W01: which general pool the donation went into ("waqf"), or null.
+    # Donor-safe by construction — it is the donor's own choice, and it
+    # names a pool, never a child.
+    "target_type",
     "gateway_transaction_id",
     "bank_reference",
     "orphan_name",

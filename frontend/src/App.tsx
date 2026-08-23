@@ -45,6 +45,7 @@ import { DonorOrphansPage } from "./pages/DonorOrphansPage";
 import { DonorPaymentsPage } from "./pages/DonorPaymentsPage";
 import { DonorProfilePage } from "./pages/DonorProfilePage";
 import { DonorSponsorshipWizardPage } from "./pages/DonorSponsorshipWizardPage";
+import { DonorWaqfPage } from "./pages/DonorWaqfPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { FamiliesPage } from "./pages/FamiliesPage";
 import { FamilyDetailPage } from "./pages/FamilyDetailPage";
@@ -156,6 +157,10 @@ export function App() {
         <Route path="/donor/orphans" element={<DonorOrphansPage />} />
         <Route path="/donor/orphans/:id" element={<DonorOrphanDetailPage />} />
         <Route path="/donor/messages" element={<DonorMessagesPage />} />
+        {/* PR-W01 — the orphans waqf: a general donation into a single
+            pool, reached from the dashboard header. Portal-only for now;
+            no public page in this track yet. */}
+        <Route path="/donor/waqf" element={<DonorWaqfPage />} />
         <Route
           path="/donor/sponsor/:code"
           element={<DonorSponsorshipWizardPage />}

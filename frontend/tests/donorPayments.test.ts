@@ -228,6 +228,7 @@ const LABELS: StatementLabels = {
     "مرجع بوابة الدفع",
   ],
   generalDonation: "تبرّع عام",
+  waqfDonation: "وقف الأيتام",
   sponsorshipOf: (name) => `كفالة ${name}`,
   donationFor: (name) => `تبرّع لـ ${name}`,
   methodLabel: (m) => (m === "credit_card" ? "بطاقة ائتمان" : m),
@@ -326,7 +327,7 @@ describe("buildStatementCsv", () => {
   });
 });
 
-describe("paymentAbout — three-step naming precedence", () => {
+describe("paymentAbout — four-step naming precedence", () => {
   it("a matched sponsorship wins", () => {
     const s = sponsorship({ id: "s-a", code: "SPN-9", orphan_name: "أحمد" });
     const [row] = buildPaymentRows(
@@ -348,9 +349,22 @@ describe("paymentAbout — three-step naming precedence", () => {
     expect(paymentAbout(row!)).toEqual({ kind: "orphan", name: "سارة", code: "ORF-2" });
   });
 
-  it("a payment with no child at all is a general donation", () => {
+  it("an untagged payment with no child at all is a general donation", () => {
     const [row] = buildPaymentRows([payment({})], []);
     expect(paymentAbout(row!)).toEqual({ kind: "general" });
+  });
+
+  it("a waqf-tagged payment reads as the waqf, not as a general donation", () => {
+    const [row] = buildPaymentRows([payment({ target_type: "waqf" })], []);
+    expect(paymentAbout(row!)).toEqual({ kind: "waqf" });
+  });
+
+  it("a child still wins over the tag — a tagged row can never carry one", () => {
+    const [row] = buildPaymentRows(
+      [payment({ orphan_name: "سارة", orphan_code: "ORF-2", target_type: "waqf" })],
+      [],
+    );
+    expect(paymentAbout(row!)).toEqual({ kind: "orphan", name: "سارة", code: "ORF-2" });
   });
 });
 

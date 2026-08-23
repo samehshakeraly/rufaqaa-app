@@ -44,13 +44,15 @@ export function effectiveDate(payment: PaymentDonorRead): string {
   return payment.completed_at ?? payment.initiated_at;
 }
 
-/** What the payment was for, by the three-step precedence (PR-D09):
- * a matched sponsorship wins; otherwise the payment's own child (the
- * server now sends orphan_name/orphan_code on the payment itself); only
- * a payment with no child at all reads as a general donation. */
+/** What the payment was for, by the four-step precedence (PR-D09,
+ * extended in PR-W01): a matched sponsorship wins; otherwise the
+ * payment's own child (the server now sends orphan_name/orphan_code on
+ * the payment itself); otherwise the pool it was tagged for; only an
+ * untagged payment with no child at all reads as a general donation. */
 export type PaymentAbout =
   | { kind: "sponsorship"; name: string; code: string }
   | { kind: "orphan"; name: string; code: string | null }
+  | { kind: "waqf" }
   | { kind: "general" };
 
 export function paymentAbout(row: PaymentRow): PaymentAbout {
@@ -68,6 +70,9 @@ export function paymentAbout(row: PaymentRow): PaymentAbout {
       code: row.payment.orphan_code ?? null,
     };
   }
+  // A waqf payment carries no child by construction, so it can only be
+  // told apart from a plain one-off donation by its tag.
+  if (row.payment.target_type === "waqf") return { kind: "waqf" };
   return { kind: "general" };
 }
 
@@ -219,6 +224,9 @@ export interface StatementLabels {
     string,
   ];
   generalDonation: string;
+  /** "وقف الأيتام" — the single-pool endowment (PR-W01). One label for
+   * the table and the CSV, so the two never disagree. */
+  waqfDonation: string;
   /** "كفالة {name}" — receives the child's name. */
   sponsorshipOf: (name: string) => string;
   /** "تبرّع لـ {name}" — a child-directed donation outside a sponsorship. */
@@ -238,6 +246,8 @@ function statementAbout(row: PaymentRow, labels: StatementLabels): string {
       return about.code
         ? `${labels.donationFor(about.name)} (${about.code})`
         : labels.donationFor(about.name);
+    case "waqf":
+      return labels.waqfDonation;
     case "general":
       return labels.generalDonation;
   }

@@ -136,6 +136,11 @@ export async function fetchPaymentReceipt(paymentId: string): Promise<PaymentRec
   return data;
 }
 
+/** A general donation into a named pool instead of to a child. The
+ * backend refuses `target_type` alongside `sponsorship_id`/`orphan_id`
+ * with a 422 — a pool payment has no beneficiary by definition. */
+export type PaymentTarget = "waqf" | "zakat";
+
 export interface PaymentInitiateInput {
   donor_id: string;
   sponsorship_id?: string;
@@ -143,6 +148,7 @@ export interface PaymentInitiateInput {
   amount: string;
   currency: string;
   language?: "ar" | "en";
+  target_type?: PaymentTarget;
 }
 
 export interface PaymentInitiateResponse {

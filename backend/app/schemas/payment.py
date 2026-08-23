@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
 PaymentMethod = Literal[
     "credit_card",
@@ -34,6 +34,12 @@ PaymentStatus = Literal[
 # otherwise a "general" donation. There is no payment-level type column — this
 # is computed from ``sponsorship_id`` on the list endpoint and used as a filter.
 PaymentType = Literal["kafala", "general"]
+
+# Stored (``payments.target_type``, migration 0031): a general donation into a
+# named pool rather than a child or a sponsorship. "waqf" is the orphans
+# endowment (PR-W01). The column is a plain nullable String(20) — this Literal
+# is the API-level allow-list, so a typo can never reach the row.
+PaymentTarget = Literal["waqf", "zakat"]
 
 
 class PaymentStatusUpdate(BaseModel):
@@ -95,7 +101,8 @@ class PaymentRead(BaseModel):
 
 class PaymentInitiate(BaseModel):
     """Start a hosted-checkout flow with MyFatoorah for either a
-    one-off donation or an existing sponsorship."""
+    one-off donation, an existing sponsorship, or a general pool
+    (``target_type``)."""
 
     donor_id: UUID
     sponsorship_id: UUID | None = None
@@ -103,6 +110,19 @@ class PaymentInitiate(BaseModel):
     amount: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
     currency: str = Field(min_length=3, max_length=3)
     language: Literal["ar", "en"] = "ar"
+    target_type: PaymentTarget | None = None
+
+    @model_validator(mode="after")
+    def _pool_payments_carry_no_child(self) -> "PaymentInitiate":
+        """A pool donation is by definition NOT tied to a child or a
+        sponsorship — the money goes into the pool, not to a named
+        beneficiary. Sending both is a caller bug, not a preference, so
+        it is refused (422) instead of silently dropping one side."""
+        if self.target_type is not None and (
+            self.sponsorship_id is not None or self.orphan_id is not None
+        ):
+            raise ValueError("target_type cannot be combined with sponsorship_id or orphan_id")
+        return self
 
 
 class PaymentInitiateResponse(BaseModel):
@@ -139,6 +159,10 @@ class PaymentDonorRead(BaseModel):
     receipt_url: str | None
     sponsorship_id: UUID | None
     orphan_id: UUID | None
+    # Which pool a general donation went into ("waqf"), or None for a
+    # child/sponsorship payment. Not an enum here: the column is free-form
+    # and older rows may carry values this build doesn't know about.
+    target_type: str | None = None
 
     # References the donor takes to their bank when a payment goes wrong.
     # NOT internal ops data: the gateway hands both to the donor's own bank

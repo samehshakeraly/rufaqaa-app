@@ -456,7 +456,8 @@
         "receiptAria": "Télécharger le reçu du paiement {{code}}",
         "waiting": "En attente de confirmation bancaire",
         "refundDetails": "Détails de la restitution",
-        "contactUs": "Contactez-nous"
+        "contactUs": "Contactez-nous",
+        "waqfDonation": "Don au waqf"
       },
       "csv": {
         "date": "Date",
@@ -610,7 +611,42 @@
         "browse": "Parcourir les enfants en attente",
         "howItWorks": "Comment fonctionne le parrainage ?",
         "hadith": "Le Prophète ﷺ a dit : « Moi et celui qui prend soin de l'orphelin serons ainsi au Paradis » — Sahih al-Bukhari"
+      },
+      "gates": {
+        "label": "Voies de don",
+        "zakat": "Calculez votre zakat",
+        "zakatSub": "Calculez-la et versez-la",
+        "waqf": "Le waqf des orphelins",
+        "waqfSub": "Un don qui ne s'arrête pas"
       }
+    },
+    "waqf": {
+      "title": "Une aumône continue",
+      "lead": "Le waqf des orphelins : un bien immobilisé dont seuls les revenus sont dépensés pour les orphelins.",
+      "hadith": "« Quand l'homme meurt, ses œuvres s'arrêtent, sauf trois : une aumône continue, un savoir dont on tire profit, ou un enfant vertueux qui prie pour lui. »",
+      "body": "Le waqf immobilise le bien lui-même — il n'est ni vendu, ni donné, ni hérité — et seuls ses revenus sont affectés à sa destination. Votre don rejoint ici le waqf des orphelins comme un seul fonds : il n'est affecté à aucun enfant en particulier et n'est lié à aucun parrainage.",
+      "mineTitle": "Votre waqf à ce jour",
+      "mineTotal": "{{amount}}",
+      "mineCount_zero": "Aucune contribution aboutie",
+      "mineCount_one": "Une contribution aboutie",
+      "mineCount_two": "{{count}} contributions abouties",
+      "mineCount_few": "{{count}} contributions abouties",
+      "mineCount_many": "{{count}} contributions abouties",
+      "mineCount_other": "{{count}} contributions abouties",
+      "otherCurrencies_zero": "aucune autre devise",
+      "otherCurrencies_one": "et une autre devise",
+      "otherCurrencies_two": "et {{count}} autres devises",
+      "otherCurrencies_few": "et {{count}} autres devises",
+      "otherCurrencies_many": "et {{count}} autres devises",
+      "otherCurrencies_other": "et {{count}} autres devises",
+      "amount": "Montant",
+      "customAmount": "Autre montant",
+      "currency": "Devise",
+      "submit": "Constituer le waqf — {{amount}}",
+      "notZakat": "Le waqf immobilise le bien et n'en transfère jamais la propriété au bénéficiaire, alors que la zakat est un transfert de propriété : la zakat ne se verse donc pas ici.",
+      "error": "Impossible de lancer le paiement pour le moment.",
+      "retry": "Réessayer",
+      "payingAs": "Au nom de {{name}} · {{email}}"
     }
   },
   "donorNav": {
