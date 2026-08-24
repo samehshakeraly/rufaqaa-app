@@ -1301,6 +1301,39 @@
       "error": "We couldn't start the payment just now.",
       "retry": "Try again",
       "payingAs": "As {{name}} · {{email}}"
+    },
+    "zakat": {
+      "title": "Calculate your zakat",
+      "lead": "A simplified calculator that estimates your zakat on the well-known position, then carries it to orphans.",
+      "compute": "Work out your zakat",
+      "fields": {
+        "cash": "Cash and bank balances",
+        "goldGrams": "Gold (grams)",
+        "goldPricePerGram": "Gold price per gram",
+        "silverGrams": "Silver (grams)",
+        "silverPricePerGram": "Silver price per gram",
+        "tradeGoods": "Trade goods",
+        "receivables": "Receivables owed to you",
+        "debts": "Debts due from you (subtracted)"
+      },
+      "limitsTitle": "The limits of this calculator",
+      "limitsBody": "This calculator applies the well-known position: the nisab is {{grams}} grams of gold and the rate is {{rate}}% once a full lunar year has passed over the wealth — verifying that year is yours to do. Schools of law differ on the details; the estimate is approximate and remains your own responsibility. Rufaqaa does not issue religious rulings, and you enter the gold price yourself — the platform has no price source.",
+      "base": "Zakatable base",
+      "due": "Zakat due",
+      "nisabReached": "Your wealth has reached the nisab.",
+      "nisabNotReached": "Below the nisab ({{nisab}}).",
+      "directTitle": "Direct your zakat",
+      "directBody": "Your zakat reaches orphans through the partner organisations: pay it directly, or turn it into a sponsorship.",
+      "amount": "Zakat amount",
+      "currency": "Currency",
+      "ack": "I acknowledge that this estimate and its responsibility are my own, and that Rufaqaa relays the partner organisation's report on the child's circumstances without issuing a religious ruling.",
+      "pay": "Pay your zakat — {{amount}}",
+      "orSponsor": "Or sponsor a child with it",
+      "whyNoBadgeTitle": "Why no child carries a “zakat-eligible” badge",
+      "whyNoBadgeBody": "Eligibility data has not yet reached us from the partner organisations, and we never pin a label announcing need on a child — their dignity comes first. Once the data is complete, we will present it in a way that keeps it that way.",
+      "error": "We couldn't start the payment just now.",
+      "retry": "Try again",
+      "invalidNumber": "Enter a valid, non-negative number."
     }
   },
   "checkout": {

@@ -46,6 +46,7 @@ import { DonorPaymentsPage } from "./pages/DonorPaymentsPage";
 import { DonorProfilePage } from "./pages/DonorProfilePage";
 import { DonorSponsorshipWizardPage } from "./pages/DonorSponsorshipWizardPage";
 import { DonorWaqfPage } from "./pages/DonorWaqfPage";
+import { DonorZakatPage } from "./pages/DonorZakatPage";
 import { DonorsPage } from "./pages/DonorsPage";
 import { FamiliesPage } from "./pages/FamiliesPage";
 import { FamilyDetailPage } from "./pages/FamilyDetailPage";
@@ -161,6 +162,10 @@ export function App() {
             pool, reached from the dashboard header. Portal-only for now;
             no public page in this track yet. */}
         <Route path="/donor/waqf" element={<DonorWaqfPage />} />
+        {/* PR-Z01 — the simplified zakat calculator, reached from the
+            dashboard header gate PR-W01 added. Donor-only; no public
+            page in this track yet. */}
+        <Route path="/donor/zakat" element={<DonorZakatPage />} />
         <Route
           path="/donor/sponsor/:code"
           element={<DonorSponsorshipWizardPage />}

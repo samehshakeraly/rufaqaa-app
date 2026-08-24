@@ -647,6 +647,39 @@
       "error": "Impossible de lancer le paiement pour le moment.",
       "retry": "Réessayer",
       "payingAs": "Au nom de {{name}} · {{email}}"
+    },
+    "zakat": {
+      "title": "Calculez votre zakat",
+      "lead": "Un calculateur simplifié qui estime votre zakat selon l'avis le plus répandu, puis la fait parvenir aux orphelins.",
+      "compute": "Calcul de la zakat",
+      "fields": {
+        "cash": "Espèces et soldes bancaires",
+        "goldGrams": "Or (grammes)",
+        "goldPricePerGram": "Prix du gramme d'or",
+        "silverGrams": "Argent (grammes)",
+        "silverPricePerGram": "Prix du gramme d'argent",
+        "tradeGoods": "Marchandises commerciales",
+        "receivables": "Créances qui vous sont dues",
+        "debts": "Dettes à votre charge (déduites)"
+      },
+      "limitsTitle": "Les limites de ce calculateur",
+      "limitsBody": "Ce calculateur applique l'avis le plus répandu : le nisab est de {{grams}} grammes d'or et le taux de {{rate}} % après qu'une année lunaire complète s'est écoulée sur le bien — vérifier cette année vous revient. Les écoles juridiques divergent sur les détails ; l'estimation reste approximative et relève de votre propre responsabilité. Rufaqaa n'émet pas d'avis religieux, et vous saisissez vous-même le prix de l'or — la plateforme n'a aucune source de prix.",
+      "base": "Assiette de la zakat",
+      "due": "Zakat due",
+      "nisabReached": "Votre patrimoine a atteint le nisab.",
+      "nisabNotReached": "En dessous du nisab ({{nisab}}).",
+      "directTitle": "Orientez votre zakat",
+      "directBody": "Votre zakat parvient aux orphelins par les organisations partenaires : versez-la directement, ou transformez-la en parrainage.",
+      "amount": "Montant de la zakat",
+      "currency": "Devise",
+      "ack": "Je reconnais que cette estimation et sa responsabilité m'incombent, et que Rufaqaa transmet le rapport de l'organisation partenaire sur la situation de l'enfant sans émettre d'avis religieux.",
+      "pay": "Versez votre zakat — {{amount}}",
+      "orSponsor": "Ou parrainez un enfant avec",
+      "whyNoBadgeTitle": "Pourquoi aucun enfant ne porte de badge « éligible à la zakat »",
+      "whyNoBadgeBody": "Les données d'éligibilité ne nous sont pas encore parvenues des organisations partenaires, et nous n'apposons jamais sur un enfant une étiquette annonçant son besoin — sa dignité d'abord. Une fois les données complètes, nous les présenterons d'une manière qui la préserve.",
+      "error": "Impossible de lancer le paiement pour le moment.",
+      "retry": "Réessayer",
+      "invalidNumber": "Saisissez un nombre valide et non négatif."
     }
   },
   "donorNav": {
